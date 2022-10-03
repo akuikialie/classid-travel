@@ -2,6 +2,7 @@
 
 namespace App\Http\Routes;
 
+use App\Enums\UserStatus;
 use Dentro\Yalr\BaseRoute;
 
 class DefaultRoute extends BaseRoute
