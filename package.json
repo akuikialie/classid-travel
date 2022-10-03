@@ -1,0 +1,36 @@
+{
+  "private": true,
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build"
+  },
+  "devDependencies": {
+    "@ckeditor/ckeditor5-alignment": "^35.1.0",
+    "@ckeditor/ckeditor5-build-balloon": "^35.1.0",
+    "@ckeditor/ckeditor5-build-balloon-block": "^35.1.0",
+    "@ckeditor/ckeditor5-build-classic": "^35.1.0",
+    "@ckeditor/ckeditor5-build-decoupled-document": "^35.1.0",
+    "@ckeditor/ckeditor5-build-inline": "^35.1.0",
+    "@popperjs/core": "^2.11.6",
+    "alpinejs": "^3.4.2",
+    "apexcharts": "^3.35.5",
+    "autoprefixer": "^10.4.2",
+    "autosize": "^5.0.1",
+    "axios": "^0.27.2",
+    "bootstrap": "^5.2.1",
+    "bootstrap-icons": "^1.9.1",
+    "chart.js": "^3.9.1",
+    "date-fns": "^2.29.3",
+    "jquery": "^3.6.1",
+    "laravel-vite-plugin": "^0.6.0",
+    "line-awesome": "^1.3.0",
+    "lodash": "^4.17.21",
+    "postcss": "^8.4.6",
+    "sass": "^1.54.9",
+    "select2": "4.1.0-rc.0",
+    "smooth-scroll": "^16.1.3",
+    "sweetalert2": "^11.4.33",
+    "vite": "^3.1.2",
+    "wnumb": "^1.2.0"
+  }
+}

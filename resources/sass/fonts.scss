@@ -1,0 +1,17 @@
+$fa-font-path : "../../fonts" !default;
+$bootstrap-icons-font-dir: "../../fonts" !default;
+$la-font-path: "../../fonts" !default;
+$la-li-width: calc(20em / 14) !default;
+
+@import "fonts/fontawesome/all";
+// @import "fonts/fontawesome/fontawesome";
+// @import "fonts/fontawesome/v4-shims";
+// @import "fonts/fontawesome/solid";
+// @import "fonts/fontawesome/regular";
+// @import "fonts/fontawesome/brands";
+// @import "fonts/fontawesome/light";
+// @import "fonts/fontawesome/thin";
+// @import "fonts/fontawesome/duotone";
+
+@import "line-awesome/dist/line-awesome/scss/line-awesome";
+@import "bootstrap-icons/font/bootstrap-icons";

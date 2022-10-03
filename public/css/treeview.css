@@ -1,0 +1,49 @@
+.table.tt-table tbody tr td, .table.tt-table tbody tr td *{
+	overflow: visible !important;
+}
+.tt-table div.tt {
+	display:inline-block;
+	position:relative;
+}
+
+.tt-table div.tt div.content {
+    display: inline-flex;
+	border:1px gray solid;
+	border-radius: 2px;
+	z-index: 10;
+	padding:0 4px 0 5px;
+	position:relative;
+	/*background-color: #dbffbe;*/
+}
+
+.tt-table div.tt div.tail {
+	border:2px gray solid;
+	border-right: 0;
+	border-top: 0;
+	position:absolute;
+	border-bottom-left-radius: 4px;
+	bottom: 11px;
+	left: -10px;
+	z-index: 0;
+}
+
+.tt-table div.tt div.root-tail {
+	border:2px gray solid;
+	border-right: 0;
+	border-top: 0;
+	border-bottom: 0;
+	position:absolute;
+	border-radius: 2px;
+	bottom: 11px;
+	left: -10px;
+	z-index: 0;
+}
+
+.tt-table div.tt-parent div.content {
+	cursor:pointer;
+	background-color: #eeeeee;
+}
+
+.tt-table tr.tt-hide {
+	display:none;
+}

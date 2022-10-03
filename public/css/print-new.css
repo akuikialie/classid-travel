@@ -1,0 +1,74 @@
+.printableArea {
+    width: 24cm;
+    height: 14cm;
+}
+.table-print{
+    width: 900px !important;
+}
+.payment-student {
+    width: 24cm;
+    height: 14cm;
+    padding: 20px;
+}
+
+.table-pembayaran {
+    padding: 5px;
+    margin: 10px 0;
+}
+
+.tbl_header {
+    font-weight: bold;
+}
+@font-face {
+    font-family: Arial;
+}
+
+html, body {
+    margin: 0;
+    font-family: Arial;
+    background: white;
+}
+
+.printableArea {
+    display: block;
+    font-family: Arial;
+    width: 950px;
+    border: 0px solid darkgrey;
+    background: white;
+}
+#border {
+    height: 1px;
+    width: 100%;
+    border-bottom: 2px solid #000;
+    margin-top: 10px;
+    font-size: 11px;
+    line-height: 17px;
+}
+#border1 {
+    height: 1px;
+    width: 100%;
+    border-top: 2px solid #000;
+    margin-top: 5px;
+    font-size: 11px;
+    line-height: 17px;
+}
+
+#border {
+    margin-bottom: 10px !important;
+}
+
+td {
+    font-size: 16;
+}
+
+.text-right { text-align: right}
+.text-left { text-align: left}
+.text-uppercase { text-transform: uppercase}
+
+@media print {
+    html, body {
+        display: block;
+        font-family: Arial;
+        margin: 0;
+    }
+}

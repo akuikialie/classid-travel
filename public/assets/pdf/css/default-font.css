@@ -1,0 +1,46 @@
+@page {
+    margin: 1cm 2cm 2cm 2cm;
+}
+body {
+    margin: 4cm 0 0.5cm 0;
+    text-align: justify;
+    font-family: times-roman, sans-serif;
+    font-size: 11pt;
+}
+
+#header,
+#footer {
+    position: fixed;
+    left: 0;
+    right: 0;
+    font-size: 0.9em;
+    font-family: times-roman, sans-serif;
+}
+
+#header {
+    top: 0;
+    border-bottom: 0.1pt solid #000;
+    padding-bottom: 5px;
+}
+
+#footer {
+    bottom: 0;
+    border-top: 0.1pt solid #000;
+    font-size: 9pt;
+}
+
+#header table,
+#footer table {
+    width: 100%;
+    border-collapse: collapse;
+    border: none;
+}
+
+#page-number {
+    text-align: right;
+    font-size: 11pt;
+}
+
+#page-number:after {
+    content: counter(page);
+}
