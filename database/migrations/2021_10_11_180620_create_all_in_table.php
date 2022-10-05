@@ -1,5 +1,7 @@
 <?php
 
+use App\Models\Plan\Plan;
+use Illuminate\Support\Str;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -17,6 +19,8 @@ return new class extends Migration
         $this->addressTable();
         $this->emailsTable();
         $this->phonesTable();
+
+        $this->trySeed();
     }
 
     /**
@@ -110,6 +114,22 @@ return new class extends Migration
 
             // $table->index(['phones_type', 'phones_id']);
         });
+    }
+
+    public function trySeed(): void
+    {
+        try {
+            collect([
+                'Umrah', 'Haji', 'Wisata',
+            ])->each(fn ($cat, $i) => Plan::create([
+                'type' => 'plan',
+                'key' => Str::slug($cat),
+                'value' => $cat,
+                'order' => $i
+            ]));
+        } catch (\Throwable $th) {
+            throw $th;
+        }
     }
 
     // private function defineSeed(): void
