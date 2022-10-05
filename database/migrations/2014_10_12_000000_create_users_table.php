@@ -19,12 +19,12 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->string('username')->unique();
-            $table->string('phone')->unique();
+            $table->string('phone')->unique()->nullable();
             $table->string('email')->nullable()->unique();
             $table->timestamp('email_verified_at', precision: 6)->nullable();
             $table->string('password');
             $table->rememberToken();
-            $table->string('type', 20)->default(UserType::VOLUNTEER->value);
+            // $table->string('type', 20)->default(UserType::VOLUNTEER->value);
             $table->string('va_number')->nullable();
             $table->string('locale')->default('id_ID');
             $table->string('timezone')->default('Asia/Jakarta');

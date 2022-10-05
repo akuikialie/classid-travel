@@ -29,4 +29,14 @@ return new class extends Migration
             $table->nullableTimestamps(precision: 6);
         });
     }
+
+    /**
+     * Reverse the migrations.
+     *
+     * @return void
+     */
+    public function down()
+    {
+        Schema::dropIfExists('media');
+    }
 };

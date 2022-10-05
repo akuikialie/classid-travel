@@ -52,6 +52,7 @@ return [
     'web' => [
         /** @inject web **/
         App\Http\Routes\DefaultRoute::class,
+        App\Http\Routes\AuthRoute::class,
     ],
     'api' => [
         /** @inject api **/

@@ -19,12 +19,30 @@ class DefaultRoute extends BaseRoute
      */
     public function register(): void
     {
-        $this->router->get('{path?}', function () {
-            if (request()->expectsJson()) {
-                return response()->json('Welcome to Multi School');
-            }
+        // $this->router->get('{path?}', function () {
+        //     if (request()->expectsJson()) {
+        //         return response()->json('Welcome to Multi School');
+        //     }
 
-            return 'Welcome to Multi School';
-        })->where('path', '.*');
+        //     return 'Welcome to Multi School';
+        // })->where('path', '.*');
+
+        $this->router->get('/', function(){
+            return view('pages.mobile.splashscreen-index');
+        });
+
+        $this->router->middleware(['auth', 'verified'])->group(function ($route) {
+
+            $route->get($this->prefix('home'), function(){
+                // $array1 = array('1' => 'Ayam Goreng', '2' => 'Nasi Goreng', '3' => 'Pisang Goreng');
+
+                // $array2 = array('Nasi Goreng', 'Ayam Goreng', 'Capcai');
+
+                // $TampungArray = array_diff($array1, $array2);
+                // return $TampungArray;
+                return view('pages.mobile.home.dashboard-index');
+            });
+
+        });
     }
 }

@@ -2,7 +2,8 @@
 
 namespace App\Http\Routes;
 
-use App\Http\Controllers\AuthController;
+use App\Http\Controllers\AuthenticationSessionController;
+use App\Http\Controllers\RegisterUserController;
 use Dentro\Yalr\BaseRoute;
 
 class AuthRoute extends BaseRoute
@@ -10,7 +11,7 @@ class AuthRoute extends BaseRoute
 
     protected string $prefix = 'auth';
 
-    protected string $name = 'auth';
+    // protected string $name = 'auth';
 
     /**
      * Register routes handled by this class.
@@ -19,8 +20,18 @@ class AuthRoute extends BaseRoute
      */
     public function register(): void
     {
-        $this->router->post($this->prefix('login'), [AuthController::class, 'login']);
+        /* login */
+        $this->router->get($this->prefix('login'), [AuthenticationSessionController::class, 'create'])->name('login');
+        $this->router->post($this->prefix('login'), [AuthenticationSessionController::class, 'store']);
 
-        $this->router->get($this->prefix('user'), [AuthController::class, 'user'])->middleware('auth:api');
+        /* register */
+        $this->router->get($this->prefix('register'), [RegisterUserController::class, 'create'])->name('register');
+        $this->router->post($this->prefix('register'), [RegisterUserController::class, 'store']);
+
+        $this->router->get($this->prefix('user'), [AuthenticationSessionController::class, 'user'])->middleware('auth:api');
+
+        $this->router->middleware(['auth', 'verified'])->group(function($route){
+            $route->post($this->prefix('logout'), [AuthenticationSessionController::class, 'destroy'])->name('logout');
+        });
     }
 }
