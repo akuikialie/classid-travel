@@ -5,6 +5,7 @@ namespace App\Http\Routes;
 use App\Http\Controllers\AuthenticationSessionController;
 use App\Http\Controllers\RegisterUserController;
 use Dentro\Yalr\BaseRoute;
+use Illuminate\Support\Facades\Request;
 
 class AuthRoute extends BaseRoute
 {
@@ -20,15 +21,18 @@ class AuthRoute extends BaseRoute
      */
     public function register(): void
     {
-        /* login */
-        $this->router->get($this->prefix('login'), [AuthenticationSessionController::class, 'create'])->name('login');
-        $this->router->post($this->prefix('login'), [AuthenticationSessionController::class, 'store']);
+        $this->router->middleware(['guest'])->group(function($route){
+            /* login */
+            $this->router->get($this->prefix('login'), [AuthenticationSessionController::class, 'create'])->name('login');
+            $this->router->post($this->prefix('login'), [AuthenticationSessionController::class, 'store']);
 
-        /* register */
-        $this->router->get($this->prefix('register'), [RegisterUserController::class, 'create'])->name('register');
-        $this->router->post($this->prefix('register'), [RegisterUserController::class, 'store']);
+            /* register */
+            $this->router->get($this->prefix('register'), [RegisterUserController::class, 'create'])->name('register');
+            $this->router->post($this->prefix('register'), [RegisterUserController::class, 'store']);
+        });
 
-        $this->router->get($this->prefix('user'), [AuthenticationSessionController::class, 'user'])->middleware('auth:api');
+
+        // $this->router->get($this->prefix('user'), [AuthenticationSessionController::class, 'user'])->middleware('auth:api');
 
         $this->router->middleware(['auth', 'verified'])->group(function($route){
             $route->post($this->prefix('logout'), [AuthenticationSessionController::class, 'destroy'])->name('logout');

@@ -51,10 +51,12 @@ return [
 
     'web' => [
         /** @inject web **/
-        // App\Http\Routes\DefaultRoute::class,
+        App\Http\Routes\DefaultRoute::class,
         App\Http\Routes\AuthRoute::class,
-        App\Http\Routes\Mobile\TabunganRoute::class,
         App\Http\Routes\Mobile\HomeRoute::class,
+        App\Http\Routes\Mobile\JamaahRoute::class,
+        App\Http\Routes\Mobile\TabunganRoute::class,
+        App\Http\Routes\Mobile\ProfileRoute::class,
     ],
     'api' => [
         /** @inject api **/
