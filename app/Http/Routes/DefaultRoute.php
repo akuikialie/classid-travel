@@ -31,15 +31,15 @@ class DefaultRoute extends BaseRoute
             return view('pages.mobile.splashscreen-index');
         });
 
-        $this->router->middleware(['auth', 'verified'])->group(function ($route) {
+        // $this->router->middleware(['auth', 'verified'])->group(function ($route) {
 
-            $route->get($this->prefix('home'), function () {
-                return view('pages.mobile.home.dashboard-index');
-            })->name('home');
+        //     $route->get($this->prefix('home'), function () {
+        //         return view('pages.mobile.home.dashboard-index');
+        //     })->name('home');
 
-            $route->get($this->prefix('tabungan'), function () {
-                return view('pages.mobile.tabungan.tabungan-index');
-            })->name('tabungan');
-        });
+        //     $route->get($this->prefix('tabungan'), function () {
+        //         return view('pages.mobile.tabungan.tabungan-index');
+        //     })->name('tabungan');
+        // });
     }
 }

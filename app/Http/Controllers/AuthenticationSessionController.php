@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\Auth\Authentication;
 use App\Providers\RouteServiceProvider;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class AuthenticationSessionController extends Controller
 {
@@ -24,12 +25,13 @@ class AuthenticationSessionController extends Controller
 
     public function destroy(Request $request)
     {
-        $this->guard->logout();
+        Auth::logout();
 
         $request->session()->invalidate();
 
         $request->session()->regenerateToken();
 
         /* redirect to login page */
+        return redirect(url('/'));
     }
 }

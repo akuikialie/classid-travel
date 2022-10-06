@@ -42,7 +42,7 @@
                 <em>(required)</em>
             </div>
 
-            <a href="#" class="btn btn-m btn-full rounded-sm shadow-l bg-green-dark text-uppercase font-700 mt-4">Buat
+            <a href="#" class="btn btn-sm btn-full rounded-sm shadow-l bg-highlight text-uppercase font-700 mt-4">Buat
                 Akun</a>
 
             <div class="divider mt-4"></div>
