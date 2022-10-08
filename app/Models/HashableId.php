@@ -11,7 +11,7 @@ trait HashableId
     public function hash(): Attribute
     {
         return Attribute::make(
-            get: fn ($val) => Hashids::encode($val),
+            get: fn ($val) => Hashids::encode($this->getOriginal($this->getKeyName())),
         );
     }
 
