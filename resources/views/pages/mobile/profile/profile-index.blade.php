@@ -14,15 +14,16 @@
         <div class="d-flex content mb-1">
             <!-- left side of profile -->
             <div class="flex-grow-1 ">
-                <h1 class="font-20 ">Winata Bayu Nur<i
+                <h1 class="font-20 ">{{ isset($user) ? $user?->name : 'unknown' }}<i
                         class="fa fa-check-circle color-blue-dark float-end font-13 mt-2 me-3"></i>
                 </h1>
                 <p class="mb-2">
-                    6281331307327
+                    {{ isset($user) ? $user->phone : '-' }}
                 </p>
                 <p class="font-14 ">
-                    <strong class="color-theme pe-1">3</strong>Tabungan
-                    <strong class="color-theme ps-3 pe-1">0</strong>Jamaah
+                    <strong class="color-theme pe-1">{{ isset($total_tabungan) ? $total_tabungan : 1 }}</strong>Tabungan
+                    <strong
+                        class="color-theme ps-3 pe-1">{{ isset($user) ? $user->people_inviteds_count : 0 }}</strong>Jamaah
                 </p>
             </div>
             <!-- right side of profile. increase image width to increase column size-->
@@ -38,7 +39,7 @@
                         Profil</a>
                 </div>
                 <div class="col-6">
-                    <a href="#"
+                    <a href="#" data-menu="menu-share-invitation"
                         class="btn btn-full btn-sm btn-border rounded-s text-uppercase font-900 color-highlight border-blue-dark">Invite
                         Jamaah</a>
                 </div>
@@ -60,15 +61,17 @@
         <div class="splide user-slider slider-no-arrows slider-no-dots" id="user-slider-1">
             <div class="splide__track">
                 <div class="splide__list">
-                    @for ($i = 0; $i < 10; $i++)
-                        <div class="splide__slide">
+                    @forelse ($people_invited as $invited)
+                        <div class="{{ $people_invited->count() > 2 ? 'splide__slide' : '' }}">
                             <div class="text-center">
-                                <img src="images/avatars/{{ rand(1, 5) }}s.png" width="55" height="55"
+                                <img src="images/avatars/4s.png" width="55" height="55"
                                     class="rounded-xl shadow-l gradient-blue">
-                                <p>{{ fake()->name() }}</p>
+                                <p>{{ $invited?->user?->name }}</p>
                             </div>
                         </div>
-                    @endfor
+                    @empty
+                    @endforelse
+
                 </div>
             </div>
         </div>
@@ -77,7 +80,7 @@
     <div class="card card-style">
         <div class="content">
             <div class="list-group list-custom-small">
-                <a href="#">
+                {{-- <a href="#">
                     <i class="fas fa-info-circle"></i>
                     <span>Tentang Kami</span>
                     <i class="fa fa-arrow-right"></i>
@@ -86,7 +89,7 @@
                     <i class="fas fa-question"></i>
                     <span>Bantuan</span>
                     <i class="fa fa-arrow-right"></i>
-                </a>
+                </a> --}}
 
                 <a href="#" class="text-danger" data-menu="menu-confirm">
                     <i class="fas fa-sign-out-alt"></i>
@@ -100,6 +103,46 @@
 @endsection
 
 @section('external-mobile-content')
+    <!---------------->
+    <!---------------->
+    <!--Menu Share Inviation-->
+    <!---------------->
+    <!---------------->
+    <div id="menu-share-invitation" class="menu menu-box-modal rounded-m" data-menu-height="300" data-menu-width="310">
+        <form {{-- action="{{ route('invite.store') }}" --}} method="post" id="form-invite-jamaah">
+            @csrf
+            <div class="me-3 ms-3 mt-3">
+                <h1 class="font-700 mb-0">Invite Jamaah</h1>
+                <p class="font-11  mt-n1 mb-0">
+                    Undang jamaah lain menggunakan kode referal kamu!.
+                </p>
+
+                <h6 class="font-13 ps-1 font-500 mb-1 mt-3">Pilih Paket</h6>
+                <div class="input-style input-style-always-active has-borders no-icon my-4">
+                    <select id="pilih-package" name="package_id">
+                        @forelse ($planPackages as $package)
+                            <option value="{{ $package->id }}">{{ $package->name }}</option>
+                        @empty
+                            <option value="" selected disabled>Belum Punya Paket</option>
+                        @endforelse
+                    </select>
+                    <span><i class="fa fa-chevron-down"></i></span>
+                    <i class="fa fa-check disabled valid color-green-dark"></i>
+                    <i class="fa fa-check disabled invalid color-red-dark"></i>
+                    <em></em>
+                </div>
+                @if ($errors->has('package_id'))
+                    <span class="text-danger"><small>{{ $errors->first('package_id') }}</small></span>
+                @endif
+                <div class="d-flex justify-content-center">
+                    <button id="btnShareLink" type="button"
+                        class="btn btn-full btn-sm shadow-l rounded-s text-uppercase font-900 bg-highlight mt-4">Bagikan</button>
+                </div>
+
+            </div>
+        </form>
+    </div>
+
     <!---------------->
     <!---------------->
     <!--Menu Confirm-->
@@ -123,4 +166,60 @@
             </form>
         </div>
     </div>
+@endsection
+
+@section('page-scripts')
+    <script src="https://code.jquery.com/jquery-3.6.1.min.js"></script>
+    <script type="text/javascript">
+        $(document).ready(function() {
+            $.ajaxSetup({
+                headers: {
+                    "X-CSRF-TOKEN": $('meta[name="csrf-token"]').attr("content"),
+                },
+            });
+
+            $("#btnShareLink").click(function(e) {
+                e.preventDefault();
+                $.ajax({
+                    data: $("#form-invite-jamaah").serialize(),
+                    url: "{{ route('invite.store') }}",
+                    type: "POST",
+                    dataType: "json",
+                    success: function(data) {
+                        // $('#clipboard').val(data.link);
+
+                        copyToClipboard(data.link);
+
+                        alert("Link telah di copy ke clipboard!.");
+                        // console.log(data);
+                    },
+                    error: function(error) {
+                        console.log(error);
+                        // Swal.fire({
+                        //     icon: error.responseJSON.icon,
+                        //     title: error.responseJSON.title,
+                        //     text: error.responseJSON.message,
+                        //     footer:
+                        //         '<a href="">Error Code: ' +
+                        //         error.status +
+                        //         ", " +
+                        //         error.statusText +
+                        //         "...</a>",
+                        // });
+                    },
+                });
+            });
+
+            function copyToClipboard(text) {
+                const elem = document.createElement('textarea');
+                elem.value = text;
+                document.body.appendChild(elem);
+                elem.select();
+                document.execCommand('copy');
+                document.body.removeChild(elem);
+            }
+
+
+        });
+    </script>
 @endsection

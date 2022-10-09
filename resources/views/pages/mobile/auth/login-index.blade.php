@@ -12,13 +12,16 @@
                 @csrf
                 <div class="input-style no-borders has-icon validate-field mb-4">
                     <i class="fa fa-user"></i>
-                    <input type="name" class="form-control validate-name" name="email-username"
+                    <input type="text" class="form-control" name="login" id="login"
                         placeholder="Username / Email / Phone">
-                    <label for="form1a" class="color-blue-dark font-10 mt-1">Username / Email / Phone</label>
+                    <label for="login" class="color-blue-dark font-10 mt-1">Username / Email / Phone</label>
                     <i class="fa fa-times disabled invalid color-red-dark"></i>
-                    <i class="fa fa-check disabled valid color-green-dark"></i>
+                    {{-- <i class="fa fa-check disabled valid color-green-dark"></i> --}}
                     <em>(required)</em>
                 </div>
+                @if ($errors->has('login'))
+                    <span class="text-danger"><small>{{ $errors->first('login') }}</small></span>
+                @endif
 
                 <div class="input-style no-borders has-icon validate-field mb-4">
                     <i class="fa fa-lock"></i>
@@ -28,6 +31,10 @@
                     <i class="fa fa-check disabled valid color-green-dark"></i>
                     <em>(required)</em>
                 </div>
+                @if ($errors->has('password'))
+                    <span class="text-danger"><small>{{ $errors->first('password') }}</small></span>
+                @endif
+
 
                 <div class="d-flex justify-content-center">
                   <button type="submit" class="btn mt-2 mb-2 btn-full bg-highlight rounded-sm text-uppercase font-900"  style="width: 80%">

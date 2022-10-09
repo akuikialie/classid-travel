@@ -44,15 +44,17 @@
         <div class="splide user-slider slider-no-arrows slider-no-dots" id="user-slider-1">
             <div class="splide__track">
                 <div class="splide__list">
-                    @for ($i = 0; $i < 10; $i++)
-                        <div class="splide__slide">
-                          <div class="text-center">
-                              <img src="images/avatars/{{ rand(1,5) }}s.png" width="55" height="55"
-                                  class="rounded-xl shadow-l gradient-blue">
-                              <p>{{ fake()->name() }}</p>
-                          </div>
+                    @forelse ($people_invited as $invited)
+                        <div class="{{ $people_invited->count() > 2 ? 'splide__slide' : '' }}">
+                            <div class="text-center">
+                                <img src="images/avatars/4s.png" width="55" height="55"
+                                    class="rounded-xl shadow-l gradient-blue">
+                                <p>{{ $invited?->user?->name }}</p>
+                            </div>
                         </div>
-                    @endfor
+                    @empty
+                    @endforelse
+
                 </div>
             </div>
         </div>
@@ -60,5 +62,5 @@
 @endsection
 
 @section('external-mobile-content')
-    @include('pages.mobile.home.menu.mulai-menabung')
+    {{-- @include('pages.mobile.home.menu.mulai-menabung') --}}
 @endsection

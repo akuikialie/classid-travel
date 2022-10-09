@@ -9,11 +9,13 @@
         content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, viewport-fit=cover" />
     <title>App</title>
 
-    {{-- <style>
+    <style>
         body {
             touch-action: pan-x pan-y;
         }
-    </style> --}}
+    </style>
+
+  {{-- @vite(['resources/sass/fonts.scss', 'resources/sass/app.scss']) --}}
 
     @include('customs.styles')
 </head>
