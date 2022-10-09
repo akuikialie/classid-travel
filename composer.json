@@ -9,6 +9,7 @@
     "license": "MIT",
     "require": {
         "php": "^8.1",
+        "browner12/helpers": "^3.4",
         "dentro/laravel-concerns": "dev-master",
         "dentro/yalr": "^1.2",
         "guzzlehttp/guzzle": "^7.2",

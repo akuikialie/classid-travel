@@ -118,18 +118,18 @@ return new class extends Migration
 
     public function trySeed(): void
     {
-        try {
-            collect([
-                'Umrah', 'Haji', 'Wisata',
-            ])->each(fn ($cat, $i) => Plan::create([
-                'type' => 'plan',
-                'key' => Str::slug($cat),
-                'value' => $cat,
-                'order' => $i
-            ]));
-        } catch (\Throwable $th) {
-            throw $th;
-        }
+        // try {
+        //     collect([
+        //         'Umrah', 'Haji', 'Wisata',
+        //     ])->each(fn ($cat, $i) => Plan::create([
+        //         'type' => 'plan',
+        //         'key' => Str::slug($cat),
+        //         'value' => $cat,
+        //         'order' => $i
+        //     ]));
+        // } catch (\Throwable $th) {
+        //     throw $th;
+        // }
     }
 
     // private function defineSeed(): void

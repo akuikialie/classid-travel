@@ -18,7 +18,9 @@ return new class extends Migration
             $table->id();
             $table->unsignedBigInteger('plan_id')->comment('reference to defines_table');
             $table->string('name', 50);
-            $table->boolean('is_publish')->default('false')->comment('Jika true, maka hanya bisa R');
+            $table->text('description')->nullable();
+            $table->double('amount', 15, 2);
+            $table->boolean('is_publish')->default('true')->comment('Jika true, maka hanya bisa Read');
             $table->string('status', 10)->default(Statuses::tryFrom('active')->keyValue())->comment('enum in Statuses::class');
             $table->dateTime('deactived_at')->nullable()->comment('terisi ketika status nonactive');
             $table->timestamps();
@@ -26,6 +28,18 @@ return new class extends Migration
 
             /* foreign keys */
             $table->foreign('plan_id')->on('defines')->references('id')->onDelete('cascade');
+        });
+
+        Schema::create('model_has_package', function (Blueprint $table) {
+            $table->id();
+            $table->string('model_type', 50);
+            $table->unsignedBigInteger('model_id');
+            $table->unsignedBigInteger('plan_package_id')->comment('reference to destinations_table');
+
+            $table->timestamps();
+
+            /* foreign keys */
+            $table->foreign('plan_package_id')->on('plan_packages')->references('id')->onDelete('cascade');
         });
     }
 
@@ -36,6 +50,7 @@ return new class extends Migration
      */
     public function down()
     {
+        Schema::dropIfExists('model_has_package');
         Schema::dropIfExists('plan_packages');
     }
 };

@@ -12,19 +12,21 @@
     <div class="card card-style">
         <div class="content">
             <div class="d-flex justify-content-between">
-                <h3 class="font-600">Bayu Nur Winata</h3>
-                <p class="text-nowrap"><strong>Total Tabungan</strong></p>
 
+                <h3 class="font-600">{{ isset($data['name']) ? $data['name'] : 'unknown' }}</h3>
+                <p class="text-nowrap"><strong>Total Tabungan</strong></p>
             </div>
-            <p class="font-11 mt-n2 color-hi ghlight">6281331307327</p>
+            <p class="font-11 mt-n2 color-hi ghlight">{{ isset($data['phone']) ? $data['phone'] : '-' }}</p>
 
             <div class="float-start">
-                <p class="font-12 opacity-80 mb-n1"><i class="far fa-calendar"></i> August 28 <i
-                        class="ms-4 far fa-clock"></i>
-                    09:00 PM</p>
-                <p class="font-12 opacity-100"> <strong><i class="fa-solid fa-wallet"></i> Rp.14.290.000
+                <p class="font-12 opacity-80 mb-n1"><i class="far fa-calendar"></i>
+                    {{ \Carbon\Carbon::now()->format('F m') }} <i class="ms-4 fas fa-money-check"></i>
+                    <strong>{{ isset($total_tabungan) ? $total_tabungan : 0 }}</strong> Tabungan
+                </p>
+                <p class="font-12 opacity-100"> <strong><i class="fa-solid fa-wallet"></i>
+                        {{ isset($data['totalSavings']) ? $data['totalSavings'] : 0 }}
                     </strong> <small>dari
-                        Rp34.000.000</small></p>
+                        {{ isset($data['targetSavings']) ? $data['targetSavings'] : '~' }}</small></p>
 
             </div>
             <a href="#" data-menu="mulai-menabung"
@@ -39,7 +41,7 @@
     </div>
 
     <div class="row text-center mb-0">
-        <a href="pages-list.html" class="col-6 pe-2">
+        <a href="#" class="col-6 pe-2">
             <div class="card card-style me-0 mb-3">
                 <h1 class="center-text pt-4 mt-2">
                     <i data-feather="file" data-feather-line="1" data-feather-size="50" data-feather-color="blue-dark"
@@ -47,13 +49,13 @@
                     </i>
                 </h1>
                 <h4 class="color-theme font-600">Berangkat Langsung</h4>
-                <p class="line-height-s font-11 pb-1">
+                {{-- <p class="line-height-s font-11 pb-1">
                     Neque porro quisquam est qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit...
-                </p>
-                <p class="font-10 opacity-30 mb-1">Tap to View</p>
+                </p> --}}
+                <p class="font-10 opacity-30 mb-1">Coming Soon</p>
             </div>
         </a>
-        <a href="pages-appstyled-list.html" class="col-6 ps-2">
+        <a href="#" class="col-6 ps-2">
             <div class="card card-style ms-0 mb-3">
                 <h1 class="center-text pt-4 mt-2">
                     <i data-feather="smartphone" data-feather-line="1" data-feather-size="50"
@@ -61,15 +63,15 @@
                     </i>
                 </h1>
                 <h4 class="color-theme font-600">Perencanaan Ibadah</h4>
-                <p class="line-height-s font-11 pb-1">
+                {{-- <p class="line-height-s font-11 pb-1">
                     Neque porro quisquam est qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit...
-                </p>
-                <p class="font-10 opacity-30 mb-1">Tap to View</p>
+                </p> --}}
+                <p class="font-10 opacity-30 mb-1">Coming Soon</p>
             </div>
         </a>
     </div>
 
-    <div class="content mb-2">
+    {{-- <div class="content mb-2">
         <h5 class="float-start font-16 font-500">Produk Kami</h5>
         <a class="float-end font-12 color-highlight mt-n1" href="#">View All</a>
         <div class="clearfix"></div>
@@ -120,7 +122,7 @@
                 </div>
             </div>
         </div>
-    </div>
+    </div> --}}
 @endsection
 
 @section('external-mobile-content')

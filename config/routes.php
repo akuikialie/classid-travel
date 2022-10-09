@@ -55,8 +55,10 @@ return [
         App\Http\Routes\AuthRoute::class,
         App\Http\Routes\Mobile\HomeRoute::class,
         App\Http\Routes\Mobile\JamaahRoute::class,
+        App\Http\Routes\Mobile\PackageRoute::class,
         App\Http\Routes\Mobile\TabunganRoute::class,
         App\Http\Routes\Mobile\ProfileRoute::class,
+        App\Http\Routes\Mobile\ReferalRoute::class,
     ],
     'api' => [
         /** @inject api **/

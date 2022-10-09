@@ -20,7 +20,14 @@
         <div class="splide__track">
             <div class="splide__list">
 
-                <div class="splide__slide px-3">
+                @foreach ($list_moneyboxs as $moneybox)
+                    <div class="splide__slide px-3">
+
+                        @include('pages.mobile.tabungan.menu.menu-tabungan', $moneybox)
+                    </div>
+                @endforeach
+
+                {{-- <div class="splide__slide px-3">
                     @include('pages.mobile.tabungan.menu.menu-tabungan', [
                         'lastSavings' => \Carbon\Carbon::now()->addDays(rand(-10, 0))->format('d M Y, H:i'),
                         'savings' => '900.000',
@@ -34,16 +41,9 @@
                         'savings' => '12.500.000',
                         'targetSavings' => '32.000.000',
                     ])
-                </div>
+                </div> --}}
 
-                <div class="splide__slide px-3">
-                    @include('pages.mobile.tabungan.menu.menu-tabungan', [
-                        'namaTabungan' => 'Tabungan Wisata',
-                        'lastSavings' => \Carbon\Carbon::now()->addDays(rand(-10, 0))->format('d M Y, H:i'),
-                        'savings' => '890.000',
-                        'targetSavings' => '2.000.000',
-                    ])
-                </div>
+
             </div>
         </div>
     </div>

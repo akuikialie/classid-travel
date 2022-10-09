@@ -2,6 +2,7 @@
 
 namespace App\Http\Routes\Mobile;
 
+use App\Http\Controllers\Mobile\JamaahController;
 use Dentro\Yalr\BaseRoute;
 
 class JamaahRoute extends BaseRoute
@@ -15,9 +16,7 @@ class JamaahRoute extends BaseRoute
     {
         $this->router->middleware(['auth', 'verified'])->group(function ($route) {
 
-            $route->get($this->prefix(''), function () {
-                return view('pages.mobile.jamaah.jamaah-index');
-            })->name('jamaah.index');
+            $route->get($this->prefix(''), [JamaahController::class, 'index'])->name('jamaah.index');
 
         });
     }

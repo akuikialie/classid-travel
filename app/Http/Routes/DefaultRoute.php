@@ -29,7 +29,7 @@ class DefaultRoute extends BaseRoute
 
         $this->router->get('/', function () {
             return view('pages.mobile.splashscreen-index');
-        });
+        })->middleware(['guest']);
 
         // $this->router->middleware(['auth', 'verified'])->group(function ($route) {
 

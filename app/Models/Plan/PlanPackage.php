@@ -14,7 +14,7 @@ class PlanPackage extends Model
 
     protected $table = 'plan_packages';
 
-    protected $fillable = ['name'];
+    protected $fillable = ['name', 'description', 'amount'];
 
     /**
      * Get the user that owns the PlanPackage

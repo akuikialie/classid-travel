@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\Auth;
 
+use App\Models\Master\Phone;
 use Illuminate\Auth\Events\Lockout;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Auth;
@@ -15,13 +16,18 @@ class Authentication extends FormRequest
 
     public function __construct()
     {
-        $this->authType = $this->findUsernameOrEmail();
+        $this->authType = $this->credentials();
     }
 
-    public function findUsernameOrEmail(): string
+    public function credentials(): string
     {
-        $usernameOrEmail = request()->input('email-username');
-        $fieldType = filter_var($usernameOrEmail, FILTER_VALIDATE_EMAIL) ? 'email' : 'username';
+
+        $usernameOrEmail = request()->input('login');
+        if (is_numeric($usernameOrEmail)) {
+            $fieldType = 'phone';
+        }else{
+            $fieldType = filter_var($usernameOrEmail, FILTER_VALIDATE_EMAIL) ? 'email' : 'username';
+        }
         request()->merge([$fieldType => $usernameOrEmail]);
         return $fieldType;
     }
@@ -46,13 +52,20 @@ class Authentication extends FormRequest
         switch ($this->authType) {
             case 'email':
                 $rules = [
-                    'email' => ['required', 'email'],
+                    'login' => ['required', 'email'],
                     'password' => ['required', 'string',],
                 ];
                 break;
             case 'username':
                 $rules = [
-                    'username' => ['required', 'string', 'max:16'],
+                    'login' => ['required', 'string', 'max:16'],
+                    'password' => ['required', 'string',],
+                ];
+                break;
+
+            case 'phone':
+                $rules = [
+                    'login' => ['required', 'regex:/^([0-9\s\-\+\(\)]*)$/',],
                     'password' => ['required', 'string',],
                 ];
                 break;
@@ -74,8 +87,9 @@ class Authentication extends FormRequest
     public function authenticate()
     {
         $this->ensureIsNotRateLimited();
+        // $this->ensureIsNotRateLimited();
 
-        if (!Auth::attempt($this->only($this->authType, 'password'), $this->boolean('remember'))) {
+        if (!Auth::attempt(request()->only($this->authType, 'password'), request()->boolean('remember'))) {
             RateLimiter::hit($this->throttleKey());
 
             throw ValidationException::withMessages([
@@ -118,6 +132,6 @@ class Authentication extends FormRequest
      */
     public function throttleKey()
     {
-        return Str::lower($this->input('username')) . '|' . $this->ip();
+        return Str::lower(request()->input('username')) . '|' . request()->ip();
     }
 }

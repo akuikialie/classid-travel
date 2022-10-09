@@ -2,9 +2,16 @@
 
 namespace App\Http\Controllers\Mobile;
 
+use App\Http\Controllers\AuthenticationSessionController;
 use App\Http\Controllers\Controller;
+use App\Models\Jamaah\Jamaah;
+use App\Models\Referal\UserInvitation;
 use App\Models\User;
+use App\Rules\OldPasswordRule;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Redirect;
 
 class ProfileController extends Controller
 {
@@ -15,7 +22,28 @@ class ProfileController extends Controller
      */
     public function index()
     {
-        return view('pages.mobile.profile.profile-index');
+
+        $user = User::query()
+            ->with(['peopleInviteds.user'])
+            ->withCount('peopleInviteds')
+            ->where('id', auth()->user()->id)
+            ->first();
+
+        // dd($user);
+
+        $jamaah = Jamaah::query()
+            ->with(['planPackages'])
+            ->withCount(['planPackages'])
+            ->where('id', $user->id)->first();
+
+        $peopleInviteds = $user->peopleInviteds;
+
+        return view('pages.mobile.profile.profile-index', [
+            'user' => $user,
+            'total_tabungan' => $jamaah->plan_packages_count + 1,
+            'planPackages' => $jamaah->planPackages,
+            'people_invited' => $peopleInviteds,
+        ]);
     }
 
     /**
@@ -61,6 +89,48 @@ class ProfileController extends Controller
         $user = User::query()->where('id', $id)->first();
         // dd($user);
         return view('pages.mobile.profile.profile-edit', ['user' => $user]);
+    }
+
+    public function editInformation(Request $request, $id)
+    {
+        $validator = $request->validate([
+            'name' => ['required', 'string'],
+            'username' => ['required', 'string'],
+            'email' => ['nullable', 'email'],
+        ]);
+
+        try {
+            User::query()->where('id', $id)
+                ->update($validator);
+            return redirect(route('profile.edit', $id));
+        } catch (\Throwable $th) {
+            throw $th;
+        }
+    }
+
+    public function updatePassword(Request $request, $id)
+    {
+        $validator = $request->validate([
+            'old_password' => ['required', 'string', new OldPasswordRule()],
+            'new_password' => ['required', 'string'],
+            'confirm_password' => ['required_with:new_password', 'same:new_password'],
+        ]);
+
+        try {
+
+            User::whereId(auth()->user()->id)->update([
+                'password' => Hash::make($request->new_password)
+            ]);
+
+            Auth::logout();
+
+            $request->session()->invalidate();
+
+            $request->session()->regenerateToken();
+            return redirect(route('login'));
+        } catch (\Throwable $th) {
+            throw $th;
+        }
     }
 
     /**
