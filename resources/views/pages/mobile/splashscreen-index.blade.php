@@ -5,13 +5,13 @@
 
         <div class="card-top mt-5 text-center">
             <img class="preload-img rounded-circle mt-5 mb-5" data-src="images/pictures/18t.jpg" width="200">
-            <h1 class="fa-3x color-theme font-900">App Name</h1>
-            <h6 class="font-300 color-highlight">Lorem ipsum dolor sit amet.</h6>
+            <h1 class="fa-3x color-theme font-900">Pro Hajj APP</h1>
+            <h6 class="font-300 color-highlight mt-3">Selamat datang di Pro Hajj APP.</h6>
 
-            <p class="boxed-text-xl pt-4 font-14">
+            {{-- <p class="boxed-text-xl pt-4 font-14">
                 Welcome to Azures. A beautifully crafted Mobile PWA & Site Template made to run incredibly fast and be
                 extremely easy to edit and customize.
-            </p>
+            </p> --}}
         </div>
 
         <div class="card-bottom mb-3">
