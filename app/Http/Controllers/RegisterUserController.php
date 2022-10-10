@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Jobs\User\CreateNewUser;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -24,7 +25,8 @@ class RegisterUserController extends Controller
 
         $validator = array_merge( $validator, ['password' => Hash::make($validator['password'])]);
 
-        User::query()->create($validator);
+        // User::query()->create($validator);
+        $this->dispatch(new CreateNewUser($validator));
 
         return redirect(route('login'));
 
