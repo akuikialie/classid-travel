@@ -1,4 +1,4 @@
-@extends('layouts.guest-mobile')
+@extends('layouts.mobile.guest-mobile')
 
 @section('title', 'Daftar')
 @section('mobile-content')

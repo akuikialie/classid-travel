@@ -2,7 +2,7 @@
 
 namespace App\Http\Routes\Mobile;
 
-use App\Http\Controllers\TabunganController;
+use App\Http\Controllers\Mobile\TabunganController;
 use Dentro\Yalr\BaseRoute;
 
 class TabunganRoute extends BaseRoute
