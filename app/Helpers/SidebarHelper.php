@@ -33,15 +33,15 @@ if (!function_exists('menuSidebar')) {
                 ],
                 "submenu" => [
                     [
-                        "url" => null,
+                        "url" => route('setup.package.index'),
                         "name" => "Setup Paket",
                         "icon" => "bx bx-right-arrow-alt",
                     ], [
-                        "url" => null,
+                        "url" => route('setup.facility.index'),
                         "name" => "Setup Fasilitas",
                         "icon" => "bx bx-right-arrow-alt",
                     ], [
-                        "url" => null,
+                        "url" => route('setup.destination.index'),
                         "name" => "Setup Tujuan",
                         "icon" => "bx bx-right-arrow-alt",
                     ],[

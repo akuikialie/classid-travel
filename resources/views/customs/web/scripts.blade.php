@@ -23,13 +23,20 @@
 {{-- <script src="/metronic8/demo1/assets/plugins/custom/datatables/datatables.bundle.js"></script> --}}
 <!--end::Vendors Javascript-->
 <!--begin::Custom Javascript(used for this page only)-->
+
 @yield('page-scripts')
+
+@yield('page-custom-scripts')
+<script src="{{ asset('web/js/widgets.bundle.js') }}"></script>
+<script src="{{ asset('web/js/custom/widgets.js') }}"></script>
 {{-- <script src="/metronic8/demo1/assets/js/widgets.bundle.js"></script>
 <script src="/metronic8/demo1/assets/js/custom/widgets.js"></script>
 <script src="/metronic8/demo1/assets/js/custom/apps/chat/chat.js"></script>
 <script src="/metronic8/demo1/assets/js/custom/utilities/modals/upgrade-plan.js"></script>
 <script src="/metronic8/demo1/assets/js/custom/utilities/modals/create-app.js"></script>
 <script src="/metronic8/demo1/assets/js/custom/utilities/modals/users-search.js"></script> --}}
+
+
 <!--end::Custom Javascript-->
 <!--end::Javascript-->
 

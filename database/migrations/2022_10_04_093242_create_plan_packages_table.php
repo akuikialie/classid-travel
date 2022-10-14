@@ -50,6 +50,18 @@ return new class extends Migration
      */
     public function down()
     {
+        if (Schema::hasTable('virtual_accounts')) {
+            Schema::table('virtual_accounts', function (Blueprint  $table) {
+                $table->dropConstrainedForeignId('package_id');
+            });
+        }
+
+        if (Schema::hasTable('referal_links')) {
+            Schema::table('referal_links', function (Blueprint  $table) {
+                $table->dropConstrainedForeignId('package_id');
+            });
+        }
+
         Schema::dropIfExists('model_has_package');
         Schema::dropIfExists('plan_packages');
     }

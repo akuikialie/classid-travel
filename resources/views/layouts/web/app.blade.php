@@ -108,7 +108,7 @@ License: For each use you must have a valid license purchased only from above li
                     </div>
                     <!--end::Mobile logo-->
                     <!--begin::Header wrapper-->
-                    @include('components.web.header')
+                    {{-- @include('components.web.header') --}}
                     <!--end::Header wrapper-->
                 </div>
                 <!--end::Header container-->
@@ -119,10 +119,24 @@ License: For each use you must have a valid license purchased only from above li
                 <!--begin::Sidebar-->
                 @include('components.web.sidebar')
                 <!--end::Sidebar-->
+
                 <!--begin::Main-->
                 <div class="app-main flex-column flex-row-fluid" id="kt_app_main">
                     <!--begin::Content wrapper-->
-                    {{-- @yield('page-content') --}}
+
+                    <div class="d-flex d-flex flex-column flex-column-fluid">
+                        <!--begin::Toolbar-->
+                        @include('components.web.toolbar')
+                        <!--end::Toolbar-->
+
+                        <!--begin::Content-->
+                        <div id="kt_app_content" class="app-content flex-column-flui ">
+                            <!--begin::Content container-->
+                            <div id="kt_app_content_container" class="app-container container-fluid">
+                                @yield('page-content')
+                            </div>
+                        </div>
+                    </div>
 
                     <!--end::Content wrapper-->
                     <!--begin::Footer-->
@@ -176,8 +190,8 @@ License: For each use you must have a valid license purchased only from above li
         <!--end::Demos drawer toggle-->
         <!--begin::Help drawer toggle-->
         <button id="kt_help_toggle" class="engage-help-toggle btn engage-btn shadow-sm px-5 rounded-top-0"
-            title="Learn & Get Inspired" data-bs-toggle="tooltip" data-bs-placement="left"
-            data-bs-dismiss="click" data-bs-trigger="hover">Help</button>
+            title="Learn & Get Inspired" data-bs-toggle="tooltip" data-bs-placement="left" data-bs-dismiss="click"
+            data-bs-trigger="hover">Help</button>
         <!--end::Help drawer toggle-->
     </div>
     <!--end::Engage toolbar-->
@@ -187,8 +201,8 @@ License: For each use you must have a valid license purchased only from above li
         <span class="svg-icon">
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none"
                 xmlns="http://www.w3.org/2000/svg">
-                <rect opacity="0.5" x="13" y="6" width="13" height="2"
-                    rx="1" transform="rotate(90 13 6)" fill="currentColor" />
+                <rect opacity="0.5" x="13" y="6" width="13" height="2" rx="1"
+                    transform="rotate(90 13 6)" fill="currentColor" />
                 <path
                     d="M12.5657 8.56569L16.75 12.75C17.1642 13.1642 17.8358 13.1642 18.25 12.75C18.6642 12.3358 18.6642 11.6642 18.25 11.25L12.7071 5.70711C12.3166 5.31658 11.6834 5.31658 11.2929 5.70711L5.75 11.25C5.33579 11.6642 5.33579 12.3358 5.75 12.75C6.16421 13.1642 6.83579 13.1642 7.25 12.75L11.4343 8.56569C11.7467 8.25327 12.2533 8.25327 12.5657 8.56569Z"
                     fill="currentColor" />

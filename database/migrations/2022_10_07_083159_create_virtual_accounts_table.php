@@ -36,6 +36,7 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('virtual_account');
+
+        Schema::dropIfExists('virtual_accounts');
     }
 };

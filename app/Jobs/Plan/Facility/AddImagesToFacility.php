@@ -9,20 +9,23 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
-use Illuminate\Support\Str;
+use Illuminate\Http\Request;
 
-class CreateNewFacility implements ShouldQueue
+class AddImagesToFacility implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
-    protected $input;
+    protected PlanFacility $planFacility;
+    protected Request $input;
+
     /**
      * Create a new job instance.
      *
      * @return void
      */
-    public function __construct(array $input)
+    public function __construct(PlanFacility $planFacility, Request $input)
     {
+        $this->planFacility = $planFacility;
         $this->input = $input;
     }
 
@@ -31,19 +34,16 @@ class CreateNewFacility implements ShouldQueue
      *
      * @return void
      */
-    public function handle(): PlanFacility
+    public function handle()
     {
         try {
+            if ($this->input->hasfile('photo_collection')) {
+                $this->planFacility->addMultipleMediaFromRequest(['photo_collection'])
+                    ->each(function ($media) {
+                        $media->toMediaCollection('photo_collections');
+                    });
 
-            $input = array_merge($this->input, [
-                'name' => ucwords($this->input['name'])
-            ]);
-
-            $newFacility = new PlanFacility($this->input);
-
-            $newFacility->save();
-
-            return $newFacility->fresh();
+            }
         } catch (\Throwable $th) {
             throw $th;
         }
