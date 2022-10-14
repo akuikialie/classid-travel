@@ -5,11 +5,20 @@ namespace App\Http\Controllers\Web\Admin\Setup;
 use App\Http\Controllers\Controller;
 use App\Jobs\Plan\Facility\AddImagesToFacility;
 use App\Jobs\Plan\Facility\CreateNewFacility;
+use App\Services\FacilityService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
 class FacilityController extends Controller
 {
+
+    protected FacilityService $facilityService;
+
+    public function __construct(FacilityService $facilityService)
+    {
+        $this->facilityService = $facilityService;
+    }
+
     /**
      * Display a listing of the resource.
      *
@@ -66,11 +75,10 @@ class FacilityController extends Controller
 
         DB::beginTransaction();
         try {
-            $createNewFacility = new CreateNewFacility($validator);
-            $newFacility = $createNewFacility->handle();
+            $newFacility = $this->facilityService->createNewFacility($validator);
+
             if ($request->hasfile('photo_collection')) {
-                $addFile = new AddImagesToFacility($newFacility, $request);
-                $addFile->handle();
+                $this->facilityService->AddImagesToFacility($newFacility, $request);
             }
 
             DB::commit();

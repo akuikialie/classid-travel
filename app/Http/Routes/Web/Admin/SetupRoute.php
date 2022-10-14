@@ -2,6 +2,7 @@
 
 namespace App\Http\Routes\Web\Admin;
 
+use App\Http\Controllers\Web\Admin\Setup\DestinationController;
 use App\Http\Controllers\Web\Admin\Setup\FacilityController;
 use App\Http\Controllers\Web\Admin\Setup\PackageController;
 use App\Http\Controllers\Web\Admin\Setup\StartController;
@@ -19,7 +20,7 @@ class SetupRoute extends BaseRoute
     {
         $this->router->middleware(['auth', 'verified', 'role:' . Role::RoleSA])->group(function () {
 
-            $this->router->resource($this->prefix('destination'), Destination::class, [
+            $this->router->resource($this->prefix('destination'), DestinationController::class, [
                 'names' => [
                     'index' => "{$this->prefix}.destination.index",
                     'create' => "{$this->prefix}.destination.create",

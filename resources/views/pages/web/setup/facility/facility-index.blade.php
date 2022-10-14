@@ -9,7 +9,6 @@
 @section('page-scripts')
     <script src="{{ asset('web/plugins/custom/datatables/datatables.bundle.js') }}"></script>
     <script src="{{ asset('web/js/custom/utilities/modals/create-app.js') }}"></script>
-    <script src="{{ asset('web/js/custom/apps/file-manager/list.js') }}"></script>
 @endsection
 
 @section('page-custom-scripts')
@@ -55,7 +54,6 @@
 @endsection
 
 @section('page-content')
-    {{-- @include('pages.web.setup.facility.modal.wizard-setup-modal') --}}
 
     <div id="dynamic_modal"></div>
 

@@ -3,10 +3,23 @@
 namespace App\Http\Controllers\Web\Admin\Setup;
 
 use App\Http\Controllers\Controller;
+use App\Jobs\Plan\Destination\AddImagesToDestination;
+use App\Jobs\Plan\Destination\CreateNewDestination;
+use App\Services\DestinationService;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class DestinationController extends Controller
 {
+
+    protected DestinationService $destinationService;
+
+    public function __construct(DestinationService $destinationService)
+    {
+        $this->destinationService = $destinationService;
+    }
+
     /**
      * Display a listing of the resource.
      *
@@ -14,7 +27,7 @@ class DestinationController extends Controller
      */
     public function index()
     {
-        //
+        return view('pages.web.setup.destination.destination-index');
     }
 
     /**
@@ -24,7 +37,13 @@ class DestinationController extends Controller
      */
     public function create()
     {
-        //
+        if (request()->ajax()) {
+
+            return response()->json([
+                'view' => view('pages.web.setup.destination.modal.wizard-setup-modal', [
+                ])->render(),
+            ]);
+        }
     }
 
     /**
@@ -35,7 +54,27 @@ class DestinationController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $validator = $request->validate([
+            'name' => ['required' ,'string',],
+            'address' => ['required' ,'string'],
+            'roaming_in_destination' => ['required' ,'integer'],
+            'photo_collection' => ['nullable', 'array'],
+        ]);
+
+        DB::beginTransaction();
+        try {
+            $newDestination = $this->destinationService->createNewDestination($validator);
+
+            if ($request->hasfile('photo_collection')) {
+                $this->destinationService->addImageToDestination($newDestination, $request);
+            }
+
+            DB::commit();
+            return redirect()->back()->with('success', 'work');
+        } catch (\Throwable $th) {
+            DB::rollBack();
+            throw $th;
+        }
     }
 
     /**

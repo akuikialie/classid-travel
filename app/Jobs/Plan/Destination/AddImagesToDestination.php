@@ -3,31 +3,31 @@
 namespace App\Jobs\Plan\Destination;
 
 use App\Models\Destination\Destination;
-use App\Models\Master\Address;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldBeUnique;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
-use Illuminate\Support\Facades\DB;
+use Illuminate\Http\Request;
 
-class AddDestinationAddress implements ShouldQueue
+
+class AddImagesToDestination implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
-    protected $destination;
-    protected $inputAddress;
+    protected Destination $destination;
+    protected Request $input;
 
     /**
      * Create a new job instance.
      *
      * @return void
      */
-    public function __construct(Destination $destination, array $inputAddress)
+    public function __construct(Destination $destination, Request $input)
     {
         $this->destination = $destination;
-        $this->inputAddress = $inputAddress;
+        $this->input = $input;
     }
 
     /**
@@ -38,11 +38,13 @@ class AddDestinationAddress implements ShouldQueue
     public function handle()
     {
         try {
-            $newAddress = new Address([
-                'address' => $this->inputAddress['address']
-            ]);
-            dd($newAddress);
-            $this->destination->myAddress()->save($newAddress);
+            if ($this->input->hasfile('photo_collection')) {
+                $this->destination->addMultipleMediaFromRequest(['photo_collection'])
+                    ->each(function ($media) {
+                        $media->toMediaCollection('photo_collections');
+                    });
+
+            }
         } catch (\Throwable $th) {
             throw $th;
         }

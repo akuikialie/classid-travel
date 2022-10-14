@@ -23,18 +23,6 @@ class PlanFacility extends Model implements HasMedia
     const TypePenginapan = 'Penginapan';
     const TypeMakan = 'Makan';
 
-    /**
-     * The "booted" method of the model.
-     *
-     * @return void
-     */
-    protected static function booted()
-    {
-        static::addGlobalScope('facility', function (Builder $builder) {
-            $builder->whereType('facility')->orderBy('order');
-        });
-    }
-
     // SCOPES
 
     // ACCESSOR & MUTATOR

@@ -9,6 +9,10 @@ class Address extends Model
 {
     use HasFactory;
 
+    protected $table = 'addresses';
+
+    protected $fillable = ['name', 'address'];
+
     function addressable()
     {
         $this->morphTo(__FUNCTION__, 'model_type', 'model_id');

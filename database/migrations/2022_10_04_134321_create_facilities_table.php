@@ -25,12 +25,12 @@ return new class extends Migration
             $table->id();
             $table->string('model_type', 50);
             $table->unsignedBigInteger('model_id');
-            $table->unsignedBigInteger('facility_id')->comment('reference to defines_table');
+            $table->unsignedBigInteger('plan_facility_id')->comment('reference to facilities_table');
 
             $table->timestamps();
 
             /* foreign keys */
-            $table->foreign('facility_id')->on('facilities')->references('id')->onDelete('cascade');
+            $table->foreign('plan_facility_id')->on('facilities')->references('id')->onDelete('cascade');
         });
     }
 

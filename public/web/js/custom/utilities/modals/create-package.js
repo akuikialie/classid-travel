@@ -17,14 +17,14 @@ function loadSetupCreateApp() {
           (r = t.querySelector('[data-kt-stepper-action="submit"]')),
           (a = t.querySelector('[data-kt-stepper-action="next"]')),
           (i = new KTStepper(t)).on("kt.stepper.changed", function (e) {
-            4 === i.getCurrentStepIndex()
+            6 === i.getCurrentStepIndex()
               ? (r.classList.remove("d-none"),
                 r.classList.add("d-inline-block"),
                 a.classList.add("d-none"))
-              : 5 === i.getCurrentStepIndex()
+              : 6 === i.getCurrentStepIndex()
               ? (r.classList.add("d-none"), a.classList.add("d-none"))
               : (r.classList.remove("d-inline-block"),
-                r.classList.remove("d-none"),
+                r.c5assList.remove("d-none"),
                 a.classList.remove("d-none"));
           }),
           i.on("kt.stepper.next", function (e) {
@@ -91,20 +91,10 @@ function loadSetupCreateApp() {
                     notEmpty: { message: "Nama fasilitas wajib diisi!." },
                   },
                 },
-                roaming_in_destination: {
+                amount: {
                   validators: {
-                    notEmpty: {
-                      message: "Jelajah di tempat tujuan wajib diisi!.",
-                    },
+                    notEmpty: { message: "Biaya paket wajib diisi!." },
                   },
-                },
-                facility_type: {
-                  validators: {
-                    notEmpty: { message: "Jenis fasilitas wajib diisi!." },
-                  },
-                },
-                address: {
-                  validators: { notEmpty: { message: "Lokasi wajib diisi!." } },
                 },
               },
               plugins: {

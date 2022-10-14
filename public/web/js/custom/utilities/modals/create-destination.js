@@ -98,11 +98,6 @@ function loadSetupCreateApp() {
                     },
                   },
                 },
-                facility_type: {
-                  validators: {
-                    notEmpty: { message: "Jenis fasilitas wajib diisi!." },
-                  },
-                },
                 address: {
                   validators: { notEmpty: { message: "Lokasi wajib diisi!." } },
                 },
