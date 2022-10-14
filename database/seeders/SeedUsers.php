@@ -3,6 +3,7 @@
 namespace Database\Seeders;
 
 use App\Models\Jamaah\Jamaah;
+use App\Models\Spatie\Role;
 use App\Models\User;
 use App\Models\VA\VirtualAccount;
 use Carbon\Carbon;
@@ -35,6 +36,10 @@ class SeedUsers extends Seeder
 
         foreach ($seedUser as $key => $user) {
             $user = User::query()->create($user);
+
+            if ($user['username'] == 'winata') {
+                $user->syncRoles([Role::RoleSA]);
+            }
 
             $VA = VirtualAccount::query()
                 ->where(function ($subQuery) {

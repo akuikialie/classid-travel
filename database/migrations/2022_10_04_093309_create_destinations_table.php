@@ -15,7 +15,7 @@ return new class extends Migration
     {
         Schema::create('destinations', function (Blueprint $table) {
             $table->id();
-            $table->string('destination_name', 50);
+            $table->string('name', 50);
             $table->unsignedInteger('roaming_in_destination')->comment('waktu jelajah di tempat tujuan');
             $table->timestamps();
             $table->softDeletes();

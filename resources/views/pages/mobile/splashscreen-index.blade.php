@@ -1,4 +1,4 @@
-@extends('layouts.guest-mobile')
+@extends('layouts.mobile.guest-mobile')
 
 @section('mobile-content')
     <div class="card preload-img" data-src="images/pictures/18.jpg" data-card-height="cover">
