@@ -5,7 +5,7 @@ namespace App\Http\Routes\Web\Admin;
 use App\Http\Controllers\Web\Admin\Setup\DestinationController;
 use App\Http\Controllers\Web\Admin\Setup\FacilityController;
 use App\Http\Controllers\Web\Admin\Setup\PackageController;
-use App\Http\Controllers\Web\Admin\Setup\StartController;
+use App\Http\Controllers\Web\Admin\Setup\ScheduleController;
 use App\Models\Destination\Destination;
 use App\Models\Spatie\Role;
 use Dentro\Yalr\BaseRoute;
@@ -56,7 +56,17 @@ class SetupRoute extends BaseRoute
                 ]
             ]);
 
-            $this->router->resource($this->prefix('started'), StartController::class);
+            $this->router->resource($this->prefix('schedule'), ScheduleController::class, [
+                'names' => [
+                    'index' => "{$this->prefix}.schedule.index",
+                    'create' => "{$this->prefix}.schedule.create",
+                    'store' => "{$this->prefix}.schedule.store",
+                    'show' => "{$this->prefix}.schedule.show",
+                    'edit' => "{$this->prefix}.schedule.edit",
+                    'update' => "{$this->prefix}.schedule.update",
+                    'destroy' => "{$this->prefix}.schedule.destroy",
+                ]
+            ]);
 
             // $this->router->get('/dashboard', function () {
             //     return view('pages.web.dashboard.dashboard-index');

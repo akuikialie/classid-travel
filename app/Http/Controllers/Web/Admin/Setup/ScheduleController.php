@@ -3,9 +3,11 @@
 namespace App\Http\Controllers\Web\Admin\Setup;
 
 use App\Http\Controllers\Controller;
+use App\Models\Schedule\Schedule;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 
-class StartController extends Controller
+class ScheduleController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -14,7 +16,10 @@ class StartController extends Controller
      */
     public function index()
     {
-        //
+        $schedules = Schedule::query()->get();
+        return view('pages.web.setup.schedule.schedule-index', [
+            'schedules' => $schedules,
+        ]);
     }
 
     /**
@@ -24,7 +29,12 @@ class StartController extends Controller
      */
     public function create()
     {
-        //
+        if (request()->ajax()) {
+            return response()->json([
+                'view' => view('pages.web.setup.schedule.modal.wizard-setup-modal', [
+                ])->render(),
+            ]);
+        }
     }
 
     /**
@@ -35,7 +45,19 @@ class StartController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $validator = $request->validate([
+            'departure_date' => ['required', 'string'],
+        ]);
+
+        try {
+            Schedule::query()->create([
+                'departure_date' => Carbon::parse($validator['departure_date']),
+            ]);
+
+            return redirect()->back()->with('success', 'success');
+        } catch (\Throwable $th) {
+            throw $th;
+        }
     }
 
     /**
