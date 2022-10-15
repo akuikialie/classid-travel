@@ -17,8 +17,9 @@ class PackageRoute extends BaseRoute
         $this->router->middleware(['auth', 'verified'])->group(function ($route) {
 
             $route->get($this->prefix(''), [PackageController::class, 'index'])->name('package.index');
+            $route->get($this->prefix('{package}/show'), [PackageController::class, 'show'])->name('package.show');
 
-            $route->get($this->prefix('add-to-jamaah/{package}'), [PackageController::class, 'addPackageToJamaah'])->name('package.add-to-jamaah');
+            $route->post($this->prefix('add-to-jamaah/{package}'), [PackageController::class, 'addPackageToJamaah'])->name('package.add-to-jamaah');
 
         });
     }

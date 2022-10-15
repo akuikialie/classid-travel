@@ -6,6 +6,7 @@ use App\Enums\VirtualAccount;
 use App\Jobs\VA\CreateVirtualAccount;
 use App\Models\Jamaah\Jamaah;
 use App\Models\Plan\PlanPackage;
+use App\Services\VirtualAccountService;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldBeUnique;
 use Illuminate\Contracts\Queue\ShouldQueue;
