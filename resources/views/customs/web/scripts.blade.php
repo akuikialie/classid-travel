@@ -24,11 +24,13 @@
 <!--end::Vendors Javascript-->
 <!--begin::Custom Javascript(used for this page only)-->
 
+
+<script src="{{ asset('web/js/widgets.bundle.js') }}"></script>
+<script src="{{ asset('web/js/custom/widgets.js') }}"></script>
+<script src="{{ asset('web/js/based/plugin.js') }}"></script>
 @yield('page-scripts')
 
 @yield('page-custom-scripts')
-<script src="{{ asset('web/js/widgets.bundle.js') }}"></script>
-<script src="{{ asset('web/js/custom/widgets.js') }}"></script>
 {{-- <script src="/metronic8/demo1/assets/js/widgets.bundle.js"></script>
 <script src="/metronic8/demo1/assets/js/custom/widgets.js"></script>
 <script src="/metronic8/demo1/assets/js/custom/apps/chat/chat.js"></script>
