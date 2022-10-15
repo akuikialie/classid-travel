@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Web\Admin\Setup;
 use App\Http\Controllers\Controller;
 use App\Jobs\Plan\Facility\AddImagesToFacility;
 use App\Jobs\Plan\Facility\CreateNewFacility;
+use App\Models\Plan\PlanFacility;
 use App\Services\FacilityService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -26,7 +27,12 @@ class FacilityController extends Controller
      */
     public function index()
     {
-        return view('pages.web.setup.facility.facility-index');
+        $facilities = PlanFacility::query()
+            ->withCount(['media'])
+            ->get();
+        return view('pages.web.setup.facility.facility-index', [
+            'facilities' => $facilities,
+        ]);
     }
 
     /**

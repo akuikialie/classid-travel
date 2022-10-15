@@ -2,10 +2,12 @@
 
 namespace App\Http\Controllers\Web\Admin\Setup;
 
+use App\Enums\Kuartal;
 use App\Http\Controllers\Controller;
 use App\Models\Destination\Destination;
 use App\Models\Plan\Plan;
 use App\Models\Plan\PlanFacility;
+use App\Models\Plan\PlanPackage;
 use App\Services\PackageService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -27,7 +29,13 @@ class PackageController extends Controller
      */
     public function index()
     {
-        return view('pages.web.setup.package.package-index');
+        $packages = PlanPackage::query()
+            ->with(['myPlan'])
+            ->get();
+
+        return view('pages.web.setup.package.package-index', [
+            'packages' => $packages,
+        ]);
     }
 
     /**
@@ -47,11 +55,14 @@ class PackageController extends Controller
             $facilities = PlanFacility::query()->get();
             $destinations = Destination::query()->get();
 
+            $kuartals = Kuartal::cases();
+
             return response()->json([
                 'view' => view('pages.web.setup.package.modal.wizard-setup-modal', [
                     'plans' => $plans,
                     'facilities' => $facilities,
                     'destinations' => $destinations,
+                    'kuartals' => $kuartals,
                 ])->render(),
             ]);
         }
@@ -67,6 +78,9 @@ class PackageController extends Controller
     {
         $validator = $request->validate([
             'type' => ['required', 'string'],
+            'departure_year' => ['required', 'string'],
+            'kuartal' => ['required', 'string'],
+            'long_days' => ['required', 'integer'],
             'name' => ['required', 'string'],
             'description' => ['nullable', 'string'],
             'amount' => ['required', 'integer'],
@@ -94,6 +108,7 @@ class PackageController extends Controller
             }
 
             DB::commit();
+            return redirect()->back()->with('success', 'work');
         } catch (\Throwable $th) {
             DB::rollBack();
             throw $th;

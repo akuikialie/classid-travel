@@ -163,7 +163,7 @@
                             enctype="multipart/form-data" action="{{ route('setup.package.store') }}" method="POST">
                             <!--begin::Step 1-->
                             <div class="current" data-kt-stepper-element="content">
-                                <div class="w-100">
+                                <div class="w-100" style="overflow:hidden; overflow-y:scroll; height:320px;">
                                     @csrf
                                     <!--begin::Input group-->
                                     <div class="fv-row mb-10">
@@ -173,7 +173,8 @@
                                                     <!--begin:Input-->
                                                     <span class="form-check form-check-custom form-check-solid">
                                                         <input class="form-check-input" type="radio" name="type"
-                                                            id="{{ $plan->key }}" value="{{ $plan->id }}" checked/>
+                                                            id="{{ $plan->key }}" value="{{ $plan->id }}"
+                                                            checked />
 
                                                         <!--begin::Label-->
                                                         <label for="{{ $plan->key }}"
@@ -192,6 +193,70 @@
                                         <!--end:Input-->
                                     </div>
                                     <!--end::Input group-->
+
+                                    <!--begin::Input group-->
+                                    <div class="fv-row ">
+                                        <div class="row">
+                                            <div class="col">
+                                                <div class="fv-row mb-10">
+                                                    <!--begin::Label-->
+                                                    <label class="form-label required" for="year_started">Tahun
+                                                        keberangkatan</label>
+                                                    <!--end::Label-->
+
+                                                    <!--begin::Flatpickr-->
+                                                    <div class="input-group w-250px">
+                                                        <input name="departure_year"
+                                                            class="form-control form-control-solid rounded rounded-end-0 datepicker-year"
+                                                            placeholder="Pilih tahun keberangkatan" />
+                                                    </div>
+                                                    <!--end::Flatpickr-->
+                                                </div>
+
+                                            </div>
+
+                                            <div class="col">
+                                                <div class="fv-row mb-10">
+                                                    <!--begin::Label-->
+                                                    <label class="form-label required">Kuartal</label>
+                                                    <!--end::Label-->
+                                                    <!--begin::Input-->
+                                                    <select name="kuartal"
+                                                        class="form-select form-select-lg form-select-solid"
+                                                        data-control="select2" data-placeholder="Select..."
+                                                        data-allow-clear="true" data-hide-search="true">
+                                                        @forelse ($kuartals as $kuartal)
+                                                            <option value="{{ $kuartal->value }}">
+                                                                {{ $kuartal->label() }}</option>
+                                                        @empty
+                                                        @endforelse
+                                                    </select>
+                                                    <!--end::Input-->
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <!--end:Input-->
+                                    </div>
+                                    <!--end::Input group-->
+
+                                    <!--begin::Input group-->
+                                    <div class="fv-row mb-10">
+                                        <!--begin::Label-->
+                                        <label class="d-flex align-items-center fs-5 fw-semibold mb-2">
+                                            <span class="required">Lama Perjalanan (Hari)</span>
+                                            <i class="fas fa-exclamation-circle ms-2 fs-7" data-bs-toggle="tooltip"
+                                                title="Lama perjalanan (Hari)"></i>
+                                        </label>
+                                        <!--end::Label-->
+                                        <!--begin::Input-->
+                                        <input type="number" class="form-control form-control-lg form-control-solid"
+                                            name="long_days" placeholder="Lama Perjalanan" value="{{ old('long_days') }}" />
+                                        <!--end::Input-->
+                                    </div>
+                                    <!--end::Input group-->
+
+
 
                                     <!--begin::Input group-->
                                     <div class="fv-row mb-10">

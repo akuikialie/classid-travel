@@ -1,5 +1,6 @@
 <?php
 
+use App\Enums\Kuartal;
 use App\Enums\Statuses;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
@@ -20,6 +21,9 @@ return new class extends Migration
             $table->string('name', 50);
             $table->text('description')->nullable();
             $table->double('amount', 15, 2);
+            $table->year('departure_year')->nullable()->comment('Tahun keberangkatan');
+            $table->string('kuartal', 3)->nullable()->comment('kuartal keberangkatan, enum in Kuartal::class');
+            $table->unsignedTinyInteger('long_days')->nullable()->comment('Lama perjalanan ');
             $table->boolean('is_publish')->default('true')->comment('Jika true, maka hanya bisa Read');
             $table->string('status', 10)->default(Statuses::tryFrom('active')->keyValue())->comment('enum in Statuses::class');
             $table->dateTime('deactived_at')->nullable()->comment('terisi ketika status nonactive');

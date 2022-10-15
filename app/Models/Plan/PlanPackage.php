@@ -16,7 +16,7 @@ class PlanPackage extends Model implements HasMedia
 
     protected $table = 'plan_packages';
 
-    protected $fillable = ['name', 'description', 'amount'];
+    protected $fillable = ['name', 'description', 'amount', 'departure_year', 'kuartal', 'long_days'];
 
     /**
      * Get the user that owns the PlanPackage

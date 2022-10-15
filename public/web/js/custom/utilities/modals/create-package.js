@@ -96,6 +96,24 @@ function loadSetupCreateApp() {
                     notEmpty: { message: "Biaya paket wajib diisi!." },
                   },
                 },
+
+                long_days: {
+                  validators: {
+                    notEmpty: { message: "Lama perjalanan wajib diisi!." },
+                  },
+                },
+
+                kuartal: {
+                  validators: {
+                    notEmpty: { message: "Kuartal keberangkatan wajib diisi!." },
+                  },
+                },
+
+                departure_year: {
+                  validators: {
+                    notEmpty: { message: "Kuartal keberangkatan wajib diisi!." },
+                  },
+                },
               },
               plugins: {
                 trigger: new FormValidation.plugins.Trigger(),

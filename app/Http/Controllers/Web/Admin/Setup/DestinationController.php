@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Web\Admin\Setup;
 use App\Http\Controllers\Controller;
 use App\Jobs\Plan\Destination\AddImagesToDestination;
 use App\Jobs\Plan\Destination\CreateNewDestination;
+use App\Models\Destination\Destination;
 use App\Services\DestinationService;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -27,7 +28,13 @@ class DestinationController extends Controller
      */
     public function index()
     {
-        return view('pages.web.setup.destination.destination-index');
+        $destinations = Destination::query()
+            ->with(['myAddress'])
+            ->withCount(['media'])
+            ->get();
+        return view('pages.web.setup.destination.destination-index', [
+            'destinations' => $destinations,
+        ]);
     }
 
     /**
@@ -40,8 +47,7 @@ class DestinationController extends Controller
         if (request()->ajax()) {
 
             return response()->json([
-                'view' => view('pages.web.setup.destination.modal.wizard-setup-modal', [
-                ])->render(),
+                'view' => view('pages.web.setup.destination.modal.wizard-setup-modal', [])->render(),
             ]);
         }
     }
@@ -55,9 +61,9 @@ class DestinationController extends Controller
     public function store(Request $request)
     {
         $validator = $request->validate([
-            'name' => ['required' ,'string',],
-            'address' => ['required' ,'string'],
-            'roaming_in_destination' => ['required' ,'integer'],
+            'name' => ['required', 'string',],
+            'address' => ['required', 'string'],
+            'roaming_in_destination' => ['required', 'integer'],
             'photo_collection' => ['nullable', 'array'],
         ]);
 
