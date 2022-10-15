@@ -264,7 +264,7 @@
                                         <label class="d-flex align-items-center fs-5 fw-semibold mb-2">
                                             <span class="required">Nama Paket</span>
                                             <i class="fas fa-exclamation-circle ms-2 fs-7" data-bs-toggle="tooltip"
-                                                title="Masukan nama paket"></i>
+                                                title="Nama paket"></i>
                                         </label>
                                         <!--end::Label-->
                                         <!--begin::Input-->
@@ -278,7 +278,7 @@
                                     <div class="fv-row mb-10">
                                         <!--begin::Label-->
                                         <label class="d-flex align-items-center fs-5 fw-semibold mb-2">
-                                            <span class="required">Deskripsi</span>
+                                            <span >Deskripsi</span>
                                             <i class="fas fa-exclamation-circle ms-2 fs-7" data-bs-toggle="tooltip"
                                                 title="Tambahkan deskripsi paket"></i>
                                         </label>

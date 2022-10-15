@@ -45,7 +45,7 @@ if (!function_exists('menuSidebar')) {
                         "name" => "Setup Tujuan",
                         "icon" => "bx bx-right-arrow-alt",
                     ],[
-                        "url" => null,
+                        "url" => route('setup.schedule.index'),
                         "name" => "Setup Keberangkatan",
                         "icon" => "bx bx-right-arrow-alt",
                     ],

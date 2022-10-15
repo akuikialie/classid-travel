@@ -120,7 +120,7 @@
                                         <label class="d-flex align-items-center fs-5 fw-semibold mb-2">
                                             <span class="required">Nama Destinasi</span>
                                             <i class="fas fa-exclamation-circle ms-2 fs-7" data-bs-toggle="tooltip"
-                                                title="Masukan nama destinasi"></i>
+                                                title="Nama destinasi"></i>
                                         </label>
                                         <!--end::Label-->
                                         <!--begin::Input-->

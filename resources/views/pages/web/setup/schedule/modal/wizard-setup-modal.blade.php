@@ -7,7 +7,7 @@
             <!--begin::Modal header-->
             <div class="modal-header">
                 <!--begin::Modal title-->
-                <h2>Setup Fasilitas</h2>
+                <h2>Setup Keberangkatan</h2>
                 <!--end::Modal title-->
                 <!--begin::Close-->
                 {{-- <div class="btn btn-sm btn-icon btn-active-color-primary" data-bs-dismiss="modal">
@@ -47,8 +47,8 @@
                                     <!--end::Icon-->
                                     <!--begin::Label-->
                                     <div class="stepper-label">
-                                        <h3 class="stepper-title">Fasilitas</h3>
-                                        <div class="stepper-desc">Tambahkan fasilitas baru</div>
+                                        <h3 class="stepper-title">Keberangkatan</h3>
+                                        <div class="stepper-desc">Tambahkan jadwal baru</div>
                                     </div>
                                     <!--end::Label-->
                                 </div>
@@ -58,29 +58,6 @@
                                 <!--end::Line-->
                             </div>
                             <!--end::Step 1-->
-                            <!--begin::Step 2-->
-                            <div class="stepper-item" data-kt-stepper-element="nav">
-                                <!--begin::Wrapper-->
-                                <div class="stepper-wrapper">
-                                    <!--begin::Icon-->
-                                    <div class="stepper-icon w-40px h-40px">
-                                        <i class="stepper-check fas fa-check"></i>
-                                        <span class="stepper-number">2</span>
-                                    </div>
-                                    <!--begin::Icon-->
-                                    <!--begin::Label-->
-                                    <div class="stepper-label">
-                                        <h3 class="stepper-title">Photo</h3>
-                                        <div class="stepper-desc">Tambahkan Photo</div>
-                                    </div>
-                                    <!--begin::Label-->
-                                </div>
-                                <!--end::Wrapper-->
-                                <!--begin::Line-->
-                                <div class="stepper-line h-40px"></div>
-                                <!--end::Line-->
-                            </div>
-                            <!--end::Step 2-->
                             <!--begin::Step 3-->
                             <div class="stepper-item mark-completed" data-kt-stepper-element="nav">
                                 <!--begin::Wrapper-->
@@ -88,7 +65,7 @@
                                     <!--begin::Icon-->
                                     <div class="stepper-icon w-40px h-40px">
                                         <i class="stepper-check fas fa-check"></i>
-                                        <span class="stepper-number">3</span>
+                                        <span class="stepper-number">2</span>
                                     </div>
                                     <!--end::Icon-->
                                     <!--begin::Label-->
@@ -109,7 +86,7 @@
                     <div class="flex-row-fluid py-lg-5 px-lg-15">
                         <!--begin::Form-->
                         <form class="form" novalidate="novalidate" id="kt_modal_create_app_form"
-                            enctype="multipart/form-data" action="{{ route('setup.facility.store') }}" method="POST">
+                            enctype="multipart/form-data" action="{{ route('setup.schedule.store') }}" method="POST">
                             <!--begin::Step 1-->
                             <div class="current" data-kt-stepper-element="content">
                                 <div class="w-100">
@@ -118,101 +95,21 @@
                                     <div class="fv-row mb-10">
                                         <!--begin::Label-->
                                         <label class="d-flex align-items-center fs-5 fw-semibold mb-2">
-                                            <span class="required">Nama Fasilitas</span>
+                                            <span class="required">Tanggal Keberangkatan</span>
                                             <i class="fas fa-exclamation-circle ms-2 fs-7" data-bs-toggle="tooltip"
-                                                title="Nama fasilitas"></i>
+                                                title="Tanggal keberangkatan"></i>
                                         </label>
                                         <!--end::Label-->
                                         <!--begin::Input-->
-                                        <input type="text" class="form-control form-control-lg form-control-solid"
-                                            name="name" placeholder="Nama Fasilitas" value="{{ old('name') }}" />
+                                        <input type="text" class="form-control form-control-lg form-control-solid datepicker"
+                                            name="departure_date" placeholder="Tanggal Keberangkatan" value="{{ old('departure_date') }}" />
                                         <!--end::Input-->
-                                    </div>
-                                    <!--end::Input group-->
-                                    <!--begin::Input group-->
-                                    <div class="fv-row">
-                                        <!--begin::Label-->
-                                        <label class="d-flex align-items-center fs-5 fw-semibold mb-4">
-                                            <span class="required">Jenis Fasilitas</span>
-                                            <i class="fas fa-exclamation-circle ms-2 fs-7" data-bs-toggle="tooltip"
-                                                title="Jenis fasilitas"></i>
-                                        </label>
-                                        <!--end::Label-->
-                                        <!--begin:Options-->
-                                        <div class="fv-row">
-                                            <!--begin:Option-->
-
-                                            @forelse ($category_facilities as $categoryFacility)
-                                                <label class="d-flex flex-stack mb-5 cursor-pointer">
-                                                    <!--begin:Label-->
-                                                    <span class="d-flex align-items-center me-2">
-                                                        <!--begin:Icon-->
-                                                        <span class="symbol symbol-50px me-6">
-                                                            <span class="symbol-label bg-light-primary">
-                                                                <!--begin::Svg Icon | path: icons/duotune/maps/map004.svg-->
-                                                                <span class="svg-icon svg-icon-1 svg-icon-primary">
-                                                                    <i class='{{ $categoryFacility['icon'] }}'></i>
-                                                                </span>
-                                                                <!--end::Svg Icon-->
-                                                            </span>
-                                                        </span>
-                                                        <!--end:Icon-->
-                                                        <!--begin:Info-->
-                                                        <span class="d-flex flex-column">
-                                                            <span
-                                                                class="fw-bold fs-6">{{ $categoryFacility['name'] }}</span>
-                                                        </span>
-                                                        <!--end:Info-->
-                                                    </span>
-                                                    <!--end:Label-->
-                                                    <!--begin:Input-->
-                                                    <span class="form-check form-check-custom form-check-solid">
-                                                        <input class="form-check-input" type="radio"
-                                                            name="type"
-                                                            value="{{ $categoryFacility['name'] }}" />
-                                                    </span>
-                                                    <!--end:Input-->
-                                                </label>
-                                            @empty
-                                            @endforelse
-
-                                            <!--end::Option-->
-                                        </div>
-                                        <!--end:Options-->
                                     </div>
                                     <!--end::Input group-->
                                 </div>
                             </div>
                             <!--end::Step 1-->
                             <!--begin::Step 2-->
-                            <div data-kt-stepper-element="content">
-                                <div class="w-100">
-                                    <!--begin::Input group-->
-                                    <div class="fv-row">
-                                        <!--begin::Label-->
-                                        <label class="d-flex align-items-center fs-5 fw-semibold mb-4"
-                                            for="photo_collection">
-                                            <span class="required">Upload Koleksi Photo</span>
-                                            <i class="fas fa-exclamation-circle ms-2 fs-7" data-bs-toggle="tooltip"
-                                                title="Specify your apps framework"></i>
-                                        </label>
-                                        <!--end::Label-->
-
-                                        <div class="mb-3">
-                                            <input class="form-control" type="file" id="photo_collection"
-                                                name="photo_collection[]" multiple>
-                                        </div>
-
-                                        <!--begin::Hint-->
-                                        <span class="form-text fs-6 text-muted">Max image size is 3MB per image,
-                                            .PNG/.JPG !</span>
-                                        <!--end::Hint-->
-                                    </div>
-                                    <!--end::Input group-->
-                                </div>
-                            </div>
-                            <!--end::Step 2-->
-                            <!--begin::Step 3-->
                             <div data-kt-stepper-element="content">
                                 <div class="w-100 text-center">
                                     <!--begin::Heading-->
@@ -230,7 +127,7 @@
                                     <!--end::Illustration-->
                                 </div>
                             </div>
-                            <!--end::Step 3-->
+                            <!--end::Step 2-->
                             <!--begin::Actions-->
                             <div class="d-flex flex-stack pt-10">
                                 <!--begin::Wrapper-->
