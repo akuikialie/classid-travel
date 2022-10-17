@@ -3,16 +3,39 @@
 namespace App\Services;
 
 use App\Enums\Statuses;
+use App\Enums\VirtualAccount;
+use App\Models\Jamaah\Jamaah;
 use App\Models\Plan\Plan;
 use App\Models\Plan\PlanFacility;
 use App\Models\Plan\PlanPackage;
 use Illuminate\Http\Request;
+use InvalidArgumentException;
 
 class PackageService
 {
     public function __construct()
     {
         //
+    }
+
+    public function addPackageToJamaah(PlanPackage $planPackage, Jamaah $jamaah, string $key = 'perencanaan')
+    {
+        try {
+            /* check package on jamaah */
+            $existingPackageInJamaah = collect($jamaah->planPackages)->where('id', $planPackage->id)->first();
+            if ($existingPackageInJamaah) {
+                throw new InvalidArgumentException('Kamu sudah mengambil paket ini!.');
+            }
+
+            /* add package to jamaah */
+            $jamaah->planPackages()->attach($planPackage->id);
+
+            /* creating va */
+            $vaService = new VirtualAccountService;
+            $vaService->createVirtualAccount(VirtualAccount::tryFrom($key)->keyValue(), $jamaah, $planPackage);
+        } catch (\Throwable $th) {
+            throw $th;
+        }
     }
 
     public function createNewPackage(int $planId, array $input): PlanPackage

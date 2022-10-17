@@ -6,14 +6,26 @@ use App\Enums\Statuses;
 use App\Enums\VirtualAccount;
 use App\Http\Controllers\Controller;
 use App\Jobs\Plan\Package\AddPackageToJamaah;
+use App\Models\Geo\City;
 use App\Models\Jamaah\Jamaah;
 use App\Models\Plan\PlanPackage;
+use App\Models\Schedule\Schedule;
 use App\Models\User;
+use App\Services\PackageService;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
 class PackageController extends Controller
 {
+
+    protected PackageService $packageService;
+
+    public function __construct(PackageService $packageService)
+    {
+        $this->packageService = $packageService;
+    }
+
     /**
      * Display a listing of the resource.
      *
@@ -22,26 +34,41 @@ class PackageController extends Controller
     public function index()
     {
         $packages = PlanPackage::query()
-            ->with(['myPlan:id,value'])
-            ->where(function($subQuery){
+            ->with(['myPlan:id,value', 'myFacilities', 'myDestinations', 'media'])
+            ->withCount(['myFacilities', 'myDestinations'])
+            ->where(function ($subQuery) {
                 $subQuery->where('is_publish', true);
                 $subQuery->where('status', Statuses::tryFrom('active')->keyValue());
             })
-            ->select('id','plan_id','name', 'description', 'amount')
             ->get();
-        // dd($packages);
         return view('pages.mobile.package.package-index', ['packages' => $packages]);
     }
 
-    public function addPackageToJamaah($package_id)
+    public function addPackageToJamaah(Request $request, $package_id)
     {
+        $validator = $request->validate([
+            'departure_city_id' => ['required', 'integer'],
+            'schedule_id' => ['required', 'string'],
+        ]);
+
         DB::beginTransaction();
+
         try {
             $package = PlanPackage::query()->where('id', $package_id)->first();
-            $jamaah = Jamaah::query()->where('user_id', auth()->user()->id)->first();
+            $jamaah = Jamaah::query()
+                ->with(['planPackages'])
+                ->where('user_id', auth()->user()->id)->first();
 
             /* add package to jamaah */
-            $this->dispatch(new AddPackageToJamaah($package, $jamaah));
+            $this->packageService->addPackageToJamaah($package, $jamaah);
+
+            /* link tempat keberangkatan */
+            $city = City::query()->find($validator['departure_city_id']);
+            $jamaah->departureCity()->associate($city);
+            /* link tanggal keberangkatan */
+            $schedule = Schedule::query()->find($validator['schedule_id']);
+            $jamaah->departureSchedule()->associate($schedule);
+            $jamaah->push();
 
             DB::commit();
             return redirect(route('tabungan.index'));
@@ -80,7 +107,22 @@ class PackageController extends Controller
      */
     public function show($id)
     {
-        //
+
+        $package = PlanPackage::query()
+            ->with(['myFacilities', 'myDestinations'])
+            ->whereId($id)->first();
+
+        $schedules = Schedule::query()
+            ->whereDate('departure_date', '>', Carbon::now()->addDay(7))
+            ->get();
+
+        $cities = City::query()->get();
+
+        return view('pages.mobile.package.package-show', [
+            'package' => $package,
+            'cities' => $cities,
+            'schedules' => $schedules,
+        ]);
     }
 
     /**
