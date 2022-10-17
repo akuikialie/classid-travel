@@ -1,4 +1,4 @@
-@extends('layouts.guest-mobile')
+@extends('layouts.mobile.guest-mobile')
 
 @section('title', 'Masuk')
 
@@ -8,7 +8,7 @@
 
     <div class="card card-style">
         <div class="content mt-2 mb-0">
-            <form action="{{ url('/auth/login') }}" method="post">
+            <form action="{{ route('login') }}" method="post">
                 @csrf
                 <div class="input-style no-borders has-icon validate-field mb-4">
                     <i class="fa fa-user"></i>

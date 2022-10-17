@@ -7,14 +7,16 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Spatie\MediaLibrary\HasMedia;
+use Spatie\MediaLibrary\InteractsWithMedia;
 
-class PlanPackage extends Model
+class PlanPackage extends Model implements HasMedia
 {
-    use HasFactory;
+    use HasFactory, InteractsWithMedia;
 
     protected $table = 'plan_packages';
 
-    protected $fillable = ['name', 'description', 'amount'];
+    protected $fillable = ['name', 'description', 'amount', 'departure_year', 'kuartal', 'long_days'];
 
     /**
      * Get the user that owns the PlanPackage
@@ -44,7 +46,7 @@ class PlanPackage extends Model
      */
     public function myDestinations(): BelongsToMany
     {
-        return $this->belongsToMany(Destination::class,'model', 'model_has_destination', 'model_id')->latest();
+        return $this->morphToMany(Destination::class,'model', 'model_has_destination', 'model_id')->latest();
     }
 
 }

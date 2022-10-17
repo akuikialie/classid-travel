@@ -63,11 +63,11 @@ return new class extends Migration
         Schema::create('addresses', function (Blueprint $table) {
             $table->id('id');
             $table->string('model_type');
-            $table->string('model_id');
+            $table->unsignedBigInteger('model_id');
             $table->boolean('is_primary')->default(false);
-            $table->string('name')->default('Rumah');
+            $table->string('name')->default('lokasi');
             $table->string('phone')->nullable();
-            $table->string('address')->nullable();
+            $table->text('address')->nullable();
             $table->string('rt_rw')->nullable();
             $table->string('sub_district')->nullable();
             $table->string('district')->nullable();

@@ -33,6 +33,14 @@ return [
             'middleware' => 'web',
             'prefix' => '',
         ],
+        'admin' => [
+            'middleware' => 'web',
+            'prefix' => 'admin',
+        ],
+        'mobile' => [
+            'middleware' => 'mobile',
+            'prefix' => 'app',
+        ],
         'api' => [
             'middleware' => 'api',
             'prefix' => 'api',
@@ -49,16 +57,25 @@ return [
     | controller that use attribute that inherit \Dentro\Yalr\RouteAttribute
     */
 
-    'web' => [
-        /** @inject web **/
-        App\Http\Routes\DefaultRoute::class,
-        App\Http\Routes\AuthRoute::class,
+    'mobile' => [
+        /* mobile */
+        App\Http\Routes\Mobile\AuthRoute::class,
         App\Http\Routes\Mobile\HomeRoute::class,
         App\Http\Routes\Mobile\JamaahRoute::class,
         App\Http\Routes\Mobile\PackageRoute::class,
         App\Http\Routes\Mobile\TabunganRoute::class,
         App\Http\Routes\Mobile\ProfileRoute::class,
         App\Http\Routes\Mobile\ReferalRoute::class,
+    ],
+    'web' => [
+        /* web */
+        App\Http\Routes\DefaultRoute::class,
+    ],
+    'admin' => [
+        /* web */
+        App\Http\Routes\Web\Admin\DefaultRoute::class,
+        App\Http\Routes\Web\Admin\AuthRoute::class,
+        App\Http\Routes\Web\Admin\SetupRoute::class,
     ],
     'api' => [
         /** @inject api **/

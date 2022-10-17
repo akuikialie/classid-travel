@@ -24,6 +24,11 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot()
     {
+        if (request()->secure() || in_array(app()->environment(), ['demo', 'staging', 'prod', 'production'])) {
+            $this->app['request']->server->set('HTTPS', true);
+            \URL::forceScheme('https');
+        }
+        
         Vite::useScriptTagAttributes([
             'type' => 'text/javascript'
         ]);

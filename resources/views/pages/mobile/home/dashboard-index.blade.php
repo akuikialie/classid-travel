@@ -1,4 +1,4 @@
-@extends('layouts.app-mobile')
+@extends('layouts.mobile.app-mobile')
 
 @section('mobile-content')
     <div class="page-title page-title-small">

@@ -7,22 +7,21 @@ use App\Traits\ModelDefines;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Spatie\MediaLibrary\HasMedia;
+use Spatie\MediaLibrary\InteractsWithMedia;
 
-class PlanFacility extends Define
+class PlanFacility extends Model implements HasMedia
 {
-    use HasFactory, ModelDefines;
+    use HasFactory, InteractsWithMedia;
 
-    /**
-     * The "booted" method of the model.
-     *
-     * @return void
-     */
-    protected static function booted()
-    {
-        static::addGlobalScope('facility', function (Builder $builder) {
-            $builder->whereType('facility')->orderBy('order');
-        });
-    }
+    protected $table = 'facilities';
+    protected $fillable = [
+        'name', 'type',
+    ];
+
+    const TypePerjalanan = 'Perjalanan';
+    const TypePenginapan = 'Penginapan';
+    const TypeMakan = 'Makan';
 
     // SCOPES
 
