@@ -1,4 +1,4 @@
-@extends('layouts.app-mobile')
+@extends('layouts.mobile.app-mobile')
 
 @section('mobile-content')
     <div class="page-title page-title-small">
@@ -7,7 +7,7 @@
     <div class="card header-card shape-rounded" data-card-height="150">
         <div class="card-overlay bg-highlight opacity-95"></div>
         <div class="card-overlay dark-mode-tint"></div>
-        <div class="card-bg preload-img" data-src="images/pictures/20s.jpg"></div>
+        <div class="card-bg preload-img" data-src="{{ asset('mobile/images/pictures/20s.jpg') }}"></div>
     </div>
     {{-- <div class="card card-style">
         <div class="content">
@@ -47,7 +47,7 @@
                     @forelse ($people_invited as $invited)
                         <div class="{{ $people_invited->count() > 2 ? 'splide__slide' : '' }}">
                             <div class="text-center">
-                                <img src="images/avatars/4s.png" width="55" height="55"
+                                <img src="{{ asset('mobile/images/avatars/4s.png') }}" width="55" height="55"
                                     class="rounded-xl shadow-l gradient-blue">
                                 <p>{{ $invited?->user?->name }}</p>
                             </div>

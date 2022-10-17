@@ -38,7 +38,10 @@ class AddDestinationAddress implements ShouldQueue
     public function handle()
     {
         try {
-            $newAddress = new Address($this->inputAddress);
+            $newAddress = new Address([
+                'address' => $this->inputAddress['address']
+            ]);
+            dd($newAddress);
             $this->destination->myAddress()->save($newAddress);
         } catch (\Throwable $th) {
             throw $th;

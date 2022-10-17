@@ -41,6 +41,12 @@ return new class extends Migration
      */
     public function down()
     {
+        if (Schema::hasTable('referal_links')) {
+            Schema::table('referal_links', function(Blueprint  $table){
+                $table->dropConstrainedForeignId('created_by');
+            });
+        }
+
         Schema::dropIfExists('users');
     }
 };

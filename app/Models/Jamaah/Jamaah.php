@@ -2,7 +2,9 @@
 
 namespace App\Models\Jamaah;
 
+use App\Models\Geo\City;
 use App\Models\Plan\PlanPackage;
+use App\Models\Schedule\Schedule;
 use App\Models\User;
 use App\Models\VA\VirtualAccount;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -43,4 +45,26 @@ class Jamaah extends Model
     {
         return $this->morphMany(VirtualAccount::class, 'vaable', 'model_type', 'model_id');
     }
+
+
+    /**
+     * Get the user that owns the Jamaah
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function departureCity(): BelongsTo
+    {
+        return $this->belongsTo(City::class, 'departure_city_id');
+    }
+
+    /**
+     * Get the user that owns the Jamaah
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function departureSchedule(): BelongsTo
+    {
+        return $this->belongsTo(Schedule::class, 'schedule_id');
+    }
+
 }

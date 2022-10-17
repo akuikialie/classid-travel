@@ -28,6 +28,8 @@ class RedirectIfAuthenticated
                     return redirect(route('dashboard.admin'));
                 }
                 return redirect(route('home.index'));
+                return redirect(route('home.index'));
+                // return redirect(RouteServiceProvider::HOME);
             }
         }
 

@@ -32,25 +32,24 @@ class CreateNewDestination implements ShouldQueue
      *
      * @return void
      */
-    public function handle()
+    public function handle(): Destination
     {
-        DB::beginTransaction();
         try {
             if ((int)$this->input['roaming_in_destination'] < 20 ) {
                 throw new Exception('Roaming in destination to short', 500);
             }
 
-            $newDestination = new Destination($this->input);
+            $newDestination = Destination::query()->create($this->input);
 
             /* add destination address when posible */
-            if (isset($this->input['addresses']) && !empty($this->input['addresses'])) {
-                dispatch(new AddDestinationAddress($newDestination, $this->input['addresses']));
+            if (isset($this->input['address']) && !empty($this->input['address'])) {
+
+                $insertAddress = new AddDestinationAddress($newDestination, $this->input);
+                $insertAddress->handle();
             }
 
-            $newDestination->save();
-            DB::commit();
+            return $newDestination;
         } catch (\Throwable $th) {
-            DB::rollBack();
             throw $th;
         }
     }
