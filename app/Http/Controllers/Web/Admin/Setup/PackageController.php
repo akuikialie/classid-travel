@@ -11,6 +11,7 @@ use App\Models\Plan\PlanPackage;
 use App\Services\PackageService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use InvalidArgumentException;
 
 class PackageController extends Controller
 {
@@ -31,6 +32,8 @@ class PackageController extends Controller
     {
         $packages = PlanPackage::query()
             ->with(['myPlan'])
+            ->withCount(['jamaah'])
+            ->latest()
             ->get();
 
         return view('pages.web.setup.package.package-index', [
@@ -58,7 +61,7 @@ class PackageController extends Controller
             $kuartals = Kuartal::cases();
 
             return response()->json([
-                'view' => view('pages.web.setup.package.modal.wizard-setup-modal', [
+                'view' => view('pages.web.setup.package.modal.wizard-create-modal', [
                     'plans' => $plans,
                     'facilities' => $facilities,
                     'destinations' => $destinations,
@@ -78,8 +81,8 @@ class PackageController extends Controller
     {
         $validator = $request->validate([
             'type' => ['required', 'string'],
-            'departure_year' => ['required', 'string'],
-            'kuartal' => ['required', 'string'],
+            'departure_year' => ['nullable', 'string'],
+            'kuartal' => ['nullable', 'string'],
             'long_days' => ['required', 'integer'],
             'name' => ['required', 'string'],
             'description' => ['nullable', 'string'],
@@ -134,7 +137,31 @@ class PackageController extends Controller
      */
     public function edit($id)
     {
-        //
+        if (request()->ajax()) {
+            $package = PlanPackage::query()
+                ->with(['myFacilities', 'myDestinations'])
+                ->whereId($id)->first();
+
+            $plans = Plan::query()
+                ->where('is_active', true)
+                ->latest('id')
+                ->get();
+
+            $facilities = PlanFacility::query()->get();
+            $destinations = Destination::query()->get();
+
+            $kuartals = Kuartal::cases();
+
+            return response()->json([
+                'view' => view('pages.web.setup.package.modal.wizard-edit-modal', [
+                    'package' => $package,
+                    'plans' => $plans,
+                    'facilities' => $facilities,
+                    'destinations' => $destinations,
+                    'kuartals' => $kuartals,
+                ])->render(),
+            ]);
+        }
     }
 
     /**
@@ -146,7 +173,50 @@ class PackageController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        $validator = $request->validate([
+            'type' => ['required', 'string'],
+            'departure_year' => ['nullable', 'string'],
+            'kuartal' => ['nullable', 'string'],
+            'long_days' => ['required', 'integer'],
+            'name' => ['required', 'string'],
+            'description' => ['nullable', 'string'],
+            'amount' => ['required', 'integer'],
+            'facilities' => ['nullable', 'array'],
+            'destinations' => ['nullable', 'array'],
+            'thumbnail' => ['nullable', 'mimes:jpg,png,jpeg', 'max:3072'],
+        ]);
+
+        DB::beginTransaction();
+        try {
+            $package = PlanPackage::query()->whereId($id)->first();
+
+
+            if (isset($validator['facilities']) && is_array($validator['facilities'])) {
+                $facilityIds = array_keys($validator['facilities']);
+                $this->packageService->addFacilitiesToPackage($package, $facilityIds);
+            }
+
+            if (isset($validator['destinations']) && is_array($validator['destinations'])) {
+                $destinationIds = array_keys($validator['destinations']);
+                $this->packageService->addDestinationsToPackage($package, $destinationIds);
+            }
+
+            if ($request->hasfile('thumbnail')) {
+                $this->packageService->addThumbnailPackage($package, $request);
+            }
+
+            $package->long_days = $validator['long_days'];
+            $package->name = $validator['name'];
+            $package->description = $validator['description'];
+            $package->amount = $validator['amount'];
+            $package->push();
+
+            DB::commit();
+            return redirect()->back()->with('success', 'work');
+        } catch (\Throwable $th) {
+            DB::rollBack();
+            throw $th;
+        }
     }
 
     /**
@@ -157,6 +227,25 @@ class PackageController extends Controller
      */
     public function destroy($id)
     {
-        //
+        try {
+            $package = PlanPackage::query()
+                ->withCount(['jamaah', 'myDestinations', 'myFacilities'])
+                ->whereId($id)->first();
+
+            if ($package->jamaah_count > 0) {
+                throw new InvalidArgumentException('Tidak dapat mengapus paket, karena paket ini sedang digunakan!', 500);
+            }
+            if ($package->my_destinations_count > 0) {
+                throw new InvalidArgumentException('Tidak dapat mengapus paket, karena paket ini sedang digunakan!', 500);
+            }
+            if ($package->my_facilities_count > 0) {
+                throw new InvalidArgumentException('Tidak dapat mengapus paket, karena paket ini sedang digunakan!', 500);
+            }
+
+            $package->delete();
+            return redirect()->back()->with('success', 'work');
+        } catch (\Throwable $th) {
+            throw $th;
+        }
     }
 }

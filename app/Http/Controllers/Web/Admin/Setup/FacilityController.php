@@ -3,12 +3,11 @@
 namespace App\Http\Controllers\Web\Admin\Setup;
 
 use App\Http\Controllers\Controller;
-use App\Jobs\Plan\Facility\AddImagesToFacility;
-use App\Jobs\Plan\Facility\CreateNewFacility;
 use App\Models\Plan\PlanFacility;
 use App\Services\FacilityService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use InvalidArgumentException;
 
 class FacilityController extends Controller
 {
@@ -28,8 +27,9 @@ class FacilityController extends Controller
     public function index()
     {
         $facilities = PlanFacility::query()
-            ->withCount(['media'])
+            ->withCount(['media', 'packages'])
             ->get();
+
         return view('pages.web.setup.facility.facility-index', [
             'facilities' => $facilities,
         ]);
@@ -58,7 +58,7 @@ class FacilityController extends Controller
             ];
 
             return response()->json([
-                'view' => view('pages.web.setup.facility.modal.wizard-setup-modal', [
+                'view' => view('pages.web.setup.facility.modal.wizard-create-modal', [
                     'category_facilities' => $categoryFacilities,
                 ])->render(),
             ]);
@@ -103,7 +103,7 @@ class FacilityController extends Controller
      */
     public function show($id)
     {
-        //
+
     }
 
     /**
@@ -114,7 +114,30 @@ class FacilityController extends Controller
      */
     public function edit($id)
     {
-        //
+        if (request()->ajax()) {
+
+            $facility = PlanFacility::query()->whereId($id)->first();
+
+            $categoryFacilities = [
+                [
+                    'name' => 'Perjalanan',
+                    'icon' => 'bx bx-car bx-tada',
+                ], [
+                    'name' => 'Penginapan',
+                    'icon' => 'bx bx-building-house bx-tada',
+                ], [
+                    'name' => 'Makan',
+                    'icon' => 'bx bxs-bowl-hot bx-tada',
+                ],
+            ];
+
+            return response()->json([
+                'view' => view('pages.web.setup.facility.modal.wizard-edit-modal', [
+                    'facility' => $facility,
+                    'category_facilities' => $categoryFacilities,
+                ])->render(),
+            ]);
+        }
     }
 
     /**
@@ -126,7 +149,30 @@ class FacilityController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        $validator = $request->validate([
+            'name' => ['required', 'unique:facilities,name', 'string'],
+            'type' => ['required', 'string'],
+            'photo_collection' => ['nullable', 'array'],
+        ]);
+
+        DB::beginTransaction();
+        try {
+            $facility = PlanFacility::query()->whereId($id)->first();
+
+            if ($request->hasfile('photo_collection')) {
+                $this->facilityService->AddImagesToFacility($facility, $request);
+            }
+
+            $facility->name = $validator['name'];
+            $facility->type = $validator['type'];
+            $facility->save();
+
+            DB::commit();
+            return redirect()->back()->with('success', 'work');
+        } catch (\Throwable $th) {
+            DB::beginTransaction();
+            throw $th;
+        }
     }
 
     /**
@@ -137,6 +183,18 @@ class FacilityController extends Controller
      */
     public function destroy($id)
     {
-        //
+        try {
+            $facility = PlanFacility::query()
+                ->withCount(['packages'])
+                ->whereId($id)->first();
+
+            if ($facility->packages_count > 0) {
+                throw new InvalidArgumentException('Tidak dapat mengapus fasilitas, karena fasilitas ini sedang digunakan!', 500);
+            }
+            $facility->delete();
+            return redirect()->back()->with('success', 'work');
+        } catch (\Throwable $th) {
+            throw $th;
+        }
     }
 }

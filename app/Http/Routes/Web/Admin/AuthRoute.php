@@ -10,6 +10,7 @@ class AuthRoute extends BaseRoute
 {
 
     protected string $prefix = 'auth';
+    protected string $name = 'admin';
 
     // protected string $name = 'auth';
 
@@ -22,8 +23,8 @@ class AuthRoute extends BaseRoute
     {
         $this->router->middleware(['guest'])->group(function(){
             /* login */
-            $this->router->get($this->prefix('login'), [AuthenticationSessionController::class, 'create'])->name('login');
-            $this->router->post($this->prefix('login'), [AuthenticationSessionController::class, 'store'])->name('sign-in');
+            $this->router->get($this->prefix('login'), [AuthenticationSessionController::class, 'create'])->name($this->name('login'));
+            $this->router->post($this->prefix('login'), [AuthenticationSessionController::class, 'store'])->name($this->name('sign-in'));
 
             /* register */
             // $this->router->get($this->prefix('register'), [RegisterUserController::class, 'create'])->name('register');
@@ -34,7 +35,7 @@ class AuthRoute extends BaseRoute
         // $this->router->get($this->prefix('user'), [AuthenticationSessionController::class, 'user'])->middleware('auth:api');
 
         $this->router->middleware(['auth', 'verified'])->group(function($route){
-            $route->post($this->prefix('logout'), [AuthenticationSessionController::class, 'destroy'])->name('logout');
+            $route->post($this->prefix('logout'), [AuthenticationSessionController::class, 'destroy'])->name($this->name('logout'));
         });
     }
 }

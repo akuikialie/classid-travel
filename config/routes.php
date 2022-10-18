@@ -36,6 +36,7 @@ return [
         'admin' => [
             'middleware' => 'web',
             'prefix' => 'admin',
+            'name' => 'admin'
         ],
         'mobile' => [
             'middleware' => 'mobile',

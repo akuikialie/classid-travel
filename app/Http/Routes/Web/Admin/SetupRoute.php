@@ -13,8 +13,8 @@ use Dentro\Yalr\BaseRoute;
 class SetupRoute extends BaseRoute
 {
 
-
     protected string $prefix = 'setup';
+    protected string $name = 'setup';
 
     public function register(): void
     {
@@ -22,49 +22,49 @@ class SetupRoute extends BaseRoute
 
             $this->router->resource($this->prefix('destination'), DestinationController::class, [
                 'names' => [
-                    'index' => "{$this->prefix}.destination.index",
-                    'create' => "{$this->prefix}.destination.create",
-                    'store' => "{$this->prefix}.destination.store",
-                    'show' => "{$this->prefix}.destination.show",
-                    'edit' => "{$this->prefix}.destination.edit",
-                    'update' => "{$this->prefix}.destination.update",
-                    'destroy' => "{$this->prefix}.destination.destroy",
+                    'index' => $this->name('destination.index'),
+                    'create' => $this->name('destination.create'),
+                    'store' => $this->name('destination.store'),
+                    'show' => $this->name('destination.show'),
+                    'edit' => $this->name('destination.edit'),
+                    'update' => $this->name('destination.update'),
+                    'destroy' => $this->name('destination.destroy'),
                 ]
             ]);
 
             $this->router->resource($this->prefix('facility'), FacilityController::class, [
                 'names' => [
-                    'index' => "{$this->prefix}.facility.index",
-                    'create' => "{$this->prefix}.facility.create",
-                    'store' => "{$this->prefix}.facility.store",
-                    'show' => "{$this->prefix}.facility.show",
-                    'edit' => "{$this->prefix}.facility.edit",
-                    'update' => "{$this->prefix}.facility.update",
-                    'destroy' => "{$this->prefix}.facility.destroy",
+                    'index' => $this->name('facility.index'),
+                    'create' => $this->name('facility.create'),
+                    'store' => $this->name('facility.store'),
+                    'show' => $this->name('facility.show'),
+                    'edit' => $this->name('facility.edit'),
+                    'update' => $this->name('facility.update'),
+                    'destroy' => $this->name('facility.destroy'),
                 ]
             ]);
 
             $this->router->resource($this->prefix('package'), PackageController::class, [
                 'names' => [
-                    'index' => "{$this->prefix}.package.index",
-                    'create' => "{$this->prefix}.package.create",
-                    'store' => "{$this->prefix}.package.store",
-                    'show' => "{$this->prefix}.package.show",
-                    'edit' => "{$this->prefix}.package.edit",
-                    'update' => "{$this->prefix}.package.update",
-                    'destroy' => "{$this->prefix}.package.destroy",
+                    'index' => $this->name('package.index'),
+                    'create' => $this->name('package.create'),
+                    'store' => $this->name('package.store'),
+                    'show' => $this->name('package.show'),
+                    'edit' => $this->name('package.edit'),
+                    'update' => $this->name('package.update'),
+                    'destroy' => $this->name('package.destroy'),
                 ]
             ]);
 
             $this->router->resource($this->prefix('schedule'), ScheduleController::class, [
                 'names' => [
-                    'index' => "{$this->prefix}.schedule.index",
-                    'create' => "{$this->prefix}.schedule.create",
-                    'store' => "{$this->prefix}.schedule.store",
-                    'show' => "{$this->prefix}.schedule.show",
-                    'edit' => "{$this->prefix}.schedule.edit",
-                    'update' => "{$this->prefix}.schedule.update",
-                    'destroy' => "{$this->prefix}.schedule.destroy",
+                    'index' => $this->name('schedule.index'),
+                    'create' => $this->name('schedule.create'),
+                    'store' => $this->name('schedule.store'),
+                    'show' => $this->name('schedule.show'),
+                    'edit' => $this->name('schedule.edit'),
+                    'update' => $this->name('schedule.update'),
+                    'destroy' => $this->name('schedule.destroy'),
                 ]
             ]);
 

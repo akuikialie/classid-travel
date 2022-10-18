@@ -9,7 +9,7 @@
                 <!--begin::Wrapper-->
                 <div class="w-lg-500px p-10">
                     <!--begin::Form-->
-                    <form class="form w-100" novalidate="novalidate" action="{{ route('sign-in') }}" method="POST">
+                    <form class="form w-100" novalidate="novalidate" action="{{ route('admin.sign-in') }}" method="POST">
                         @csrf
                         <!--begin::Heading-->
                         <div class="text-center mb-11">

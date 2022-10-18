@@ -1,8 +1,7 @@
 @extends('layouts.web.app')
 
 @section('toolbar')
-    <a href="#" class="btn btn-sm fw-bold btn-primary" id="setup-button" data-bs-toggle="modal"
-        data-bs-target="#kt_modal_create_app">Setup
+    <a href="#" class="btn btn-sm fw-bold btn-primary" id="setup-button">Setup
         Fasilitas</a>
 @endsection
 
@@ -36,6 +35,39 @@
                         loadSetupCreateApp();
                     },
                     error: function(error) {
+                        Swal.fire({
+                            icon: error.responseJSON.icon,
+                            title: error.responseJSON.title,
+                            text: error.responseJSON.message,
+                            footer: '<a href="">Error Code: ' +
+                                error.status +
+                                ", " +
+                                error.statusText +
+                                "...</a>",
+                        });
+                    },
+                });
+            });
+
+            $('.btn-edit-modal').click(function(e) {
+                e.preventDefault();
+                var id = $(this).attr("data-id");
+                let url_edit = "{{ route('setup.facility.edit', ':id') }}";
+                url_edit = url_edit.replace(":id", id);
+
+                $.ajax({
+                    url: url_edit,
+                    type: "GET",
+                    success: function(data) {
+                        if (!$("#kt_modal_create_app").is(":visible")) {
+                            $("#dynamic_modal").html(data.view);
+                            $("#kt_modal_create_app").modal("show");
+                        }
+
+                        loadSetupCreateApp();
+                    },
+                    error: function(error) {
+                        console.log(error);
                         Swal.fire({
                             icon: error.responseJSON.icon,
                             title: error.responseJSON.title,
@@ -190,12 +222,17 @@
                                 <td class="text-dark fw-bold text-hover-primary fs-6">{{ $facility->name }}</td>
                                 <td class="text-dark fw-bold text-hover-primary fs-6">{{ $facility->type }}</td>
                                 <td class="text-dark fw-bold text-hover-primary fs-6">
-                                  {{ isset($facility->is_active) ? 'Aktif' : 'Tidak Aktif' }}
+                                    {{ isset($facility->is_active) ? 'Aktif' : 'Tidak Aktif' }}
                                 </td>
-                                <td class="text-dark fw-bold text-hover-primary fs-6">{{ $facility->media_count }} Photo</td>
+                                <td class="text-dark fw-bold text-hover-primary fs-6">{{ $facility->media_count }} Photo
+                                </td>
+
+
+                                <!--begin::Action=-->
                                 <td class="text-end">
-                                    <a href="#" data-bs-toggle="tooltip" title="Edit fasilitas"
-                                        class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm me-1">
+                                    <a href="#" data-id="{{ $facility->id }}" data-bs-toggle="tooltip"
+                                        title="Edit jadwal"
+                                        class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm me-1 btn-edit-modal">
                                         <!--begin::Svg Icon | path: icons/duotune/art/art005.svg-->
                                         <span class="svg-icon svg-icon-3">
                                             <svg width="24" height="24" viewBox="0 0 24 24" fill="none"
@@ -210,26 +247,68 @@
                                         </span>
                                         <!--end::Svg Icon-->
                                     </a>
-                                    <a href="#" class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm"
-                                        data-bs-toggle="tooltip" title="Hapus fasilitas">
-                                        <!--begin::Svg Icon | path: icons/duotune/general/gen027.svg-->
-                                        <span class="svg-icon svg-icon-3">
+                                    <a href="#" class="btn btn-light btn-active-light-primary btn-sm"
+                                        data-kt-menu-trigger="click" data-kt-menu-placement="bottom-end">
+                                        <!--begin::Svg Icon | path: icons/duotune/arrows/arr072.svg-->
+                                        <span class="svg-icon svg-icon-5 m-0">
                                             <svg width="24" height="24" viewBox="0 0 24 24" fill="none"
                                                 xmlns="http://www.w3.org/2000/svg">
                                                 <path
-                                                    d="M5 9C5 8.44772 5.44772 8 6 8H18C18.5523 8 19 8.44772 19 9V18C19 19.6569 17.6569 21 16 21H8C6.34315 21 5 19.6569 5 18V9Z"
-                                                    fill="currentColor" />
-                                                <path opacity="0.5"
-                                                    d="M5 5C5 4.44772 5.44772 4 6 4H18C18.5523 4 19 4.44772 19 5V5C19 5.55228 18.5523 6 18 6H6C5.44772 6 5 5.55228 5 5V5Z"
-                                                    fill="currentColor" />
-                                                <path opacity="0.5"
-                                                    d="M9 4C9 3.44772 9.44772 3 10 3H14C14.5523 3 15 3.44772 15 4V4H9V4Z"
+                                                    d="M11.4343 12.7344L7.25 8.55005C6.83579 8.13583 6.16421 8.13584 5.75 8.55005C5.33579 8.96426 5.33579 9.63583 5.75 10.05L11.2929 15.5929C11.6834 15.9835 12.3166 15.9835 12.7071 15.5929L18.25 10.05C18.6642 9.63584 18.6642 8.96426 18.25 8.55005C17.8358 8.13584 17.1642 8.13584 16.75 8.55005L12.5657 12.7344C12.2533 13.0468 11.7467 13.0468 11.4343 12.7344Z"
                                                     fill="currentColor" />
                                             </svg>
                                         </span>
                                         <!--end::Svg Icon-->
                                     </a>
+                                    <!--begin::Menu-->
+                                    <div class="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-600 menu-state-bg-light-primary fw-semibold fs-7 w-125px py-4"
+                                        data-kt-menu="true">
+                                        <!--begin::Menu item-->
+                                        <div class="menu-item px-3" data-kt-menu-trigger="hover"
+                                            data-kt-menu-placement="right-start">
+                                            <!--begin::Menu item-->
+                                            <a href="#" class="menu-link px-3">
+                                                <span class="menu-title">Menu Cepat </span>
+                                                <span class="menu-arrow"></span>
+                                            </a>
+                                            <!--end::Menu item-->
+                                            <!--begin::Menu sub-->
+                                            <div class="menu-sub menu-sub-dropdown w-175px py-4">
+                                                @if (!$facility->is_active)
+                                                    <!--begin::Menu item-->
+                                                    <div class="menu-item px-3">
+                                                        <a href="#" class="menu-link px-3">Aktifkan Fasilitas</a>
+                                                    </div>
+                                                    <!--end::Menu item-->
+                                                @else
+                                                    <!--begin::Menu item-->
+                                                    <div class="menu-item px-3">
+                                                        <a href="#" class="menu-link px-3">Nonaktifkan Fasilitas</a>
+                                                    </div>
+                                                    <!--end::Menu item-->
+                                                @endif
+                                            </div>
+                                            <!--end::Menu sub-->
+                                        </div>
+                                        <!--end::Menu item-->
+                                        <!--begin::Menu item-->
+                                        @if ($facility->packages_count < 1)
+                                            <form action="{{ route('setup.facility.destroy', $facility->id) }}"
+                                                method="post" id="delete">
+                                                @csrf
+                                                @method('delete')
+                                                <div class="menu-item px-3">
+                                                    <a onclick="$('#delete').submit()"
+                                                        data-kt-subscriptions-table-filter="delete_row"
+                                                        class="menu-link px-3">Delete</a>
+                                                </div>
+                                            </form>
+                                        @endif
+                                        <!--end::Menu item-->
+                                    </div>
+                                    <!--end::Menu-->
                                 </td>
+                                <!--end::Action=-->
                             </tr>
 
                         @empty

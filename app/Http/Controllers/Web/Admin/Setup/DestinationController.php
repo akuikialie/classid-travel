@@ -10,6 +10,7 @@ use App\Services\DestinationService;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use InvalidArgumentException;
 
 class DestinationController extends Controller
 {
@@ -30,8 +31,9 @@ class DestinationController extends Controller
     {
         $destinations = Destination::query()
             ->with(['myAddress'])
-            ->withCount(['media'])
+            ->withCount(['media', 'packages'])
             ->get();
+
         return view('pages.web.setup.destination.destination-index', [
             'destinations' => $destinations,
         ]);
@@ -47,7 +49,7 @@ class DestinationController extends Controller
         if (request()->ajax()) {
 
             return response()->json([
-                'view' => view('pages.web.setup.destination.modal.wizard-setup-modal', [])->render(),
+                'view' => view('pages.web.setup.destination.modal.wizard-create-modal', [])->render(),
             ]);
         }
     }
@@ -102,7 +104,18 @@ class DestinationController extends Controller
      */
     public function edit($id)
     {
-        //
+        if (request()->ajax()) {
+
+            $destination = Destination::query()
+                ->with(['myAddress'])
+                ->whereId($id)->first();
+
+            return response()->json([
+                'view' => view('pages.web.setup.destination.modal.wizard-edit-modal', [
+                    'destination' => $destination,
+                ])->render(),
+            ]);
+        }
     }
 
     /**
@@ -114,7 +127,34 @@ class DestinationController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        $validator = $request->validate([
+            'name' => ['required', 'string',],
+            'address' => ['required', 'string'],
+            'roaming_in_destination' => ['required', 'integer'],
+            'photo_collection' => ['nullable', 'array'],
+        ]);
+
+        DB::beginTransaction();
+        try {
+            $destination = Destination::query()->whereId($id)->first();
+
+            if ($request->hasfile('photo_collection')) {
+                $this->destinationService->addImageToDestination($destination, $request);
+            }
+
+            if (isset($validator['address']) && !empty($validator['address'])) {
+                $this->destinationService->updateDestinationAddress($destination, $validator);
+            }
+
+            $destination->name = $validator['name'];
+            $destination->roaming_in_destination = $validator['roaming_in_destination'];
+
+            DB::commit();
+            return redirect()->back()->with('success', 'work');
+        } catch (\Throwable $th) {
+            DB::rollBack();
+            throw $th;
+        }
     }
 
     /**
@@ -125,6 +165,18 @@ class DestinationController extends Controller
      */
     public function destroy($id)
     {
-        //
+        try {
+            $destination = Destination::query()
+                ->withCount(['packages'])
+                ->whereId($id)->first();
+
+            if ($destination->packages_count > 0) {
+                throw new InvalidArgumentException('Tidak dapat mengapus destinasi, karena destinasi ini sedang digunakan!', 500);
+            }
+            $destination->delete();
+            return redirect()->back()->with('success', 'work');
+        } catch (\Throwable $th) {
+            throw $th;
+        }
     }
 }
