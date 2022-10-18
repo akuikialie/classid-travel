@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Schedule\Schedule;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use InvalidArgumentException;
 
 class ScheduleController extends Controller
 {
@@ -16,7 +17,9 @@ class ScheduleController extends Controller
      */
     public function index()
     {
-        $schedules = Schedule::query()->get();
+        $schedules = Schedule::query()
+            ->withCount(['jamaah'])
+            ->get();
         return view('pages.web.setup.schedule.schedule-index', [
             'schedules' => $schedules,
         ]);
@@ -31,8 +34,7 @@ class ScheduleController extends Controller
     {
         if (request()->ajax()) {
             return response()->json([
-                'view' => view('pages.web.setup.schedule.modal.wizard-setup-modal', [
-                ])->render(),
+                'view' => view('pages.web.setup.schedule.modal.wizard-create-modal', [])->render(),
             ]);
         }
     }
@@ -79,7 +81,16 @@ class ScheduleController extends Controller
      */
     public function edit($id)
     {
-        //
+        if (request()->ajax()) {
+
+            $schedule = Schedule::query()->whereId($id)->first();
+
+            return response()->json([
+                'view' => view('pages.web.setup.schedule.modal.wizard-edit-modal', [
+                    'schedule' => $schedule,
+                ])->render(),
+            ]);
+        }
     }
 
     /**
@@ -91,7 +102,19 @@ class ScheduleController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        $validator = $request->validate([
+            'departure_date' => ['required', 'string'],
+        ]);
+
+        try {
+            Schedule::query()->whereId($id)->update([
+                'departure_date' => Carbon::parse($validator['departure_date']),
+            ]);
+
+            return redirect()->back()->with('success', 'success');
+        } catch (\Throwable $th) {
+            throw $th;
+        }
     }
 
     /**
@@ -102,6 +125,18 @@ class ScheduleController extends Controller
      */
     public function destroy($id)
     {
-        //
+        try {
+            $schedule = Schedule::query()
+                ->withCount(['jamaah'])
+                ->whereId($id)->first();
+
+            if ($schedule->jamaah_count > 0) {
+                throw new InvalidArgumentException('Tidak dapat mengapus jadwal, karena jadwal ini sedang digunakan!', 500);
+            }
+            $schedule->delete();
+            return redirect()->back()->with('success', 'work');
+        } catch (\Throwable $th) {
+            throw $th;
+        }
     }
 }

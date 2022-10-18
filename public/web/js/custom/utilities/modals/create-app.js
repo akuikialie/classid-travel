@@ -98,7 +98,7 @@ function loadSetupCreateApp() {
                     },
                   },
                 },
-                facility_type: {
+                type: {
                   validators: {
                     notEmpty: { message: "Jenis fasilitas wajib diisi!." },
                   },

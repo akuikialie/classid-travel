@@ -45,6 +45,16 @@ class DestinationService
         }
     }
 
+    public function updateDestinationAddress(Destination $destination, array $input)
+    {
+        try {
+            $destination->myAddress->address = $input['address'];
+            $destination->myAddress->save();
+        } catch (\Throwable $th) {
+            throw $th;
+        }
+    }
+
     public function addImageToDestination(Destination $destination, Request $request)
     {
         try {
@@ -53,7 +63,6 @@ class DestinationService
                     ->each(function ($media) {
                         $media->toMediaCollection('photo_collections');
                     });
-
             }
         } catch (\Throwable $th) {
             throw $th;

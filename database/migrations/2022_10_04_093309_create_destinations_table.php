@@ -17,6 +17,7 @@ return new class extends Migration
             $table->id();
             $table->string('name', 50);
             $table->unsignedInteger('roaming_in_destination')->comment('waktu jelajah di tempat tujuan');
+            $table->boolean('is_active')->default(true);
             $table->timestamps();
             $table->softDeletes();
 

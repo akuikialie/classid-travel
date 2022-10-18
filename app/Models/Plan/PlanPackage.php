@@ -3,6 +3,8 @@
 namespace App\Models\Plan;
 
 use App\Models\Destination\Destination;
+use App\Models\Jamaah\Jamaah;
+use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -48,5 +50,26 @@ class PlanPackage extends Model implements HasMedia
     {
         return $this->morphToMany(Destination::class,'model', 'model_has_destination', 'model_id')->latest();
     }
+
+    /**
+     * The roles that belong to the PlanPackage
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     */
+    public function jamaah(): BelongsToMany
+    {
+        return $this->morphedByMany(Jamaah::class, 'model', 'model_has_package', 'plan_package_id', 'model_id');
+    }
+
+    // public function users(): BelongsToMany
+    // {
+    //     return $this->morphedByMany(
+    //         getModelForGuard($this->attributes['guard_name']),
+    //         'model',
+    //         config('permission.table_names.model_has_roles'),
+    //         PermissionRegistrar::$pivotRole,
+    //         config('permission.column_names.model_morph_key')
+    //     );
+    // }
 
 }

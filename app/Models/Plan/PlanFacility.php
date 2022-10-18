@@ -7,6 +7,7 @@ use App\Traits\ModelDefines;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
 
@@ -28,5 +29,16 @@ class PlanFacility extends Model implements HasMedia
     // ACCESSOR & MUTATOR
 
     // RELATIONSHIPS
+
+     /**
+     * The roles that belong to the PlanPackage
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     */
+    public function packages(): BelongsToMany
+    {
+        return $this->morphedByMany(PlanPackage::class, 'model', 'model_has_facility', 'plan_facility_id', 'model_id');
+    }
+
 
 }
