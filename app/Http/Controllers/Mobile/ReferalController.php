@@ -8,18 +8,26 @@ use App\Jobs\Referal\AddNewInvitedPerson;
 use App\Jobs\Referal\CreateReferalLink;
 use App\Models\Referal\ReferalLink;
 use App\Providers\RouteServiceProvider;
+use App\Services\ReferalService;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Redirect;
+use Illuminate\Support\Facades\DB;
 
 class ReferalController extends Controller
 {
+
+    protected ReferalService $referalService;
+
+    public function __construct(ReferalService $referalService)
+    {
+        $this->referalService = $referalService;
+    }
+
     public function referal($hashableId, $auth = 'login')
     {
         try {
             if ($auth == 'login') {
                 return view('pages.mobile.referal.referal-login-index', ['hash' => $hashableId]);
-            }else if ($auth == 'register') {
+            } else if ($auth == 'register') {
                 return view('pages.mobile.referal.referal-register-index', ['hash' => $hashableId]);
             }
         } catch (\Throwable $th) {
@@ -29,22 +37,30 @@ class ReferalController extends Controller
 
     public function referalAuth(Request $request, $hashableId, $auth = 'login')
     {
-        $invitation = ReferalLink::query()->where('hash', $hashableId)->first();
+        $invitation = ReferalLink::query()
+            ->with(['package', 'createdBy'])
+            ->where('hash', $hashableId)->first();
         if ($auth == 'login') {
-            // return Redirect::action([ReferalController::class, 'authStore'], $request);
             return $this->authStore($request, $invitation);
-        }else if ($auth == 'register') {
+        } else if ($auth == 'register') {
             return $this->registerStore($request, $invitation);
         }
     }
 
     public function saved($hashableId)
     {
+        DB::beginTransaction();
         try {
             $invitation = ReferalLink::query()->where('hash', $hashableId)->first();
 
-            $this->dispatch(new AddNewInvitedPerson($invitation));
+            $this->referalService->saveInvitedPerson($invitation);
+
+            DB::commit();
         } catch (\Throwable $th) {
+            DB::rollBack();
+
+            notify('Oops!', $th->getMessage(), 'error');
+            return redirect()->back();
             throw $th;
         }
     }
@@ -59,18 +75,18 @@ class ReferalController extends Controller
             'package_id.exists' => 'Paket yang dipilih tidak ditemukan!',
         ]);
 
-        try {
-            if (request()->ajax()) {
-                $invitedLink = new CreateReferalLink($validator);
-                $data = $invitedLink->handle();
+        if (request()->ajax()) {
+            DB::beginTransaction();
+            try {
+                $invitedLink = $this->referalService->createReferalLink($validator);
+                DB::commit();
                 return response()->json([
-                    'link' => collect($data)->toArray()['link'],
+                    'link' => collect($invitedLink)->toArray()['link'],
                 ]);
-            }else{
-                // $this->dispatch(new CreateReferalLink($validator));
+            } catch (\Throwable $th) {
+                DB::rollBack();
+                throw $th;
             }
-        } catch (\Throwable $th) {
-            throw $th;
         }
     }
 
@@ -88,7 +104,6 @@ class ReferalController extends Controller
         // User::query()->create($validator);
 
         return redirect(route('login'));
-
     }
 
     public function authStore(Request $request, ReferalLink $referalLink)
@@ -98,8 +113,10 @@ class ReferalController extends Controller
 
         $request->session()->regenerate();
 
-        $this->dispatch(new AddNewInvitedPerson($referalLink));
+        $this->referalService->saveInvitedPerson($referalLink);
 
-        return redirect()->intended(RouteServiceProvider::HOME);
+        notify('Selamat!', "Kamu telah mengikuti program `{$referalLink->package->name}` bersama {$referalLink->createdBy->name}", 'success');
+
+        return redirect(route('home.index'));
     }
 }

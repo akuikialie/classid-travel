@@ -50,7 +50,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
         //Demo function for programtic creation of Menu
-        //menu('menu-settings', 'show', 250);
+        // menu('menu-success-1', 'show', 250);
 
         //Activating Menus
         document.querySelectorAll('.menu').forEach(el=>{el.style.display='block'})

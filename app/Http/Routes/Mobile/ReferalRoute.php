@@ -18,7 +18,7 @@ class ReferalRoute extends BaseRoute
         $this->router->get($this->prefix('{hash}/auth/{auth}'), [ReferalController::class, 'referal'])->name('invite.link');
         $this->router->middleware(['auth', 'verified'])->group(function(){
             $this->router->post($this->prefix('{hash}/auth/{auth}'), [ReferalController::class, 'referalAuth'])->name('invite.link-authentication');
-            $this->router->post($this->prefix('saved'), [ReferalController::class, 'store'])->name('invite.saved');
+            // $this->router->post($this->prefix('saved'), [ReferalController::class, 'store'])->name('invite.saved');
             $this->router->post($this->prefix('store'), [ReferalController::class, 'store'])->name('invite.store');
 
 

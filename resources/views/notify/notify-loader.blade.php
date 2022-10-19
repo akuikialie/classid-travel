@@ -1,1 +1,17 @@
-@include(Config::get('notify.view'))
+@php
+    $prefix = request()
+        ->route()
+        ->getPrefix();
+
+    $loadView = 'mobile';
+
+    if (str_contains($prefix, 'admin')) {
+        $loadView = 'web';
+    }
+
+@endphp
+
+@foreach (Config::get('notify.view')[$loadView] as $view)
+    @include($view)
+@endforeach
+

@@ -102,8 +102,12 @@ class ProfileController extends Controller
         try {
             User::query()->where('id', $id)
                 ->update($validator);
-            return redirect(route('profile.edit', $id));
+
+            notify('Berhasil', 'Data berhasil diperbarui!.', 'success');
+            return redirect()->back();
         } catch (\Throwable $th) {
+            notify('Opps!', $th->getMessage(), 'error');
+            return redirect()->back();
             throw $th;
         }
     }

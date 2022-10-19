@@ -102,6 +102,7 @@ class NotifyConfig
         if (!is_null($icon)) {
             $this->config['icon'] = $icon;
         }
+
         $this->flash();
 
         return $this;
