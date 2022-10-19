@@ -91,7 +91,8 @@ class FacilityController extends Controller
             }
 
             DB::commit();
-            return redirect()->back()->with('success', 'work');
+            notify('Berhasil', 'Data fasilitas berhasil dibuat!', 'success')->autoClose();
+            return redirect()->back();
         } catch (\Throwable $th) {
             DB::rollBack();
             notify('Opps!', $th->getMessage(), 'error');
@@ -177,7 +178,8 @@ class FacilityController extends Controller
             $facility->save();
 
             DB::commit();
-            return redirect()->back()->with('success', 'work');
+            notify('Berhasil', 'Data fasilitas berhasil diperbarui!', 'success')->autoClose();
+            return redirect()->back();
         } catch (\Throwable $th) {
             DB::rollBack();
             notify('Opps!', $th->getMessage(), 'error');
@@ -203,7 +205,9 @@ class FacilityController extends Controller
                 throw new InvalidArgumentException('Tidak dapat mengapus fasilitas, karena fasilitas ini sedang digunakan!', 500);
             }
             $facility->delete();
-            return redirect()->back()->with('success', 'work');
+
+            notify('Berhasil', 'Data fasilitas berhasil dihapus!', 'success')->autoClose();
+            return redirect()->back();
         } catch (\Throwable $th) {
             notify('Opps!', $th->getMessage(), 'error');
             return redirect()->back();
