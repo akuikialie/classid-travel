@@ -3,11 +3,8 @@
 namespace App\Http\Controllers\Web\Admin\Setup;
 
 use App\Http\Controllers\Controller;
-use App\Jobs\Plan\Destination\AddImagesToDestination;
-use App\Jobs\Plan\Destination\CreateNewDestination;
 use App\Models\Destination\Destination;
 use App\Services\DestinationService;
-use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use InvalidArgumentException;
@@ -29,6 +26,7 @@ class DestinationController extends Controller
      */
     public function index()
     {
+        // toast('Signed in successfully', 'success')->autoClose();
         $destinations = Destination::query()
             ->with(['myAddress'])
             ->withCount(['media', 'packages'])
@@ -47,10 +45,12 @@ class DestinationController extends Controller
     public function create()
     {
         if (request()->ajax()) {
-
             return response()->json([
                 'view' => view('pages.web.setup.destination.modal.wizard-create-modal', [])->render(),
             ]);
+        } else {
+            notify('Opps!', 'Terjadi kesalahan saat memuat halaman!', 'error')->autoClose();
+            return redirect(route('setup.destination.index'));
         }
     }
 
@@ -81,6 +81,8 @@ class DestinationController extends Controller
             return redirect()->back()->with('success', 'work');
         } catch (\Throwable $th) {
             DB::rollBack();
+            notify('Opps!', $th->getMessage(), 'error');
+            return redirect()->back();
             throw $th;
         }
     }
@@ -93,7 +95,8 @@ class DestinationController extends Controller
      */
     public function show($id)
     {
-        //
+        notify('Opps!', 'Terjadi kesalahan saat memuat halaman!', 'error')->autoClose();
+        return redirect(route('setup.destination.index'));
     }
 
     /**
@@ -115,6 +118,9 @@ class DestinationController extends Controller
                     'destination' => $destination,
                 ])->render(),
             ]);
+        } else {
+            notify('Opps!', 'Terjadi kesalahan saat memuat halaman!', 'error')->autoClose();
+            return redirect(route('setup.destination.index'));
         }
     }
 
@@ -153,6 +159,8 @@ class DestinationController extends Controller
             return redirect()->back()->with('success', 'work');
         } catch (\Throwable $th) {
             DB::rollBack();
+            notify('Opps!', $th->getMessage(), 'error');
+            return redirect()->back();
             throw $th;
         }
     }
@@ -176,6 +184,8 @@ class DestinationController extends Controller
             $destination->delete();
             return redirect()->back()->with('success', 'work');
         } catch (\Throwable $th) {
+            notify('Opps!', $th->getMessage(), 'error');
+            return redirect()->back();
             throw $th;
         }
     }

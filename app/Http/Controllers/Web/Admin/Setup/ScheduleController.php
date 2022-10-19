@@ -36,6 +36,9 @@ class ScheduleController extends Controller
             return response()->json([
                 'view' => view('pages.web.setup.schedule.modal.wizard-create-modal', [])->render(),
             ]);
+        }else{
+            notify('Opps!', 'Terjadi kesalahan saat memuat halaman!', 'error')->autoClose();
+            return redirect(route('setup.schedule.index'));
         }
     }
 
@@ -58,6 +61,8 @@ class ScheduleController extends Controller
 
             return redirect()->back()->with('success', 'success');
         } catch (\Throwable $th) {
+            notify('Opps!', $th->getMessage(), 'error');
+            return redirect()->back();
             throw $th;
         }
     }
@@ -70,7 +75,8 @@ class ScheduleController extends Controller
      */
     public function show($id)
     {
-        //
+        notify('Opps!', 'Terjadi kesalahan saat memuat halaman!', 'error')->autoClose();
+        return redirect(route('setup.schedule.index'));
     }
 
     /**
@@ -90,6 +96,9 @@ class ScheduleController extends Controller
                     'schedule' => $schedule,
                 ])->render(),
             ]);
+        }else{
+            notify('Opps!', 'Terjadi kesalahan saat memuat halaman!', 'error')->autoClose();
+            return redirect(route('setup.schedule.index'));
         }
     }
 
@@ -113,6 +122,8 @@ class ScheduleController extends Controller
 
             return redirect()->back()->with('success', 'success');
         } catch (\Throwable $th) {
+            notify('Opps!', $th->getMessage(), 'error');
+            return redirect()->back();
             throw $th;
         }
     }
@@ -136,6 +147,8 @@ class ScheduleController extends Controller
             $schedule->delete();
             return redirect()->back()->with('success', 'work');
         } catch (\Throwable $th) {
+            notify('Opps!', $th->getMessage(), 'error');
+            return redirect()->back();
             throw $th;
         }
     }

@@ -195,6 +195,8 @@ return [
         App\Providers\EventServiceProvider::class,
         App\Providers\RouteServiceProvider::class,
         browner12\helpers\HelperServiceProvider::class,
+
+        App\Core\Notify\NotifyServiceProvider::class,
     ],
 
     /*
@@ -210,6 +212,7 @@ return [
 
     'aliases' => Facade::defaultAliases()->merge([
         // 'ExampleClass' => App\Example\ExampleClass::class,
+        'Notify' => \App\Core\Notify\Facades\Notify::class,
     ])->toArray(),
 
 ];

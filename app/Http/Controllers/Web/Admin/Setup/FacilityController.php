@@ -62,6 +62,9 @@ class FacilityController extends Controller
                     'category_facilities' => $categoryFacilities,
                 ])->render(),
             ]);
+        }else{
+            notify('Opps!', 'Terjadi kesalahan saat memuat halaman!', 'error')->autoClose();
+            return redirect(route('setup.facility.index'));
         }
     }
 
@@ -90,7 +93,9 @@ class FacilityController extends Controller
             DB::commit();
             return redirect()->back()->with('success', 'work');
         } catch (\Throwable $th) {
-            DB::beginTransaction();
+            DB::rollBack();
+            notify('Opps!', $th->getMessage(), 'error');
+            return redirect()->back();
             throw $th;
         }
     }
@@ -103,7 +108,8 @@ class FacilityController extends Controller
      */
     public function show($id)
     {
-
+        notify('Opps!', 'Terjadi kesalahan saat memuat halaman!', 'error')->autoClose();
+        return redirect(route('setup.facility.index'));
     }
 
     /**
@@ -137,6 +143,9 @@ class FacilityController extends Controller
                     'category_facilities' => $categoryFacilities,
                 ])->render(),
             ]);
+        }else{
+            notify('Opps!', 'Terjadi kesalahan saat memuat halaman!', 'error')->autoClose();
+            return redirect(route('setup.facility.index'));
         }
     }
 
@@ -170,7 +179,9 @@ class FacilityController extends Controller
             DB::commit();
             return redirect()->back()->with('success', 'work');
         } catch (\Throwable $th) {
-            DB::beginTransaction();
+            DB::rollBack();
+            notify('Opps!', $th->getMessage(), 'error');
+            return redirect()->back();
             throw $th;
         }
     }
@@ -194,6 +205,8 @@ class FacilityController extends Controller
             $facility->delete();
             return redirect()->back()->with('success', 'work');
         } catch (\Throwable $th) {
+            notify('Opps!', $th->getMessage(), 'error');
+            return redirect()->back();
             throw $th;
         }
     }
