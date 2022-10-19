@@ -68,6 +68,9 @@ class PackageController extends Controller
                     'kuartals' => $kuartals,
                 ])->render(),
             ]);
+        } else {
+            notify('Opps!', 'Terjadi kesalahan saat memuat halaman!', 'error')->autoClose();
+            return redirect(route('setup.package.index'));
         }
     }
 
@@ -114,6 +117,8 @@ class PackageController extends Controller
             return redirect()->back()->with('success', 'work');
         } catch (\Throwable $th) {
             DB::rollBack();
+            notify('Opps!', $th->getMessage(), 'error');
+            return redirect()->back();
             throw $th;
         }
     }
@@ -126,7 +131,8 @@ class PackageController extends Controller
      */
     public function show($id)
     {
-        //
+        notify('Opps!', 'Terjadi kesalahan saat memuat halaman!', 'error')->autoClose();
+        return redirect(route('setup.package.index'));
     }
 
     /**
@@ -161,6 +167,9 @@ class PackageController extends Controller
                     'kuartals' => $kuartals,
                 ])->render(),
             ]);
+        } else {
+            notify('Opps!', 'Terjadi kesalahan saat memuat halaman!', 'error')->autoClose();
+            return redirect(route('setup.package.index'));
         }
     }
 
@@ -215,6 +224,8 @@ class PackageController extends Controller
             return redirect()->back()->with('success', 'work');
         } catch (\Throwable $th) {
             DB::rollBack();
+            notify('Opps!', $th->getMessage(), 'error');
+            return redirect()->back();
             throw $th;
         }
     }
@@ -245,6 +256,8 @@ class PackageController extends Controller
             $package->delete();
             return redirect()->back()->with('success', 'work');
         } catch (\Throwable $th) {
+            notify('Opps!', $th->getMessage(), 'error');
+            return redirect()->back();
             throw $th;
         }
     }

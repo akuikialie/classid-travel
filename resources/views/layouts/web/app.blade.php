@@ -210,6 +210,9 @@ License: For each use you must have a valid license purchased only from above li
         </span>
         <!--end::Svg Icon-->
     </div>
+
+    @include('notify.notify-loader')
+
     <!--end::Scrolltop-->
     <!--begin::Modals-->
     <!--begin::Modal - Upgrade plan-->
