@@ -27,8 +27,8 @@
                 </p>
             </div>
             <!-- right side of profile. increase image width to increase column size-->
-            <img src="{{ asset('mobile/images/empty.png') }}" data-src="{{ asset('mobile/images/avatars/4s.png') }}" width="115"
-                class="bg-highlight rounded-circle mt-3 shadow-xl preload-img">
+            <img src="{{ asset('mobile/images/empty.png') }}" data-src="{{ asset('mobile/images/avatars/4s.png') }}"
+                width="115" class="bg-highlight rounded-circle mt-3 shadow-xl preload-img">
         </div>
         <!-- follow buttons-->
         <div class="content">
@@ -108,7 +108,7 @@
     <!--Menu Share Inviation-->
     <!---------------->
     <!---------------->
-    <div id="menu-share-invitation" class="menu menu-box-modal rounded-m" data-menu-height="300" data-menu-width="310">
+    <div id="menu-share-invitation" class="menu menu-box-modal rounded-m" data-menu-height="330" data-menu-width="310">
         <form {{-- action="{{ route('invite.store') }}" --}} method="post" id="form-invite-jamaah">
             @csrf
             <div class="me-3 ms-3 mt-3">
@@ -131,6 +131,14 @@
                     <i class="fa fa-check disabled invalid color-red-dark"></i>
                     <em></em>
                 </div>
+
+                <div class="input-style no-borders has-icon validate-field mb-4 mt-3">
+                    <input type="text" class="form-control validate-password" id="link"
+                        placeholder="Referal Link">
+                    <label for="link" class="color-highlight font-11 font-500 mt-1">Referal Link</label>
+                    <em>(required)</em>
+                </div>
+
                 @if ($errors->has('package_id'))
                     <span class="text-danger"><small>{{ $errors->first('package_id') }}</small></span>
                 @endif
@@ -161,8 +169,6 @@
                     class="close-menu btn btn-sm btn-full button-s shadow-l rounded-s text-uppercase font-900 bg-red-dark ms-2">Keluar</button>
                 <a href="#"
                     class="close-menu btn btn-full btn-sm btn-border rounded-s text-uppercase font-900 color-dark-light border-dark-dark ms-2">Batal</a>
-
-
             </form>
         </div>
     </div>
@@ -186,12 +192,11 @@
                     type: "POST",
                     dataType: "json",
                     success: function(data) {
-                        // $('#clipboard').val(data.link);
+
+                        $('#link').val(data.link);
 
                         copyToClipboard(data.link);
 
-                        alert("Link telah di copy ke clipboard!.");
-                        // console.log(data);
                     },
                     error: function(error) {
                         console.log(error);

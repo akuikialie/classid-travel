@@ -71,9 +71,13 @@ class PackageController extends Controller
             $jamaah->push();
 
             DB::commit();
+            notify('Berhasil', "Paket  {$package->name} berhasil ditambahkan!.", 'success');
             return redirect(route('tabungan.index'));
         } catch (\Throwable $th) {
             DB::rollBack();
+
+            notify('Opps!', $th->getMessage(), 'error');
+            return redirect()->back();
             throw $th;
         }
     }

@@ -40,8 +40,6 @@
         </div>
         <!-- end of page content-->
 
-
-
         <div id="menu-share" class="menu menu-box-bottom menu-box-detached rounded-m" data-menu-load="menu-share.html"
             data-menu-height="420" data-menu-effect="menu-over">
         </div>
@@ -59,4 +57,5 @@
     @yield('external-mobile-content')
 
     @include('customs.mobile.scripts')
+    @include('notify.notify-loader')
 </body>
