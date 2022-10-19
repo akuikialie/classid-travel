@@ -78,7 +78,8 @@ class DestinationController extends Controller
             }
 
             DB::commit();
-            return redirect()->back()->with('success', 'work');
+            notify('Berhasil', 'Data destinasi berhasil dibuat!', 'success')->autoClose();
+            return redirect()->back();
         } catch (\Throwable $th) {
             DB::rollBack();
             notify('Opps!', $th->getMessage(), 'error');
@@ -156,7 +157,9 @@ class DestinationController extends Controller
             $destination->roaming_in_destination = $validator['roaming_in_destination'];
 
             DB::commit();
-            return redirect()->back()->with('success', 'work');
+            notify('Berhasil', 'Data destinasi berhasil diperbarui!', 'success')->autoClose();
+
+            return redirect()->back();
         } catch (\Throwable $th) {
             DB::rollBack();
             notify('Opps!', $th->getMessage(), 'error');
@@ -182,7 +185,8 @@ class DestinationController extends Controller
                 throw new InvalidArgumentException('Tidak dapat mengapus destinasi, karena destinasi ini sedang digunakan!', 500);
             }
             $destination->delete();
-            return redirect()->back()->with('success', 'work');
+            notify('Berhasil', 'Data destinasi berhasil dihapus!', 'success')->autoClose();
+            return redirect();
         } catch (\Throwable $th) {
             notify('Opps!', $th->getMessage(), 'error');
             return redirect()->back();

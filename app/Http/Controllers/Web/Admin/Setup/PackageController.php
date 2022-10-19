@@ -114,7 +114,9 @@ class PackageController extends Controller
             }
 
             DB::commit();
-            return redirect()->back()->with('success', 'work');
+            notify('Berhasil', 'Data paket berhasil dibuat!', 'success')->autoClose();
+
+            return redirect()->back();
         } catch (\Throwable $th) {
             DB::rollBack();
             notify('Opps!', $th->getMessage(), 'error');
@@ -221,7 +223,8 @@ class PackageController extends Controller
             $package->push();
 
             DB::commit();
-            return redirect()->back()->with('success', 'work');
+            notify('Berhasil', 'Data paket berhasil diperbarui!', 'success')->autoClose();
+            return redirect()->back();
         } catch (\Throwable $th) {
             DB::rollBack();
             notify('Opps!', $th->getMessage(), 'error');
@@ -254,7 +257,8 @@ class PackageController extends Controller
             }
 
             $package->delete();
-            return redirect()->back()->with('success', 'work');
+            notify('Berhasil', 'Data paket berhasil dihapus!', 'success')->autoClose();
+            return redirect()->back();
         } catch (\Throwable $th) {
             notify('Opps!', $th->getMessage(), 'error');
             return redirect()->back();

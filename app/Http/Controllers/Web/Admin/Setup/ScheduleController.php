@@ -59,7 +59,8 @@ class ScheduleController extends Controller
                 'departure_date' => Carbon::parse($validator['departure_date']),
             ]);
 
-            return redirect()->back()->with('success', 'success');
+            notify('Berhasil', 'Jadwal baru berhasil dibuat!', 'success')->autoClose();
+            return redirect()->back();
         } catch (\Throwable $th) {
             notify('Opps!', $th->getMessage(), 'error');
             return redirect()->back();
@@ -120,6 +121,7 @@ class ScheduleController extends Controller
                 'departure_date' => Carbon::parse($validator['departure_date']),
             ]);
 
+            notify('Berhasil', 'Data jadwal berhasil diperbarui!', 'success')->autoClose();
             return redirect()->back()->with('success', 'success');
         } catch (\Throwable $th) {
             notify('Opps!', $th->getMessage(), 'error');
@@ -145,7 +147,8 @@ class ScheduleController extends Controller
                 throw new InvalidArgumentException('Tidak dapat mengapus jadwal, karena jadwal ini sedang digunakan!', 500);
             }
             $schedule->delete();
-            return redirect()->back()->with('success', 'work');
+            notify('Berhasil', 'Data jadwal berhasil dihapus!', 'success')->autoClose();
+            return redirect()->back();
         } catch (\Throwable $th) {
             notify('Opps!', $th->getMessage(), 'error');
             return redirect()->back();
