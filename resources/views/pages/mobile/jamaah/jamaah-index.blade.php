@@ -48,7 +48,7 @@
                         <div class="{{ $people_invited->count() > 2 ? 'splide__slide' : '' }}">
                             <div class="text-center">
                                 <img src="{{ asset('mobile/images/avatars/4s.png') }}" width="55" height="55"
-                                    class="rounded-xl shadow-l gradient-blue">
+                                    class="rounded-xl shadow-l bg-highlight">
                                 <p>{{ $invited?->user?->name }}</p>
                             </div>
                         </div>
