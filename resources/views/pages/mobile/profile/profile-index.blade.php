@@ -35,7 +35,7 @@
             <div class="row mb-0">
                 <div class="col-6">
                     <a href="{{ route('profile.edit', Auth::user()->id) }}"
-                        class="btn btn-full btn-sm rounded-s text-uppercase font-900 bg-blue-dark">Edit
+                        class="btn btn-full btn-sm rounded-s text-uppercase font-900 bg-highlight">Edit
                         Profil</a>
                 </div>
                 <div class="col-6">

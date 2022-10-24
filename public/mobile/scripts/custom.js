@@ -497,7 +497,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 const activeHighlight = document.querySelectorAll('.highlight-active');
                 for(let i=0; i < activeHighlight.length; i++){activeHighlight[i].classList.remove('highlight-active');}
                 el.classList.add('highlight-active');
-                var highlight = el.getAttribute('data-change-highlight');
+                // var highlight = el.getAttribute('data-change-highlight');
+                var highlight = 'prohajj';
                 var pageHighlight = document.querySelectorAll('.page-highlight');
                 if(pageHighlight.length){pageHighlight.forEach(function(e){e.remove();});}
                 var loadHighlight = document.createElement("link");
