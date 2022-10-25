@@ -37,7 +37,7 @@
         </h1>
         <h1 class="text-center mt-3 text-uppercase font-700">{{ $sessionNotify['title'] }}</h1>
         <p class="boxed-text-l">
-            {{ $sessionNotify['text'] }}
+            {{ \Illuminate\Support\Str::limit($sessionNotify['text'], 100) }}
         </p>
         <a href="#"
             class="close-menu btn btn-m btn-center-m button-s shadow-l rounded-s text-uppercase font-900 bg-{{ $color }}-light">OK</a>

@@ -2,10 +2,12 @@
 
 namespace App\Http\Controllers\Mobile;
 
+use App\Actions\Users\CreateNewUser;
+use App\Actions\Jamaah\AddJamaahHistory;
 use App\Http\Controllers\Controller;
-use App\Jobs\User\CreateNewUser;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 
 class RegisterUserController extends Controller
@@ -15,7 +17,7 @@ class RegisterUserController extends Controller
         return view('pages.mobile.auth.register-index');
     }
 
-    public function store(Request $request)
+    public function store(Request $request, CreateNewUser $newUser, AddJamaahHistory $jamaahHistory)
     {
         $validator = $request->validate([
             'name' => ['required', 'string'],
@@ -27,7 +29,18 @@ class RegisterUserController extends Controller
         $validator = array_merge( $validator, ['password' => Hash::make($validator['password'])]);
 
         // User::query()->create($validator);
-        $this->dispatch(new CreateNewUser($validator));
+        DB::beginTransaction();
+        try {
+            $createNewUser = $newUser->handle($validator);
+
+            $jamaahHistory->handle($createNewUser['jamaah']);
+            DB::commit();
+        }catch (\Throwable $throwable){
+            DB::rollBack();
+            throw $throwable;
+            notify('Gagal!!', $throwable->getMessage(), 'error');
+            return redirect()->back();
+        }
 
         return redirect(route('login'));
 

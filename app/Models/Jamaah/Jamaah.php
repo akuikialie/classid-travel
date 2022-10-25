@@ -24,7 +24,7 @@ class Jamaah extends Model
     /**
      * Get the user that owns the Jamaah
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * @return BelongsTo
      */
     public function user(): BelongsTo
     {
@@ -34,7 +34,7 @@ class Jamaah extends Model
     /**
      * The roles that belong to the Jamaah
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     * @return BelongsToMany
      */
     public function planPackages(): BelongsToMany
     {
@@ -50,7 +50,7 @@ class Jamaah extends Model
     /**
      * Get the user that owns the Jamaah
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * @return BelongsTo
      */
     public function departureCity(): BelongsTo
     {
@@ -60,11 +60,21 @@ class Jamaah extends Model
     /**
      * Get the user that owns the Jamaah
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * @return BelongsTo
      */
     public function departureSchedule(): BelongsTo
     {
         return $this->belongsTo(Schedule::class, 'schedule_id');
+    }
+
+    /**
+     * Get the user that owns the Jamaah
+     *  status keberangkatan jamaah
+     * @return HasMany
+     */
+    public function departureHistory(): HasMany
+    {
+        return $this->hasMany(JamaahHistory::class, 'jamaah_id');
     }
 
 }

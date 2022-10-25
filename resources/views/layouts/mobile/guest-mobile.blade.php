@@ -36,4 +36,6 @@
 
 
     @include('customs.mobile.scripts')
+    @include('notify.notify-loader')
+
 </body>

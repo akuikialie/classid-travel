@@ -204,6 +204,7 @@ class PackageController extends Controller
                 ->withCount(['jamaah', 'myDestinations', 'myFacilities'])
                 ->whereId($id)->first();
 
+
             if ($package->jamaah_count > 0) {
                 throw new InvalidArgumentException('Tidak dapat mengapus paket, karena paket ini sedang digunakan!', 500);
             }

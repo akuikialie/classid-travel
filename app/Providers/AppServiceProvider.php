@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use App\Actions\CreateNewUser;
 use Illuminate\Support\Facades\Vite;
 use Illuminate\Support\ServiceProvider;
 
@@ -28,7 +29,7 @@ class AppServiceProvider extends ServiceProvider
             $this->app['request']->server->set('HTTPS', true);
             \URL::forceScheme('https');
         }
-        
+
         Vite::useScriptTagAttributes([
             'type' => 'text/javascript'
         ]);
