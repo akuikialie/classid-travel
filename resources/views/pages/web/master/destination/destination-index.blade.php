@@ -1,14 +1,13 @@
 @extends('layouts.web.app')
 
 @section('toolbar')
-    <a href="#" class="btn btn-sm fw-bold btn-primary" id="setup-button" data-bs-toggle="modal"
-        data-bs-target="#kt_modal_create_app">Setup
-        Keberangkatan</a>
+    <a href="#" class="btn btn-sm fw-bold btn-primary" id="setup-button">Setup
+        Tujuan</a>
 @endsection
 
 @section('page-scripts')
     <script src="{{ asset('web/plugins/custom/datatables/datatables.bundle.js') }}"></script>
-    <script src="{{ asset('web/js/custom/utilities/modals/create-schedule.js') }}"></script>
+    <script src="{{ asset('web/js/custom/utilities/modals/create-destination.js') }}"></script>
 @endsection
 
 @section('page-custom-scripts')
@@ -25,7 +24,7 @@
                 e.preventDefault();
                 $.ajax({
                     data: $("#form-input-role").serialize(),
-                    url: "{{ route('setup.schedule.create') }}",
+                    url: "{{ route('master.destination.create') }}",
                     type: "GET",
                     success: function(data) {
                         if (!$("#kt_modal_create_app").is(":visible")) {
@@ -34,9 +33,6 @@
                         }
 
                         loadSetupCreateApp();
-                        $(".datepicker").flatpickr({
-                            altInput: true,
-                        });
                     },
                     error: function(error) {
                         Swal.fire({
@@ -56,7 +52,7 @@
             $('.btn-edit-modal').click(function(e) {
                 e.preventDefault();
                 var id = $(this).attr("data-id");
-                let url_edit = "{{ route('setup.schedule.edit', ':id') }}";
+                let url_edit = "{{ route('master.destination.edit', ':id') }}";
                 url_edit = url_edit.replace(":id", id);
 
                 $.ajax({
@@ -69,9 +65,6 @@
                         }
 
                         loadSetupCreateApp();
-                        $(".datepicker").flatpickr({
-                            altInput: true,
-                        });
                     },
                     error: function(error) {
                         console.log(error);
@@ -100,7 +93,7 @@
         <!--begin::Header-->
         <div class="card-header border-0 pt-5">
             <h3 class="card-title align-items-start flex-column">
-                <span class="card-label fw-bold fs-3 mb-1">Data Keberangkatan</span>
+                <span class="card-label fw-bold fs-3 mb-1">Data Destinasi</span>
             </h3>
             <div class="card-toolbar">
                 <!--begin::Menu-->
@@ -209,30 +202,45 @@
                                         data-kt-check-target=".widget-13-check" />
                                 </div>
                             </th>
-                            <th class="min-w-150px">Tanggal Keberangkatan</th>
-                            <th class="min-w-150px">Status</th>
+                            <th class="min-w-150px">Name</th>
+                            <th class="min-w-150px">Lokasi</th>
+                            <th class="min-w-140px">Waktu Jelajah</th>
+                            <th class="min-w-120px">Koleksi Photo</th>
                             <th class="min-w-100px text-end">Actions</th>
                         </tr>
                     </thead>
                     <!--end::Table head-->
                     <!--begin::Table body-->
                     <tbody>
-                        @forelse ($schedules as $schedule)
+                        @forelse ($destinations as $destination)
                             <tr>
                                 <td>
                                     <div class="form-check form-check-sm form-check-custom form-check-solid">
                                         <input class="form-check-input widget-13-check" type="checkbox" value="1" />
                                     </div>
                                 </td>
+                                <td class="text-dark fw-bold text-hover-primary fs-6">{{ $destination->name }}</td>
                                 <td class="text-dark fw-bold text-hover-primary fs-6">
-                                    {{ \Carbon\Carbon::parse($schedule->departure_date)->format('d F Y') }}</td>
-                                <td class="text-dark fw-bold text-hover-primary fs-6">
-                                    {{ isset($schedule->is_active) ? 'Aktif' : 'Tidak Aktif' }}
+                                    @if (isset($destination->myAddress?->address))
+                                        {{ mb_strimwidth($destination->myAddress?->address, 0, 20, '...') }}
+                                        @if (strlen($destination->myAddress?->address) > 20)
+                                            <i class="fas fa-exclamation-circle ms-2 fs-7" data-bs-toggle="tooltip"
+                                                title="{{ $destination->myAddress?->address }}"></i>
+                                        @endif
+                                    @else
+                                        -
+                                    @endif
                                 </td>
+                                <td class="text-dark fw-bold text-hover-primary fs-6">
+                                    {{ isset($destination->roaming_in_destination) ? "{$destination->roaming_in_destination} Menit" : '-' }}
+                                </td>
+                                <td class="text-dark fw-bold text-hover-primary fs-6">{{ $destination->media_count }} Photo
+                                </td>
+
 
                                 <!--begin::Action=-->
                                 <td class="text-end">
-                                    <a href="#" data-id="{{ $schedule->id }}" data-bs-toggle="tooltip"
+                                    <a href="#" data-id="{{ $destination->id }}" data-bs-toggle="tooltip"
                                         title="Edit jadwal"
                                         class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm me-1 btn-edit-modal">
                                         <!--begin::Svg Icon | path: icons/duotune/art/art005.svg-->
@@ -276,16 +284,16 @@
                                             <!--end::Menu item-->
                                             <!--begin::Menu sub-->
                                             <div class="menu-sub menu-sub-dropdown w-175px py-4">
-                                                @if (!$schedule->is_active)
+                                                @if (!$destination->is_active)
                                                     <!--begin::Menu item-->
                                                     <div class="menu-item px-3">
-                                                        <a href="#" class="menu-link px-3">Aktifkan Jadwal</a>
+                                                        <a href="#" class="menu-link px-3">Aktifkan Fasilitas</a>
                                                     </div>
                                                     <!--end::Menu item-->
                                                 @else
                                                     <!--begin::Menu item-->
                                                     <div class="menu-item px-3">
-                                                        <a href="#" class="menu-link px-3">Nonaktifkan Jadwal</a>
+                                                        <a href="#" class="menu-link px-3">Nonaktifkan Fasilitas</a>
                                                     </div>
                                                     <!--end::Menu item-->
                                                 @endif
@@ -294,8 +302,8 @@
                                         </div>
                                         <!--end::Menu item-->
                                         <!--begin::Menu item-->
-                                        @if ($schedule->jamaah_count < 1)
-                                            <form action="{{ route('setup.schedule.destroy', $schedule->id) }}"
+                                        @if ($destination->packages_count < 1)
+                                            <form action="{{ route('master.destination.destroy', $destination->id) }}"
                                                 method="post" id="delete">
                                                 @csrf
                                                 @method('delete')

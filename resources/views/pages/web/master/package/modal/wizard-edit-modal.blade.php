@@ -160,10 +160,10 @@
                     <div class="flex-row-fluid py-lg-5 px-lg-15">
                         <!--begin::Form-->
                         <form class="form" novalidate="novalidate" id="kt_modal_create_app_form"
-                            enctype="multipart/form-data" action="{{ route('setup.package.update', $package->id) }}"
+                            enctype="multipart/form-data" action="{{ route('master.package.update', $package->id) }}"
                             method="POST">
 
-                            @include('pages.web.setup.package.modal._input-wizard-modal', [
+                            @include('pages.web.master.package.modal._input-wizard-modal', [
                                 // 'plan' => $plan,
                             ])
 

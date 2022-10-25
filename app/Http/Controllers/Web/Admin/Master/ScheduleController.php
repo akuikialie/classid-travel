@@ -1,26 +1,34 @@
 <?php
 
-namespace App\Http\Controllers\Web\Admin\Setup;
+namespace App\Http\Controllers\Web\Admin\Master;
 
 use App\Http\Controllers\Controller;
 use App\Models\Schedule\Schedule;
 use Carbon\Carbon;
+use Illuminate\Contracts\Foundation\Application;
+use Illuminate\Contracts\View\Factory;
+use Illuminate\Contracts\View\View;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
+use Illuminate\Routing\Redirector;
 use InvalidArgumentException;
+use Throwable;
 
 class ScheduleController extends Controller
 {
     /**
      * Display a listing of the resource.
      *
-     * @return \Illuminate\Http\Response
+     * @return Application|Factory|View
      */
-    public function index()
+    public function index(): View|Factory|Application
     {
         $schedules = Schedule::query()
             ->withCount(['jamaah'])
             ->get();
-        return view('pages.web.setup.schedule.schedule-index', [
+        return view('pages.web.master.schedule.schedule-index', [
             'schedules' => $schedules,
         ]);
     }
@@ -28,27 +36,27 @@ class ScheduleController extends Controller
     /**
      * Show the form for creating a new resource.
      *
-     * @return \Illuminate\Http\Response
+     * @return Application|JsonResponse|RedirectResponse|Redirector
      */
-    public function create()
+    public function create(): JsonResponse|Redirector|Application|RedirectResponse
     {
         if (request()->ajax()) {
             return response()->json([
-                'view' => view('pages.web.setup.schedule.modal.wizard-create-modal', [])->render(),
+                'view' => view('pages.web.master.schedule.modal.wizard-create-modal', [])->render(),
             ]);
         }else{
             notify('Opps!', 'Terjadi kesalahan saat memuat halaman!', 'error')->autoClose();
-            return redirect(route('setup.schedule.index'));
+            return redirect(route('master.schedule.index'));
         }
     }
 
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
+     * @param Request $request
+     * @return RedirectResponse
      */
-    public function store(Request $request)
+    public function store(Request $request): RedirectResponse
     {
         $validator = $request->validate([
             'departure_date' => ['required', 'string'],
@@ -61,10 +69,9 @@ class ScheduleController extends Controller
 
             notify('Berhasil', 'Jadwal baru berhasil dibuat!', 'success')->autoClose();
             return redirect()->back();
-        } catch (\Throwable $th) {
+        } catch (Throwable $th) {
             notify('Opps!', $th->getMessage(), 'error');
             return redirect()->back();
-            throw $th;
         }
     }
 
@@ -72,45 +79,45 @@ class ScheduleController extends Controller
      * Display the specified resource.
      *
      * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * @return Application|Redirector|RedirectResponse
      */
-    public function show($id)
+    public function show(int $id): Redirector|RedirectResponse|Application
     {
         notify('Opps!', 'Terjadi kesalahan saat memuat halaman!', 'error')->autoClose();
-        return redirect(route('setup.schedule.index'));
+        return redirect(route('master.schedule.index'));
     }
 
     /**
      * Show the form for editing the specified resource.
      *
      * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * @return Application|JsonResponse|Redirector|RedirectResponse
      */
-    public function edit($id)
+    public function edit(int $id): JsonResponse|Redirector|RedirectResponse|Application
     {
         if (request()->ajax()) {
 
             $schedule = Schedule::query()->whereId($id)->first();
 
             return response()->json([
-                'view' => view('pages.web.setup.schedule.modal.wizard-edit-modal', [
+                'view' => view('pages.web.master.schedule.modal.wizard-edit-modal', [
                     'schedule' => $schedule,
                 ])->render(),
             ]);
         }else{
             notify('Opps!', 'Terjadi kesalahan saat memuat halaman!', 'error')->autoClose();
-            return redirect(route('setup.schedule.index'));
+            return redirect(route('master.schedule.index'));
         }
     }
 
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param Request $request
      * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * @return RedirectResponse|Response
      */
-    public function update(Request $request, $id)
+    public function update(Request $request, int $id): Response|RedirectResponse
     {
         $validator = $request->validate([
             'departure_date' => ['required', 'string'],
@@ -123,10 +130,9 @@ class ScheduleController extends Controller
 
             notify('Berhasil', 'Data jadwal berhasil diperbarui!', 'success')->autoClose();
             return redirect()->back()->with('success', 'success');
-        } catch (\Throwable $th) {
+        } catch (Throwable $th) {
             notify('Opps!', $th->getMessage(), 'error');
             return redirect()->back();
-            throw $th;
         }
     }
 
@@ -134,9 +140,9 @@ class ScheduleController extends Controller
      * Remove the specified resource from storage.
      *
      * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * @return RedirectResponse
      */
-    public function destroy($id)
+    public function destroy(int $id): RedirectResponse
     {
         try {
             $schedule = Schedule::query()
@@ -149,10 +155,9 @@ class ScheduleController extends Controller
             $schedule->delete();
             notify('Berhasil', 'Data jadwal berhasil dihapus!', 'success')->autoClose();
             return redirect()->back();
-        } catch (\Throwable $th) {
+        } catch (Throwable $th) {
             notify('Opps!', $th->getMessage(), 'error');
             return redirect()->back();
-            throw $th;
         }
     }
 }

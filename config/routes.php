@@ -76,7 +76,7 @@ return [
         /* web */
         App\Http\Routes\Web\Admin\DefaultRoute::class,
         App\Http\Routes\Web\Admin\AuthRoute::class,
-        App\Http\Routes\Web\Admin\SetupRoute::class,
+        App\Http\Routes\Web\Admin\MasterRoute::class,
     ],
     'api' => [
         /** @inject api **/

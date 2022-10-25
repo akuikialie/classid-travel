@@ -9,14 +9,18 @@ $segment = request()->path();
     <!--begin::Logo-->
     <div class="app-sidebar-logo px-6" id="kt_app_sidebar_logo">
         <!--begin::Logo image-->
-        <a href="#l">
-            <img alt="Logo" src="{{ asset('web/media/logos/default.svg') }}"
-                class="h-25px app-sidebar-logo-default theme-light-show" />
-            <img alt="Logo" src="{{ asset('web/media/logos/default-dark.svg') }}"
-                class="h-25px app-sidebar-logo-default theme-dark-show" />
-            <img alt="Logo" src="{{ asset('web/media/logos/default-small.svg') }}"
-                class="h-20px app-sidebar-logo-minimize" />
-        </a>
+
+        <div class="d-flex justify-content-center">
+          <a href="#l">
+              <img alt="Logo" src="{{ asset('logo/SVG/logo-pict-white.svg') }}"
+                  class="h-25px app-sidebar-logo-default theme-light-show" />
+              <img alt="Logo" src="{{ asset('logo/SVG/logo-pict-white.svg') }}"
+                  class="h-25px app-sidebar-logo-default theme-dark-show" />
+              <img alt="Logo" src="{{ asset('logo/SVG/logo-pict-white.svg') }}"
+                  class="h-20px app-sidebar-logo-minimize" />
+          </a>
+          <h1 class="ms-5 text-white">ProHajj</h1>
+        </div>
         <!--end::Logo image-->
         <!--begin::Sidebar toggle-->
         <div id="kt_app_sidebar_toggle"

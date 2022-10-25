@@ -24,7 +24,7 @@
                 e.preventDefault();
                 $.ajax({
                     data: $("#form-input-role").serialize(),
-                    url: "{{ route('setup.facility.create') }}",
+                    url: "{{ route('master.facility.create') }}",
                     type: "GET",
                     success: function(data) {
                         if (!$("#kt_modal_create_app").is(":visible")) {
@@ -52,7 +52,7 @@
             $('.btn-edit-modal').click(function(e) {
                 e.preventDefault();
                 var id = $(this).attr("data-id");
-                let url_edit = "{{ route('setup.facility.edit', ':id') }}";
+                let url_edit = "{{ route('master.facility.edit', ':id') }}";
                 url_edit = url_edit.replace(":id", id);
 
                 $.ajax({
@@ -293,7 +293,7 @@
                                         <!--end::Menu item-->
                                         <!--begin::Menu item-->
                                         @if ($facility->packages_count < 1)
-                                            <form action="{{ route('setup.facility.destroy', $facility->id) }}"
+                                            <form action="{{ route('master.facility.destroy', $facility->id) }}"
                                                 method="post" id="delete">
                                                 @csrf
                                                 @method('delete')

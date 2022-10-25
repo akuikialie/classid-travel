@@ -20,7 +20,7 @@ class SeedPackages extends Seeder
         /* create plan */
         try {
             collect([
-                'Umrah', 'Haji', 'Wisata',
+                'Umrah', /*'Haji', 'Wisata',*/
             ])->each(fn ($cat, $i) => Plan::create([
                 'type' => 'plan',
                 'key' => Str::slug($cat),
@@ -42,13 +42,13 @@ class SeedPackages extends Seeder
                 ],
             ];
 
-            $planUmrah = Plan::query()->where('type', 'plan')->where('key', 'umrah')->first();
+            /*$planUmrah = Plan::query()->where('type', 'plan')->where('key', 'umrah')->first();
 
             foreach ($packages as $key => $package) {
                 $newPackage = new PlanPackage($package);
                 $newPackage->myPlan()->associate($planUmrah);
                 $newPackage->push();
-            }
+            }*/
         } catch (\Throwable $th) {
             throw $th;
         }

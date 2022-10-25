@@ -149,7 +149,7 @@
         <div class="fv-row">
             <!--begin::Label-->
             <label class="d-flex align-items-center fs-5 fw-semibold mb-4" for="thumbnail">
-                <span class="required">Upload Koleksi Photo</span>
+                <span class="required">Upload Thumbnail</span>
                 <i class="fas fa-exclamation-circle ms-2 fs-7" data-bs-toggle="tooltip"
                     title="Specify your apps framework"></i>
             </label>

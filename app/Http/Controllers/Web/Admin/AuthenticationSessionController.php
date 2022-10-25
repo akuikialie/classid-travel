@@ -4,18 +4,26 @@ namespace App\Http\Controllers\Web\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\Authentication;
-use GuzzleHttp\RetryMiddleware;
+use Illuminate\Contracts\Foundation\Application;
+use Illuminate\Contracts\View\Factory;
+use Illuminate\Contracts\View\View;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Routing\Redirector;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Validation\ValidationException;
 
 class AuthenticationSessionController extends Controller
 {
-    public function create()
+    public function create(): Factory|View|Application
     {
         return view('pages.web.auth.sign-in');
     }
 
-    public function store(Authentication $request)
+    /**
+     * @throws ValidationException
+     */
+    public function store(Authentication $request): RedirectResponse
     {
         $request->authenticate();
 
@@ -24,7 +32,7 @@ class AuthenticationSessionController extends Controller
         return redirect()->intended(route('dashboard.admin'));
     }
 
-    public function destroy(Request $request)
+    public function destroy(Request $request): Redirector|Application|RedirectResponse
     {
         Auth::logout();
 
@@ -33,6 +41,6 @@ class AuthenticationSessionController extends Controller
         $request->session()->regenerateToken();
 
         /* redirect to login page */
-        return redirect(url('/'));
+        return redirect(route('admin.login'));
     }
 }

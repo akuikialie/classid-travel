@@ -101,14 +101,14 @@ License: For each use you must have a valid license purchased only from above li
                     <!--end::sidebar mobile toggle-->
                     <!--begin::Mobile logo-->
                     <div class="d-flex align-items-center flex-grow-1 flex-lg-grow-0">
-                        <a href="/metronic8/demo1/../demo1/index.html" class="d-lg-none">
-                            <img alt="Logo" src="/metronic8/demo1/assets/media/logos/default-small.svg"
+                        <a href="#" class="d-lg-none">
+                            <img alt="Logo" src="{{ asset('logo/24w/logo-pict@24px.png') }}"
                                 class="h-30px" />
                         </a>
                     </div>
                     <!--end::Mobile logo-->
                     <!--begin::Header wrapper-->
-                    {{-- @include('components.web.header') --}}
+                    @include('components.web.header')
                     <!--end::Header wrapper-->
                 </div>
                 <!--end::Header container-->
@@ -154,12 +154,7 @@ License: For each use you must have a valid license purchased only from above li
     <!--begin::App layout builder-->
 
     <!--end::App layout builder-->
-    <!--begin::App settings toggle-->
-    <button id="kt_app_layout_builder_toggle" class="btn btn-dark app-layout-builder-toggle lh-1 py-4"
-        title="Metronic Builder" data-bs-toggle="tooltip" data-bs-placement="left" data-bs-dismiss="click"
-        data-bs-trigger="hover">
-        <i class="fonticon-equalizer fs-4 me-1"></i>Customize</button>
-    <!--end::App settings toggle-->
+
 
     <!--begin::Drawers-->
     <!--begin::Activities drawer-->
@@ -177,24 +172,7 @@ License: For each use you must have a valid license purchased only from above li
 
     <!--end::Help drawer-->
     <!--end::Engage drawers-->
-    <!--begin::Engage toolbar-->
-    <div
-        class="engage-toolbar d-flex position-fixed px-5 fw-bold zindex-2 top-50 end-0 transform-90 mt-5 mt-lg-20 gap-2">
-        <!--begin::Demos drawer toggle-->
-        <button id="kt_engage_demos_toggle"
-            class="engage-demos-toggle engage-btn btn shadow-sm fs-6 px-4 rounded-top-0"
-            title="Check out 24 more demos" data-bs-toggle="tooltip" data-bs-placement="left"
-            data-bs-dismiss="click" data-bs-trigger="hover">
-            <span id="kt_engage_demos_label">Demos</span>
-        </button>
-        <!--end::Demos drawer toggle-->
-        <!--begin::Help drawer toggle-->
-        <button id="kt_help_toggle" class="engage-help-toggle btn engage-btn shadow-sm px-5 rounded-top-0"
-            title="Learn & Get Inspired" data-bs-toggle="tooltip" data-bs-placement="left" data-bs-dismiss="click"
-            data-bs-trigger="hover">Help</button>
-        <!--end::Help drawer toggle-->
-    </div>
-    <!--end::Engage toolbar-->
+
     <!--begin::Scrolltop-->
     <div id="kt_scrolltop" class="scrolltop" data-kt-scrolltop="true">
         <!--begin::Svg Icon | path: icons/duotune/arrows/arr066.svg-->
@@ -212,6 +190,9 @@ License: For each use you must have a valid license purchased only from above li
     </div>
 
     @include('notify.notify-loader')
+
+
+    @yield('page-modals')
 
     <!--end::Scrolltop-->
     <!--begin::Modals-->

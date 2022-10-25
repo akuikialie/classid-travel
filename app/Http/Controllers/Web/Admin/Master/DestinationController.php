@@ -1,13 +1,20 @@
 <?php
 
-namespace App\Http\Controllers\Web\Admin\Setup;
+namespace App\Http\Controllers\Web\Admin\Master;
 
 use App\Http\Controllers\Controller;
 use App\Models\Destination\Destination;
 use App\Services\DestinationService;
+use Illuminate\Contracts\Foundation\Application;
+use Illuminate\Contracts\View\Factory;
+use Illuminate\Contracts\View\View;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Routing\Redirector;
 use Illuminate\Support\Facades\DB;
 use InvalidArgumentException;
+use Throwable;
 
 class DestinationController extends Controller
 {
@@ -22,9 +29,9 @@ class DestinationController extends Controller
     /**
      * Display a listing of the resource.
      *
-     * @return \Illuminate\Http\Response
+     * @return Application|Factory|View
      */
-    public function index()
+    public function index(): View|Factory|Application
     {
         // toast('Signed in successfully', 'success')->autoClose();
         $destinations = Destination::query()
@@ -32,7 +39,7 @@ class DestinationController extends Controller
             ->withCount(['media', 'packages'])
             ->get();
 
-        return view('pages.web.setup.destination.destination-index', [
+        return view('pages.web.master.destination.destination-index', [
             'destinations' => $destinations,
         ]);
     }
@@ -40,27 +47,27 @@ class DestinationController extends Controller
     /**
      * Show the form for creating a new resource.
      *
-     * @return \Illuminate\Http\Response
+     * @return Application|JsonResponse|RedirectResponse|Redirector
      */
-    public function create()
+    public function create(): JsonResponse|Redirector|Application|RedirectResponse
     {
         if (request()->ajax()) {
             return response()->json([
-                'view' => view('pages.web.setup.destination.modal.wizard-create-modal', [])->render(),
+                'view' => view('pages.web.master.destination.modal.wizard-create-modal', [])->render(),
             ]);
         } else {
             notify('Opps!', 'Terjadi kesalahan saat memuat halaman!', 'error')->autoClose();
-            return redirect(route('setup.destination.index'));
+            return redirect(route('master.destination.index'));
         }
     }
 
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
+     * @param Request $request
+     * @return RedirectResponse
      */
-    public function store(Request $request)
+    public function store(Request $request): RedirectResponse
     {
         $validator = $request->validate([
             'name' => ['required', 'string',],
@@ -80,11 +87,10 @@ class DestinationController extends Controller
             DB::commit();
             notify('Berhasil', 'Data destinasi berhasil dibuat!', 'success')->autoClose();
             return redirect()->back();
-        } catch (\Throwable $th) {
+        } catch (Throwable $th) {
             DB::rollBack();
             notify('Opps!', $th->getMessage(), 'error');
             return redirect()->back();
-            throw $th;
         }
     }
 
@@ -92,21 +98,21 @@ class DestinationController extends Controller
      * Display the specified resource.
      *
      * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * @return Application|Redirector|RedirectResponse
      */
-    public function show($id)
+    public function show(int $id): Redirector|RedirectResponse|Application
     {
         notify('Opps!', 'Terjadi kesalahan saat memuat halaman!', 'error')->autoClose();
-        return redirect(route('setup.destination.index'));
+        return redirect(route('master.destination.index'));
     }
 
     /**
      * Show the form for editing the specified resource.
      *
      * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * @return Application|JsonResponse|Redirector|RedirectResponse
      */
-    public function edit($id)
+    public function edit(int $id): JsonResponse|Redirector|RedirectResponse|Application
     {
         if (request()->ajax()) {
 
@@ -115,24 +121,24 @@ class DestinationController extends Controller
                 ->whereId($id)->first();
 
             return response()->json([
-                'view' => view('pages.web.setup.destination.modal.wizard-edit-modal', [
+                'view' => view('pages.web.master.destination.modal.wizard-edit-modal', [
                     'destination' => $destination,
                 ])->render(),
             ]);
         } else {
             notify('Opps!', 'Terjadi kesalahan saat memuat halaman!', 'error')->autoClose();
-            return redirect(route('setup.destination.index'));
+            return redirect(route('master.destination.index'));
         }
     }
 
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param Request $request
      * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * @return RedirectResponse
      */
-    public function update(Request $request, $id)
+    public function update(Request $request, int $id): RedirectResponse
     {
         $validator = $request->validate([
             'name' => ['required', 'string',],
@@ -160,11 +166,10 @@ class DestinationController extends Controller
             notify('Berhasil', 'Data destinasi berhasil diperbarui!', 'success')->autoClose();
 
             return redirect()->back();
-        } catch (\Throwable $th) {
+        } catch (Throwable $th) {
             DB::rollBack();
             notify('Opps!', $th->getMessage(), 'error');
             return redirect()->back();
-            throw $th;
         }
     }
 
@@ -172,9 +177,9 @@ class DestinationController extends Controller
      * Remove the specified resource from storage.
      *
      * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * @return Application|Redirector|RedirectResponse
      */
-    public function destroy($id)
+    public function destroy(int $id): Redirector|RedirectResponse|Application
     {
         try {
             $destination = Destination::query()
@@ -187,10 +192,9 @@ class DestinationController extends Controller
             $destination->delete();
             notify('Berhasil', 'Data destinasi berhasil dihapus!', 'success')->autoClose();
             return redirect();
-        } catch (\Throwable $th) {
+        } catch (Throwable $th) {
             notify('Opps!', $th->getMessage(), 'error');
             return redirect()->back();
-            throw $th;
         }
     }
 }

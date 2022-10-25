@@ -49,7 +49,7 @@ class PackageService
             $newPackage->myPlan()->associate($plan);
             $newPackage->save();
 
-            return $newPackage->refresh();
+            return $newPackage->fresh();
         } catch (\Throwable $th) {
             throw $th;
         }

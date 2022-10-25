@@ -7,22 +7,22 @@
             <!--begin::Modal header-->
             <div class="modal-header">
                 <!--begin::Modal title-->
-                <h2>Setup Keberangkatan</h2>
+                <h2>Setup Paket</h2>
                 <!--end::Modal title-->
                 <!--begin::Close-->
                 {{-- <div class="btn btn-sm btn-icon btn-active-color-primary" data-bs-dismiss="modal">
-                  <!--begin::Svg Icon | path: icons/duotune/arrows/arr061.svg-->
-                  <span class="svg-icon svg-icon-1">
-                      <svg width="24" height="24" viewBox="0 0 24 24" fill="none"
-                          xmlns="http://www.w3.org/2000/svg">
-                          <rect opacity="0.5" x="6" y="17.3137" width="16" height="2"
-                              rx="1" transform="rotate(-45 6 17.3137)" fill="currentColor" />
-                          <rect x="7.41422" y="6" width="16" height="2" rx="1"
-                              transform="rotate(45 7.41422 6)" fill="currentColor" />
-                      </svg>
-                  </span>
-                  <!--end::Svg Icon-->
-              </div> --}}
+              <!--begin::Svg Icon | path: icons/duotune/arrows/arr061.svg-->
+              <span class="svg-icon svg-icon-1">
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none"
+                      xmlns="http://www.w3.org/2000/svg">
+                      <rect opacity="0.5" x="6" y="17.3137" width="16" height="2"
+                          rx="1" transform="rotate(-45 6 17.3137)" fill="currentColor" />
+                      <rect x="7.41422" y="6" width="16" height="2" rx="1"
+                          transform="rotate(45 7.41422 6)" fill="currentColor" />
+                  </svg>
+              </span>
+              <!--end::Svg Icon-->
+          </div> --}}
                 <!--end::Close-->
             </div>
             <!--end::Modal header-->
@@ -35,6 +35,7 @@
                     <div class="d-flex justify-content-center justify-content-xl-start flex-row-auto w-100 w-xl-300px">
                         <!--begin::Nav-->
                         <div class="stepper-nav ps-lg-10">
+
                             <!--begin::Step 1-->
                             <div class="stepper-item current" data-kt-stepper-element="nav">
                                 <!--begin::Wrapper-->
@@ -47,8 +48,8 @@
                                     <!--end::Icon-->
                                     <!--begin::Label-->
                                     <div class="stepper-label">
-                                        <h3 class="stepper-title">Keberangkatan</h3>
-                                        <div class="stepper-desc">Tambahkan jadwal baru</div>
+                                        <h3 class="stepper-title">Paket</h3>
+                                        <div class="stepper-desc">Tambahkan paket baru</div>
                                     </div>
                                     <!--end::Label-->
                                 </div>
@@ -58,14 +59,87 @@
                                 <!--end::Line-->
                             </div>
                             <!--end::Step 1-->
-                            <!--begin::Step 3-->
-                            <div class="stepper-item mark-completed" data-kt-stepper-element="nav">
+
+                            <!--begin::Step 2-->
+                            <div class="stepper-item" data-kt-stepper-element="nav">
                                 <!--begin::Wrapper-->
                                 <div class="stepper-wrapper">
                                     <!--begin::Icon-->
                                     <div class="stepper-icon w-40px h-40px">
                                         <i class="stepper-check fas fa-check"></i>
                                         <span class="stepper-number">2</span>
+                                    </div>
+                                    <!--begin::Icon-->
+                                    <!--begin::Label-->
+                                    <div class="stepper-label">
+                                        <h3 class="stepper-title">Thumbnail</h3>
+                                        <div class="stepper-desc">Tambahkan photo thumbnail</div>
+                                    </div>
+                                    <!--begin::Label-->
+                                </div>
+                                <!--end::Wrapper-->
+                                <!--begin::Line-->
+                                <div class="stepper-line h-40px"></div>
+                                <!--end::Line-->
+                            </div>
+                            <!--end::Step 2-->
+
+                            <!--begin::Step 3-->
+                            <div class="stepper-item " data-kt-stepper-element="nav">
+                                <!--begin::Wrapper-->
+                                <div class="stepper-wrapper">
+                                    <!--begin::Icon-->
+                                    <div class="stepper-icon w-40px h-40px">
+                                        <i class="stepper-check fas fa-check"></i>
+                                        <span class="stepper-number">3</span>
+                                    </div>
+                                    <!--end::Icon-->
+                                    <!--begin::Label-->
+                                    <div class="stepper-label">
+                                        <h3 class="stepper-title">Fasilitas</h3>
+                                        <div class="stepper-desc">Tambahkan fasilitas kedalam paket</div>
+                                    </div>
+                                    <!--end::Label-->
+                                </div>
+                                <!--end::Wrapper-->
+                                <!--begin::Line-->
+                                <div class="stepper-line h-40px"></div>
+                                <!--end::Line-->
+                            </div>
+                            <!--end::Step 3-->
+
+                            <!--begin::Step 4-->
+                            <div class="stepper-item" data-kt-stepper-element="nav">
+                                <!--begin::Wrapper-->
+                                <div class="stepper-wrapper">
+                                    <!--begin::Icon-->
+                                    <div class="stepper-icon w-40px h-40px">
+                                        <i class="stepper-check fas fa-check"></i>
+                                        <span class="stepper-number">4</span>
+                                    </div>
+                                    <!--end::Icon-->
+                                    <!--begin::Label-->
+                                    <div class="stepper-label">
+                                        <h3 class="stepper-title">Destinasi</h3>
+                                        <div class="stepper-desc">Tambahkan destinasi kedalam paket</div>
+                                    </div>
+                                    <!--end::Label-->
+                                </div>
+                                <!--end::Wrapper-->
+                                <!--begin::Line-->
+                                <div class="stepper-line h-40px"></div>
+                                <!--end::Line-->
+                            </div>
+                            <!--end::Step 4-->
+
+                            <!--begin::Step 5-->
+                            <div class="stepper-item mark-completed" data-kt-stepper-element="nav">
+                                <!--begin::Wrapper-->
+                                <div class="stepper-wrapper">
+                                    <!--begin::Icon-->
+                                    <div class="stepper-icon w-40px h-40px">
+                                        <i class="stepper-check fas fa-check"></i>
+                                        <span class="stepper-number">5</span>
                                     </div>
                                     <!--end::Icon-->
                                     <!--begin::Label-->
@@ -77,7 +151,7 @@
                                 </div>
                                 <!--end::Wrapper-->
                             </div>
-                            <!--end::Step 3-->
+                            <!--end::Step 5-->
                         </div>
                         <!--end::Nav-->
                     </div>
@@ -86,11 +160,12 @@
                     <div class="flex-row-fluid py-lg-5 px-lg-15">
                         <!--begin::Form-->
                         <form class="form" novalidate="novalidate" id="kt_modal_create_app_form"
-                            enctype="multipart/form-data" action="{{ route('setup.schedule.update', $schedule->id) }}" method="POST">
-                            @include('pages.web.setup.schedule.modal._input-wizard-modal')
+                            enctype="multipart/form-data" action="{{ route('master.package.store') }}" method="POST">
+                            @include('pages.web.master.package.modal._input-wizard-modal', [
+                            ])
+
                             <!--begin::Actions-->
                             <div class="d-flex flex-stack pt-10">
-                                @method('put')
                                 <!--begin::Wrapper-->
                                 <div class="me-2">
                                     <button type="button" class="btn btn-lg btn-light-primary me-3"

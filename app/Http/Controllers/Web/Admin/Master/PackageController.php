@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Web\Admin\Setup;
+namespace App\Http\Controllers\Web\Admin\Master;
 
 use App\Enums\Kuartal;
 use App\Http\Controllers\Controller;
@@ -9,9 +9,17 @@ use App\Models\Plan\Plan;
 use App\Models\Plan\PlanFacility;
 use App\Models\Plan\PlanPackage;
 use App\Services\PackageService;
+use Illuminate\Contracts\Foundation\Application;
+use Illuminate\Contracts\View\Factory;
+use Illuminate\Contracts\View\View;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
+use Illuminate\Routing\Redirector;
 use Illuminate\Support\Facades\DB;
 use InvalidArgumentException;
+use Throwable;
 
 class PackageController extends Controller
 {
@@ -26,9 +34,9 @@ class PackageController extends Controller
     /**
      * Display a listing of the resource.
      *
-     * @return \Illuminate\Http\Response
+     * @return Application|Factory|View
      */
-    public function index()
+    public function index(): View|Factory|Application
     {
         $packages = PlanPackage::query()
             ->with(['myPlan'])
@@ -36,7 +44,7 @@ class PackageController extends Controller
             ->latest()
             ->get();
 
-        return view('pages.web.setup.package.package-index', [
+        return view('pages.web.master.package.package-index', [
             'packages' => $packages,
         ]);
     }
@@ -44,9 +52,9 @@ class PackageController extends Controller
     /**
      * Show the form for creating a new resource.
      *
-     * @return \Illuminate\Http\Response
+     * @return Application|JsonResponse|RedirectResponse|Redirector
      */
-    public function create()
+    public function create(): JsonResponse|Redirector|Application|RedirectResponse
     {
         if (request()->ajax()) {
 
@@ -61,7 +69,7 @@ class PackageController extends Controller
             $kuartals = Kuartal::cases();
 
             return response()->json([
-                'view' => view('pages.web.setup.package.modal.wizard-create-modal', [
+                'view' => view('pages.web.master.package.modal.wizard-create-modal', [
                     'plans' => $plans,
                     'facilities' => $facilities,
                     'destinations' => $destinations,
@@ -70,58 +78,33 @@ class PackageController extends Controller
             ]);
         } else {
             notify('Opps!', 'Terjadi kesalahan saat memuat halaman!', 'error')->autoClose();
-            return redirect(route('setup.package.index'));
+            return redirect(route('master.package.index'));
         }
     }
 
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
+     * @param Request $request
+     * @return RedirectResponse|Response
      */
     public function store(Request $request)
     {
-        $validator = $request->validate([
-            'type' => ['required', 'string'],
-            'departure_year' => ['nullable', 'string'],
-            'kuartal' => ['nullable', 'string'],
-            'long_days' => ['required', 'integer'],
-            'name' => ['required', 'string'],
-            'description' => ['nullable', 'string'],
-            'amount' => ['required', 'integer'],
-            'facilities' => ['nullable', 'array'],
-            'destinations' => ['nullable', 'array'],
-            'thumbnail' => ['nullable', 'mimes:jpg,png,jpeg', 'max:3072'],
-        ]);
-
+        $validator = $this->getArr($request);
         DB::beginTransaction();
         try {
             $newPackage = $this->packageService->createNewPackage($validator['type'], $validator);
 
-            if (isset($validator['facilities']) && is_array($validator['facilities'])) {
-                $facilityIds = array_keys($validator['facilities']);
-                $this->packageService->addFacilitiesToPackage($newPackage, $facilityIds);
-            }
-
-            if (isset($validator['destinations']) && is_array($validator['destinations'])) {
-                $destinationIds = array_keys($validator['destinations']);
-                $this->packageService->addDestinationsToPackage($newPackage, $destinationIds);
-            }
-
-            if ($request->hasfile('thumbnail')) {
-                $this->packageService->addThumbnailPackage($newPackage, $request);
-            }
+            $this->extracted($validator, $newPackage, $request);
 
             DB::commit();
             notify('Berhasil', 'Data paket berhasil dibuat!', 'success')->autoClose();
 
             return redirect()->back();
-        } catch (\Throwable $th) {
+        } catch (Throwable $th) {
             DB::rollBack();
             notify('Opps!', $th->getMessage(), 'error');
             return redirect()->back();
-            throw $th;
         }
     }
 
@@ -129,21 +112,21 @@ class PackageController extends Controller
      * Display the specified resource.
      *
      * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * @return Application|Redirector|RedirectResponse
      */
-    public function show($id)
+    public function show(int $id): Redirector|RedirectResponse|Application
     {
         notify('Opps!', 'Terjadi kesalahan saat memuat halaman!', 'error')->autoClose();
-        return redirect(route('setup.package.index'));
+        return redirect(route('master.package.index'));
     }
 
     /**
      * Show the form for editing the specified resource.
      *
      * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * @return Application|JsonResponse|Redirector|RedirectResponse
      */
-    public function edit($id)
+    public function edit(int $id): JsonResponse|Redirector|RedirectResponse|Application
     {
         if (request()->ajax()) {
             $package = PlanPackage::query()
@@ -161,7 +144,7 @@ class PackageController extends Controller
             $kuartals = Kuartal::cases();
 
             return response()->json([
-                'view' => view('pages.web.setup.package.modal.wizard-edit-modal', [
+                'view' => view('pages.web.master.package.modal.wizard-edit-modal', [
                     'package' => $package,
                     'plans' => $plans,
                     'facilities' => $facilities,
@@ -171,50 +154,26 @@ class PackageController extends Controller
             ]);
         } else {
             notify('Opps!', 'Terjadi kesalahan saat memuat halaman!', 'error')->autoClose();
-            return redirect(route('setup.package.index'));
+            return redirect(route('master.package.index'));
         }
     }
 
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param Request $request
      * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * @return RedirectResponse
      */
-    public function update(Request $request, $id)
+    public function update(Request $request, int $id): RedirectResponse
     {
-        $validator = $request->validate([
-            'type' => ['required', 'string'],
-            'departure_year' => ['nullable', 'string'],
-            'kuartal' => ['nullable', 'string'],
-            'long_days' => ['required', 'integer'],
-            'name' => ['required', 'string'],
-            'description' => ['nullable', 'string'],
-            'amount' => ['required', 'integer'],
-            'facilities' => ['nullable', 'array'],
-            'destinations' => ['nullable', 'array'],
-            'thumbnail' => ['nullable', 'mimes:jpg,png,jpeg', 'max:3072'],
-        ]);
+        $validator = $this->getArr($request);
 
         DB::beginTransaction();
         try {
             $package = PlanPackage::query()->whereId($id)->first();
 
-
-            if (isset($validator['facilities']) && is_array($validator['facilities'])) {
-                $facilityIds = array_keys($validator['facilities']);
-                $this->packageService->addFacilitiesToPackage($package, $facilityIds);
-            }
-
-            if (isset($validator['destinations']) && is_array($validator['destinations'])) {
-                $destinationIds = array_keys($validator['destinations']);
-                $this->packageService->addDestinationsToPackage($package, $destinationIds);
-            }
-
-            if ($request->hasfile('thumbnail')) {
-                $this->packageService->addThumbnailPackage($package, $request);
-            }
+            $this->extracted($validator, $package, $request);
 
             $package->long_days = $validator['long_days'];
             $package->name = $validator['name'];
@@ -225,11 +184,10 @@ class PackageController extends Controller
             DB::commit();
             notify('Berhasil', 'Data paket berhasil diperbarui!', 'success')->autoClose();
             return redirect()->back();
-        } catch (\Throwable $th) {
+        } catch (Throwable $th) {
             DB::rollBack();
             notify('Opps!', $th->getMessage(), 'error');
             return redirect()->back();
-            throw $th;
         }
     }
 
@@ -237,9 +195,9 @@ class PackageController extends Controller
      * Remove the specified resource from storage.
      *
      * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * @return RedirectResponse
      */
-    public function destroy($id)
+    public function destroy(int $id): RedirectResponse
     {
         try {
             $package = PlanPackage::query()
@@ -259,10 +217,53 @@ class PackageController extends Controller
             $package->delete();
             notify('Berhasil', 'Data paket berhasil dihapus!', 'success')->autoClose();
             return redirect()->back();
-        } catch (\Throwable $th) {
+        } catch (Throwable $th) {
             notify('Opps!', $th->getMessage(), 'error');
             return redirect()->back();
-            throw $th;
+        }
+    }
+
+    /**
+     * @param Request $request
+     * @return array
+     */
+    public function getArr(Request $request): array
+    {
+        return $request->validate([
+            'type' => ['required', 'string'],
+            'departure_year' => ['nullable', 'string'],
+            'kuartal' => ['nullable', 'string'],
+            'long_days' => ['required', 'integer'],
+            'name' => ['required', 'string'],
+            'description' => ['nullable', 'string'],
+            'amount' => ['required', 'integer'],
+            'facilities' => ['nullable', 'array'],
+            'destinations' => ['nullable', 'array'],
+            'thumbnail' => ['nullable', 'mimes:jpg,png,jpeg', 'max:3072'],
+        ]);
+    }
+
+    /**
+     * @param array $validator
+     * @param PlanPackage $newPackage
+     * @param Request $request
+     * @return void
+     * @throws Throwable
+     */
+    public function extracted(array $validator, PlanPackage $newPackage, Request $request): void
+    {
+        if (isset($validator['facilities']) && is_array($validator['facilities'])) {
+            $facilityIds = array_keys($validator['facilities']);
+            $this->packageService->addFacilitiesToPackage($newPackage, $facilityIds);
+        }
+
+        if (isset($validator['destinations']) && is_array($validator['destinations'])) {
+            $destinationIds = array_keys($validator['destinations']);
+            $this->packageService->addDestinationsToPackage($newPackage, $destinationIds);
+        }
+
+        if ($request->hasfile('thumbnail')) {
+            $this->packageService->addThumbnailPackage($newPackage, $request);
         }
     }
 }
