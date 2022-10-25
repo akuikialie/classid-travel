@@ -2,11 +2,11 @@
 
 namespace App\Services;
 
+use App\Actions\Jamaah\AddJamaahHistory;
 use App\Enums\Statuses;
 use App\Enums\VirtualAccount;
 use App\Models\Jamaah\Jamaah;
 use App\Models\Plan\Plan;
-use App\Models\Plan\PlanFacility;
 use App\Models\Plan\PlanPackage;
 use Illuminate\Http\Request;
 use InvalidArgumentException;
@@ -18,7 +18,7 @@ class PackageService
         //
     }
 
-    public function addPackageToJamaah(PlanPackage $planPackage, Jamaah $jamaah, string $key = 'perencanaan')
+    public function addPackageToJamaah(PlanPackage $planPackage, Jamaah $jamaah, string $key = 'perencanaan'): void
     {
         try {
             /* check package on jamaah */
@@ -29,6 +29,10 @@ class PackageService
 
             /* add package to jamaah */
             $jamaah->planPackages()->attach($planPackage->id);
+
+            /* add jamaah history */
+            $jamaahHistory = new AddJamaahHistory();
+            $jamaahHistory->handle($jamaah, $planPackage, null);
 
             /* creating va */
             $vaService = new VirtualAccountService;
@@ -103,7 +107,7 @@ class PackageService
         }
     }
 
-    public function addThumbnailPackage(PlanPackage $planPackage, Request $request)
+    public function addThumbnailPackage(PlanPackage $planPackage, Request $request): void
     {
         try {
             if ($request->hasfile('thumbnail')) {
@@ -113,4 +117,5 @@ class PackageService
             throw $th;
         }
     }
+
 }

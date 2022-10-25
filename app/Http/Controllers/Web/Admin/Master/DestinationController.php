@@ -177,21 +177,26 @@ class DestinationController extends Controller
      * Remove the specified resource from storage.
      *
      * @param  int  $id
-     * @return Application|Redirector|RedirectResponse
+     * @return RedirectResponse
      */
-    public function destroy(int $id): Redirector|RedirectResponse|Application
+    public function destroy(int $id): RedirectResponse
     {
         try {
             $destination = Destination::query()
                 ->withCount(['packages'])
-                ->whereId($id)->first();
+                ->where('id', $id)->first();
+
+            if (!isset($destination)){
+                throw new InvalidArgumentException('Data destinasi tidak ditemukan', 500);
+            }
 
             if ($destination->packages_count > 0) {
                 throw new InvalidArgumentException('Tidak dapat mengapus destinasi, karena destinasi ini sedang digunakan!', 500);
             }
-            $destination->delete();
+            Destination::query()
+                ->find($id)->delete();
             notify('Berhasil', 'Data destinasi berhasil dihapus!', 'success')->autoClose();
-            return redirect();
+            return redirect()->back();
         } catch (Throwable $th) {
             notify('Opps!', $th->getMessage(), 'error');
             return redirect()->back();

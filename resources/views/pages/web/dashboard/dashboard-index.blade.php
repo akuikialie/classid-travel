@@ -27,17 +27,26 @@
                data-kt-table-widget-3="tabs_nav">
             <!--begin::Tab item-->
             <div class="fs-4 fw-bold pb-3 border-bottom border-3 border-primary cursor-pointer"
-                 data-kt-table-widget-3="tab" data-kt-table-widget-3-value="Show All">Data Keberangkatan (5)
+                 data-kt-table-widget-3="tab" data-kt-table-widget-3-value="Show All">Data Keberangkatan
+              ({{ collect($data_keberangkatan)->count() }})
             </div>
             <!--end::Tab item-->
             <!--begin::Tab item-->
             <div class="fs-4 fw-bold text-muted pb-3 cursor-pointer" data-kt-table-widget-3="tab"
-                 data-kt-table-widget-3-value="Pending">Belum Berangkat (2)
+                 data-kt-table-widget-3-value="SEDANG_BERANGKAT">Sedang Berangkat
+              ({{ collect($data_keberangkatan)->where('departure_status', 'SEDANG_BERANGKAT')->count() }})
             </div>
             <!--end::Tab item-->
             <!--begin::Tab item-->
             <div class="fs-4 fw-bold text-muted pb-3 cursor-pointer" data-kt-table-widget-3="tab"
-                 data-kt-table-widget-3-value="Canceled">Batal Berangkat (1)
+                 data-kt-table-widget-3-value="BELUM_BERANGKAT">Belum Berangkat
+              ({{ collect($data_keberangkatan)->where('departure_status', 'BELUM_BERANGKAT')->count() }})
+            </div>
+            <!--end::Tab item-->
+            <!--begin::Tab item-->
+            <div class="fs-4 fw-bold text-muted pb-3 cursor-pointer" data-kt-table-widget-3="tab"
+                 data-kt-table-widget-3-value="BATAL_BERANGKAT">Batal Berangkat
+              ({{ collect($data_keberangkatan)->where('departure_status', 'BATAL_BERANGKAT')->count() }})
             </div>
             <!--end::Tab item-->
           </div>
@@ -69,38 +78,68 @@
             </tr>
             </thead>
             <tbody>
-            @for($i = 0; $i < 10; $i++)
+            @foreach($data_keberangkatan as $item)
               @php
                 $bg = ['primary', 'secondary', 'info', 'danger', 'warning', 'success'];
-                $boarded_at = Carbon::now()->addDay(rand(1,29))->addMonth(rand(1,12))->addYear(rand(1,3));
+                $boarded_at = null;
+                if (isset($item->departure_date)){
+                    $boarded_at = Carbon::parse($item->departure_date);
+                }
               @endphp
               <tr>
                 <td class="min-w-175px">
                   <div class="position-relative ps-6 pe-3 py-2">
                     <div class="position-absolute start-0 top-0 w-4px h-100 rounded-2 bg-{{ $bg[rand(0,5)] }}"></div>
                     <a href="#" class="mb-1 text-dark text-hover-primary fw-bold">
-                      {{ fake()->name() }}
+                      {{ $item->name }}
                     </a>
-                    <div class="fs-7 text-muted fw-bold">Berangkat pada {{ $boarded_at->format('d M Y') }}</div>
+                    <div class="fs-7 text-muted fw-bold"> {{ isset($boarded_at) ? 'Berangkat
+                      pada'. $boarded_at->format('d M Y') : 'Keberangkatan belum Disetting' }}</div>
                   </div>
                 </td>
                 <td>
-                  <div class="fs-7 text-muted fw-bold">Paket Umrah {{ $boarded_at->format('Y') }}</div>
+                  <div
+                    class="fs-7 text-muted fw-bold">{{ isset($item->plan) ? $item->plan : 'Belum memiliki rencana' }}</div>
                 </td>
                 <td>
-                  <span class="badge badge-light-success">Live Now</span>
+                  @php
+                    switch ($item->departure_status){
+                        case 'SEDANG_BERANGKAT':
+                          $badgeColor = 'primary';
+                          break;
+
+                          case 'SUDAH_BERANGKAT':
+                          $badgeColor = 'success';
+                          break;
+
+                          case 'BELUM_BERANGKAT':
+                          $badgeColor = 'warning';
+                          break;
+
+                          case 'BATAL_BERANGKAT':
+                          $badgeColor = 'seccondary';
+                          break;
+
+                          default :
+                              break;
+                    }
+                  @endphp
+
+                  <span class="badge badge-light-{{ $badgeColor }}">{{ $item->departure_status }}</span>
+
                 </td>
 
                 <td class="min-w-150px">
-                  <div class="mb-2 fw-bold">{{ $boarded_at->format('d M Y') }}
-                    - {{ $boarded_at->addDay(rand(10, 20))->format('d M Y') }}</div>
+                  <div class="mb-2 fw-bold">
+                    @if(isset($boarded_at) && isset($item->plan_long_days))
+                      {{ $boarded_at->format('d M Y') }} - {{ $boarded_at->addDay($item->plan_long_days)->format('d M Y') }}</div>
+                    @else
+                      belum ada perencanaan
+                    @endif
                   <div class="fs-7 fw-bold text-muted">Estimasi</div>
                 </td>
                 <td class="d-none">
-                  @php
-                    $status = ['Pending', 'Completed', 'Canceled'];
-                    echo $status[rand(0,2)]
-                  @endphp</td>
+                {{$item->departure_status}}
                 <td class="text-end">
                   <button type="button" class="btn btn-icon btn-sm btn-light btn-active-primary w-25px h-25px">
                     <!--begin::Svg Icon | path: icons/duotune/arrows/arr001.svg-->
@@ -118,8 +157,7 @@
                   </button>
                 </td>
               </tr>
-
-            @endfor
+            @endforeach
             </tbody>
             <!--end::Table-->
           </table>
