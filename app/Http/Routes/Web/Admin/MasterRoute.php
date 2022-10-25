@@ -2,19 +2,18 @@
 
 namespace App\Http\Routes\Web\Admin;
 
-use App\Http\Controllers\Web\Admin\Setup\DestinationController;
-use App\Http\Controllers\Web\Admin\Setup\FacilityController;
-use App\Http\Controllers\Web\Admin\Setup\PackageController;
-use App\Http\Controllers\Web\Admin\Setup\ScheduleController;
-use App\Models\Destination\Destination;
+use App\Http\Controllers\Web\Admin\Master\DestinationController;
+use App\Http\Controllers\Web\Admin\Master\FacilityController;
+use App\Http\Controllers\Web\Admin\Master\PackageController;
+use App\Http\Controllers\Web\Admin\Master\ScheduleController;
 use App\Models\Spatie\Role;
 use Dentro\Yalr\BaseRoute;
 
-class SetupRoute extends BaseRoute
+class MasterRoute extends BaseRoute
 {
 
-    protected string $prefix = 'setup';
-    protected string $name = 'setup';
+    protected string $prefix = 'master';
+    protected string $name = 'master';
 
     public function register(): void
     {

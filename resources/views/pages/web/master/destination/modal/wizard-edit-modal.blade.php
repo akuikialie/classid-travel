@@ -109,8 +109,8 @@
                   <div class="flex-row-fluid py-lg-5 px-lg-15">
                       <!--begin::Form-->
                       <form class="form" novalidate="novalidate" id="kt_modal_create_app_form"
-                          enctype="multipart/form-data" action="{{ route('setup.destination.update', $destination->id) }}" method="POST">
-                          @include('pages.web.setup.destination.modal._input-wizard-modal')
+                          enctype="multipart/form-data" action="{{ route('master.destination.update', $destination->id) }}" method="POST">
+                          @include('pages.web.master.destination.modal._input-wizard-modal')
                           <!--begin::Actions-->
                           <div class="d-flex flex-stack pt-10">
                             @method('PUT')

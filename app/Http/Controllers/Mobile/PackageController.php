@@ -51,6 +51,7 @@ class PackageController extends Controller
             'schedule_id' => ['required', 'string'],
         ]);
 
+
         DB::beginTransaction();
 
         try {

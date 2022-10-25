@@ -24,6 +24,23 @@ if (!function_exists('menuSidebar')) {
                 'navheader' => 'Master',
             ],
             [
+                "url" => route('master.package.index'),
+                "name" => "Master Paket",
+                "icon" => "bx bx-right-arrow-alt",
+            ], [
+                "url" => route('master.facility.index'),
+                "name" => "Master Fasilitas",
+                "icon" => "bx bx-right-arrow-alt",
+            ], [
+                "url" => route('master.destination.index'),
+                "name" => "Master Tujuan",
+                "icon" => "bx bx-right-arrow-alt",
+            ],[
+                "url" => route('master.schedule.index'),
+                "name" => "Master Keberangkatan",
+                "icon" => "bx bx-right-arrow-alt",
+            ],
+            /* [
                 'url' => null,
                 'name' => 'Setup',
                 'icon' => 'bx bx-cog bx-tada',
@@ -32,25 +49,9 @@ if (!function_exists('menuSidebar')) {
                     'permissions' => [],
                 ],
                 "submenu" => [
-                    [
-                        "url" => route('setup.package.index'),
-                        "name" => "Setup Paket",
-                        "icon" => "bx bx-right-arrow-alt",
-                    ], [
-                        "url" => route('setup.facility.index'),
-                        "name" => "Setup Fasilitas",
-                        "icon" => "bx bx-right-arrow-alt",
-                    ], [
-                        "url" => route('setup.destination.index'),
-                        "name" => "Setup Tujuan",
-                        "icon" => "bx bx-right-arrow-alt",
-                    ],[
-                        "url" => route('setup.schedule.index'),
-                        "name" => "Setup Keberangkatan",
-                        "icon" => "bx bx-right-arrow-alt",
-                    ],
+
                 ]
-            ],
+            ], */
 
         ];
 
