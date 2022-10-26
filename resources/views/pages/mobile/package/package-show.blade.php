@@ -43,9 +43,16 @@
             <div class="card-overlay bg-gradient opacity-90"></div> --}}
         </div>
     </div>
-    <a href="#" data-menu="confirm-action"
-        class="btn btn-center-l btn-l bg-highlight font-700 text-uppercase under-slider-btn rounded-sm mt-n4">Pilih
-        Paket</a>
+    <form action="{{  route('perencanaan.check-estimasi') }}" method="get">
+      <input hidden name="package" value="{{$package->id}}">
+      <div class="d-flex justify-content-between">
+        <a href="#" data-menu="confirm-action"
+           class="btn btn-center-l btn-l bg-highlight font-700 text-uppercase under-slider-btn rounded-sm mt-n4 me-2 ms-4">Pilih Paket</a>
+        <button
+           class="btn btn-center-l btn-l btn-border color-highlight border-highlight font-700 text-uppercase under-slider-btn rounded-sm mt-n4 me-4 ms-2">Cek Estimasi</button>
+      </div>
+    </form>
+
 
 
     <div class="card card-style mt-4">
@@ -140,9 +147,9 @@
             @csrf
 
             <div class="me-3 ms-3 mt-3 pt-1">
-                <h2 class="font-700 mb-0">Ganti Sandi?</h2>
+                <h2 class="font-700 mb-0">Data Kebreangkatan</h2>
                 <p class="font-11 mb-3">
-                    Pastikan kata sandi baru mudah untuk diingat!.
+                    Silahakan mengisi data keberangkatan!.
                 </p>
                 <div class="input-style input-style-always-active has-borders no-icon my-4">
                     <label for="departure_city_id" class="color-highlight">Pilih Tempat Keberangkatan</label>

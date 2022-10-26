@@ -17,14 +17,14 @@ class ReferalService
         //
     }
 
-    public function saveInvitedPerson(ReferalLink $referalLink)
+    public function saveInvitedPerson(ReferalLink $referalLink, User $user = null): void
     {
         try {
             /* add user invited detail */
             $peopleInvited = new UserInvitation();
 
             /* insert user id */
-            $user = User::query()->find(auth()->user()->id);
+            $user = User::query()->find(isset($user) ? $user->id : auth()->user()->id);
             $peopleInvited->user()->associate($user);
 
             /* insert invited by */

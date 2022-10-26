@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers\Mobile;
 
+use App\Actions\Jamaah\AddJamaahHistory;
+use App\Actions\Users\CreateNewUser;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\Authentication;
 use App\Jobs\Referal\AddNewInvitedPerson;
@@ -9,8 +11,12 @@ use App\Jobs\Referal\CreateReferalLink;
 use App\Models\Referal\ReferalLink;
 use App\Providers\RouteServiceProvider;
 use App\Services\ReferalService;
+use Illuminate\Contracts\Foundation\Application;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Routing\Redirector;
 use Illuminate\Support\Facades\DB;
+use Throwable;
 
 class ReferalController extends Controller
 {
@@ -30,7 +36,7 @@ class ReferalController extends Controller
             } else if ($auth == 'register') {
                 return view('pages.mobile.referal.referal-register-index', ['hash' => $hashableId]);
             }
-        } catch (\Throwable $th) {
+        } catch (Throwable $th) {
             throw $th;
         }
     }
@@ -56,7 +62,7 @@ class ReferalController extends Controller
             $this->referalService->saveInvitedPerson($invitation);
 
             DB::commit();
-        } catch (\Throwable $th) {
+        } catch (Throwable $th) {
             DB::rollBack();
 
             notify('Oops!', $th->getMessage(), 'error');
@@ -83,14 +89,14 @@ class ReferalController extends Controller
                 return response()->json([
                     'link' => collect($invitedLink)->toArray()['link'],
                 ]);
-            } catch (\Throwable $th) {
+            } catch (Throwable $th) {
                 DB::rollBack();
                 throw $th;
             }
         }
     }
 
-    public function registerStore(Request $request, ReferalLink $referalLink)
+    public function registerStore(Request $request, ReferalLink $referalLink, CreateNewUser $newUser, AddJamaahHistory $jamaahHistory): Redirector|RedirectResponse|Application
     {
         $validator = $request->validate([
             'name' => ['required', 'string'],
@@ -99,9 +105,18 @@ class ReferalController extends Controller
             'password_confirmation' => ['required_with:password', 'same:password'],
         ]);
 
-        // $validator = array_merge( $validator, ['password' => Hash::make($validator['password'])]);
+        DB::beginTransaction();
+        try {
+            $createNewUser = $newUser->handle($validator);
+            $this->referalService->saveInvitedPerson($referalLink, $createNewUser['user']);
 
-        // User::query()->create($validator);
+            $jamaahHistory->handle($createNewUser['jamaah']);
+            DB::commit();
+        }catch (Throwable $throwable){
+            DB::rollBack();
+            notify('Gagal!!', $throwable->getMessage(), 'error');
+            return redirect()->back();
+        }
 
         return redirect(route('login'));
     }

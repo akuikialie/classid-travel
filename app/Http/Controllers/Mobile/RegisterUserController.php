@@ -37,7 +37,6 @@ class RegisterUserController extends Controller
             DB::commit();
         }catch (\Throwable $throwable){
             DB::rollBack();
-            throw $throwable;
             notify('Gagal!!', $throwable->getMessage(), 'error');
             return redirect()->back();
         }

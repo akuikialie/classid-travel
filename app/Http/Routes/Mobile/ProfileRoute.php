@@ -22,6 +22,7 @@ class ProfileRoute extends BaseRoute
 
             $route->put($this->prefix('edit/{user}/edit-information'), [ProfileController::class, 'editInformation'])->name('profile.edit-information');
             $route->put($this->prefix('edit/{user}/update-password'), [ProfileController::class, 'updatePassword'])->name('profile.update-password');
+            $route->post($this->prefix('change-avatar'), [ProfileController::class, 'changeProfile'])->name('profile.change-avatar');
         });
     }
 }

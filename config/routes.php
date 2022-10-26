@@ -67,6 +67,7 @@ return [
         App\Http\Routes\Mobile\TabunganRoute::class,
         App\Http\Routes\Mobile\ProfileRoute::class,
         App\Http\Routes\Mobile\ReferalRoute::class,
+        App\Http\Routes\Mobile\PerencanaanRoute::class,
     ],
     'web' => [
         /* web */
