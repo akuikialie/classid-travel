@@ -2,23 +2,30 @@
 
 namespace App\Http\Controllers\Mobile;
 
+use App\Actions\Users\ChangeAvatar;
 use App\Http\Controllers\AuthenticationSessionController;
 use App\Http\Controllers\Controller;
 use App\Models\Jamaah\Jamaah;
 use App\Models\Referal\UserInvitation;
 use App\Models\User;
 use App\Rules\OldPasswordRule;
+use Illuminate\Contracts\Foundation\Application;
+use Illuminate\Contracts\View\Factory;
+use Illuminate\Contracts\View\View;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Redirect;
+use Throwable;
 
 class ProfileController extends Controller
 {
     /**
      * Display a listing of the resource.
      *
-     * @return \Illuminate\Http\Response
+     * @return Response
      */
     public function index()
     {
@@ -49,7 +56,7 @@ class ProfileController extends Controller
     /**
      * Show the form for creating a new resource.
      *
-     * @return \Illuminate\Http\Response
+     * @return Response
      */
     public function create()
     {
@@ -59,8 +66,8 @@ class ProfileController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
+     * @param Request $request
+     * @return Response
      */
     public function store(Request $request)
     {
@@ -71,7 +78,7 @@ class ProfileController extends Controller
      * Display the specified resource.
      *
      * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * @return Response
      */
     public function show($id)
     {
@@ -82,16 +89,16 @@ class ProfileController extends Controller
      * Show the form for editing the specified resource.
      *
      * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * @return Application|Factory|View
      */
-    public function edit($id)
+    public function edit(int $id)
     {
         $user = User::query()->where('id', $id)->first();
         // dd($user);
         return view('pages.mobile.profile.profile-edit', ['user' => $user]);
     }
 
-    public function editInformation(Request $request, $id)
+    public function editInformation(Request $request, int $id)
     {
         $validator = $request->validate([
             'name' => ['required', 'string'],
@@ -105,14 +112,14 @@ class ProfileController extends Controller
 
             notify('Berhasil', 'Data berhasil diperbarui!.', 'success');
             return redirect()->back();
-        } catch (\Throwable $th) {
+        } catch (Throwable $th) {
             notify('Opps!', $th->getMessage(), 'error');
             return redirect()->back();
             throw $th;
         }
     }
 
-    public function updatePassword(Request $request, $id)
+    public function updatePassword(Request $request, int $id)
     {
         $validator = $request->validate([
             'old_password' => ['required', 'string', new OldPasswordRule()],
@@ -132,17 +139,36 @@ class ProfileController extends Controller
 
             $request->session()->regenerateToken();
             return redirect(route('login'));
-        } catch (\Throwable $th) {
+        } catch (Throwable $th) {
             throw $th;
+        }
+    }
+
+    public function changeProfile(Request $request, ChangeAvatar $changeAvatar){
+        $request->validate([
+            'avatar' => ['required', 'max:2048']
+        ]);
+
+        DB::beginTransaction();
+        try {
+            $changeAvatar->handle($request);
+
+            notify('Berhasil!', 'Photo profil berhasil di perbarui', 'success');
+            DB::commit();
+            return \redirect()->back();
+        }catch (\Throwable $th){
+            DB::rollBack();
+            notify('Gagal!', $th->getMessage(), 'error');
+            return \redirect()->back();
         }
     }
 
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param Request $request
      * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * @return Response
      */
     public function update(Request $request, $id)
     {
@@ -153,7 +179,7 @@ class ProfileController extends Controller
      * Remove the specified resource from storage.
      *
      * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * @return Response
      */
     public function destroy($id)
     {

@@ -1,6 +1,15 @@
 @extends('layouts.mobile.app-mobile')
 
 @section('mobile-content')
+
+  @php
+    $mediaItems = auth()->user()->getMedia('avatar');
+    $mediaUrl = null;
+    if ($mediaItems->count() > 0) {
+        $mediaUrl = collect($mediaItems)->last()->getUrl();
+    }
+  @endphp
+
     <div class="page-title page-title-small">
         <h2><a href="#"></a>Profile</h2>
     </div>
@@ -27,7 +36,7 @@
                 </p>
             </div>
             <!-- right side of profile. increase image width to increase column size-->
-            <img src="{{ asset('mobile/images/empty.png') }}" data-src="{{ asset('mobile/images/avatars/4s.png') }}"
+            <img src="{{ isset($mediaUrl) ? $mediaUrl : asset('mobile/images/pictures/20s.jpg') }}" data-src="{{ isset($mediaUrl) ? $mediaUrl : asset('mobile/images/pictures/20s.jpg') }}"
                 width="115" class="bg-highlight rounded-circle mt-3 shadow-xl preload-img">
         </div>
         <!-- follow buttons-->
