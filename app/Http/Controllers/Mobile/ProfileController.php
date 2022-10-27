@@ -25,7 +25,7 @@ class ProfileController extends Controller
     /**
      * Display a listing of the resource.
      *
-     * @return Response
+     * @return Application|Factory|View
      */
     public function index()
     {
@@ -113,15 +113,14 @@ class ProfileController extends Controller
             notify('Berhasil', 'Data berhasil diperbarui!.', 'success');
             return redirect()->back();
         } catch (Throwable $th) {
-            notify('Opps!', $th->getMessage(), 'error');
+            notify('Oops!', $th->getMessage(), 'error');
             return redirect()->back();
-            throw $th;
         }
     }
 
     public function updatePassword(Request $request, int $id)
     {
-        $validator = $request->validate([
+        $request->validate([
             'old_password' => ['required', 'string', new OldPasswordRule()],
             'new_password' => ['required', 'string'],
             'confirm_password' => ['required_with:new_password', 'same:new_password'],
@@ -140,7 +139,8 @@ class ProfileController extends Controller
             $request->session()->regenerateToken();
             return redirect(route('login'));
         } catch (Throwable $th) {
-            throw $th;
+            notify('Oops!', $th->getMessage(), 'error');
+            return redirect()->back();
         }
     }
 
@@ -158,7 +158,7 @@ class ProfileController extends Controller
             return \redirect()->back();
         }catch (\Throwable $th){
             DB::rollBack();
-            notify('Gagal!', $th->getMessage(), 'error');
+            notify('Oops!', $th->getMessage(), 'error');
             return \redirect()->back();
         }
     }
