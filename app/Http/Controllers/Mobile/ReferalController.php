@@ -71,7 +71,7 @@ class ReferalController extends Controller
         }
     }
 
-    public function store(Request $request)
+    public function store(Request $request) // ajax
     {
         $validator = $request->validate([
             'package_id' => ['required', 'integer', 'exists:plan_packages,id'],
@@ -114,7 +114,7 @@ class ReferalController extends Controller
             DB::commit();
         }catch (Throwable $throwable){
             DB::rollBack();
-            notify('Gagal!!', $throwable->getMessage(), 'error');
+            notify('Oops!!', $throwable->getMessage(), 'error');
             return redirect()->back();
         }
 
@@ -128,7 +128,12 @@ class ReferalController extends Controller
 
         $request->session()->regenerate();
 
-        $this->referalService->saveInvitedPerson($referalLink);
+        try {
+            $this->referalService->saveInvitedPerson($referalLink);
+        } catch (Throwable $e) {
+            notify('Opps!', $e->getMessage(), 'error');
+            return redirect()->back();
+        }
 
         notify('Selamat!', "Kamu telah mengikuti program `{$referalLink->package->name}` bersama {$referalLink->createdBy->name}", 'success');
 

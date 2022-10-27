@@ -82,7 +82,7 @@ class PackageController extends Controller
         } catch (Throwable $th) {
             DB::rollBack();
 
-            notify('Opps!', $th->getMessage(), 'error');
+            notify('Oops!', $th->getMessage(), 'error');
             return redirect()->back();
         }
     }
