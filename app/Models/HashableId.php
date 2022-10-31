@@ -15,7 +15,7 @@ trait HashableId
         );
     }
 
-    public function scopeByHash(Builder $query, ?string $hash, ?string $keyName = null): Builder
+    public function scopeByHash(Builder $query, ?string $hash, ?string $keyName = null): ?Builder
     {
         if (!$hash) return null;
 
