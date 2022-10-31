@@ -117,10 +117,12 @@
                           break;
 
                           case 'BATAL_BERANGKAT':
-                          $badgeColor = 'seccondary';
+                          $badgeColor = 'secondary';
                           break;
 
                           default :
+                            $badgeColor = 'primary';
+
                               break;
                     }
                   @endphp
