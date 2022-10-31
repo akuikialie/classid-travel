@@ -4,13 +4,22 @@ namespace App\Services;
 
 use App\Models\Destination\Destination;
 use App\Models\Master\Address;
+use App\Traits\HasTenant;
 use Exception;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
+use Throwable;
 
 class DestinationService
 {
+    use HasTenant;
+
+    public Builder $query;
     public function __construct()
     {
+        $this->query = Destination::query();
+        $this->query->with(['myAddress'])
+            ->withCount(['media', 'packages']);
     }
 
     public function createNewDestination(array $input): Destination
@@ -28,7 +37,7 @@ class DestinationService
             }
 
             return $newDestination;
-        } catch (\Throwable $th) {
+        } catch (Throwable $th) {
             throw $th;
         }
     }
@@ -40,7 +49,7 @@ class DestinationService
                 'address' => $input['address']
             ]);
             $destination->myAddress()->save($newAddress);
-        } catch (\Throwable $th) {
+        } catch (Throwable $th) {
             throw $th;
         }
     }
@@ -50,7 +59,7 @@ class DestinationService
         try {
             $destination->myAddress->address = $input['address'];
             $destination->myAddress->save();
-        } catch (\Throwable $th) {
+        } catch (Throwable $th) {
             throw $th;
         }
     }
@@ -64,7 +73,7 @@ class DestinationService
                         $media->toMediaCollection('photo_collections');
                     });
             }
-        } catch (\Throwable $th) {
+        } catch (Throwable $th) {
             throw $th;
         }
     }

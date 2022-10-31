@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Models\Referal;
+namespace App\Models\Referral;
 
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -40,7 +40,7 @@ class UserInvitation extends Model
      */
     public function referalLink(): BelongsTo
     {
-        return $this->belongsTo(ReferalLink::class, 'link_id');
+        return $this->belongsTo(ReferralLink::class, 'link_id');
     }
 
 

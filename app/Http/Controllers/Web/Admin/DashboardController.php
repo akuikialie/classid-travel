@@ -10,7 +10,9 @@ class DashboardController extends Controller
 {
     public function index()
     {
+        $user = auth()->user();
         $dataKeberangkatan = Jamaah::query()
+            ->where('tenant_id', $user->tenant?->id)
             ->with([
                 'user',
                 'departureSchedule',
@@ -32,7 +34,7 @@ class DashboardController extends Controller
             ];
         }
 
-        return view('pages/web/dashboard/dashboard-index', [
+        return view('pages.web.dashboard.dashboard-index', [
             'data_keberangkatan' => array_to_object($arrayData),
         ]);
     }

@@ -3,13 +3,21 @@
 namespace App\Services;
 
 use App\Models\Plan\PlanFacility;
+use App\Traits\HasTenant;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
+use Throwable;
 
 class FacilityService
 {
+
+    use HasTenant;
+
+    public Builder $query;
     public function __construct()
     {
-        //
+        $this->query = PlanFacility::query();
+        $this->query->withCount(['media', 'packages']);
     }
 
     public function createNewFacility(array $input): PlanFacility
@@ -23,7 +31,7 @@ class FacilityService
             $newFacility = PlanFacility::query()->create($input);
 
             return $newFacility;
-        } catch (\Throwable $th) {
+        } catch (Throwable $th) {
             throw $th;
         }
     }
@@ -38,7 +46,7 @@ class FacilityService
                     });
 
             }
-        } catch (\Throwable $th) {
+        } catch (Throwable $th) {
             throw $th;
         }
     }

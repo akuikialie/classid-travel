@@ -2,6 +2,7 @@
 
 namespace App\Models\VA;
 
+use App\Models\HashableId;
 use App\Models\Plan\PlanPackage;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -10,11 +11,13 @@ use Illuminate\Database\Eloquent\Relations\MorphTo;
 
 class VirtualAccount extends Model
 {
-    use HasFactory;
+    use HasFactory, HashableId;
 
     protected $table = 'virtual_accounts';
     protected $fillable = [
-        'va_number', 'va_label'
+        'tenant_id',
+        'va_number',
+        'va_label'
     ];
 
 
@@ -26,7 +29,7 @@ class VirtualAccount extends Model
     /**
      * Get the user that owns the VirtualAccount
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * @return BelongsTo
      */
     public function myPackage(): BelongsTo
     {

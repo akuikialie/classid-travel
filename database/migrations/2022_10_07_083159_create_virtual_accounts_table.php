@@ -16,13 +16,14 @@ return new class extends Migration
     {
         Schema::create('virtual_accounts', function (Blueprint $table) {
             $table->id();
-            $table->string('model_type', 80)->comment('users_table, jamaah table');
+            $table->unsignedBigInteger('tenant_id')->comment('reference to tenant_table');
             $table->unsignedBigInteger('model_id');
+            $table->unsignedBigInteger('package_id')->nullable()->comment('reference to package_table');
+            $table->string('model_type', 80)->comment('users_table, jamaah table');
             $table->string('va_number', 30);
             $table->string('va_label', 30)->default(VirtualAccount::tryFrom('tabungan')->keyValue())->comment('tabungan pribadi, perencanaan');
-            $table->unsignedBigInteger('package_id')->nullable()->comment('reference to package_table');
-            $table->timestamps();
-            $table->softDeletes();
+            $table->timestamps(precision: 6);
+            $table->softDeletes(precision: 6);
 
             /* foreign key */
             $table->foreign('package_id')->on('plan_packages')->references('id')->onDelete('cascade');

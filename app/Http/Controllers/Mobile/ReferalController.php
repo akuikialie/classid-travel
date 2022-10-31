@@ -8,7 +8,8 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\Authentication;
 use App\Jobs\Referal\AddNewInvitedPerson;
 use App\Jobs\Referal\CreateReferalLink;
-use App\Models\Referal\ReferalLink;
+use App\Models\Jamaah\JamaahHistory;
+use App\Models\Referral\ReferralLink;
 use App\Providers\RouteServiceProvider;
 use App\Services\ReferalService;
 use Illuminate\Contracts\Foundation\Application;
@@ -41,9 +42,12 @@ class ReferalController extends Controller
         }
     }
 
+    /**
+     * @throws Throwable
+     */
     public function referalAuth(Request $request, $hashableId, $auth = 'login')
     {
-        $invitation = ReferalLink::query()
+        $invitation = ReferralLink::query()
             ->with(['package', 'createdBy'])
             ->where('hash', $hashableId)->first();
         if ($auth == 'login') {
@@ -57,7 +61,7 @@ class ReferalController extends Controller
     {
         DB::beginTransaction();
         try {
-            $invitation = ReferalLink::query()->where('hash', $hashableId)->first();
+            $invitation = ReferralLink::query()->where('hash', $hashableId)->first();
 
             $this->referalService->saveInvitedPerson($invitation);
 
@@ -96,7 +100,7 @@ class ReferalController extends Controller
         }
     }
 
-    public function registerStore(Request $request, ReferalLink $referalLink, CreateNewUser $newUser, AddJamaahHistory $jamaahHistory): Redirector|RedirectResponse|Application
+    public function registerStore(Request $request, ReferralLink $referralLink)
     {
         $validator = $request->validate([
             'name' => ['required', 'string'],
@@ -107,36 +111,44 @@ class ReferalController extends Controller
 
         DB::beginTransaction();
         try {
-            $createNewUser = $newUser->handle($validator);
-            $this->referalService->saveInvitedPerson($referalLink, $createNewUser['user']);
+            $createNewUser = new CreateNewUser();
+            $newUser = $createNewUser->handle($validator);
+            $this->referalService->saveInvitedPerson($referralLink, $newUser['user']);
 
-            $jamaahHistory->handle($createNewUser['jamaah']);
+            $jamaahHistory = new AddJamaahHistory();
+            $jamaahHistory->handle($newUser['jamaah']);
             DB::commit();
+
+            notify('Selamat!', "Kamu telah berhasil membuat akun dan mengikuti program `{$referralLink->package->name}` bersama {$referralLink->createdBy->name}", 'success');
+
+            return redirect(route('login'));
         }catch (Throwable $throwable){
+            throw $throwable;
             DB::rollBack();
             notify('Oops!!', $throwable->getMessage(), 'error');
             return redirect()->back();
         }
 
-        return redirect(route('login'));
     }
 
-    public function authStore(Request $request, ReferalLink $referalLink)
+    public function authStore(Request $request, ReferralLink $referalLink)
     {
-        $newRequest = new Authentication;
-        $newRequest->authenticate();
-
-        $request->session()->regenerate();
-
         try {
+            $newRequest = new Authentication;
+            $newRequest->authenticate();
+
+            $request->session()->regenerate();
             $this->referalService->saveInvitedPerson($referalLink);
+
+            notify('Selamat!', "Kamu telah mengikuti program `{$referalLink->package->name}` bersama {$referalLink->createdBy->name}", 'success');
+
+            return redirect(route('home.index'));
         } catch (Throwable $e) {
-            notify('Opps!', $e->getMessage(), 'error');
+            throw $e;
+            notify('Oops!', $e->getMessage(), 'error');
             return redirect()->back();
         }
 
-        notify('Selamat!', "Kamu telah mengikuti program `{$referalLink->package->name}` bersama {$referalLink->createdBy->name}", 'success');
 
-        return redirect(route('home.index'));
     }
 }

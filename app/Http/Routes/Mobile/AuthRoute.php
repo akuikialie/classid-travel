@@ -12,7 +12,7 @@ class AuthRoute extends BaseRoute
 
     protected string $prefix = 'auth';
 
-    // protected string $name = 'auth';
+    protected string $name = 'app';
 
     /**
      * Register routes handled by this class.

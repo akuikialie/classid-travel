@@ -3,6 +3,7 @@
 namespace App\Models\Plan;
 
 use App\Models\Destination\Destination;
+use App\Models\HashableId;
 use App\Models\Jamaah\Jamaah;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -14,11 +15,20 @@ use Spatie\MediaLibrary\InteractsWithMedia;
 
 class PlanPackage extends Model implements HasMedia
 {
-    use HasFactory, InteractsWithMedia;
+    use HasFactory, InteractsWithMedia, HashableId;
 
     protected $table = 'plan_packages';
 
-    protected $fillable = ['name', 'description', 'amount', 'departure_year', 'kuartal', 'long_days'];
+    protected $fillable = [
+        'tenant_id',
+        'plan_id',
+        'name',
+        'description',
+        'amount',
+        'departure_year',
+        'kuartal',
+        'long_days'
+    ];
 
     /**
      * Get the user that owns the PlanPackage

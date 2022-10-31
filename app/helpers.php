@@ -133,14 +133,14 @@ if (!function_exists('trimAll')) {
 }
 
 if (!function_exists('carbon')) {
+
     /**
-     * @param string|null $datetime
-     * @param \DateTimeZone|string|null $timezone
+     * @param string|DateTimeInterface|null $datetime
+     * @param string|DateTimeZone|null $timezone
      * @param string|null $locale
-     *
      * @return Carbon
      */
-    function carbon(?string $datetime = null, $timezone = 'Asia/Jakarta', ?string $locale = null): Carbon
+    function carbon(string|DateTimeInterface|null $datetime = null, string|DateTimeZone|null $timezone = 'Asia/Jakarta', ?string $locale = null): Carbon
     {
         Carbon::setLocale($locale ?? 'id_ID');
         if (!$datetime) {

@@ -4,8 +4,8 @@ namespace App\Services;
 
 use App\Models\Jamaah\Jamaah;
 use App\Models\Plan\PlanPackage;
-use App\Models\Referal\ReferalLink;
-use App\Models\Referal\UserInvitation;
+use App\Models\Referral\ReferralLink;
+use App\Models\Referral\UserInvitation;
 use App\Models\User;
 
 use Illuminate\Support\Str;
@@ -17,7 +17,7 @@ class ReferalService
         //
     }
 
-    public function saveInvitedPerson(ReferalLink $referalLink, User $user = null): void
+    public function saveInvitedPerson(ReferralLink $referalLink, User $user = null): void
     {
         try {
             /* add user invited detail */
@@ -52,7 +52,7 @@ class ReferalService
     {
         try {
             $hashable = Str::random(10);
-            $newReferalLink = new ReferalLink([
+            $newReferalLink = new ReferralLink([
                 'link' => route('invite.link', [$hashable, 'login']),
                 'hash' => $hashable,
             ]);

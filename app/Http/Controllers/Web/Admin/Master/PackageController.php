@@ -38,10 +38,9 @@ class PackageController extends Controller
      */
     public function index(): View|Factory|Application
     {
-        $packages = PlanPackage::query()
-            ->with(['myPlan'])
-            ->withCount(['jamaah'])
-            ->latest()
+        $user = auth()->user();
+        $packages =$this->packageService
+            ->byTenant($user->tenant?->id)
             ->get();
 
         return view('pages.web.master.package.package-index', [

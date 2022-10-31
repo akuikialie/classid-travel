@@ -32,8 +32,9 @@ class FacilityController extends Controller
      */
     public function index(): View|Factory|Application
     {
-        $facilities = PlanFacility::query()
-            ->withCount(['media', 'packages'])
+        $user = auth()->user();
+        $facilities = $this->facilityService
+            ->byTenant($user->tenant?->id)
             ->get();
 
         return view('pages.web.master.facility.facility-index', [

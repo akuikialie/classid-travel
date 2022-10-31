@@ -2,11 +2,11 @@
 
 namespace App\Http\Routes\Web\Admin;
 
+use App\Enums\RoleEnum;
 use App\Http\Controllers\Web\Admin\Master\DestinationController;
 use App\Http\Controllers\Web\Admin\Master\FacilityController;
 use App\Http\Controllers\Web\Admin\Master\PackageController;
 use App\Http\Controllers\Web\Admin\Master\ScheduleController;
-use App\Models\Spatie\Role;
 use Dentro\Yalr\BaseRoute;
 
 class MasterRoute extends BaseRoute
@@ -17,7 +17,7 @@ class MasterRoute extends BaseRoute
 
     public function register(): void
     {
-        $this->router->middleware(['auth', 'verified', 'role:' . Role::RoleSA])->group(function () {
+        $this->router->middleware(['auth', 'verified', 'role:' . RoleEnum::Admin->keyValue()])->group(function () {
 
             $this->router->resource($this->prefix('destination'), DestinationController::class, [
                 'names' => [

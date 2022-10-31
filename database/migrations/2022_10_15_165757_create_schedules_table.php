@@ -15,9 +15,11 @@ return new class extends Migration
     {
         Schema::create('schedules', function (Blueprint $table) {
             $table->id();
+            $table->unsignedBigInteger('tenant_id')->comment('reference to tenant_table');
             $table->date('departure_date');
             $table->boolean('is_active')->default(true);
-            $table->timestamps();
+            $table->timestamps(precision: 6);
+            $table->softDeletes(precision: 6);
         });
 
 

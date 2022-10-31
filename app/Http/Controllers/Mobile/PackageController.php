@@ -38,9 +38,13 @@ class PackageController extends Controller
      */
     public function index()
     {
-        $packages = PlanPackage::query()
-            ->with(['myPlan:id,value', 'myFacilities', 'myDestinations', 'media'])
-            ->withCount(['myFacilities', 'myDestinations'])
+        $with = ['myPlan:id,value', 'myFacilities', 'myDestinations', 'media'];
+        $withCount = ['myFacilities', 'myDestinations'];
+
+        $user = auth()->user();
+        $packages = $this->packageService->byTenant($user->tenant->id)
+            ->with($with)
+            ->withCount($withCount)
             ->where(function ($subQuery) {
                 $subQuery->where('is_publish', true);
                 $subQuery->where('status', Statuses::tryFrom('active')->keyValue());

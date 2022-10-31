@@ -16,6 +16,7 @@ return new class extends Migration
     {
         Schema::create('people', function (Blueprint $table) {
             $table->id();
+            $table->unsignedBigInteger('tenant_id')->nullable()->comment('reference to tenant_table');
             $table->string('name');
             $table->string('nickname')->nullable();
             $table->string('id_type')->default(PersonId::KTP->value);

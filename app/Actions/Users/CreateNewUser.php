@@ -8,12 +8,15 @@ use App\Models\VA\VirtualAccount;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Hash;
 
 class CreateNewUser
 {
     public function handle(array $input): array
     {
-        $user = User::query()->create($input);
+        $user = User::query()->create(array_merge($input, [
+            'password' => Hash::make($input['password'])
+        ]));
 
         $VA = VirtualAccount::query()
             ->where(function ($subQuery) {

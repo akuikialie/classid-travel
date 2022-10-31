@@ -33,11 +33,10 @@ class DestinationController extends Controller
      */
     public function index(): View|Factory|Application
     {
-        // toast('Signed in successfully', 'success')->autoClose();
-        $destinations = Destination::query()
-            ->with(['myAddress'])
-            ->withCount(['media', 'packages'])
-            ->get();
+        $user = auth()->user();
+        $destinations = $this->destinationService
+            ->byTenant($user->tenant?->id)
+        ->get();
 
         return view('pages.web.master.destination.destination-index', [
             'destinations' => $destinations,

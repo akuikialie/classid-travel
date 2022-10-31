@@ -13,6 +13,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
+use Illuminate\Database\Eloquent\Relations\MorphOne;
 
 class Jamaah extends Model
 {
@@ -20,6 +21,9 @@ class Jamaah extends Model
 
     protected $table = 'jamaah';
 
+    protected $fillable = [
+        'tenant_id',
+    ];
 
     /**
      * Get the user that owns the Jamaah
@@ -42,6 +46,14 @@ class Jamaah extends Model
     }
 
     public function tabunganPackages(): MorphMany
+    {
+        return $this->morphMany(VirtualAccount::class, 'vaable', 'model_type', 'model_id');
+    }
+
+    /**
+     * @return MorphMany
+     */
+    public function tabungan(): MorphMany
     {
         return $this->morphMany(VirtualAccount::class, 'vaable', 'model_type', 'model_id');
     }

@@ -17,7 +17,7 @@ class Destination extends Model implements HasMedia
 
     protected $table = 'destinations';
 
-    protected $fillable = ['name', 'roaming_in_destination'];
+    protected $fillable = ['name'];
 
     public function myAddress(): MorphOne
     {

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Models\Referal;
+namespace App\Models\Referral;
 
 use App\Models\Plan\PlanPackage;
 use App\Models\User;
@@ -8,20 +8,20 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-class ReferalLink extends Model
+class ReferralLink extends Model
 {
     use HasFactory;
 
-    protected $table = 'referal_links';
+    protected $table = 'referral_links';
 
     protected $fillable = [
         'summary', 'link', 'hash',
     ];
 
     /**
-     * Get the user that owns the ReferalLink
+     * Get the user that owns the ReferralLink
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * @return BelongsTo
      */
     public function package(): BelongsTo
     {
@@ -31,7 +31,7 @@ class ReferalLink extends Model
     /**
      * Get the user that owns the UserInvitation
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * @return BelongsTo
      */
     public function createdBy(): BelongsTo
     {

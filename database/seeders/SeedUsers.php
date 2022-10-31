@@ -2,14 +2,14 @@
 
 namespace Database\Seeders;
 
+use App\Enums\RoleEnum;
 use App\Models\Jamaah\Jamaah;
-use App\Models\Spatie\Role;
+use App\Models\Tenant\Tenant;
 use App\Models\User;
-use App\Models\VA\VirtualAccount;
-use Carbon\Carbon;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+use App\Services\VirtualAccountService;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
+use Laravel\Octane\Exceptions\DdException;
 
 class SeedUsers extends Seeder
 {
@@ -22,42 +22,66 @@ class SeedUsers extends Seeder
     {
         $seedUser = [
             [
+                'tenant_id' => 1,
                 'name' => 'winata bayu',
                 'username' => 'winata',
                 'phone' => '081331307327',
                 'password' => Hash::make('bayu'),
+                'role' => RoleEnum::Admin->keyValue(),
             ], [
-                'name' => 'winata bayu',
+                'tenant_id' => 2,
+                'name' => 'bayu winata',
                 'username' => 'wb',
                 'phone' => '081331307328',
                 'password' => Hash::make('bayu'),
+                'role' => RoleEnum::Jamaah->keyValue(),
             ],
         ];
 
         foreach ($seedUser as $key => $user) {
-            $user = User::query()->create($user);
+            \DB::beginTransaction();
+            $newUser = null;
+            try {
+                $newUser = User::create([
+                    'tenant_id' => $user['tenant_id'],
+                    'name' => $user['name'],
+                    'username' => $user['username'],
+                    'phone' => $user['phone'],
+                    'password' => $user['password'],
+                ]);
 
-            if ($user['username'] == 'winata') {
-                $user->syncRoles([Role::RoleSA]);
+                $newUser->syncRoles([$user['role']]);
+
+                $tenant = Tenant::query()->find($user['tenant_id']);
+                $newUser->tenant()->associate($tenant);
+
+                $newJamaah = new Jamaah([
+                    'tenant_id' => $tenant->id,
+                ]);
+                $newUser->jamaah()->save($newJamaah);
+
+                $newUser->push();
+
+                \DB::commit();
+            }catch (\Throwable $e){
+                \DB::rollBack();
+                $this->command->info($e->getMessage());
             }
 
-            $VA = VirtualAccount::query()
-                ->where(function ($subQuery) {
-                    $subQuery->where('va_label', 'tabungan')
-                        ->whereMonth('created_at', Carbon::now());
-                })->max('va_number');
+            if ($newUser instanceof User) {
+                /* begin:: start Virtual Account Service */
+                $VAService = new VirtualAccountService();
 
-            $newVANumber = createNewVA('tabungan', $VA);
-            $newVA = new VirtualAccount([
-                'va_number' => $newVANumber,
-                'va_label' => 'tabungan',
-            ]);
+                try {
+                    $VAService->vaType('tabungan')
+                        ->createFor($newUser->fresh(['tenant']))
+                        ->createVA();
+                } catch (DdException|\Throwable $e) {
+                    $this->command->info($e->getMessage());
+                }
+                /* end:: start Virtual Account Service */
+            }
 
-            $user->tabungan()->save($newVA);
-            $user->save();
-
-            $newJamaah = new Jamaah();
-            $user->jamaah()->save($newJamaah);
         }
 
 

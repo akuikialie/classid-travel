@@ -17,6 +17,7 @@ return new class extends Migration
     {
         Schema::create('plan_packages', function (Blueprint $table) {
             $table->id();
+            $table->unsignedBigInteger('tenant_id')->comment('reference to tenant_table');
             $table->unsignedBigInteger('plan_id')->comment('reference to defines_table');
             $table->string('name', 50);
             $table->text('description')->nullable();
@@ -26,9 +27,9 @@ return new class extends Migration
             $table->unsignedTinyInteger('long_days')->nullable()->comment('Lama perjalanan ');
             $table->boolean('is_publish')->default('true')->comment('Jika true, maka hanya bisa Read');
             $table->string('status', 10)->default(Statuses::tryFrom('active')->keyValue())->comment('enum in Statuses::class');
-            $table->dateTime('deactived_at')->nullable()->comment('terisi ketika status nonactive');
-            $table->timestamps();
-            $table->softDeletes();
+            $table->dateTime('deactivate_at')->nullable()->comment('terisi ketika status nonactive');
+            $table->timestamps(precision: 6);
+            $table->softDeletes(precision: 6);
 
             /* foreign keys */
             $table->foreign('plan_id')->on('defines')->references('id')->onDelete('cascade');
@@ -36,11 +37,12 @@ return new class extends Migration
 
         Schema::create('model_has_package', function (Blueprint $table) {
             $table->id();
-            $table->string('model_type', 50);
-            $table->unsignedBigInteger('model_id');
             $table->unsignedBigInteger('plan_package_id')->comment('reference to destinations_table');
+            $table->unsignedBigInteger('model_id');
+            $table->string('model_type', 50);
 
-            $table->timestamps();
+            $table->timestamps(precision: 6);
+            $table->softDeletes(precision: 6);
 
             /* foreign keys */
             $table->foreign('plan_package_id')->on('plan_packages')->references('id')->onDelete('cascade');
