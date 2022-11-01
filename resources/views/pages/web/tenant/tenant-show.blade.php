@@ -2,6 +2,14 @@
 
 @section('page-content')
 
+  @php
+    $avatars = $tenant->getMedia('avatars');
+    $avatar = null;
+    if ($avatars->count() > 0) {
+        $avatar = $avatars[0]->getUrl();
+    }
+  @endphp
+
   <div id="kt_app_content_container" class="app-container container-xxl">
     <!--begin::Navbar-->
     <div class="card mb-6 mb-xl-9">
@@ -11,7 +19,7 @@
           <!--begin::Image-->
           <div
             class="d-flex flex-center flex-shrink-0 bg-light rounded w-100px h-100px w-lg-150px h-lg-150px me-7 mb-4">
-            <img class="mw-50px mw-lg-75px" src="/metronic8/demo1/assets/media/svg/brand-logos/volicity-9.svg"
+            <img class="mw-50px mw-lg-75px" src="{{ $avatar }}g"
                  alt="image"/>
           </div>
           <!--end::Image-->
@@ -24,17 +32,17 @@
                 <!--begin::Status-->
                 <div class="d-flex align-items-center mb-1">
                   <a href="#" class="text-gray-800 text-hover-primary fs-2 fw-bold me-3">{{ $tenant->name }}</a>
-                  <span class="badge badge-light-success me-auto">In Progress</span>
+                  <span class="badge badge-light-success me-auto">{{ $tenant->slug }}</span>
                 </div>
                 <!--end::Status-->
                 <!--begin::Description-->
-                <div class="d-flex flex-wrap fw-semibold mb-4 fs-5 text-gray-400">#1 Tool to get started with Web Apps
-                  any Kind & size
+                <div class="d-flex flex-wrap fw-semibold mb-4 fs-5 text-gray-400">
+                  {{----}}
                 </div>
                 <!--end::Description-->
               </div>
               <!--end::Details-->
-              <!--begin::Actions-->
+              {{--<!--begin::Actions-->
               <div class="d-flex mb-4">
                 <a href="#" class="btn btn-sm btn-bg-light btn-active-color-primary me-3" data-bs-toggle="modal"
                    data-bs-target="#kt_modal_users_search">Add User</a>
@@ -129,10 +137,10 @@
                 </div>
                 <!--end::Menu-->
               </div>
-              <!--end::Actions-->
+              <!--end::Actions-->--}}
             </div>
             <!--end::Head-->
-            <!--begin::Info-->
+            {{--<!--begin::Info-->
             <div class="d-flex flex-wrap justify-content-start">
               <!--begin::Stats-->
               <div class="d-flex flex-wrap">
@@ -252,7 +260,7 @@
               </div>
               <!--end::Users-->
             </div>
-            <!--end::Info-->
+            <!--end::Info-->--}}
           </div>
           <!--end::Wrapper-->
         </div>
@@ -263,7 +271,7 @@
           <input hidden class="input-fragment" name="fragment">
           <!--begin::Nav-->
           <ul class="nav nav-stretch nav-line-tabs nav-line-tabs-2x border-transparent fs-5 fw-bold">
-            <!--begin::Nav item-->
+            {{--<!--begin::Nav item-->
             <li class="nav-item">
               <a class="nav-link text-active-primary py-5 me-6 fragment {{ ($fragment_active ?? 'overview') == 'overview' ? 'active' : '' }}"
                  type="button" data-fragment="overview">Overview</a>
@@ -274,7 +282,7 @@
               <a class="nav-link text-active-primary py-5 me-6 fragment {{ ($fragment_active ?? 'overview') == 'metadata' ? 'active' : '' }}"
                  type="button" data-fragment="metadata">Metadata</a>
             </li>
-            <!--end::Nav item-->
+            <!--end::Nav item-->--}}
             <!--begin::Nav item-->
             <li class="nav-item">
               <a class="nav-link text-active-primary py-5 me-6 fragment {{ ($fragment_active ?? 'overview') == 'setting' ? 'active' : '' }}"
