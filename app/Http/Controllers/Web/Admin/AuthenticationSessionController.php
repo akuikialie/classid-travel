@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers\Web\Admin;
 
-use App\Http\Controllers\Web\Controller;
 use App\Http\Requests\Auth\Authentication;
 use App\Models\Tenant\Tenant;
 use App\Models\User;
