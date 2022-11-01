@@ -10,7 +10,8 @@ class AuthenticationSessionController extends Controller
 {
     public function splash()
     {
-        return view('pages.mobile.splashscreen-index');
+        $tenant = activeTenant();
+        return view('pages.mobile.splashscreen-index', ['tenant' => $tenant]);
     }
 
     public function create()
