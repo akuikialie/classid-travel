@@ -122,6 +122,7 @@ class TenantController extends Controller
                 $tenantService
                     ->setAvatar($request);
             }
+            $tenantService->update($input);
             /* end:: tenant service */
 
             DB::commit();
