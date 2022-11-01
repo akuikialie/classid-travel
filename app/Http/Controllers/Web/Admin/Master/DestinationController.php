@@ -85,7 +85,7 @@ class DestinationController extends Controller
             return redirect()->back();
         } catch (Throwable $th) {
             DB::rollBack();
-            notify('Opps!', $th->getMessage(), 'error');
+            notify('Oops!', $th->getMessage(), 'error');
             return redirect()->back();
         }
     }
