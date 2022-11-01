@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers\Web\Admin\Master;
 
-use App\Http\Controllers\Web\Controller;
+use App\Http\Controllers\Web\Admin\Controller;
 use App\Models\Plan\PlanFacility;
 use App\Services\FacilityService;
 use Illuminate\Contracts\Foundation\Application;
