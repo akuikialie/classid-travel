@@ -5,7 +5,7 @@ namespace App\Services;
 use App\Models\Tenant\Tenant;
 use Exception;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Support\Facades\Request;
+use Illuminate\Http\Request;
 use Spatie\MediaLibrary\MediaCollections\Exceptions\FileDoesNotExist;
 use Spatie\MediaLibrary\MediaCollections\Exceptions\FileIsTooBig;
 
@@ -32,7 +32,6 @@ class TenantService
     }
 
     /**
-     * @param Request $request
      * @return $this
      * @throws FileDoesNotExist
      * @throws FileIsTooBig
@@ -42,7 +41,7 @@ class TenantService
         try {
             $tenant = $this->tenant();
 
-            if (isset($data['avatar'])) {
+            if ($request->hasFile('avatar')) {
                 $tenant->addMediaFromRequest('avatar')
                     ->toMediaCollection('avatars');
             }
