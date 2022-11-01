@@ -285,7 +285,7 @@
             <!--end::Nav item-->--}}
             <!--begin::Nav item-->
             <li class="nav-item">
-              <a class="nav-link text-active-primary py-5 me-6 fragment {{ ($fragment_active ?? 'overview') == 'setting' ? 'active' : '' }}"
+              <a class="nav-link text-active-primary py-5 me-6 fragment {{ ($fragment_active ?? 'setting') == 'setting' ? 'active' : '' }}"
                  type="button" data-fragment="setting">Setting</a>
             </li>
             <!--end::Nav item-->
