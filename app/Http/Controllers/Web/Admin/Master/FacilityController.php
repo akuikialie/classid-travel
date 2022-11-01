@@ -18,13 +18,6 @@ use InvalidArgumentException;
 class FacilityController extends Controller
 {
 
-    protected FacilityService $facilityService;
-
-    public function __construct(FacilityService $facilityService)
-    {
-        $this->facilityService = $facilityService;
-    }
-
     /**
      * Display a listing of the resource.
      *
@@ -32,8 +25,10 @@ class FacilityController extends Controller
      */
     public function index(): View|Factory|Application
     {
+        $user = auth()->user();
         $facilities = PlanFacility::query()
             ->withCount(['media', 'packages'])
+            ->tenantId($user->tenant_id)
             ->get();
 
         return view('pages.web.master.facility.facility-index', [
@@ -90,11 +85,11 @@ class FacilityController extends Controller
 
         DB::beginTransaction();
         try {
-            $newFacility = $this->facilityService->createNewFacility($validator);
-
-            if ($request->hasfile('photo_collection')) {
-                $this->facilityService->AddImagesToFacility($newFacility, $request);
-            }
+            $user = auth()->user();
+            $facilityService = new FacilityService($user->tenant_id);
+            $facilityService->createFacility($validator)
+                ->addGallery($request)
+                ->get();
 
             DB::commit();
             notify('Berhasil', 'Data fasilitas berhasil dibuat!', 'success')->autoClose();
@@ -172,15 +167,13 @@ class FacilityController extends Controller
 
         DB::beginTransaction();
         try {
-            $facility = PlanFacility::query()->whereId($id)->first();
 
-            if ($request->hasfile('photo_collection')) {
-                $this->facilityService->AddImagesToFacility($facility, $request);
-            }
-
-            $facility->name = $validator['name'];
-            $facility->type = $validator['type'];
-            $facility->save();
+            $user = auth()->user();
+            $facilityService = new FacilityService($user->tenant_id);
+            $facilityService
+                ->facilityId($id)
+                ->addGallery($request)
+                ->update($validator);
 
             DB::commit();
             notify('Berhasil', 'Data fasilitas berhasil diperbarui!', 'success')->autoClose();

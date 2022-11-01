@@ -1,5 +1,6 @@
 <?php
 
+use App\Enums\RoleEnum;
 use App\Models\Spatie\Role;
 
 if (!function_exists('menuSidebar')) {
@@ -15,7 +16,7 @@ if (!function_exists('menuSidebar')) {
                 'name' => 'Dashboard',
                 'icon' => 'bx bxs-dashboard bx-tada',
                 'show_in' => [
-                    'roles' => [Role::RoleSA],
+                    'roles' => [RoleEnum::Admin],
                     'permissions' => [],
                 ],
             ],

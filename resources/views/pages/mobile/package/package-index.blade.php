@@ -27,18 +27,7 @@
                 </div>
                 <div class="divider mt-3 mb-4"></div>
                 <div class="row mb-0 mt-3">
-                    <div class="col pe-0">
-                        <h5 class="mb-0">Fasilitas - <span
-                                class="badge bg-highlight color-white">{{ $package->my_facilities_count }}</span></h5>
-                        @if ($package->my_facilities_count > 0)
-                            <ul >
-                                @foreach ($package->myFacilities as $facility)
-                                    <li></i>{{ $facility->name }}</li>
-                                @endforeach
-                            </ul>
-                        @endif
-                    </div>
-                    <div class="col ps-0">
+                    <div class="col-12 ps-2 pe-2">
                         <h5 class="mb-0">Destinasi - <span
                                 class="badge bg-highlight color-white">{{ $package->my_destinations_count }}</span></h5>
                         @if ($package->my_destinations_count > 0)
@@ -49,6 +38,17 @@
                             </ul>
                         @endif
                     </div>
+                  <div class="col-12 ps-2 pe-2">
+                    <h5 class="mb-0">Fasilitas - <span
+                        class="badge bg-highlight color-white">{{ $package->my_facilities_count }}</span></h5>
+                    @if ($package->my_facilities_count > 0)
+                      <ul >
+                        @foreach ($package->myFacilities as $facility)
+                          <li></i>{{ $facility->name }}</li>
+                        @endforeach
+                      </ul>
+                    @endif
+                  </div>
                 </div>
                 <div class="divider divider-margins mt-2"></div>
                 <div class="mt-0">

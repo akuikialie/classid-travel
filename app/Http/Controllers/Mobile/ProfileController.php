@@ -6,7 +6,7 @@ use App\Actions\Users\ChangeAvatar;
 use App\Http\Controllers\AuthenticationSessionController;
 use App\Http\Controllers\Controller;
 use App\Models\Jamaah\Jamaah;
-use App\Models\Referal\UserInvitation;
+use App\Models\Referral\UserInvitation;
 use App\Models\User;
 use App\Rules\OldPasswordRule;
 use Illuminate\Contracts\Foundation\Application;

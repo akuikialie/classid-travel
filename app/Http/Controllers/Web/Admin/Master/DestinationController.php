@@ -19,13 +19,6 @@ use Throwable;
 class DestinationController extends Controller
 {
 
-    protected DestinationService $destinationService;
-
-    public function __construct(DestinationService $destinationService)
-    {
-        $this->destinationService = $destinationService;
-    }
-
     /**
      * Display a listing of the resource.
      *
@@ -33,10 +26,11 @@ class DestinationController extends Controller
      */
     public function index(): View|Factory|Application
     {
-        // toast('Signed in successfully', 'success')->autoClose();
+        $user = auth()->user();
         $destinations = Destination::query()
             ->with(['myAddress'])
             ->withCount(['media', 'packages'])
+            ->tenantId($user->tenant_id)
             ->get();
 
         return view('pages.web.master.destination.destination-index', [
@@ -72,17 +66,19 @@ class DestinationController extends Controller
         $validator = $request->validate([
             'name' => ['required', 'string',],
             'address' => ['required', 'string'],
-            'roaming_in_destination' => ['required', 'integer'],
             'photo_collection' => ['nullable', 'array'],
         ]);
 
         DB::beginTransaction();
         try {
-            $newDestination = $this->destinationService->createNewDestination($validator);
+            $user = auth()->user();
 
-            if ($request->hasfile('photo_collection')) {
-                $this->destinationService->addImageToDestination($newDestination, $request);
-            }
+            $destinationService = new DestinationService($user->tenant_id);
+            $destinationService
+                ->createDestination($validator)
+                ->addAddress($validator)
+                ->addGallery($request)
+                ->get();
 
             DB::commit();
             notify('Berhasil', 'Data destinasi berhasil dibuat!', 'success')->autoClose();
@@ -142,25 +138,23 @@ class DestinationController extends Controller
     {
         $validator = $request->validate([
             'name' => ['required', 'string',],
-            'address' => ['required', 'string'],
-            'roaming_in_destination' => ['required', 'integer'],
+            'address' => ['nullable', 'string'],
             'photo_collection' => ['nullable', 'array'],
         ]);
 
         DB::beginTransaction();
         try {
+
+            $user = auth()->user();
+
             $destination = Destination::query()->whereId($id)->first();
 
-            if ($request->hasfile('photo_collection')) {
-                $this->destinationService->addImageToDestination($destination, $request);
-            }
-
-            if (isset($validator['address']) && !empty($validator['address'])) {
-                $this->destinationService->updateDestinationAddress($destination, $validator);
-            }
-
-            $destination->name = $validator['name'];
-            $destination->roaming_in_destination = $validator['roaming_in_destination'];
+            $destinationService = new DestinationService($user->tenant_id);
+            $destinationService
+                ->destinationId($destination->id)
+                ->addAddress($validator)
+                ->addGallery($request)
+                ->update($validator);
 
             DB::commit();
             notify('Berhasil', 'Data destinasi berhasil diperbarui!', 'success')->autoClose();

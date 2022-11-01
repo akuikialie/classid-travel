@@ -24,13 +24,6 @@ use Throwable;
 class PackageController extends Controller
 {
 
-    protected PackageService $packageService;
-
-    public function __construct(PackageService $packageService)
-    {
-        $this->packageService = $packageService;
-    }
-
     /**
      * Display a listing of the resource.
      *
@@ -38,9 +31,14 @@ class PackageController extends Controller
      */
     public function index()
     {
+        $with = ['myPlan:id,value', 'myFacilities', 'myDestinations', 'media'];
+        $withCount = ['myFacilities', 'myDestinations'];
+
+        $user = auth()->user();
         $packages = PlanPackage::query()
-            ->with(['myPlan:id,value', 'myFacilities', 'myDestinations', 'media'])
-            ->withCount(['myFacilities', 'myDestinations'])
+            ->tenantId($user->tenant_id)
+            ->with($with)
+            ->withCount($withCount)
             ->where(function ($subQuery) {
                 $subQuery->where('is_publish', true);
                 $subQuery->where('status', Statuses::tryFrom('active')->keyValue());
@@ -66,7 +64,8 @@ class PackageController extends Controller
                 ->where('user_id', auth()->user()->id)->first();
 
             /* add package to jamaah */
-            $this->packageService->addPackageToJamaah($package, $jamaah);
+            $packageService = new PackageService(1);
+            $packageService->addPackageToJamaah($package, $jamaah);
 
             /* link tempat keberangkatan */
             $city = City::query()->find($validator['departure_city_id']);

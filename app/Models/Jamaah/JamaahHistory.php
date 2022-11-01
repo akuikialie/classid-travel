@@ -14,6 +14,7 @@ class JamaahHistory extends Model
     protected $table = 'jamaah_histories';
 
     protected $fillable = [
+        'tenant_id',
         'detail',
     ];
 

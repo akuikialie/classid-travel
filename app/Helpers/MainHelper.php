@@ -65,7 +65,7 @@ if (!function_exists('createNewVA')) {
     {
         /*
             format va
-                1. 857600.0.2209.00001 : tabungan
+                1. 8576000220900001 : tabungan
                 2. 857600.1.2209.00001 : paket
         */
 

@@ -10,8 +10,8 @@
     }
 
 @endphp
-
-@foreach (Config::get('notify.view')[$loadView] as $view)
-    @include($view)
-@endforeach
+@include('notify.web.sweetalert-notify')
+{{--@foreach (Config::get('notify.view')[$loadView] as $view)--}}
+{{--    @include($view)--}}
+{{--@endforeach--}}
 

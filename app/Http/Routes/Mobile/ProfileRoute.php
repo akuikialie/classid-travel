@@ -2,6 +2,7 @@
 
 namespace App\Http\Routes\Mobile;
 
+use App\Enums\RoleEnum;
 use App\Http\Controllers\Mobile\ProfileController;
 use Dentro\Yalr\BaseRoute;
 
@@ -14,7 +15,7 @@ class ProfileRoute extends BaseRoute
 
     public function register(): void
     {
-        $this->router->middleware(['auth', 'verified'])->group(function ($route) {
+        $this->router->middleware(['auth', 'verified', 'role:' . RoleEnum::Jamaah->keyValue()])->group(function ($route) {
 
             $route->get($this->prefix(''), [ProfileController::class, 'index'])->name('profile.index');
 

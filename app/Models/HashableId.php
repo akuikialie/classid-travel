@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Contracts\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Casts\Attribute;
+use Illuminate\Database\Eloquent\Model;
 use Vinkla\Hashids\Facades\Hashids;
 
 trait HashableId
@@ -15,7 +16,7 @@ trait HashableId
         );
     }
 
-    public function scopeByHash(Builder $query, ?string $hash, ?string $keyName = null): ?Builder
+    public function scopeByHash(Builder $query, ?string $hash, ?string $keyName = null)
     {
         if (!$hash) return null;
 

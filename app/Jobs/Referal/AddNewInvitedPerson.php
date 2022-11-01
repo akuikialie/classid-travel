@@ -5,8 +5,8 @@ namespace App\Jobs\Referal;
 use App\Jobs\Plan\Package\AddPackageToJamaah;
 use App\Models\Jamaah\Jamaah;
 use App\Models\Plan\PlanPackage;
-use App\Models\Referal\ReferalLink;
-use App\Models\Referal\UserInvitation;
+use App\Models\Referral\ReferralLink;
+use App\Models\Referral\UserInvitation;
 use App\Models\User;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldBeUnique;
@@ -27,7 +27,7 @@ class AddNewInvitedPerson implements ShouldQueue
      *
      * @return void
      */
-    public function __construct(ReferalLink $referalLink)
+    public function __construct(ReferralLink $referalLink)
     {
         $this->referalLink = $referalLink;
     }

@@ -2,11 +2,11 @@
 
 namespace Database\Seeders;
 
-use App\Models\Plan\Plan;
+use App\Models\Destination\Destination;
+use App\Models\Plan\PlanFacility;
 use App\Models\Plan\PlanPackage;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+use App\Services\PackageService;
 use Illuminate\Database\Seeder;
-use Illuminate\Support\Str;
 
 class SeedPackages extends Seeder
 {
@@ -17,40 +17,37 @@ class SeedPackages extends Seeder
      */
     public function run()
     {
-        /* create plan */
-        try {
-            collect([
-                'Umrah', /*'Haji', 'Wisata',*/
-            ])->each(fn ($cat, $i) => Plan::create([
-                'type' => 'plan',
-                'key' => Str::slug($cat),
-                'value' => $cat,
-                'order' => $i
-            ]));
+        $destinations = Destination::query()->get()->pluck('id')->toArray();
+        $facilities = PlanFacility::query()->get()->pluck('id')->toArray();
+        for ($i = 0; $i < rand(5, 15); $i++) {
+            /* begin:: start package service */
 
-            /* add package to plan */
-            $packages = [
-                [
-                    'name' => 'Paket Umrah Reguler 12 Hari',
-                    'description' => null,
-                    'amount' => 28000000,
-                ],
-                [
-                    'name' => 'Paket Umrah Reguler 20 Hari',
-                    'description' => null,
-                    'amount' => 32000000,
-                ],
-            ];
+            $packageService = new PackageService(1);
 
-            /*$planUmrah = Plan::query()->where('type', 'plan')->where('key', 'umrah')->first();
+            \DB::beginTransaction();
+            try {
+                $newPackage = PlanPackage::query()->create([
+                    'tenant_id' => rand(1, 2),
+                    'plan_id' => 1,
+                    'name' => fake()->name(),
+                    'description' => fake()->text(),
+                    'amount' => fake()->randomNumber(8),
+                    'long_days' => fake()->randomNumber(2),
+                ]);
+                \DB::commit();
 
-            foreach ($packages as $key => $package) {
-                $newPackage = new PlanPackage($package);
-                $newPackage->myPlan()->associate($planUmrah);
-                $newPackage->push();
-            }*/
-        } catch (\Throwable $th) {
-            throw $th;
+                $packageService
+                    ->byHash($newPackage->hash)
+                    ->addDestinations($destinations[rand(0, count($destinations)-1)])
+                    ->addFacilities($facilities);
+
+                /* end:: start package service */
+            }catch (\Throwable $e){
+                \DB::rollBack();
+                $this->command->info($e->getMessage());
+            }
+
         }
+
     }
 }

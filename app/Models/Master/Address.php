@@ -11,7 +11,11 @@ class Address extends Model
 
     protected $table = 'addresses';
 
-    protected $fillable = ['name', 'address'];
+    protected $fillable = [
+        'tenant_id',
+        'name',
+        'address'
+    ];
 
     function addressable()
     {

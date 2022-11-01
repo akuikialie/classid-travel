@@ -15,10 +15,12 @@ return new class extends Migration
     {
         Schema::create('jamaah_histories', function (Blueprint $table) {
             $table->id();
+            $table->unsignedBigInteger('tenant_id')->comment('reference to tenant_table');
             $table->unsignedBigInteger('jamaah_id')->comment('reference to jamaah_table');
             $table->string('departure_status')->default(\App\Enums\DepartureStatus::BELUM_BERANGKAT->keyValue())->comment('Status keberangkatan jamaah, DepartureStatus::class');
             $table->text('detail')->nullable()->comment('detail status keberangkatan jamaah');
-            $table->timestamps();
+            $table->timestamps(precision: 6);
+            $table->softDeletes(precision: 6);
 
             /*  foreign key */
             $table->foreign('jamaah_id')->on('jamaah')->references('id')->onDelete('cascade');

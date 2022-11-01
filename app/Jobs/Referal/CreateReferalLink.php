@@ -3,7 +3,7 @@
 namespace App\Jobs\Referal;
 
 use App\Models\Plan\PlanPackage;
-use App\Models\Referal\ReferalLink;
+use App\Models\Referral\ReferralLink;
 use App\Models\User;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldBeUnique;
@@ -40,7 +40,7 @@ class CreateReferalLink implements ShouldQueue
         DB::beginTransaction();
         try {
             $hashable = Str::random(10);
-            $newReferalLink = new ReferalLink([
+            $newReferalLink = new ReferralLink([
                 'link' => route('invite.link', [$hashable, 'login']),
                 'hash' => $hashable,
             ]);

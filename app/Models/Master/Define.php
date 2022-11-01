@@ -25,7 +25,7 @@ class Define extends Model
      *
      * @var string[]
      */
-    protected $fillable = ['type', 'is_active', 'key', 'value', 'order'];
+    protected $fillable = ['tenant_id', 'type', 'is_active', 'key', 'value', 'order'];
 
     // SCOPES
 

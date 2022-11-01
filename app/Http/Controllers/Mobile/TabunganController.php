@@ -32,6 +32,7 @@ class TabunganController extends Controller
 
         /* tabungan perencanaan */
         $jamaah = Jamaah::query()
+            ->whereTenantId($user->tenant?->id)
             ->with(['tabunganPackages.myPackage.myPlan', 'departureSchedule'])
             ->where('user_id', '=', auth()->user()->id)
             ->first();

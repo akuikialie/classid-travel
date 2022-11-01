@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Web\Admin\Master;
 
 use App\Http\Controllers\Controller;
 use App\Models\Schedule\Schedule;
+use App\Services\ScheduleService;
 use Carbon\Carbon;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\View\Factory;
@@ -18,6 +19,14 @@ use Throwable;
 
 class ScheduleController extends Controller
 {
+
+    protected ScheduleService $scheduleService;
+
+    public function __construct(ScheduleService $scheduleService)
+    {
+        $this->scheduleService = $scheduleService;
+    }
+
     /**
      * Display a listing of the resource.
      *
@@ -25,8 +34,10 @@ class ScheduleController extends Controller
      */
     public function index(): View|Factory|Application
     {
+        $user = auth()->user();
         $schedules = Schedule::query()
             ->withCount(['jamaah'])
+            ->tenantId($user->tenant_id)
             ->get();
         return view('pages.web.master.schedule.schedule-index', [
             'schedules' => $schedules,
@@ -63,7 +74,9 @@ class ScheduleController extends Controller
         ]);
 
         try {
+            $user = auth()->user();
             Schedule::query()->create([
+                'tenant_id' => $user->tenant_id,
                 'departure_date' => Carbon::parse($validator['departure_date']),
             ]);
 

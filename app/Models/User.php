@@ -5,9 +5,12 @@ namespace App\Models;
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 
 use App\Models\Jamaah\Jamaah;
-use App\Models\Referal\UserInvitation;
+use App\Models\Referral\UserInvitation;
+use App\Models\Tenant\Tenant;
 use App\Models\VA\VirtualAccount;
+use App\Traits\HasTenant;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\MorphOne;
@@ -21,7 +24,7 @@ use Spatie\Permission\Traits\HasRoles;
 class User extends Authenticatable implements HasMedia
 {
     use HasApiTokens, HasFactory, Notifiable, HasRoles;
-    use HashableId, InteractsWithMedia;
+    use HashableId, InteractsWithMedia, HasTenant;
 
     /**
      * The attributes that are mass assignable.
@@ -29,6 +32,7 @@ class User extends Authenticatable implements HasMedia
      * @var array<int, string>
      */
     protected $fillable = [
+        'tenant_id',
         'name',
         'username',
         'phone',
@@ -54,11 +58,17 @@ class User extends Authenticatable implements HasMedia
         'email_verified_at' => 'datetime',
     ];
 
+    /**
+     * @return HasOne
+     */
     public function jamaah(): HasOne
     {
         return $this->hasOne(Jamaah::class, 'user_id');
     }
 
+    /**
+     * @return MorphOne
+     */
     public function tabungan(): MorphOne
     {
         return $this->morphOne(VirtualAccount::class, 'vaable', 'model_type', 'model_id');
