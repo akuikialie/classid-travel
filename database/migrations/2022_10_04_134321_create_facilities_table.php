@@ -30,7 +30,6 @@ return new class extends Migration
             $table->string('model_type', 50);
 
             $table->timestamps(precision: 6);
-            $table->softDeletes(precision: 6);
 
             /* foreign keys */
             $table->foreign('plan_facility_id')->on('facilities')->references('id')->onDelete('cascade');

@@ -2,8 +2,7 @@
 
 namespace App\Http\Routes;
 
-use App\Enums\UserStatus;
-use App\Models\Spatie\Role;
+use App\Http\Controllers\Mobile\AuthenticationSessionController;
 use Dentro\Yalr\BaseRoute;
 
 class DefaultRoute extends BaseRoute
@@ -28,9 +27,7 @@ class DefaultRoute extends BaseRoute
         //     return 'Welcome to Multi School';
         // })->where('path', '.*');
 
-        $this->router->get('/', function () {
-            return view('pages.mobile.splashscreen-index');
-        })->middleware(['guest']);
+        $this->router->get('/', [AuthenticationSessionController::class, 'splash'])->middleware(['guest']);
 
         // $this->router->middleware(['auth', 'verified'])->group(function ($route) {
 

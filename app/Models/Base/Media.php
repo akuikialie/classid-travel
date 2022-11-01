@@ -4,6 +4,7 @@ namespace App\Models\Base;
 
 use Dentro\Concerns\Eloquent\UuidAsPrimaryKey;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
 use Spatie\MediaLibrary\MediaCollections\Models\Media as BaseMedia;
@@ -13,6 +14,7 @@ class Media extends BaseMedia implements HasMedia
     use HasFactory;
     use InteractsWithMedia;
     use UuidAsPrimaryKey;
+    use SoftDeletes;
 
     protected $table = 'media';
 

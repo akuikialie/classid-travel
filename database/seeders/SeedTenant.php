@@ -17,14 +17,14 @@ class SeedTenant extends Seeder
         $seedTenants = [
             [
                 'name' => 'Indonesia',
-                'slug' => 'Tenant slug',
-                'app_domain' => 'https://prohajj.app',
+                'slug' => 'slug1',
+                'app_domain' => 'd1.umrah.haji.test',
                 'BCN' => '857601',
             ],
             [
                 'name' => 'Malaysia',
-                'slug' => 'Tenant slug',
-                'app_domain' => 'https://prohajj.app',
+                'slug' => 'slug2',
+                'app_domain' => 'd2.umrah.haji.test',
                 'BCN' => '857602',
             ],
         ];

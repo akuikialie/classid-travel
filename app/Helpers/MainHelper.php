@@ -1,7 +1,7 @@
 <?php
 
+use App\Models\Tenant\Tenant;
 use Carbon\Carbon;
-
 
 if (!function_exists('array_to_object')) {
 
