@@ -12,7 +12,9 @@ use Illuminate\Support\Str;
 
 class ReferalService
 {
-    public function __construct()
+    public function __construct(
+        private readonly int $tenantId
+    )
     {
         //
     }
@@ -21,30 +23,20 @@ class ReferalService
     {
         try {
             /* add user invited detail */
-            $peopleInvited = new UserInvitation(
+            UserInvitation::query()->create(
                 [
-                    'tenant_id' => 1,
+                    'tenant_id' => $referalLink->tenant_id,
+                    'user_id' => $user->id,
+                    'invited_by' => $referalLink->created_by,
+                    'link_id' => $referalLink->id,
                 ]
             );
-
-            /* insert user id */
-            $user = User::query()->find(isset($user) ? $user->id : auth()->user()->id);
-            $peopleInvited->user()->associate($user);
-
-            /* insert invited by */
-            $invitedBy = User::query()->find($referalLink->created_by);
-            $peopleInvited->invitedBy()->associate($invitedBy);
-
-            /* insert referal link */
-            $peopleInvited->referalLink()->associate($referalLink);
-
-            $peopleInvited->push();
 
             $jamaah = Jamaah::query()->where('user_id', $user->id)->first();
             $package = PlanPackage::query()->where('id', $referalLink->package_id)->first();
 
             /* add package to jamaah */
-            $packageService = new PackageService(1);
+            $packageService = new PackageService($referalLink->tenant_id);
             $packageService->addPackageToJamaah($package, $jamaah);
         } catch (\Throwable $th) {
             throw $th;

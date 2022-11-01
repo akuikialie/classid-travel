@@ -3,8 +3,9 @@
 namespace App\Http\Controllers\Mobile;
 
 use App\Actions\Users\CreateNewUser;
-use App\Actions\Jamaah\AddJamaahHistory;
+use App\Enums\RoleEnum;
 use App\Models\Jamaah\JamaahHistory;
+use App\Services\UserService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -28,16 +29,17 @@ class RegisterUserController extends Controller
         // User::query()->create($validator);
         DB::beginTransaction();
         try {
+
+            /* begin:: user service */
             $tenant = activeTenant();
-            $validator = array_merge(['tenant_id' => $tenant->id], $validator);
-            $createNewUser = new CreateNewUser();
-            $newUser = $createNewUser->handle($validator);
+            $userService = new UserService(tenantId: $tenant->id);
+            $userService
+                ->createNewUser($validator)
+                ->setRole(RoleEnum::Jamaah->keyValue())
+                ->createVa('tabungan')
+                ->setDepartureStatus();
+            /* end:: user service */
 
-            $newDepartureHistory = new JamaahHistory([
-                'tenant_id' => $tenant->id,
-            ]);
-
-            $newUser['jamaah']->departureHistory()->save($newDepartureHistory);
             DB::commit();
 
             notify('Berhasil!!', 'Anda berhasil membuat akun, silahkan login menggunakan akun anda', 'success');

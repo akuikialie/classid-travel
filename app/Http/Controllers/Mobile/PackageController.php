@@ -60,7 +60,8 @@ class PackageController extends Controller
                 ->where('user_id', auth()->user()->id)->first();
 
             /* add package to jamaah */
-            $packageService = new PackageService(1);
+            $user = auth()->user();
+            $packageService = new PackageService($user->tenant_id);
             $packageService->addPackageToJamaah($package, $jamaah);
 
             /* link tempat keberangkatan */

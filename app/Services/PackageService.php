@@ -112,7 +112,7 @@ class PackageService
             $jamaahHistory->handle($jamaah, $planPackage, null);
 
             /* creating va */
-            $vaService = new VirtualAccountService;
+            $vaService = new VirtualAccountService($this->tenantId);
             $vaService->createVirtualAccount(VirtualAccount::tryFrom($key)->keyValue(), $jamaah, $planPackage);
         } catch (Throwable $th) {
             throw $th;

@@ -16,6 +16,9 @@ class UserInvitation extends Model
 
     protected $fillable = [
         'tenant_id',
+        'user_id',
+        'invited_by',
+        'link_id',
     ];
 
     /**

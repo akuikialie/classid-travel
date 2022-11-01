@@ -16,7 +16,9 @@ class JamaahHistory extends Model
 
     protected $fillable = [
         'tenant_id',
+        'jamaah_id',
         'detail',
+        'departure_status',
     ];
 
     public function jamaah(): BelongsTo
