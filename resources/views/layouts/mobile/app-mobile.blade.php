@@ -4,6 +4,8 @@
 @php
      $avatars = activeTenant()->getMedia('avatars');
      $avatar = null;
+
+     debugbar()->info($avatars);
      if ($avatars->count() > 0) {
          $avatar = collect($avatars)->last()->getUrl();
      }
