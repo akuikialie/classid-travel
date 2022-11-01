@@ -156,21 +156,28 @@ if (!function_exists('trimAll')) {
 }
 
 if (!function_exists('carbon')) {
-
     /**
-     * @param string|DateTimeInterface|null $datetime
-     * @param string|DateTimeZone|null $timezone
-     * @param string|null $locale
+     * @param string|\DateTimeInterface|null $datetime
+     * @param \DateTimeZone|string|null      $timezone
+     * @param string|null                    $locale
+     *
      * @return Carbon
      */
-    function carbon(string|DateTimeInterface|null $datetime = null, string|DateTimeZone|null $timezone = 'Asia/Jakarta', ?string $locale = null): Carbon
+    function carbon(string|DateTimeInterface|null $datetime = null, string|DateTimeZone|null $timezone = null, ?string $locale = null): Carbon
     {
+        if (auth()->check()) {
+            if (!$timezone && auth()->user()?->timezone) {
+                $timezone = auth()->user()->timezone;
+            }
+            if (!$locale && auth()->user()?->locale) {
+                $locale = auth()->user()->locale;
+            }
+        }
         Carbon::setLocale($locale ?? 'id_ID');
         if (!$datetime) {
-            return Carbon::now($timezone);
+            return Carbon::now()->timezone($timezone);
         }
-
-        return Carbon::parse($datetime, $timezone);
+        return Carbon::parse($datetime)->timezone($timezone);
     }
 }
 
