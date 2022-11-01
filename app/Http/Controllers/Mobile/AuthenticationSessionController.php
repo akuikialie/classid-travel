@@ -2,14 +2,17 @@
 
 namespace App\Http\Controllers\Mobile;
 
-use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\Authentication;
-use App\Providers\RouteServiceProvider;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class AuthenticationSessionController extends Controller
 {
+    public function splash()
+    {
+        return view('pages.mobile.splashscreen-index');
+    }
+
     public function create()
     {
         return view('pages.mobile.auth.login-index');

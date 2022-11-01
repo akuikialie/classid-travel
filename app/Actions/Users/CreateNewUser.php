@@ -14,7 +14,7 @@ class CreateNewUser
     public function handle(array $input): array
     {
         $user = User::query()->create(array_merge($input, [
-            'tenant_id' => 1,
+            'tenant_id' => $input['tenant_id'],
             'password' => Hash::make($input['password'])
         ]));
 

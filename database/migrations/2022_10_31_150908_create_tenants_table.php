@@ -16,7 +16,7 @@ return new class extends Migration
         Schema::create('tenants', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->string('slug')->nullable();
+            $table->string('slug')->unique()->nullable();
             $table->string('app_domain');
             $table->string('BCN')->unique()->comment('Bank Code Number');
             $table->string('locale')->default('id_ID');

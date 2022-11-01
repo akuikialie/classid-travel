@@ -102,7 +102,7 @@ class ProfileController extends Controller
     {
         $validator = $request->validate([
             'name' => ['required', 'string'],
-            'username' => ['required', 'string'],
+            'username' => ['nullable', 'string'],
             'email' => ['nullable', 'email'],
         ]);
 

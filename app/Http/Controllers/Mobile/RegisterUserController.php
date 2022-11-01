@@ -4,14 +4,13 @@ namespace App\Http\Controllers\Mobile;
 
 use App\Actions\Users\CreateNewUser;
 use App\Actions\Jamaah\AddJamaahHistory;
-use App\Http\Controllers\Controller;
-use App\Models\User;
+use App\Models\Jamaah\JamaahHistory;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Hash;
 
 class RegisterUserController extends Controller
 {
+
     public function create()
     {
         return view('pages.mobile.auth.register-index');
@@ -29,11 +28,16 @@ class RegisterUserController extends Controller
         // User::query()->create($validator);
         DB::beginTransaction();
         try {
+            $tenant = activeTenant();
+            $validator = array_merge(['tenant_id' => $tenant->id], $validator);
             $createNewUser = new CreateNewUser();
             $newUser = $createNewUser->handle($validator);
 
-            $jamaahHistory = new AddJamaahHistory();
-            $jamaahHistory->handle($newUser['jamaah']);
+            $newDepartureHistory = new JamaahHistory([
+                'tenant_id' => $tenant->id,
+            ]);
+
+            $newUser['jamaah']->departureHistory()->save($newDepartureHistory);
             DB::commit();
 
             notify('Berhasil!!', 'Anda berhasil membuat akun, silahkan login menggunakan akun anda', 'success');

@@ -27,6 +27,7 @@ return new class extends Migration
             $table->unsignedInteger('order_column')->nullable()->index();
 
             $table->nullableTimestamps(precision: 6);
+            $table->softDeletes(precision: 6);
         });
     }
 

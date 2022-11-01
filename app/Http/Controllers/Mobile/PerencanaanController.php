@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\Mobile;
 
 use App\Enums\Statuses;
-use App\Http\Controllers\Controller;
 use App\Models\Plan\PlanPackage;
 use Carbon\Carbon;
 use Psr\Container\ContainerExceptionInterface;
