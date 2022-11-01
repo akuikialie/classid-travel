@@ -2,7 +2,8 @@
 
 namespace App\Http\Routes\Mobile;
 
-use App\Http\Controllers\TabunganController;
+use App\Enums\RoleEnum;
+use App\Http\Controllers\Mobile\TabunganController;
 use Dentro\Yalr\BaseRoute;
 
 class TabunganRoute extends BaseRoute
@@ -14,7 +15,7 @@ class TabunganRoute extends BaseRoute
 
     public function register(): void
     {
-        $this->router->middleware(['auth', 'verified'])->group(function ($route) {
+        $this->router->middleware(['auth', 'verified', 'role:' . RoleEnum::Jamaah->keyValue()])->group(function ($route) {
 
             $route->get($this->prefix(''), [TabunganController::class, 'index'])->name('tabungan.index');
 

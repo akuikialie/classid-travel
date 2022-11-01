@@ -42,6 +42,7 @@ return new class extends Migration
     {
         Schema::create('defines', function (Blueprint $table) {
             $table->id('id');
+            $table->unsignedBigInteger('tenant_id')->nullable()->comment('reference to tenant_table');
             $table->string('type', 50)->default('global');
             $table->string('key');
             $table->text('value')->nullable()->comment('main value');
@@ -49,8 +50,8 @@ return new class extends Migration
             $table->boolean('is_required')->default(false);
             $table->boolean('is_active')->default(true);
             $table->unsignedSmallInteger('order')->default(0);
-            $table->timestamps();
-            $table->softDeletes();
+            $table->timestamps(precision: 6);
+            $table->softDeletes(precision: 6);
 
             $table->unique(['type', 'key']);
         });
@@ -62,12 +63,13 @@ return new class extends Migration
     {
         Schema::create('addresses', function (Blueprint $table) {
             $table->id('id');
+            $table->unsignedBigInteger('tenant_id')->nullable()->comment('reference to tenant_table');
+            $table->unsignedBigInteger('model_id');
             $table->string('model_type');
-            $table->string('model_id');
             $table->boolean('is_primary')->default(false);
-            $table->string('name')->default('Rumah');
+            $table->string('name')->default('lokasi')->comment('label');
             $table->string('phone')->nullable();
-            $table->string('address')->nullable();
+            $table->text('address')->nullable();
             $table->string('rt_rw')->nullable();
             $table->string('sub_district')->nullable();
             $table->string('district')->nullable();
@@ -76,8 +78,8 @@ return new class extends Migration
             $table->string('province')->nullable();
             $table->string('zip_code')->nullable();
             $table->string('country')->nullable();
-            $table->timestamps();
-            $table->softDeletes();
+            $table->timestamps(precision: 6);
+            $table->softDeletes(precision: 6);
 
             // $table->index(['addresses_type', 'addresses_id']);
         });
@@ -87,13 +89,14 @@ return new class extends Migration
     {
         Schema::create('emails', function (Blueprint $table) {
             $table->id('id');
-            $table->string('model_type');
+            $table->unsignedBigInteger('tenant_id')->nullable()->comment('reference to tenant_table');
             $table->string('model_id');
+            $table->string('model_type');
             $table->boolean('is_primary')->default(false);
             $table->string('name')->default('Email Pribadi');
             $table->string('email');
-            $table->timestamps();
-            $table->softDeletes();
+            $table->timestamps(precision: 6);
+            $table->softDeletes(precision: 6);
 
             // $table->index(['emails_type', 'emails_id']);
         });
@@ -103,14 +106,15 @@ return new class extends Migration
     {
         Schema::create('phones', function (Blueprint $table) {
             $table->id('id');
-            $table->string('model_type');
+            $table->unsignedBigInteger('tenant_id')->nullable()->comment('reference to tenant_table');
             $table->string('model_id');
+            $table->string('model_type');
             $table->boolean('is_primary')->default(false);
             $table->string('name')->default('Mobile');
             $table->string('phone_code', 5)->default('62');
             $table->string('phone_number');
-            $table->timestamps();
-            $table->softDeletes();
+            $table->timestamps(precision: 6);
+            $table->softDeletes(precision: 6);
 
             // $table->index(['phones_type', 'phones_id']);
         });
@@ -118,18 +122,18 @@ return new class extends Migration
 
     public function trySeed(): void
     {
-        try {
-            collect([
-                'Umrah', 'Haji', 'Wisata',
-            ])->each(fn ($cat, $i) => Plan::create([
-                'type' => 'plan',
-                'key' => Str::slug($cat),
-                'value' => $cat,
-                'order' => $i
-            ]));
-        } catch (\Throwable $th) {
-            throw $th;
-        }
+        // try {
+        //     collect([
+        //         'Umrah', 'Haji', 'Wisata',
+        //     ])->each(fn ($cat, $i) => Plan::create([
+        //         'type' => 'plan',
+        //         'key' => Str::slug($cat),
+        //         'value' => $cat,
+        //         'order' => $i
+        //     ]));
+        // } catch (\Throwable $th) {
+        //     throw $th;
+        // }
     }
 
     // private function defineSeed(): void

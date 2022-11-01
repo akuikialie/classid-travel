@@ -13,16 +13,26 @@ return new class extends Migration
      */
     public function up()
     {
+        Schema::create('facilities', function (Blueprint $table) {
+            $table->id();
+            $table->unsignedBigInteger('tenant_id')->comment('reference to tenant_table');
+            $table->string('name', 50);
+            $table->string('type', 15);
+            $table->boolean('is_active')->default(true);
+            $table->timestamps(precision: 6);
+            $table->softDeletes(precision: 6);
+        });
+
         Schema::create('model_has_facility', function (Blueprint $table) {
             $table->id();
-            $table->string('model_type', 50);
+            $table->unsignedBigInteger('plan_facility_id')->comment('reference to facilities_table');
             $table->unsignedBigInteger('model_id');
-            $table->unsignedBigInteger('facility_id')->comment('reference to defines_table');
+            $table->string('model_type', 50);
 
-            $table->timestamps();
+            $table->timestamps(precision: 6);
 
             /* foreign keys */
-            $table->foreign('facility_id')->on('defines')->references('id')->onDelete('cascade');
+            $table->foreign('plan_facility_id')->on('facilities')->references('id')->onDelete('cascade');
         });
     }
 
@@ -34,5 +44,6 @@ return new class extends Migration
     public function down()
     {
         Schema::dropIfExists('model_has_facility');
+        Schema::dropIfExists('facilities');
     }
 };

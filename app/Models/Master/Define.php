@@ -5,10 +5,11 @@ namespace App\Models\Master;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Define extends Model
 {
-    use HasFactory;
+    use HasFactory, SoftDeletes;
 
      /**
      * The table associated with the model.
@@ -25,7 +26,7 @@ class Define extends Model
      *
      * @var string[]
      */
-    protected $fillable = ['type', 'is_active', 'key', 'value', 'order'];
+    protected $fillable = ['tenant_id', 'type', 'is_active', 'key', 'value', 'order'];
 
     // SCOPES
 

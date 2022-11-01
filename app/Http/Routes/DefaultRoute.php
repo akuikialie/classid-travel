@@ -2,7 +2,7 @@
 
 namespace App\Http\Routes;
 
-use App\Enums\UserStatus;
+use App\Http\Controllers\Mobile\AuthenticationSessionController;
 use Dentro\Yalr\BaseRoute;
 
 class DefaultRoute extends BaseRoute
@@ -27,9 +27,7 @@ class DefaultRoute extends BaseRoute
         //     return 'Welcome to Multi School';
         // })->where('path', '.*');
 
-        $this->router->get('/', function () {
-            return view('pages.mobile.splashscreen-index');
-        });
+        $this->router->get('/', [AuthenticationSessionController::class, 'splash'])->middleware(['guest']);
 
         // $this->router->middleware(['auth', 'verified'])->group(function ($route) {
 
@@ -41,5 +39,7 @@ class DefaultRoute extends BaseRoute
         //         return view('pages.mobile.tabungan.tabungan-index');
         //     })->name('tabungan');
         // });
+
+
     }
 }

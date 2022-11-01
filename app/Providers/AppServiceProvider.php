@@ -2,6 +2,9 @@
 
 namespace App\Providers;
 
+use App\Actions\CreateNewUser;
+use App\Models\Tenant\Tenant;
+use Exception;
 use Illuminate\Support\Facades\Vite;
 use Illuminate\Support\ServiceProvider;
 
@@ -14,7 +17,18 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        //
+        app()->singleton('activeTenant', function(): ?Tenant {
+            try {
+                if (auth()->user()?->tenant_id){
+                    return Tenant::find(auth()->user()?->tenant_id);
+                }
+
+                $domain = request()->getHost();
+                return Tenant::where(['app_domain' => $domain])->first();
+            } catch (Exception $e) {
+                return null;
+            }
+        });
     }
 
     /**
@@ -28,7 +42,7 @@ class AppServiceProvider extends ServiceProvider
             $this->app['request']->server->set('HTTPS', true);
             \URL::forceScheme('https');
         }
-        
+
         Vite::useScriptTagAttributes([
             'type' => 'text/javascript'
         ]);

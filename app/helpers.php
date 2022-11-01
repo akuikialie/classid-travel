@@ -6,10 +6,33 @@
  * @author      yusron arif <yusron.arif4@gmail.com>
  */
 
+use App\Models\Tenant\Tenant;
 use Carbon\Carbon;
 use Illuminate\Contracts\Container\BindingResolutionException;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Model;
 use Psr\Container\NotFoundExceptionInterface;
 use Psr\Container\ContainerExceptionInterface;
+
+if (!function_exists('activeTenant')) {
+    /**
+     * @return Tenant|Builder|Model|null
+     */
+    function activeTenant(): Model|Builder|Tenant|null
+    {
+        return app('activeTenant');
+    }
+}
+
+if (!function_exists('isActiveTenant')) {
+    /**
+     * @return bool
+     */
+    function isActiveTenant(): bool
+    {
+        return app('activeTenant') instanceof Tenant;
+    }
+}
 
 if (!function_exists('isMobile')) {
     /**
@@ -126,21 +149,21 @@ if (!function_exists('trimAll')) {
                 default:
                     return preg_replace('/'. $pattern .'/i', ' ', preg_replace('/^'. $pattern .'|'. $pattern .'$/i', '', $string));
             }
-        } catch (\Exception $e) {}
+        } catch (Exception $e) {}
 
         return '';
     }
 }
 
 if (!function_exists('carbon')) {
+
     /**
-     * @param string|null $datetime
-     * @param \DateTimeZone|string|null $timezone
+     * @param string|DateTimeInterface|null $datetime
+     * @param string|DateTimeZone|null $timezone
      * @param string|null $locale
-     *
      * @return Carbon
      */
-    function carbon(?string $datetime = null, $timezone = 'Asia/Jakarta', ?string $locale = null): Carbon
+    function carbon(string|DateTimeInterface|null $datetime = null, string|DateTimeZone|null $timezone = 'Asia/Jakarta', ?string $locale = null): Carbon
     {
         Carbon::setLocale($locale ?? 'id_ID');
         if (!$datetime) {
@@ -192,7 +215,7 @@ if (!function_exists('romanicToInt')) {
      * @param $romanic
      *
      * @return int|null
-     * @throws \Exception
+     * @throws Exception
      */
     function romanicToInt($romanic): ?int
     {
@@ -233,7 +256,7 @@ if (!function_exists('romanicToInt')) {
          */
         function numberSpell($value)
         {
-            $f = new \NumberFormatter('id', \NumberFormatter::SPELLOUT);
+            $f = new NumberFormatter('id', NumberFormatter::SPELLOUT);
 
             return $f->format($value);
         }

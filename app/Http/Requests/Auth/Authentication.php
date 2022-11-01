@@ -2,12 +2,18 @@
 
 namespace App\Http\Requests\Auth;
 
+use App\Models\Master\Phone;
+use App\Models\Tenant\Tenant;
+use App\Models\User;
+use http\Exception\InvalidArgumentException;
 use Illuminate\Auth\Events\Lockout;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
+use Psr\Container\ContainerExceptionInterface;
+use Psr\Container\NotFoundExceptionInterface;
 
 class Authentication extends FormRequest
 {
@@ -15,13 +21,18 @@ class Authentication extends FormRequest
 
     public function __construct()
     {
-        $this->authType = $this->findUsernameOrEmail();
+        $this->authType = $this->credentials();
     }
 
-    public function findUsernameOrEmail(): string
+    public function credentials(): string
     {
-        $usernameOrEmail = request()->input('email-username');
-        $fieldType = filter_var($usernameOrEmail, FILTER_VALIDATE_EMAIL) ? 'email' : 'username';
+
+        $usernameOrEmail = request()->input('login');
+        if (is_numeric($usernameOrEmail)) {
+            $fieldType = 'phone';
+        }else{
+            $fieldType = filter_var($usernameOrEmail, FILTER_VALIDATE_EMAIL) ? 'email' : 'username';
+        }
         request()->merge([$fieldType => $usernameOrEmail]);
         return $fieldType;
     }
@@ -31,7 +42,7 @@ class Authentication extends FormRequest
      *
      * @return bool
      */
-    public function authorize()
+    public function authorize(): bool
     {
         return true;
     }
@@ -41,27 +52,26 @@ class Authentication extends FormRequest
      *
      * @return array<string, mixed>
      */
-    public function rules()
+    public function rules(): array
     {
-        switch ($this->authType) {
-            case 'email':
-                $rules = [
-                    'email' => ['required', 'email'],
-                    'password' => ['required', 'string',],
-                ];
-                break;
-            case 'username':
-                $rules = [
-                    'username' => ['required', 'string', 'max:16'],
-                    'password' => ['required', 'string',],
-                ];
-                break;
-
-            default:
-                $rules = [];
-                break;
-        }
-        return $rules;
+        return match ($this->authType) {
+            'email' => [
+                'login' => ['required', 'email'],
+                'password' => ['required', 'string'],
+                'travel_code' => ['nullable', 'string'],
+            ],
+            'username' => [
+                'login' => ['required', 'string', 'max:16'],
+                'password' => ['required', 'string',],
+                'travel_code' => ['nullable', 'string',],
+            ],
+            'phone' => [
+                'login' => ['required', 'regex:/^([0-9\s\-\+\(\)]*)$/',],
+                'password' => ['required', 'string',],
+                'travel_code' => ['nullable', 'string',],
+            ],
+            default => [],
+        };
     }
 
     /**
@@ -69,15 +79,16 @@ class Authentication extends FormRequest
      *
      * @return void
      *
-     * @throws \Illuminate\Validation\ValidationException
+     * @throws ValidationException
      */
-    public function authenticate()
+    public function authenticate(): void
     {
         $this->ensureIsNotRateLimited();
+        // $this->ensureIsNotRateLimited();
 
-        if (!Auth::attempt($this->only($this->authType, 'password'), $this->boolean('remember'))) {
+        if (!Auth::attempt(request()->only($this->authType, 'password'), request()->boolean('remember'))) {
+
             RateLimiter::hit($this->throttleKey());
-
             throw ValidationException::withMessages([
                 'email' => trans('auth.failed'),
             ]);
@@ -91,7 +102,7 @@ class Authentication extends FormRequest
      *
      * @return void
      *
-     * @throws \Illuminate\Validation\ValidationException
+     * @throws ValidationException
      */
     public function ensureIsNotRateLimited()
     {
@@ -118,6 +129,6 @@ class Authentication extends FormRequest
      */
     public function throttleKey()
     {
-        return Str::lower($this->input('username')) . '|' . $this->ip();
+        return Str::lower(request()->input('username')) . '|' . request()->ip();
     }
 }

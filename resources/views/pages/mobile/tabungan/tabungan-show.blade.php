@@ -1,4 +1,4 @@
-@extends('layouts.app-mobile')
+@extends('layouts.mobile.app-mobile')
 
 @section('mobile-content')
     @include('components.mobile.toolbar', [
@@ -13,7 +13,8 @@
             <h3 class="float-start font-16">Riwayat Tabungan</h3>
             <a class="float-end font-12 color-highlight mt-n1" href="#">View All</a>
             <div class="clearfix mb-1"></div>
-            <div class="d-flex">
+
+            {{-- <div class="d-flex">
                 <div>
                     <a href="#" class="icon icon-m bg-green-dark rounded-m shadow-xl"><i
                             class="fa fa-arrow-down"></i></a>
@@ -71,7 +72,7 @@
                     <h5 class="color-blue-dark mb-n1 text-end">$10.000</h5>
                     <span class="color-theme d-block font-11 text-end">Jul 15th</span>
                 </div>
-            </div>
+            </div> --}}
         </div>
     </div>
 @endsection

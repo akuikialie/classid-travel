@@ -15,7 +15,15 @@ return new class extends Migration
     {
         Schema::create('jamaah', function (Blueprint $table) {
             $table->id();
-            $table->timestamps();
+            $table->unsignedBigInteger('tenant_id')->default(1)->comment('reference to tenant_table');
+            $table->unsignedBigInteger('user_id');
+            $table->unsignedBigInteger('departure_city_id')->nullable()->comment('tempat keberangkatan link ke city_id');
+            $table->unsignedBigInteger('schedule_id')->nullable()->comment('link ke schedules_table, untuk memilih waktu keberangkatan');
+            $table->timestamps(precision: 6);
+            $table->softDeletes(precision: 6);
+
+            /* foreign key */
+            $table->foreign('user_id')->on('users')->references('id')->onDelete('cascade');
         });
     }
 
@@ -26,6 +34,8 @@ return new class extends Migration
      */
     public function down()
     {
+
+
         Schema::dropIfExists('jamaah');
     }
 };

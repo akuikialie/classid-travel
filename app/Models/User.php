@@ -3,16 +3,30 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
+
+use App\Models\Jamaah\Jamaah;
+use App\Models\Referral\UserInvitation;
+use App\Models\Tenant\Tenant;
+use App\Models\VA\VirtualAccount;
+use App\Traits\HasTenant;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Database\Eloquent\Relations\MorphOne;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Passport\HasApiTokens;
+use Spatie\MediaLibrary\HasMedia;
+use Spatie\MediaLibrary\InteractsWithMedia;
 use Spatie\Permission\Traits\HasRoles;
 
-class User extends Authenticatable
+class User extends Authenticatable implements HasMedia
 {
     use HasApiTokens, HasFactory, Notifiable, HasRoles;
-    use HashableId;
+    use HashableId, InteractsWithMedia, HasTenant;
+    use SoftDeletes;
 
     /**
      * The attributes that are mass assignable.
@@ -20,9 +34,10 @@ class User extends Authenticatable
      * @var array<int, string>
      */
     protected $fillable = [
+        'tenant_id',
         'name',
         'username',
-        'email',
+        'phone',
         'password',
     ];
 
@@ -44,4 +59,30 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
+
+    /**
+     * @return HasOne
+     */
+    public function jamaah(): HasOne
+    {
+        return $this->hasOne(Jamaah::class, 'user_id');
+    }
+
+    /**
+     * @return MorphOne
+     */
+    public function tabungan(): MorphOne
+    {
+        return $this->morphOne(VirtualAccount::class, 'vaable', 'model_type', 'model_id');
+    }
+
+    /**
+     * Get all of the comments for the User
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function peopleInviteds(): HasMany
+    {
+        return $this->hasMany(UserInvitation::class, 'invited_by');
+    }
 }

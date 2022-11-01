@@ -23,7 +23,11 @@ class RedirectIfAuthenticated
 
         foreach ($guards as $guard) {
             if (Auth::guard($guard)->check()) {
-                return redirect(RouteServiceProvider::HOME);
+                $prefix = request()->route()->getPrefix();
+                if ($prefix =='admin') {
+                    return redirect(route('dashboard.admin'));
+                }
+                return redirect(route('home.index'));
             }
         }
 
