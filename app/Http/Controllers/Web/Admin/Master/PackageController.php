@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers\Web\Admin\Master;
 
+use App\Http\Controllers\Web\Controller;
 use App\Enums\Kuartal;
-use App\Http\Controllers\Controller;
 use App\Models\Destination\Destination;
 use App\Models\Plan\Plan;
 use App\Models\Plan\PlanFacility;

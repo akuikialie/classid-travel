@@ -61,7 +61,7 @@ class Authentication extends FormRequest
                 'travel_code' => ['nullable', 'string'],
             ],
             'username' => [
-                'login' => ['required', 'string', 'max:16'],
+                'login' => ['required', 'string', 'max:50'],
                 'password' => ['required', 'string',],
                 'travel_code' => ['nullable', 'string',],
             ],

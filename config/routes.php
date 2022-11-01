@@ -78,6 +78,7 @@ return [
         /* web */
         App\Http\Routes\Web\Admin\DefaultRoute::class,
         App\Http\Routes\Web\Admin\AuthRoute::class,
+        App\Http\Routes\Web\Admin\GlobalRoute::class,
         App\Http\Routes\Web\Admin\MasterRoute::class,
     ],
     'api' => [

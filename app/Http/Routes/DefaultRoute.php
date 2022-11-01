@@ -29,6 +29,10 @@ class DefaultRoute extends BaseRoute
 
         $this->router->get('/', [AuthenticationSessionController::class, 'splash'])->middleware(['guest']);
 
+        $this->router->get('/admin', function (){
+            return redirect(route('admin.login'));
+        });
+
         // $this->router->middleware(['auth', 'verified'])->group(function ($route) {
 
         //     $route->get($this->prefix('home'), function () {

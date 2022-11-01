@@ -27,7 +27,8 @@
 
 <script src="{{ asset('web/js/widgets.bundle.js') }}"></script>
 <script src="{{ asset('web/js/custom/widgets.js') }}"></script>
-<script src="{{ asset('web/js/based/plugin.js') }}"></script>
+<script src="{{ asset('web/vendor/sweetalert/sweetalert2.js') }}"></script>
+<script src="{{ asset('web/js/global-helper.js') }}"></script>
 @yield('page-scripts')
 
 @yield('page-custom-scripts')
