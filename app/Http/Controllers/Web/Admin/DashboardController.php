@@ -2,8 +2,7 @@
 
 namespace App\Http\Controllers\Web\Admin;
 
-use App\Enums\DepartureStatus;
-use App\Http\Controllers\Controller;
+use App\Http\Controllers\Web\Controller;
 use App\Models\Jamaah\Jamaah;
 
 class DashboardController extends Controller

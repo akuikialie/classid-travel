@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers\Web\Admin;
 
-use App\Http\Controllers\Controller;
+use App\Http\Controllers\Web\Controller;
 use App\Http\Requests\Auth\Authentication;
 use App\Models\Tenant\Tenant;
 use App\Models\User;
@@ -13,13 +13,12 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Redirector;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\RateLimiter;
-use Illuminate\Validation\ValidationException;
 
 class AuthenticationSessionController extends Controller
 {
     public function create(): Factory|View|Application
     {
+
         return view('pages.web.auth.sign-in');
     }
 
