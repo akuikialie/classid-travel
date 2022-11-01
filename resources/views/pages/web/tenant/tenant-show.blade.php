@@ -6,7 +6,7 @@
     $avatars = $tenant->getMedia('avatars');
     $avatar = null;
     if ($avatars->count() > 0) {
-        $avatar = $avatars[0]->getUrl();
+        $avatar = collect($avatars)->last()->getUrl();
     }
   @endphp
 
