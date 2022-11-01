@@ -100,7 +100,7 @@ class TenantController extends Controller
     public function update(Request $request, $hash)
     {
         $input = $request->validate([
-            'avatar_remove' => ['required', 'string'],
+            'avatar_remove' => ['nullable', 'string'],
             'name' => ['required', 'string'],
             'slug' => ['required', 'string'],
         ]);
