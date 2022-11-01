@@ -13,6 +13,7 @@ class AddJamaahHistory
     {
         try {
             $newDepartureHistory = new JamaahHistory([
+                'tenant_id' => 1,
                 'detail' => $detail,
             ]);
 

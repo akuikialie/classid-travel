@@ -15,7 +15,7 @@ class ReferralLink extends Model
     protected $table = 'referral_links';
 
     protected $fillable = [
-        'summary', 'link', 'hash',
+        'summary', 'link', 'hash', 'tenant_id',
     ];
 
     /**

@@ -24,13 +24,6 @@ use Throwable;
 class PackageController extends Controller
 {
 
-    protected PackageService $packageService;
-
-    public function __construct(PackageService $packageService)
-    {
-        $this->packageService = $packageService;
-    }
-
     /**
      * Display a listing of the resource.
      *
@@ -39,9 +32,14 @@ class PackageController extends Controller
     public function index(): View|Factory|Application
     {
         $user = auth()->user();
-        $packages =$this->packageService
-            ->byTenant($user->tenant?->id)
+        $packages = PlanPackage::query()
+            ->with(['myPlan', 'myDestinations'])
+            ->withCount(['jamaah'])
+            ->tenantId($user->tenant_id)
+            ->latest()
             ->get();
+
+//        dd($packages);
 
         return view('pages.web.master.package.package-index', [
             'packages' => $packages,
@@ -92,15 +90,39 @@ class PackageController extends Controller
         $validator = $this->getArr($request);
         DB::beginTransaction();
         try {
-            $newPackage = $this->packageService->createNewPackage($validator['type'], $validator);
 
-            $this->extracted($validator, $newPackage, $request);
+            $user = auth()->user();
+            $packageService = new PackageService($user->tenant_id);
+
+            $newPackage = $packageService->createNewPackage($validator['type'], $validator);
+
+            $facilityIds = [];
+            if (isset($validator['facilities']) && is_array($validator['facilities'])) {
+                $facilityIds = array_keys($validator['facilities']);
+//                $packageService->addFacilitiesToPackage($package, $facilityIds);
+            }
+
+            $destinationIds = [];
+            if (isset($validator['destinations']) && is_array($validator['destinations'])) {
+                $destinationIds = array_keys($validator['destinations']);
+//                $packageService->addDestinationsToPackage($package, $destinationIds);
+            }
+
+            $packageService
+                ->byHash($newPackage->hash)
+                ->addDestinations($destinationIds)
+                ->addFacilities($facilityIds);
+
+            if ($request->hasfile('thumbnail')) {
+                $packageService->addThumbnailPackage($newPackage, $request);
+            }
 
             DB::commit();
             notify('Berhasil', 'Data paket berhasil dibuat!', 'success')->autoClose();
 
             return redirect()->back();
         } catch (Throwable $th) {
+            throw  $th;
             DB::rollBack();
             notify('Opps!', $th->getMessage(), 'error');
             return redirect()->back();
@@ -170,9 +192,32 @@ class PackageController extends Controller
 
         DB::beginTransaction();
         try {
+            $user = auth()->user();
+            $packageService = new PackageService($user->tenant_id);
+
             $package = PlanPackage::query()->whereId($id)->first();
 
-            $this->extracted($validator, $package, $request);
+
+            $facilityIds = [];
+            if (isset($validator['facilities']) && is_array($validator['facilities'])) {
+                $facilityIds = array_keys($validator['facilities']);
+//                $packageService->addFacilitiesToPackage($package, $facilityIds);
+            }
+
+            $destinationIds = [];
+            if (isset($validator['destinations']) && is_array($validator['destinations'])) {
+                $destinationIds = array_keys($validator['destinations']);
+//                $packageService->addDestinationsToPackage($package, $destinationIds);
+            }
+
+            $packageService
+                ->byHash($package->hash)
+                ->addDestinations($destinationIds)
+                ->addFacilities($facilityIds);
+
+            if ($request->hasfile('thumbnail')) {
+                $packageService->addThumbnailPackage($package, $request);
+            }
 
             $package->long_days = $validator['long_days'];
             $package->name = $validator['name'];
@@ -241,29 +286,5 @@ class PackageController extends Controller
             'destinations' => ['nullable', 'array'],
             'thumbnail' => ['nullable', 'mimes:jpg,png,jpeg', 'max:3072'],
         ]);
-    }
-
-    /**
-     * @param array $validator
-     * @param PlanPackage $newPackage
-     * @param Request $request
-     * @return void
-     * @throws Throwable
-     */
-    public function extracted(array $validator, PlanPackage $newPackage, Request $request): void
-    {
-        if (isset($validator['facilities']) && is_array($validator['facilities'])) {
-            $facilityIds = array_keys($validator['facilities']);
-            $this->packageService->addFacilitiesToPackage($newPackage, $facilityIds);
-        }
-
-        if (isset($validator['destinations']) && is_array($validator['destinations'])) {
-            $destinationIds = array_keys($validator['destinations']);
-            $this->packageService->addDestinationsToPackage($newPackage, $destinationIds);
-        }
-
-        if ($request->hasfile('thumbnail')) {
-            $this->packageService->addThumbnailPackage($newPackage, $request);
-        }
     }
 }

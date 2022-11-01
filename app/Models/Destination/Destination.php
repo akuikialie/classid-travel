@@ -4,6 +4,7 @@ namespace App\Models\Destination;
 
 use App\Models\Master\Address;
 use App\Models\Plan\PlanPackage;
+use App\Traits\HasTenant;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
@@ -13,11 +14,12 @@ use Spatie\MediaLibrary\InteractsWithMedia;
 
 class Destination extends Model implements HasMedia
 {
-    use HasFactory, InteractsWithMedia;
+    use HasFactory, InteractsWithMedia, HasTenant;
 
     protected $table = 'destinations';
 
-    protected $fillable = ['name'];
+    protected $fillable = ['tenant_id','name'];
+
 
     public function myAddress(): MorphOne
     {
@@ -27,7 +29,7 @@ class Destination extends Model implements HasMedia
     /**
      * The roles that belong to the PlanPackage
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     * @return BelongsToMany
      */
     public function packages(): BelongsToMany
     {

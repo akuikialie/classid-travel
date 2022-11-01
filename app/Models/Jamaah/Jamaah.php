@@ -7,6 +7,7 @@ use App\Models\Plan\PlanPackage;
 use App\Models\Schedule\Schedule;
 use App\Models\User;
 use App\Models\VA\VirtualAccount;
+use App\Traits\HasTenant;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -17,7 +18,7 @@ use Illuminate\Database\Eloquent\Relations\MorphOne;
 
 class Jamaah extends Model
 {
-    use HasFactory;
+    use HasFactory, HasTenant;
 
     protected $table = 'jamaah';
 

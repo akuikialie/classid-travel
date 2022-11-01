@@ -21,7 +21,11 @@ class ReferalService
     {
         try {
             /* add user invited detail */
-            $peopleInvited = new UserInvitation();
+            $peopleInvited = new UserInvitation(
+                [
+                    'tenant_id' => 1,
+                ]
+            );
 
             /* insert user id */
             $user = User::query()->find(isset($user) ? $user->id : auth()->user()->id);
@@ -40,7 +44,7 @@ class ReferalService
             $package = PlanPackage::query()->where('id', $referalLink->package_id)->first();
 
             /* add package to jamaah */
-            $packageService = new PackageService;
+            $packageService = new PackageService(1);
             $packageService->addPackageToJamaah($package, $jamaah);
         } catch (\Throwable $th) {
             throw $th;
@@ -53,6 +57,7 @@ class ReferalService
         try {
             $hashable = Str::random(10);
             $newReferalLink = new ReferralLink([
+                'tenant_id' => 1,
                 'link' => route('invite.link', [$hashable, 'login']),
                 'hash' => $hashable,
             ]);

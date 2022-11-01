@@ -110,6 +110,7 @@ class VirtualAccountService
                 case 'tabungan':
                     $user = User::query()->find(auth()->user()->id);
                     $newVA = new VirtualAccount([
+                        'tenant_id' => 1,
                         'va_number' => $newVANumber,
                         'va_label' => $va_type,
                     ]);
@@ -120,6 +121,7 @@ class VirtualAccountService
 
                 case 'perencanaan':
                     $newVA = new VirtualAccount([
+                        'tenant_id' => 1,
                         'va_number' => $newVANumber,
                         'va_label' => $va_type,
                     ]);

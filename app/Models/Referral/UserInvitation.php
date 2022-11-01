@@ -13,6 +13,10 @@ class UserInvitation extends Model
 
     protected $table = 'user_invitations';
 
+    protected $fillable = [
+        'tenant_id',
+    ];
+
     /**
      * Get the user that owns the UserInvitation
      *

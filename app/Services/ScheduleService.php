@@ -14,7 +14,6 @@ class ScheduleService
     public function __construct()
     {
         $this->query = Schedule::query();
-        $this->query->withCount(['jamaah']);
     }
 
     public function createSchedule(array $input): Schedule

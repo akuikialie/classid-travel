@@ -22,7 +22,7 @@ class SeedPackages extends Seeder
         for ($i = 0; $i < rand(5, 15); $i++) {
             /* begin:: start package service */
 
-            $packageService = new PackageService();
+            $packageService = new PackageService(1);
 
             \DB::beginTransaction();
             try {

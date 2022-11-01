@@ -19,12 +19,11 @@ class PackageService
 {
     use HasTenant;
     protected Builder $query;
-    public function __construct()
+    public function __construct(
+        private readonly int $tenantId
+    )
     {
         $this->query = PlanPackage::query();
-        $this->query->with(['myPlan'])
-            ->withCount(['jamaah'])
-            ->latest();
     }
 
     /**
@@ -123,6 +122,8 @@ class PackageService
     public function createNewPackage(int $planId, array $input): PlanPackage
     {
         try {
+
+            $input = array_merge(['tenant_id' => $this->tenantId], $input);
 
             $plan = Plan::query()->find($planId);
 

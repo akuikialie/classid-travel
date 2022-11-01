@@ -17,7 +17,7 @@ class RegisterUserController extends Controller
         return view('pages.mobile.auth.register-index');
     }
 
-    public function store(Request $request, CreateNewUser $newUser, AddJamaahHistory $jamaahHistory)
+    public function store(Request $request)
     {
         $validator = $request->validate([
             'name' => ['required', 'string'],
@@ -26,22 +26,24 @@ class RegisterUserController extends Controller
             'password_confirmation' => ['required_with:password', 'same:password'],
         ]);
 
-        $validator = array_merge( $validator, ['password' => Hash::make($validator['password'])]);
-
         // User::query()->create($validator);
         DB::beginTransaction();
         try {
-            $createNewUser = $newUser->handle($validator);
+            $createNewUser = new CreateNewUser();
+            $newUser = $createNewUser->handle($validator);
 
-            $jamaahHistory->handle($createNewUser['jamaah']);
+            $jamaahHistory = new AddJamaahHistory();
+            $jamaahHistory->handle($newUser['jamaah']);
             DB::commit();
+
+            notify('Berhasil!!', 'Anda berhasil membuat akun, silahkan login menggunakan akun anda', 'success');
+            return redirect(route('login'));
         }catch (\Throwable $throwable){
             DB::rollBack();
             notify('Gagal!!', $throwable->getMessage(), 'error');
             return redirect()->back();
         }
 
-        return redirect(route('login'));
 
     }
 }

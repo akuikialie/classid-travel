@@ -12,7 +12,7 @@ class DashboardController extends Controller
     {
         $user = auth()->user();
         $dataKeberangkatan = Jamaah::query()
-            ->where('tenant_id', $user->tenant?->id)
+            ->tenantId($user->tenant_id)
             ->with([
                 'user',
                 'departureSchedule',

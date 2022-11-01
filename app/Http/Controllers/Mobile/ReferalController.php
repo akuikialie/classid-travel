@@ -144,7 +144,6 @@ class ReferalController extends Controller
 
             return redirect(route('home.index'));
         } catch (Throwable $e) {
-            throw $e;
             notify('Oops!', $e->getMessage(), 'error');
             return redirect()->back();
         }

@@ -15,7 +15,7 @@ return new class extends Migration
     {
         Schema::create('jamaah', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('tenant_id')->comment('reference to tenant_table');
+            $table->unsignedBigInteger('tenant_id')->default(1)->comment('reference to tenant_table');
             $table->unsignedBigInteger('user_id');
             $table->unsignedBigInteger('departure_city_id')->nullable()->comment('tempat keberangkatan link ke city_id');
             $table->unsignedBigInteger('schedule_id')->nullable()->comment('link ke schedules_table, untuk memilih waktu keberangkatan');

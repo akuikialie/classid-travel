@@ -6,6 +6,7 @@ use App\Models\Destination\Destination;
 use App\Models\HashableId;
 use App\Models\Jamaah\Jamaah;
 use App\Models\User;
+use App\Traits\HasTenant;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -15,7 +16,7 @@ use Spatie\MediaLibrary\InteractsWithMedia;
 
 class PlanPackage extends Model implements HasMedia
 {
-    use HasFactory, InteractsWithMedia, HashableId;
+    use HasFactory, InteractsWithMedia, HashableId, HasTenant;
 
     protected $table = 'plan_packages';
 
@@ -33,7 +34,7 @@ class PlanPackage extends Model implements HasMedia
     /**
      * Get the user that owns the PlanPackage
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * @return BelongsTo
      */
     public function myPlan(): BelongsTo
     {
@@ -44,7 +45,7 @@ class PlanPackage extends Model implements HasMedia
     /**
      * The roles that belong to the PlanPackage
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     * @return BelongsToMany
      */
     public function myFacilities(): BelongsToMany
     {
@@ -54,7 +55,7 @@ class PlanPackage extends Model implements HasMedia
     /**
      * The roles that belong to the PlanPackage
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     * @return BelongsToMany
      */
     public function myDestinations(): BelongsToMany
     {
@@ -64,7 +65,7 @@ class PlanPackage extends Model implements HasMedia
     /**
      * The roles that belong to the PlanPackage
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     * @return BelongsToMany
      */
     public function jamaah(): BelongsToMany
     {

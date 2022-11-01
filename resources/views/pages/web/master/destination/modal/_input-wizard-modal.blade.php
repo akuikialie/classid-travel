@@ -17,7 +17,7 @@
          </div>
          <!--end::Input group-->
 
-         <!--begin::Input group-->
+         {{--<!--begin::Input group-->
          <div class="fv-row mb-10">
              <!--begin::Label-->
              <label class="d-flex align-items-center fs-5 fw-semibold mb-2">
@@ -31,7 +31,7 @@
                  placeholder="Waktu Jelajah (Menit)" value="{{ old('roaming_in_destination', isset($destination) ? $destination->roaming_in_destination : 30) }}" />
              <!--end::Input-->
          </div>
-         <!--end::Input group-->
+         <!--end::Input group-->--}}
 
          <!--begin::Input group-->
          <div class="fv-row mb-10">

@@ -265,7 +265,7 @@
                 <input class="form-check-input" type="checkbox"
                        id="destination-{{ $destination->id }}"
                        name="destinations[{{ $destination->id }}]"
-                  {{ in_array($destination->id,(isset($package->destinations) ? collect($package->destinations)->pluck('id')->toArray() : []))? 'checked': '' }} />
+                  {{ in_array($destination->id,(isset($package->myDestinations) ? collect($package->myDestinations)->pluck('id')->toArray() : []))? 'checked': '' }} />
               </div>
               <!--end::Checkbox-->
               <!--begin::Description-->
@@ -276,9 +276,7 @@
                   class="text-muted fw-semibold d-block">{{ $destination?->myAddress?->address }}</span>
               </div>
               <!--end::Description-->
-              <span
-                class="badge badge-light-{{ $color }} fs-8 fw-bold">{{ $destination->roaming_in_destination }}
-                                Menit</span>
+
             </div>
             <!--end:Item-->
           @empty
