@@ -45,13 +45,13 @@ return new class extends Migration
     {
         Schema::create('geo_cities', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('province_id');
+            $table->unsignedBigInteger('province_id')->nullable();
             $table->string('name');
-            $table->string('postal_code', 5);
+            $table->string('postal_code', 5)->nullable();
             $table->string('latitude', 40)->nullable();
             $table->string('longitude', 40)->nullable();
-            $table->string('admin_code');
-            $table->unsignedBigInteger('wilayah_code');
+            $table->string('admin_code')->nullable();
+            $table->unsignedBigInteger('wilayah_code')->nullable();
 
             /* foreign key */
             $table->foreign('province_id')->on('geo_provinces')->references('id')->onDelete('cascade');
