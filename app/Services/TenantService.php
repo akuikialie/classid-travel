@@ -3,12 +3,15 @@
 namespace App\Services;
 
 use App\Models\Tenant\Tenant;
+use Exception;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Request;
 
 class TenantService
 {
+    private Builder $query;
+    private Tenant $tenant;
 
-    protected $query;
     public function __construct(
         private readonly int $tenantId
     )
@@ -23,12 +26,33 @@ class TenantService
 
     public function setAvatar(Request $request)
     {
+        $tenant =
         $user->addMediaFromRequest('avatar')->toMediaCollection('avatars');
     }
 
     public function unsetAvatar()
     {
 
+    }
+
+    public function get()
+    {
+        return $this->query->first();
+    }
+
+    public function tenant(): Tenant
+    {
+        if ($this->query->count() > 1) {
+            if (isset($this->tenant) and $this->tenant instanceof Tenant) {
+                $tenant = $this->tenant;
+            } else {
+                throw new Exception('Tenant belum di konfigurasi');
+            }
+        } else {
+            $tenant = $this->query->first();
+        }
+
+        return $tenant;
     }
 
 }
