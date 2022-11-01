@@ -19,7 +19,7 @@
           <!--begin::Image-->
           <div
             class="d-flex flex-center flex-shrink-0 bg-light rounded w-100px h-100px w-lg-150px h-lg-150px me-7 mb-4">
-            <img class="mw-50px mw-lg-75px" src="{{ $avatar }}g"
+            <img class="mw-50px mw-lg-75px" src="{{ $avatar?? asset('logo/96w/logo-pict@96px.png') }}"
                  alt="image"/>
           </div>
           <!--end::Image-->
