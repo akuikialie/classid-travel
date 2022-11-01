@@ -18,7 +18,7 @@
         content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, viewport-fit=cover" />
     <link rel="shortcut icon" href="{{ $avatar ?? asset('logo/24w/logo-pict@24px.png') }}" />
 
-    <title>{{ $tenant ?? 'ProHajj' }} - App</title>
+    <title>{{ $tenant->name ?? 'ProHajj' }} - App</title>
 
     <style>
         body {

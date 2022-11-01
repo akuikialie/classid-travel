@@ -16,7 +16,7 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="viewport"
         content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, viewport-fit=cover"/>
-  <title>{{ $tenant ?? 'ProHajj' }} - App</title>
+  <title>{{ $tenant->name ?? 'ProHajj' }} - App</title>
 
   <link rel="shortcut icon" href="{{ $avatar ?? asset('logo/24w/logo-pict@24px.png') }}"/>
 
