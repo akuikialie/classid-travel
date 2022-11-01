@@ -22,6 +22,16 @@ if (!function_exists('menuSidebar')) {
             ],
 
             [
+                'url' => route('tenant.show', auth()->user()->tenant_id),
+                'name' => 'Tenant',
+                'icon' => 'bx bxs-dashboard bx-tada',
+                'show_in' => [
+                    'roles' => [RoleEnum::Admin],
+                    'permissions' => [],
+                ],
+            ],
+
+            [
                 'navheader' => 'Master',
             ],
             [
