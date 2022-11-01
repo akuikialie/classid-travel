@@ -56,6 +56,21 @@ class TenantService
 
     }
 
+    /**
+     * @param array $input
+     * @return Tenant|null
+     * @throws Exception
+     */
+    public function update(array $input): ?Tenant
+    {
+        $tenant = $this->tenant();
+        $tenant->name = $input['name'];
+        $tenant->slug = $input['slug'];
+        $tenant->save();
+
+        return $tenant->fresh();
+    }
+
     public function get()
     {
         return $this->query->first();
