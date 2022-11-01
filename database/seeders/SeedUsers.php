@@ -6,6 +6,7 @@ use App\Enums\RoleEnum;
 use App\Models\Jamaah\Jamaah;
 use App\Models\Tenant\Tenant;
 use App\Models\User;
+use App\Services\UserService;
 use App\Services\VirtualAccountService;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
@@ -20,23 +21,26 @@ class SeedUsers extends Seeder
      */
     public function run()
     {
-        $seedUser = [
-            [
-                'tenant_id' => 1,
-                'name' => 'winata bayu',
-                'username' => 'winata',
-                'phone' => '081331307327',
-                'password' => Hash::make('bayu'),
+
+        for ($i = 1; $i <= 5; $i++){
+            $admins[] = [
+                'tenant_id' => $i,
+                'name' => 'travel admin ' . $i,
+                'phone' => '08111111111'. $i,
+                'password' => Hash::make('admin'),
                 'role' => RoleEnum::Admin->keyValue(),
-            ], [
-                'tenant_id' => 2,
-                'name' => 'bayu winata',
-                'username' => 'wb',
-                'phone' => '081331307328',
-                'password' => Hash::make('bayu'),
+            ];
+
+            $apps[] = [
+                'tenant_id' => $i,
+                'name' => 'Travel Apps ' . $i,
+                'phone' => '08222222222'. $i,
+                'password' => Hash::make('app'),
                 'role' => RoleEnum::Jamaah->keyValue(),
-            ],
-        ];
+            ];
+        }
+
+        $seedUser = array_merge($admins, $apps);
 
         foreach ($seedUser as $key => $user) {
             \DB::beginTransaction();
@@ -45,7 +49,6 @@ class SeedUsers extends Seeder
                 $newUser = User::create([
                     'tenant_id' => $user['tenant_id'],
                     'name' => $user['name'],
-                    'username' => $user['username'],
                     'phone' => $user['phone'],
                     'password' => $user['password'],
                 ]);
@@ -70,11 +73,11 @@ class SeedUsers extends Seeder
 
             if ($newUser instanceof User) {
                 /* begin:: start Virtual Account Service */
-                $VAService = new VirtualAccountService();
+                $VAService = new VirtualAccountService($user['tenant_id']);
 
                 try {
                     $VAService->vaType('tabungan')
-                        ->createFor($newUser->fresh(['tenant']))
+                        ->createFor($newUser)
                         ->createVA();
                 } catch (DdException|\Throwable $e) {
                     $this->command->info($e->getMessage());
@@ -83,6 +86,15 @@ class SeedUsers extends Seeder
             }
 
         }
+
+//        /* begin:: user service */
+//        $userService = new UserService(tenantId: $user['tenant_id']);
+//        $userService
+//            ->createNewUser($input)
+//            ->setRole(RoleEnum::Jamaah->keyValue())
+//            ->createVa('tabungan')
+//            ->setDepartureStatus();
+//        /* end:: user service */
 
 
     }

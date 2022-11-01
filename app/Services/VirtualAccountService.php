@@ -13,7 +13,9 @@ use Laravel\Octane\Exceptions\DdException;
 class VirtualAccountService
 {
     public $query;
-    public function __construct()
+    public function __construct(
+        private readonly int $tenantId
+    )
     {
         $this->query = VirtualAccount::query();
     }
@@ -77,8 +79,9 @@ class VirtualAccountService
             })->max('va_number');
 
         $VANumber = createNewVA($this->vaType, $VA);
+
         $newVA = new VirtualAccount([
-            'tenant_id' => $this->model->tenant?->id,
+            'tenant_id' => $this->tenantId,
             'va_number' => $VANumber,
             'va_label' => 'tabungan',
         ]);

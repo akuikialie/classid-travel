@@ -5,19 +5,24 @@ declare(strict_types=1);
 namespace App\Services;
 
 use App\Models\Jamaah\Jamaah;
+use App\Models\Jamaah\JamaahHistory;
 use App\Models\User;
 use App\Models\VA\VirtualAccount;
-use Carbon\Carbon;
+use Exception;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Hash;
 use Laravel\Octane\Exceptions\DdException;
 use Throwable;
 
 class UserService
 {
-    public Builder $query;
-    public function __construct()
+    private Builder $query;
+
+    private User $user;
+
+    public function __construct(
+        private readonly int $tenantId
+    )
     {
         $this->query = User::query();
     }
@@ -42,28 +47,101 @@ class UserService
         return $this;
     }
 
-    /**
-     * @param int $id
-     * @return User|array|Builder|Collection|Model|string|null
-     */
-    public function findById(int $id)
+    public function createVa(string $vaType): static
     {
-        return $this->query->where('id', $id)->first();
+        /* begin:: start Virtual Account Service */
+        try {
+            $user = $this->user();
+            $VAService = new VirtualAccountService($this->tenantId);
+            $VAService->vaType($vaType)
+                ->createFor($user)
+                ->createVA();
+        } catch (Throwable $e) {
+            throw $e;
+        }
+        /* end:: start Virtual Account Service */
+
+        return $this;
     }
 
     /**
-     * @throws Throwable
-     * @throws DdException
+     * @param array $input
+     * @return $this
      */
-    public function createVa(string $vaType): VirtualAccount
+    public function createNewUser(array $input): static
     {
-        $user = $this->query->first();
+        $input = array_merge(['tenant_id' => $this->tenantId], $input);
+        $input = array_merge($input, ['password' => Hash::make($input['password'])]);
+        $this->user = $this->query->create($input);
+        $newJamaah = new Jamaah([
+            'tenant_id' => 1,
+        ]);
+        $this->user->jamaah()->save($newJamaah);
 
-        /* begin:: start Virtual Account Service */
-        $VAService = new VirtualAccountService();
-        return $VAService->vaType($vaType)
-            ->createFor($user)
-            ->createVA();
-        /* end:: start Virtual Account Service */
+        return $this;
+    }
+
+    /**
+     * @param array $input
+     * @return $this
+     * @throws Exception
+     */
+    public function setDepartureStatus(string $status = null, string $detail = null): static
+    {
+        try {
+            $user = $this->user()->fresh(['jamaah']);
+
+            $input = [
+                'tenant_id' => $this->tenantId,
+                'jamaah_id' => $user->jamaah->id,
+            ];
+
+            if (!is_null($status)){
+                $input = array_merge($input, [
+                    'departure_status' => $status,
+                ]);
+            } if (!is_null($detail)){
+                $input = array_merge($input, [
+                    'detail' => $detail,
+                ]);
+            }
+
+            JamaahHistory::query()->create($input);
+
+            return $this;
+        } catch (Exception $e) {
+            throw $e;
+        }
+    }
+
+    public function setRole(...$roles)
+    {
+        try {
+            $user = $this->user();
+            $user->syncRoles($roles);
+            return $this;
+        } catch (Exception $e) {
+            throw $e;
+        }
+    }
+
+    public function get()
+    {
+        return $this->query->first();
+    }
+
+    public function user(): User
+    {
+        if ($this->query->count() > 1) {
+            if (isset($this->user) and $this->user instanceof User) {
+                $user = $this->user;
+            } else {
+                throw new Exception('Tujuan belum di konfigurasi');
+            }
+        } else {
+            $user = $this->query->first();
+        }
+
+        return $user;
     }
 }

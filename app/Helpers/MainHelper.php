@@ -74,24 +74,25 @@ if (!function_exists('createNewVA')) {
         $monthDate = substr($time_now->format('Ym'), 2);
 
         $count = null;
+        if (isset($lastVA) && !empty($lastVA)) {
+            if ($time_now->toDateString() == $start_of_month->toDateString()) {
+                // today is a start of month
+                if (empty($lastVA) && $lastVA === null) {
+                    /* reset count */
+                    $count = 10000;
+                }else{
+                    $count = (int)collect(explode('.', $lastVA))->last();
+                }
+            } else {
 
-        if ($time_now->toDateString() == $start_of_month->toDateString()) {
-            // today is a start of month
-            if (empty($lastVA) && $lastVA === null) {
-                /* reset count */
-                $count = 10000;
-            }
-        } else {
-            if (isset($lastVA) && !empty($lastVA)) {
                 $count = (int)collect(explode('.', $lastVA))->last();
             }
         }
 
-
         switch ($type) {
             case 'tabungan':
                 /* format va */
-                $outFormat = '857600.0.' . $monthDate . '.' . ((isset($count) && !empty($count)) ? ($count + 1) : 10001);
+                $outFormat = '857600.0.' . $monthDate . '.' . ((isset($count) && !empty($count) ? ($count + 1) : 10001));
                 break;
 
             case 'perencanaan':

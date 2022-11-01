@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Mobile;
 
 use App\Actions\Jamaah\AddJamaahHistory;
 use App\Actions\Users\CreateNewUser;
+use App\Enums\RoleEnum;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\Authentication;
 use App\Jobs\Referal\AddNewInvitedPerson;
@@ -12,6 +13,7 @@ use App\Models\Jamaah\JamaahHistory;
 use App\Models\Referral\ReferralLink;
 use App\Providers\RouteServiceProvider;
 use App\Services\ReferalService;
+use App\Services\UserService;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -21,13 +23,6 @@ use Throwable;
 
 class ReferalController extends Controller
 {
-
-    protected ReferalService $referalService;
-
-    public function __construct(ReferalService $referalService)
-    {
-        $this->referalService = $referalService;
-    }
 
     public function referal($hashableId, $auth = 'login')
     {
@@ -111,19 +106,26 @@ class ReferalController extends Controller
 
         DB::beginTransaction();
         try {
-            $createNewUser = new CreateNewUser();
-            $newUser = $createNewUser->handle($validator);
-            $this->referalService->saveInvitedPerson($referralLink, $newUser['user']);
 
-            $jamaahHistory = new AddJamaahHistory();
-            $jamaahHistory->handle($newUser['jamaah']);
+            $tenant = activeTenant();
+            $userService = new UserService(tenantId: $tenant->id);
+            $newUser = $userService
+                ->createNewUser($validator)
+                ->setRole(RoleEnum::Jamaah->keyValue())
+                ->createVa('tabungan')
+                ->setDepartureStatus()
+                ->get();
+
+            /* end:: user service */
+
+            $referralService = new ReferalService(tenantId: $tenant->id);
+            $referralService->saveInvitedPerson($referralLink, $newUser);
             DB::commit();
 
             notify('Selamat!', "Kamu telah berhasil membuat akun dan mengikuti program `{$referralLink->package->name}` bersama {$referralLink->createdBy->name}", 'success');
 
             return redirect(route('login'));
         }catch (Throwable $throwable){
-            throw $throwable;
             DB::rollBack();
             notify('Oops!!', $throwable->getMessage(), 'error');
             return redirect()->back();
