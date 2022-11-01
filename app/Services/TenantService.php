@@ -27,7 +27,7 @@ class TenantService
      */
     public function tenantId(int $tenantId = null): static
     {
-        $this->query->tenantId($tenantId ?? $this->tenantId);
+        $this->query->where('id', ($tenantId ?? $this->tenantId));
         return $this;
     }
 
