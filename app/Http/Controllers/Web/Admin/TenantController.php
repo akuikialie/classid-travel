@@ -127,6 +127,7 @@ class TenantController extends Controller
 
             DB::commit();
 
+            notify('Berhasil', 'Data paket berhasil diperbarui!', 'success')->autoClose();
             return redirect()->back();
 
         }catch (\Throwable $e){
