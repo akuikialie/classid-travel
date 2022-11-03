@@ -50,6 +50,10 @@ if (!function_exists('menuSidebar')) {
                 "url" => route('master.schedule.index'),
                 "name" => "Master Keberangkatan",
                 "icon" => "bx bx-right-arrow-alt",
+            ],[
+                "url" => route('master.itinerary.index'),
+                "name" => "Master Itinerary",
+                "icon" => "bx bx-right-arrow-alt",
             ],
             /* [
                 'url' => null,

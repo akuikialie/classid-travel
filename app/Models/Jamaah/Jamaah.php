@@ -3,6 +3,7 @@
 namespace App\Models\Jamaah;
 
 use App\Models\Geo\City;
+use App\Models\HashableId;
 use App\Models\Plan\PlanPackage;
 use App\Models\Schedule\Schedule;
 use App\Models\User;
@@ -19,7 +20,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Jamaah extends Model
 {
-    use HasFactory, HasTenant, SoftDeletes;
+    use HasFactory, HasTenant, SoftDeletes, HashableId;
 
     protected $table = 'jamaah';
 

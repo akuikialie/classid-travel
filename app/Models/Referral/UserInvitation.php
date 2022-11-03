@@ -2,6 +2,7 @@
 
 namespace App\Models\Referral;
 
+use App\Models\HashableId;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -10,7 +11,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class UserInvitation extends Model
 {
-    use HasFactory, SoftDeletes;
+    use HasFactory, SoftDeletes, HashableId;
 
     protected $table = 'user_invitations';
 

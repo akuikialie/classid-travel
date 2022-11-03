@@ -2,6 +2,7 @@
 
 namespace App\Models\Jamaah;
 
+use App\Models\HashableId;
 use App\Models\Plan\PlanPackage;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -10,7 +11,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class JamaahHistory extends Model
 {
-    use HasFactory, SoftDeletes;
+    use HasFactory, SoftDeletes, HashableId;
 
     protected $table = 'jamaah_histories';
 

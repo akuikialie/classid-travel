@@ -5,6 +5,7 @@ namespace App\Http\Routes\Web\Admin;
 use App\Enums\RoleEnum;
 use App\Http\Controllers\Web\Admin\Master\DestinationController;
 use App\Http\Controllers\Web\Admin\Master\FacilityController;
+use App\Http\Controllers\Web\Admin\Master\ItineraryController;
 use App\Http\Controllers\Web\Admin\Master\PackageController;
 use App\Http\Controllers\Web\Admin\Master\ScheduleController;
 use Dentro\Yalr\BaseRoute;
@@ -54,6 +55,12 @@ class MasterRoute extends BaseRoute
                     'destroy' => $this->name('package.destroy'),
                 ]
             ]);
+            $this->router->get($this->prefix('package/{package}/itinerary-setup'),
+                [PackageController::class, 'createSetupItinerary'])
+                ->name($this->name('package.itinerary-setup.create'));
+            $this->router->post($this->prefix('package/{package}/itinerary-setup'),
+                [PackageController::class, 'storeSetupItinerary'])
+                ->name($this->name('package.itinerary-setup.store'));
 
             $this->router->resource($this->prefix('schedule'), ScheduleController::class, [
                 'names' => [
@@ -66,6 +73,19 @@ class MasterRoute extends BaseRoute
                     'destroy' => $this->name('schedule.destroy'),
                 ]
             ]);
+
+            $this->router->resource($this->prefix('itinerary'), ItineraryController::class, [
+                'names' => [
+                    'index' => $this->name('itinerary.index'),
+                    'create' => $this->name('itinerary.create'),
+                    'store' => $this->name('itinerary.store'),
+                    'show' => $this->name('itinerary.show'),
+                    'edit' => $this->name('itinerary.edit'),
+                    'update' => $this->name('itinerary.update'),
+                    'destroy' => $this->name('itinerary.destroy'),
+                ]
+            ]);
+
 
             // $this->router->get('/dashboard', function () {
             //     return view('pages.web.dashboard.dashboard-index');

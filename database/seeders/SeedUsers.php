@@ -6,7 +6,6 @@ use App\Enums\RoleEnum;
 use App\Models\Jamaah\Jamaah;
 use App\Models\Tenant\Tenant;
 use App\Models\User;
-use App\Services\UserService;
 use App\Services\VirtualAccountService;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
@@ -21,6 +20,17 @@ class SeedUsers extends Seeder
      */
     public function run()
     {
+
+        $admins = [
+            [
+                'tenant_id' => 6,
+                'name' => 'Dev Account',
+                'phone' => '083333333331',
+                'password' => Hash::make('admin'),
+                'role' => RoleEnum::Admin->keyValue(),
+            ]
+
+        ];
 
         for ($i = 1; $i <= 5; $i++){
             $admins[] = [

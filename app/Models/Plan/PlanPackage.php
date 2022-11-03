@@ -4,6 +4,8 @@ namespace App\Models\Plan;
 
 use App\Models\Destination\Destination;
 use App\Models\HashableId;
+use App\Models\Itinerary\Itinerary;
+use App\Models\Itinerary\ItineraryActivity;
 use App\Models\Jamaah\Jamaah;
 use App\Models\User;
 use App\Traits\HasTenant;
@@ -11,6 +13,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
@@ -73,15 +76,12 @@ class PlanPackage extends Model implements HasMedia
         return $this->morphedByMany(Jamaah::class, 'model', 'model_has_package', 'plan_package_id', 'model_id');
     }
 
-    // public function users(): BelongsToMany
-    // {
-    //     return $this->morphedByMany(
-    //         getModelForGuard($this->attributes['guard_name']),
-    //         'model',
-    //         config('permission.table_names.model_has_roles'),
-    //         PermissionRegistrar::$pivotRole,
-    //         config('permission.column_names.model_morph_key')
-    //     );
-    // }
+    /**
+     * @return MorphMany
+     */
+    public function myItineraries(): MorphMany
+    {
+        return $this->morphMany(Itinerary::class, 'model', 'model_type', 'model_id');
+    }
 
 }
