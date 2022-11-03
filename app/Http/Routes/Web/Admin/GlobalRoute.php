@@ -9,13 +9,16 @@ use Dentro\Yalr\BaseRoute;
 class GlobalRoute extends BaseRoute
 {
 
-    protected string $prefix = 'master';
-    protected string $name = 'master';
+    protected string $prefix = 'tenant';
+    protected string $name = 'tenant';
 
     public function register(): void
     {
         $this->router->middleware(['auth', 'verified', 'role:' . RoleEnum::Admin->keyValue()])->group(function () {
-            $this->router->resource('tenant', TenantController::class);
+            $this->router->resource($this->prefix, TenantController::class);
+            $this->router->post($this->prefix('{tenant}/add-media-collections'),
+                [TenantController::class, 'addMedia'])
+                ->name($this->name('tenant.add-media'));
         });
     }
 }

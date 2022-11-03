@@ -10,8 +10,8 @@ class Controller extends BaseController
     {
         parent::__construct();
 
-        if(!isActiveTenant()) {
-            abort(404);
-        }
+//        if(!isActiveTenant()) {
+//            abort(404);
+//        }
     }
 }

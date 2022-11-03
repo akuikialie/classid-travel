@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Models\Tenant\Tenant;
 use Exception;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
 use Spatie\MediaLibrary\MediaCollections\Exceptions\FileDoesNotExist;
 use Spatie\MediaLibrary\MediaCollections\Exceptions\FileIsTooBig;
@@ -57,6 +58,35 @@ class TenantService
     }
 
     /**
+     * @throws \Throwable
+     * @throws FileDoesNotExist
+     * @throws FileIsTooBig
+     */
+    public function addMediaCollection(Request $request, string $collectionName): static
+    {
+        try {
+            $tenant = $this->tenant();
+            if ($request->hasfile('collections')) {
+//                $tenant->clearMediaCollection($collectionName);
+                foreach ($request->file('collections') as $key => $media){
+                    $tenant
+                        ->addMedia($media)
+                        ->withCustomProperties([
+                            'order' => $key,
+                            'url' => 'some url',
+                            'short description' => 'some description',
+                        ])
+                        ->toMediaCollection($collectionName);
+                }
+            }
+        } catch (\Throwable $th) {
+            throw $th;
+        }
+
+        return $this;
+    }
+
+    /**
      * @param array $input
      * @return Tenant|null
      * @throws Exception
@@ -71,7 +101,10 @@ class TenantService
         return $tenant->fresh();
     }
 
-    public function get()
+    /**
+     * @return Model|Builder|null
+     */
+    public function get(): Model|Builder|null
     {
         return $this->query->first();
     }

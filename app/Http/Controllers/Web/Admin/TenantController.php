@@ -14,6 +14,8 @@ use Illuminate\Contracts\View\View;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\DB;
+use Psr\Container\ContainerExceptionInterface;
+use Psr\Container\NotFoundExceptionInterface;
 
 class TenantController extends Controller
 {
@@ -54,22 +56,26 @@ class TenantController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  int  $id
+     * @param $hash
      * @return Application|Factory|View
+     * @throws ContainerExceptionInterface
+     * @throws NotFoundExceptionInterface
      */
-    public function show($id)
+    public function show($hash)
     {
         $tenant = Tenant::query()
             ->with('media')
-            ->whereId($id)->first();
+            ->byHashOrFail($hash);
 
         if (\request()->has('fragment')){
             try {
                 $fragmentName = \request()->get('fragment');
+                $fragmentParameter = \request()->get('parameter');
                 $this->setGlobalParams('fragment_active', $fragmentName);
                 $this->fragment(new TenantFragmentController())
                     ->render($fragmentName ?? 'target', [
-                        'hash' => $tenant->hash,
+                        'tenant' => $tenant,
+                        'parameter' => $fragmentParameter ?? null,
                     ]);
             } catch (\ReflectionException $e) {
             }
@@ -149,5 +155,36 @@ class TenantController extends Controller
     public function destroy($id)
     {
         //
+    }
+
+    public function addMedia(Request $request, $hash)
+    {
+        $request->validate([
+            'collection' => ['required', 'string'],
+            'collections' => ['nullable'],
+        ]);
+
+        DB::beginTransaction();
+        try {
+
+            /* begin:: tenant service */
+            $tenant = Tenant::query()
+                ->byHashOrFail($hash);
+
+            $tenantService = new TenantService($tenant->id);
+            $tenantService
+                ->tenantId($tenant->id)
+                ->addMediaCollection($request, $request->collection);
+            /* end:: tenant service */
+
+            notify('Berhasil!', "Berhasil memperbarui koleksi {$request->collection}", 'success');
+
+            DB::commit();
+            return redirect()->back();
+        }catch (\Throwable $e){
+            DB::rollBack();
+            notify('Oops!', $e->getMessage(), 'error');
+            return redirect()->back();
+        }
     }
 }
