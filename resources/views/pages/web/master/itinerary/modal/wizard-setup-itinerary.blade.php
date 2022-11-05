@@ -7,7 +7,7 @@
       <!--begin::Modal header-->
       <div class="modal-header">
         <!--begin::Modal title-->
-        <h2>Setup Itinerary</h2>
+        <h2>Setup Kegiatan</h2>
         <!--end::Modal title-->
         <!--begin::Close-->
         {{-- <div class="btn btn-sm btn-icon btn-active-color-primary" data-bs-dismiss="modal">
@@ -56,11 +56,11 @@
                       <!--begin::Label-->
                       <div class="stepper-label">
                         <h3 class="stepper-title">
-                          Day {{$i}}
+                          Hari ke-{{$i}}
                         </h3>
 
                         <div class="stepper-desc">
-                          {{ $itinerary?->activities->count() ?? 0 }} Activity
+                          {{ $itinerary?->activities->count() ?? 0 }} Kegiatan
                         </div>
                       </div>
                       <!--end::Label-->
@@ -99,13 +99,13 @@
                     <!--begin::Heading-->
                     <div class="mb-13 text-center">
                       <!--begin::Title-->
-                      <h1 class="mb-3">Itinerary Day {{ $i }}</h1>
+                      <h1 class="mb-3">Kegiatan hari ke-{{ $i }}</h1>
                       <!--end::Title-->
                       <!--begin::Description-->
-                      <div class="text-muted fw-semibold fs-5">Tambahkan aktifitas pada hari ke-{{ $i }}.
+                      <div class="text-muted fw-semibold fs-5">Tambahkan kegiatan pada hari ke-{{ $i }}.
                         <a href="#" class="fw-bold link-primary add-itinerary-activity"
                            data-itinerary="data-itinerary-{{ $i }}"
-                           data-add-itinerary="new-itinerary-activity-{{$i}}">Aktifitas Baru</a>.
+                           data-add-itinerary="new-itinerary-activity-{{$i}}">Tambah Kegiatan</a>.
                       </div>
                       <!--end::Description-->
                     </div>
@@ -127,14 +127,14 @@
                     <div class="fv-row mb-10">
                       <!--begin::Label-->
                       <label class="d-flex align-items-center fs-5 fw-semibold mb-2">
-                        <span class="required">Summary</span>
+                        <span class="required">Keterangan</span>
                         <i class="fas fa-exclamation-circle ms-2 fs-7" data-bs-toggle="tooltip" title="Summary"></i>
                       </label>
                       <!--end::Label-->
                       <!--begin::Input-->
                       <input type="text" class="form-control form-control-lg form-control-solid" name="name[day-{{$i}}][]"
                              placeholder="Summary"
-                             value="{{ old('name', $itinerary->name ?? "day-{$i}") }}"/>
+                             value="{{ old('name', $itinerary->name ?? "Keterangan hari ke-{$i}") }}"/>
                       <!--end::Input-->
                     </div>
                     <!--end::Input group-->
@@ -146,7 +146,7 @@
                             <!--begin::Input group-->
                             <div class="fv-row mb-10">
                               <!--begin::Label-->
-                              <label class="form-label">Time</label>
+                              <label class="form-label">Waktu</label>
                               <!--end::Label-->
 
                               <!--begin::Input-->
@@ -174,7 +174,7 @@
                                     {{ $_itinerary->activity }}
                                   </option>
                                 @empty
-                                  <option value="" selected disabled>Data aktifitas belum tersedia</option>
+                                  <option value="" selected disabled>Data kegiatan belum tersedia</option>
                                 @endforelse
                               </select>
                             </div>
@@ -227,7 +227,7 @@
                             @forelse($itineraries as $itinerary)
                               <option value="{{ $itinerary->id }}">{{ $itinerary->activity }}</option>
                             @empty
-                              <option value="" selected disabled>Data aktifitas belum tersedia</option>
+                              <option value="" selected disabled>Data kegiatan belum tersedia</option>
                             @endforelse
                           </select>
                         </div>

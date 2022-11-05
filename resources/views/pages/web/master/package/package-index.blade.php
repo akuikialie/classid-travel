@@ -324,7 +324,7 @@
                   <div class="menu-item px-3 text-nowrap">
                     <a class="menu-link px-3 btn-itinerary-setup" data-id="{{ $package->hash }}"
                        data-bs-toggle="tooltip"
-                       title="Itinarary Setup">Itinerary Setup</a>
+                       title="Setup kegiatan">Setup Kegiatan</a>
                   </div>
                   <!--end::Menu item-->
 

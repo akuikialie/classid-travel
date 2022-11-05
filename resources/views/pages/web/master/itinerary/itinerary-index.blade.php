@@ -1,7 +1,7 @@
 @extends('layouts.web.app')
 
 @section('toolbar')
-  <a href="#" class="btn btn-sm fw-bold btn-primary" id="setup-button">Buat Aktifitas</a>
+  <a href="#" class="btn btn-sm fw-bold btn-primary" id="setup-button">Buat Kegiatan Baru</a>
 @endsection
 
 @section('page-styles')
@@ -93,8 +93,8 @@
     <!--begin::Header-->
     <div class="card-header border-0 pt-5">
       <h3 class="card-title align-items-start flex-column">
-        <span class="card-label fw-bold fs-3 mb-1">Data Aktifitas</span>
-        <span class="text-muted mt-1 fw-semibold fs-7">{{ $itineraries->count() }} Aktifitas</span>
+        <span class="card-label fw-bold fs-3 mb-1">Data Kegiatan</span>
+        <span class="text-muted mt-1 fw-semibold fs-7">{{ $itineraries->count() }} Kegiatan</span>
       </h3>
     </div>
     <!--end::Header-->

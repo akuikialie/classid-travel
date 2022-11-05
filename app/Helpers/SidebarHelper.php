@@ -53,7 +53,7 @@ if (!function_exists('menuSidebar')) {
                 "icon" => "bx bx-right-arrow-alt",
             ],[
                 "url" => route('master.itinerary.index'),
-                "name" => "Master Itinerary",
+                "name" => "Master Kegiatan",
                 "icon" => "bx bx-right-arrow-alt",
             ],
             /* [

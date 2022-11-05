@@ -72,7 +72,7 @@ class ItineraryController extends Controller
             ItineraryActivity::query()->create($input);
             /* end:: create new itinerary activity */
 
-            notify('Berhasil', 'Berhasil membuat aktifitas baru!.', 'success');
+            notify('Berhasil', 'Berhasil membuat kegiatan baru!.', 'success');
         }catch (\Throwable $e){
             notify('Gagal', $e->getMessage(), 'error');
         } finally {
@@ -137,7 +137,7 @@ class ItineraryController extends Controller
             $activity->save();
             /* end:: update itinerary activity */
 
-            notify('Berhasil', 'Berhasil memperbarui data aktifitas!.', 'success');
+            notify('Berhasil', 'Berhasil memperbarui data kegiatan!.', 'success');
         }catch (\Throwable $e){
             notify('Gagal', $e->getMessage(), 'error');
         } finally {
@@ -159,7 +159,7 @@ class ItineraryController extends Controller
                ->byHashOrFail($hash);
 
             if ($activity->has_itineraries_count > 0) {
-                throw new InvalidArgumentException('Tidak dapat mengapus aktifitas, karena aktifitas ini sedang digunakan!', 500);
+                throw new InvalidArgumentException('Tidak dapat mengapus kegiatan, karena kegiatan ini sedang digunakan!', 500);
             }
             $activity->delete();
 
