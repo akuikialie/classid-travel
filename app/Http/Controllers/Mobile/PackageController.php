@@ -27,8 +27,10 @@ class PackageController extends Controller
      */
     public function index()
     {
-        $with = ['myPlan:id,value', 'myFacilities', 'myDestinations', 'media'];
-        $withCount = ['myFacilities', 'myDestinations'];
+        $with = ['myPlan:id,value', 'myFacilities', 'myDestinations', 'myItineraries' => function($subQuery){
+            $subQuery->orderBy('day', 'asc');
+        }, 'myItineraries.activities', 'media'];
+        $withCount = ['myFacilities', 'myDestinations', 'myItineraries'];
 
         $user = auth()->user();
         $packages = PlanPackage::query()
@@ -37,9 +39,12 @@ class PackageController extends Controller
             ->withCount($withCount)
             ->where(function ($subQuery) {
                 $subQuery->where('is_publish', true);
-                $subQuery->where('status', Statuses::tryFrom('active')->keyValue());
+                $subQuery->where('status', Statuses::Active->keyValue());
             })
             ->get();
+
+
+
         return view('pages.mobile.package.package-index', ['packages' => $packages]);
     }
 
@@ -113,11 +118,23 @@ class PackageController extends Controller
     public function show(int $id): View|Factory|Application
     {
 
+        $with = ['myFacilities', 'myDestinations', 'myItineraries' => function($subQuery){
+            $subQuery->orderBy('day', 'asc');
+        }, 'myItineraries.activities', 'media'];
+
+        $withCount = ['myFacilities', 'myDestinations', 'myItineraries'];
+
+
         $package = PlanPackage::query()
-            ->with(['myFacilities', 'myDestinations'])
+            ->with($with)
+            ->withCount($withCount)
             ->whereId($id)->first();
+//        dd($package);
+
+        $user = auth()->user();
 
         $schedules = Schedule::query()
+            ->tenantId($user->tenant_id)
             ->whereDate('departure_date', '>', Carbon::now()->addDay(7))
             ->get();
 

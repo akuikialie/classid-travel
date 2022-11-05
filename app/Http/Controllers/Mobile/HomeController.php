@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Mobile;
 
 use App\Models\Jamaah\Jamaah;
+use App\Models\Tenant\Tenant;
 use App\Models\User;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\View\Factory;
@@ -63,6 +64,19 @@ class HomeController extends Controller
         $user = auth()->user();
         $tabunganUtama = array_merge($semuaTabungan, $tabunganPerencanaan);
 
+        $tenant = Tenant::query()
+            ->with(['media'])
+            ->where('id', $user->tenant_id)
+            ->first();
+
+        $mediaBanners = $tenant->getMedia('banners');
+        $bannerCollections = [];
+        foreach ($mediaBanners as $item){
+            $bannerCollections[] = [
+                'image_url' => $item->getUrl(),
+                'order' => $item->getCustomProperty('order'),
+            ];
+        }
 
         return view('pages.mobile.home.dashboard-index', [
             'data' => collect([
@@ -73,6 +87,7 @@ class HomeController extends Controller
             ]),
             'list_moneyboxs' => collect($semuaTabungan),
             'total_tabungan' => $totalTabungan,
+            'banners' => $bannerCollections ?? [],
         ]);
     }
 

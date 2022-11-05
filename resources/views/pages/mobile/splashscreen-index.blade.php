@@ -3,12 +3,14 @@
 @section('mobile-content')
 
   @php
-    $avatars = $tenant->getMedia('avatars');
-  $avatar = null;
+    $avatar = null;
 
-  if ($avatars->count() > 0) {
-      $avatar = collect($avatars)->last()->getUrl();
-  }
+    if (isset($tenant)){
+      $avatars = $tenant->getMedia('avatars');
+      if ($avatars->count() > 0) {
+          $avatar = collect($avatars)->last()->getUrl();
+      }
+    }
   @endphp
   <div class="card preload-img" data-src="{{ $avatar ?? asset('mobile/images/logo/logo_umrah_haji.jpeg') }}"
        data-card-height="cover">

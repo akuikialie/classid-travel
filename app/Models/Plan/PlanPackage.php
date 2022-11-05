@@ -83,5 +83,4 @@ class PlanPackage extends Model implements HasMedia
     {
         return $this->morphMany(Itinerary::class, 'model', 'model_type', 'model_id');
     }
-
 }

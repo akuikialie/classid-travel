@@ -3,7 +3,7 @@
 @section('mobile-content')
     @include('components.mobile.toolbar', [
         'title' => 'Rincian Tabungan',
-        'backDestination' => route('tabungan.index'),
+        'backDestination' => url()->previous(),
     ])
 
     @include('pages.mobile.tabungan.menu.menu-tabungan', $moneybox)

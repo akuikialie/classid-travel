@@ -39,6 +39,8 @@ class ItineraryService
                     ->where([
                         'tenant_id' => $this->tenantId,
                         'day' => $key ?? null,
+                        'model_id' => $this->model->id,
+                        'model_type' => $this->model::class,
                     ])->first();
 
                 if (!$itinerary){

@@ -35,9 +35,45 @@
     </div>
   </div>
 
+  @if(isset($banners))
+
+    <!-- Homepage Slider-->
+    <div class="splide single-slider slider-no-arrows slider-no-dots homepage-slider" id="single-slider-1">
+      <div class="splide__track">
+        <div class="splide__list">
+
+          @for($i = 0; $i < config('media-collections.collection_settings.banners.max'); $i++)
+            @php
+              $a = $i;
+
+              $currentBanner = collect($banners)->where('order', $a+1)->last();
+              $currentBanner = $currentBanner['image_url'] ?? null;
+              if (!isset($currentBanner)){
+                  continue;
+              }
+            @endphp
+
+            <div class="splide__slide">
+              <div class="card rounded-l mx-2 text-center shadow-l" style="background-image: url({{$currentBanner}})" data-card-height="320">
+                <div class="card-bottom">
+                  <h1 class="font-24 font-700">{{--Meet Azures--}}</h1>
+                  <p class="boxed-text-xl">
+                    {{--Azures brings beauty and colors to your Mobile device with a stunning user interface to match.--}}
+                  </p>
+                </div>
+                <div class="card-overlay bg-gradient-fade"></div>
+              </div>
+            </div>
+          @endfor
+
+        </div>
+      </div>
+    </div>
+  @endif
+
   <div class="content mb-2">
     <h5 class="float-start font-16 font-500">Program Kami</h5>
-{{--    <a class="float-end font-12 color-highlight mt-n1" href="#">View All</a>--}}
+    {{--    <a class="float-end font-12 color-highlight mt-n1" href="#">View All</a>--}}
     <div class="clearfix"></div>
   </div>
 
@@ -68,6 +104,7 @@
       </button>
     </form>
   </div>
+
 @endsection
 
 @section('external-mobile-content')

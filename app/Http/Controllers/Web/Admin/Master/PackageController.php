@@ -356,7 +356,6 @@ class PackageController extends Controller
                 throw new InvalidArgumentException('Terjadi perbedaan input data!. mohon di periksa kembali.', 500);
             }
 
-
             $lastData = [];
 
             $sampleName = $input['name'];
