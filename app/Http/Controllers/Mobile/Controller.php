@@ -10,7 +10,7 @@ class Controller extends BaseController
     {
         parent::__construct();
 
-        if(!isActiveTenant()) {
+        if(!app()->runningInConsole() && !isActiveTenant()) {
             abort(404);
         }
     }
