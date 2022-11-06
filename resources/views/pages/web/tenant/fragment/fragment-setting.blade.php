@@ -23,9 +23,9 @@
         <!--begin::Col-->
         <div class="col-lg-8">
           <!--begin::Image input-->
-          <div class="image-input image-input-outline" data-kt-image-input="true" style="background-image: url('/metronic8/demo1/assets/media/svg/avatars/blank.svg')">
+          <div class="image-input image-input-outline" data-kt-image-input="true" style="background-image: url({{ $avatar?? asset('logo/96w/logo-pict@96px.png') }})">
             <!--begin::Preview existing avatar-->
-            <div class="image-input-wrapper w-125px h-125px bgi-position-center" style="background-size: 75%; background-image: url('/metronic8/demo1/assets/media/svg/brand-logos/volicity-9.svg')"></div>
+            <div class="image-input-wrapper w-125px h-125px bgi-position-center" style="background-size: 75%; background-image: url({{ $avatar?? asset('logo/96w/logo-pict@96px.png') }})"></div>
             <!--end::Preview existing avatar-->
             <!--begin::Label-->
             <label class="btn btn-icon btn-circle btn-active-color-primary w-25px h-25px bg-white shadow" data-kt-image-input-action="change" data-bs-toggle="tooltip" title="Change avatar">

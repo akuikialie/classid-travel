@@ -74,7 +74,7 @@ class UserService
         $input = array_merge($input, ['password' => Hash::make($input['password'])]);
         $this->user = $this->query->create($input);
         $newJamaah = new Jamaah([
-            'tenant_id' => 1,
+            'tenant_id' => $this->tenantId,
         ]);
         $this->user->jamaah()->save($newJamaah);
 

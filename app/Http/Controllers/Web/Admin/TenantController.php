@@ -13,6 +13,7 @@ use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use Illuminate\Support\Facades\DB;
 
 class TenantController extends Controller
 {
@@ -59,6 +60,7 @@ class TenantController extends Controller
     public function show($id)
     {
         $tenant = Tenant::query()
+            ->with('media')
             ->whereId($id)->first();
 
         if (\request()->has('fragment')){
@@ -93,16 +95,17 @@ class TenantController extends Controller
      *
      * @param Request $request
      * @param  int  $id
-     * @return Response
+     * @return \Illuminate\Http\RedirectResponse|Response
      */
     public function update(Request $request, $hash)
     {
         $input = $request->validate([
-            'avatar_remove' => ['required', 'string'],
+            'avatar_remove' => ['nullable', 'string'],
             'name' => ['required', 'string'],
             'slug' => ['required', 'string'],
         ]);
 
+        DB::beginTransaction();
         try {
             /* begin:: tenant service */
             $tenant = Tenant::query()
@@ -111,15 +114,30 @@ class TenantController extends Controller
             $user = auth()->user();
             $tenantService = new TenantService($user->tenant_id);
             $tenantService
-                ->
-                ->setAvatar($request);
+                ->tenantId($tenant->id);
+
+            if ($input['avatar_remove']){
+                $tenantService->unsetAvatar();
+            }else{
+                $tenantService
+                    ->setAvatar($request);
+            }
+            $tenantService->update($input);
             /* end:: tenant service */
+
+            DB::commit();
+
+            notify('Berhasil', 'Data paket berhasil diperbarui!', 'success')->autoClose();
+            return redirect()->back();
+
         }catch (\Throwable $e){
+
+            DB::rollBack();
+            notify('Oops!', $e->getMessage(), 'error');
+
             return redirect()->back();
         }
 
-
-        dd($request->all());
     }
 
     /**

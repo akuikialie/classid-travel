@@ -34,10 +34,11 @@ class TabunganController extends Controller
             ->with(['tabunganPackages.myPackage.myPlan', 'departureSchedule'])
             ->where('user_id', '=', auth()->user()->id)
             ->first();
+//        dd($jamaah);
 
         $semuaTabungan = array_merge($semuaTabungan, $tabunganPribadi);
         $tabunganPerencanaan = [];
-        foreach ($jamaah->tabunganPackages as $key => $tabungan) {
+        foreach ($jamaah->tabunganPackages ?? [] as $key => $tabungan) {
             $namaTabungan = 'tabungan ' . $tabungan?->myPackage?->name;
             $tabunganPerencanaan[] = [
                 'namaTabungan' => ucwords($namaTabungan) . ' ' . Carbon::parse($jamaah->departureSchedule?->departure_date)->format('Y'),

@@ -5,7 +5,9 @@ namespace App\Services;
 use App\Models\Tenant\Tenant;
 use Exception;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Support\Facades\Request;
+use Illuminate\Http\Request;
+use Spatie\MediaLibrary\MediaCollections\Exceptions\FileDoesNotExist;
+use Spatie\MediaLibrary\MediaCollections\Exceptions\FileIsTooBig;
 
 class TenantService
 {
@@ -19,20 +21,54 @@ class TenantService
         $this->query = Tenant::query();
     }
 
-    public function tenantId(int $tenantId = null)
+    /**
+     * @param int|null $tenantId
+     * @return $this
+     */
+    public function tenantId(int $tenantId = null): static
     {
-        $this->query->tenantId($tenantId ?? $tenantId);
+        $this->query->where('id', ($tenantId ?? $this->tenantId));
+        return $this;
     }
 
-    public function setAvatar(Request $request)
+    /**
+     * @return $this
+     * @throws FileDoesNotExist
+     * @throws FileIsTooBig
+     */
+    public function setAvatar(Request $request): static
     {
-        $tenant =
-        $user->addMediaFromRequest('avatar')->toMediaCollection('avatars');
+        try {
+            $tenant = $this->tenant();
+
+            if ($request->hasFile('avatar')) {
+                $tenant->addMediaFromRequest('avatar')
+                    ->toMediaCollection('avatars');
+            }
+            return $this;
+        } catch (FileDoesNotExist|FileIsTooBig|Exception $e) {
+            throw $e;
+        }
     }
 
     public function unsetAvatar()
     {
 
+    }
+
+    /**
+     * @param array $input
+     * @return Tenant|null
+     * @throws Exception
+     */
+    public function update(array $input): ?Tenant
+    {
+        $tenant = $this->tenant();
+        $tenant->name = $input['name'];
+        $tenant->slug = $input['slug'];
+        $tenant->save();
+
+        return $tenant->fresh();
     }
 
     public function get()
