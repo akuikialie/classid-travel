@@ -18,7 +18,5 @@ class DefaultRoute extends BaseRoute
 //            })->name('dashboard.admin');
             $this->router->get('/dashboard', [DashboardController::class, 'index'])->name('dashboard.admin');
         });
-
-
     }
 }

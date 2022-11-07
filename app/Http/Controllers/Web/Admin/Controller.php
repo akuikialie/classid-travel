@@ -10,9 +10,8 @@ class Controller extends BaseController
     {
         parent::__construct();
 
-        if (!(env(key: 'ADMIN_URL') === \request()->host())){
+        if (!app()->runningInConsole() && !(env(key: 'ADMIN_URL') === request()->host())){
             abort(404);
         }
-
     }
 }

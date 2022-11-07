@@ -62,17 +62,7 @@ class MasterRoute extends BaseRoute
                 [PackageController::class, 'storeSetupItinerary'])
                 ->name($this->name('package.itinerary-setup.store'));
 
-            $this->router->resource($this->prefix('schedule'), ScheduleController::class, [
-                'names' => [
-                    'index' => $this->name('schedule.index'),
-                    'create' => $this->name('schedule.create'),
-                    'store' => $this->name('schedule.store'),
-                    'show' => $this->name('schedule.show'),
-                    'edit' => $this->name('schedule.edit'),
-                    'update' => $this->name('schedule.update'),
-                    'destroy' => $this->name('schedule.destroy'),
-                ]
-            ]);
+            $this->router->resource($this->prefix('schedule'), ScheduleController::class)->names($this->name('schedule'));
 
             $this->router->resource($this->prefix('itinerary'), ItineraryController::class, [
                 'names' => [
@@ -91,5 +81,43 @@ class MasterRoute extends BaseRoute
             //     return view('pages.web.dashboard.dashboard-index');
             // })->name('dashboard.admin');
         });
+    }
+
+    /**
+     * Perform after register callback.
+     *
+     * @return void
+     */
+    public function afterRegister(): void
+    {
+        menus(group: 'Master')
+            ->route(
+                title: 'Master Paket',
+                name: 'master.package.index',
+                attribute: [
+                    'icon' => 'bx bx-right-arrow-alt',
+                ],
+            )
+            ->route(
+                title: 'Master Fasilitas',
+                name: 'master.facility.index',
+                attribute: [
+                    'icon' => 'bx bx-right-arrow-alt',
+                ],
+            )
+            ->route(
+                title: 'Master Tujuan',
+                name: 'master.destination.index',
+                attribute: [
+                    'icon' => 'bx bx-right-arrow-alt',
+                ],
+            )
+            ->route(
+                title: 'Master Keberangkatan',
+                name: 'master.schedule.index',
+                attribute: [
+                    'icon' => 'bx bx-right-arrow-alt',
+                ],
+            );
     }
 }

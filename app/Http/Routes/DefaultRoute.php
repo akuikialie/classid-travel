@@ -43,7 +43,5 @@ class DefaultRoute extends BaseRoute
         //         return view('pages.mobile.tabungan.tabungan-index');
         //     })->name('tabungan');
         // });
-
-
     }
 }
