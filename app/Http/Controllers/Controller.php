@@ -2,17 +2,83 @@
 
 namespace App\Http\Controllers;
 
-use Closure;
+use App\Models\User;
+use Exception;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Foundation\Bus\DispatchesJobs;
 use Illuminate\Foundation\Validation\ValidatesRequests;
-use Illuminate\Http\Request;
 use Illuminate\Routing\Controller as BaseController;
+use Illuminate\Support\Arr;
+use Illuminate\Support\Collection;
+use Illuminate\View\View;
+use JetBrains\PhpStorm\Pure;
 
 class Controller extends BaseController
 {
     use AuthorizesRequests, DispatchesJobs, ValidatesRequests;
 
+    /**
+     * Current view path
+     *
+     * @var null|string
+     */
+    protected ?string $viewPath = null;
+
+    /**
+     * Active User.
+     *
+     * @var string|null
+     */
+    private ?User $activeUser;
+
+    /**
+     * Controller data.
+     *
+     * @var array
+     */
+    private array $controllerData = [];
+
+    /**
+     * Active menu indicator.
+     *
+     * @var array
+     */
+    private array $activeMenu = [];
+
+    /**
+     * Page title.
+     *
+     * @var string|null
+     */
+    private ?string $pageTitle;
+
+    /**
+     * Page Meta.
+     *
+     * @var array
+     */
+    private array $pageMeta = [
+        'description' => null,
+        'keywords' => null
+    ];
+
+    /**
+     * Breadcrumbs Collection.
+     *
+     * @var Collection
+     */
+    private Collection $breadCrumbs;
+
+    /**
+     * Reserved variable for the controller.
+     *
+     * @var array
+     */
+    private array $reservedVariables = ['activeMenu', 'pageTitle', 'pageMeta'];
+
+    /**
+     * Controller constructor.
+     */
     public function __construct()
     {
         if (
@@ -22,5 +88,169 @@ class Controller extends BaseController
         ){
             return to_route('dashboard.admin')->send();
         }
+        $this->setBreadCrumb([]);
+    }
+
+    /**
+     * Serve blade template.
+     *
+     * @param string $view
+     *
+     * @return \Illuminate\View\View
+     */
+    protected function view(string $view): View
+    {
+        if (false === array_key_exists('pageTitle', $this->controllerData)) {
+            $this->setPageTitle('Untitled');
+        }
+
+        $this->setPageMeta('csrf_token', csrf_token());
+        $this->controllerData['activeUser'] = auth()->check() ? auth()->user() : null;
+        $this->controllerData['activeMenu'] = $this->activeMenu;
+        $this->controllerData['pageMeta'] = $this->pageMeta;
+        $this->controllerData['breadCrumbs'] = $this->breadCrumbs;
+
+        if ($this->viewPath) {
+            $view = preg_replace(['/\.+/i', '/(^\.+)|(\.+$)/i'], ['.', ''], trim($this->viewPath)) . ".{$view}";
+        }
+
+        return view($view, $this->controllerData);
+    }
+
+    /**
+     * Set Default Value for Request Input.
+     *
+     * @param string|array $name
+     * @param mixed        $value
+     *
+     * @return void
+     * @throws \Exception
+     */
+    protected function setDefault(string|array $name, mixed $value = null): void
+    {
+        if (! request()->input()) {
+            setDefaultRequest($name, $value);
+        }
+    }
+
+    /**
+     * Set controller data.
+     *
+     * @param string $name
+     * @param mixed  $value
+     *
+     * @return $this
+     * @throws \Exception
+     */
+    protected function setData(string $name, $value): self
+    {
+        if (in_array($name, $this->reservedVariables)) {
+            throw new Exception("Variable [$name] is reserved by this controller");
+        }
+        $this->controllerData[$name] = $value;
+
+        return $this;
+    }
+
+    /**
+     * Set page meta.
+     *
+     * @param string $metaKey
+     * @param mixed  $metaValue
+     *
+     * @return $this
+     */
+    protected function setPageMeta(string $metaKey, $metaValue): self
+    {
+        $this->pageMeta[$metaKey] = $metaValue;
+
+        return $this;
+    }
+
+    /**
+     * Set Page title.
+     *
+     * @param string $title
+     *
+     * @return $this
+     */
+    protected function setPageTitle(string $title): self
+    {
+        $this->controllerData['pageTitle'] = $title;
+
+        return $this;
+    }
+
+    /**
+     * Set Back Link.
+     *
+     * @param string $link
+     *
+     * @return $this
+     */
+    protected function setBackLink(string $link): self
+    {
+        $this->controllerData['backLink'] = $link;
+
+        return $this;
+    }
+
+    /**
+     * Set BreadCrumb.
+     *
+     * @param  string|array  $breadcrumb
+     * @return void
+     */
+    protected function setBreadCrumb(string|array $breadcrumb): void
+    {
+        $bc = collect();
+        if (is_string($breadcrumb)) {
+            $bc->add($this->breadCrumbFormat(['title' => $breadcrumb, 'url' => '#']));
+        } else {
+            foreach ((array) $breadcrumb as $k => $v) {
+                if (is_string($v)) {
+                    $bc->add($this->breadCrumbFormat($breadcrumb));
+                    break;
+                }
+                $bc->add($this->breadCrumbFormat($v));
+            }
+        }
+
+        $this->breadCrumbs = $bc;
+    }
+
+    /**
+     * Add BreadCrumb.
+     *
+     * @param  string|array  $breadcrumb
+     * @return void
+     */
+    protected function addBreadCrumb(string|array $breadcrumb): void
+    {
+        if (is_string($breadcrumb)) {
+            $this->breadCrumbs->add($this->breadCrumbFormat(['title' => $breadcrumb, 'url' => '#']));
+        } else {
+            foreach ((array) $breadcrumb as $k => $v) {
+                if (is_string($v)) {
+                    $this->breadCrumbs->add($this->breadCrumbFormat($breadcrumb));
+                    break;
+                }
+                $this->breadCrumbs->add($this->breadCrumbFormat($v));
+            }
+        }
+    }
+
+    /**
+     * Breadcrumb formatter.
+     *
+     * @param  array  $breadcrumb
+     * @return object
+     */
+    #[Pure]
+    private function breadCrumbFormat(array $breadcrumb): object
+    {
+        $def = ['title' => '', 'url' => '#'];
+
+        return (object) array_merge($def, Arr::only($breadcrumb, ['title', 'url']));
     }
 }
