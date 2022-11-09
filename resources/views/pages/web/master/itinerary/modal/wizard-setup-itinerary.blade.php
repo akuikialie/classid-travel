@@ -10,19 +10,9 @@
         <h2>Setup Kegiatan</h2>
         <!--end::Modal title-->
         <!--begin::Close-->
-        {{-- <div class="btn btn-sm btn-icon btn-active-color-primary" data-bs-dismiss="modal">
-        <!--begin::Svg Icon | path: icons/duotune/arrows/arr061.svg-->
-        <span class="svg-icon svg-icon-1">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none"
-                xmlns="http://www.w3.org/2000/svg">
-                <rect opacity="0.5" x="6" y="17.3137" width="16" height="2"
-                    rx="1" transform="rotate(-45 6 17.3137)" fill="currentColor" />
-                <rect x="7.41422" y="6" width="16" height="2" rx="1"
-                    transform="rotate(45 7.41422 6)" fill="currentColor" />
-            </svg>
-        </span>
-        <!--end::Svg Icon-->
-    </div> --}}
+        <div class="btn btn-icon btn-sm btn-active-light-primary ms-2" data-bs-dismiss="modal" aria-label="Close">
+          <i class="fa-solid fa-xmark"></i>
+        </div>
         <!--end::Close-->
       </div>
       <!--end::Modal header-->
@@ -84,7 +74,7 @@
           <div class="flex-row-fluid">
             <!--begin::Form-->
             <form class="form w-lg-500px mx-auto"
-                  action="{{ route('master.package.itinerary-setup.store', $package->hash) }}" method="post">
+                  action="{{ route('admin.master.package.itinerary-setup.store', $package->hash) }}" method="post">
               <!--begin::Group-->
               <div class="mb-5 scroll-y h-375px">
                 @for($i = 1; $i <= $package->long_days ?? 0; $i++)
@@ -132,7 +122,8 @@
                       </label>
                       <!--end::Label-->
                       <!--begin::Input-->
-                      <input type="text" class="form-control form-control-lg form-control-solid" name="name[day-{{$i}}][]"
+                      <input type="text" class="form-control form-control-lg form-control-solid"
+                             name="name[day-{{$i}}][]"
                              placeholder="Summary"
                              value="{{ old('name', $itinerary->name ?? "Keterangan hari ke-{$i}") }}"/>
                       <!--end::Input-->

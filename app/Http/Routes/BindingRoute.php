@@ -2,7 +2,7 @@
 
 namespace App\Http\Routes;
 
-use App\Models\User;
+use App\Models\Tenant\Tenant;
 use Dentro\Yalr\Contracts\Bindable;
 use Illuminate\Routing\Router;
 
@@ -15,6 +15,7 @@ class BindingRoute implements Bindable
 
     public function bind(): void
     {
-        $this->router->bind('use_hash', fn ($value) => User::byHashOrFail($value));
+        $this->router->bind('tenant_hash', fn ($value) => Tenant::byHashOrFail($value));
+        $this->router->bind('tenant_with_trash_hash', fn ($value) => Tenant::query()->withTrashed()->byHashOrFail($value));
     }
 }

@@ -36,7 +36,7 @@ return [
         'admin' => [
             'middleware' => 'web',
             'prefix' => 'admin',
-            'name' => 'admin'
+            'as' => 'admin.'
         ],
         'mobile' => [
             'middleware' => 'mobile',
@@ -78,8 +78,9 @@ return [
         /* web */
         App\Http\Routes\Web\Admin\DefaultRoute::class,
         App\Http\Routes\Web\Admin\AuthRoute::class,
-        App\Http\Routes\Web\Admin\GlobalRoute::class,
+        App\Http\Routes\Web\Admin\TenantRoute::class,
         App\Http\Routes\Web\Admin\MasterRoute::class,
+        App\Http\Routes\Web\Admin\UserRoute::class,
     ],
     'api' => [
         /** @inject api **/

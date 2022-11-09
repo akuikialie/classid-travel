@@ -8,7 +8,7 @@
   </div>
   <!--end::Card header-->
   <!--begin::Form-->
-  <form class="form" action="{{ route('tenant.tenant.add-media', $tenant->hash) }}" method="post"
+  <form class="form" action="{{ route('admin.tenant.add-media') }}" method="post"
         enctype="multipart/form-data">
     @csrf
     <!--begin::Card body-->

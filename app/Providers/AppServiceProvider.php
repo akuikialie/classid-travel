@@ -24,7 +24,10 @@ class AppServiceProvider extends ServiceProvider
                 }
 
                 $domain = request()->getHost();
-                return Tenant::where(['app_domain' => $domain])->first();
+                return Tenant::query()->where([
+                    'app_domain' => $domain,
+                    'is_active' => true,
+                ])->first();
             } catch (Exception $e) {
                 return null;
             }

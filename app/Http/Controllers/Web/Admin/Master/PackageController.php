@@ -184,6 +184,11 @@ class PackageController extends Controller
 
             $kuartals = Kuartal::cases();
 
+            setDefaultRequest([
+                'test' => 'whatever',
+                'long_days' => $package?->long_days ?? 0,
+            ]);
+
             return response()->json([
                 'view' => view('pages.web.master.package.modal.wizard-edit-modal', [
                     'package' => $package,

@@ -28,7 +28,7 @@
       $("#setup-button").click(function (e) {
         e.preventDefault();
         $.ajax({
-          url: "{{ route('master.itinerary.create') }}",
+          url: "{{ route('admin.master.itinerary.create') }}",
           type: "GET",
           success: function (data) {
             if (!$("#modal_itinerary_activity").is(":visible")) {
@@ -54,7 +54,7 @@
       $('.btn-edit-modal').click(function (e) {
         e.preventDefault();
         var id = $(this).attr("data-id");
-        let url_edit = "{{ route('master.itinerary.edit', ':id') }}";
+        let url_edit = "{{ route('admin.master.itinerary.edit', ':id') }}";
         url_edit = url_edit.replace(":id", id);
 
         $.ajax({
@@ -170,7 +170,7 @@
                 </a>
 
                 <!--begin::Menu item-->
-                <form action="{{ route('master.itinerary.destroy', $itinerary->hash) }}" hidden
+                <form action="{{ route('admin.master.itinerary.destroy', $itinerary->hash) }}" hidden
                       method="post" id="delete">
                   @csrf
                   @method('delete')

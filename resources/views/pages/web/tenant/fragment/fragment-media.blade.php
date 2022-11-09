@@ -4,7 +4,7 @@
   @foreach(config('media-collections.default_collections') as $collection)
     @php
       $getMediaCollection = collect($media_collections);
-      $getMediaCollection = $getMediaCollection[$collection['name']];
+      $getMediaCollection = $getMediaCollection[$collection['name']] ?? [];
     @endphp
 
       <!--begin::Col-->
@@ -34,7 +34,7 @@
               @foreach($getMediaCollection ?? [] as $media)
                 <!--begin::Item-->
                 <div class="text-center px-5 py-5">
-                  <img src="{{ $media->getUrl() }}" class="card-rounded mw-100" alt=""/>
+                  <img src="{{ $media->getUrl() }}" class="card-rounded mw-100"/>
                 </div>
                 <!--end::Item-->
               @endforeach

@@ -25,7 +25,7 @@
                 e.preventDefault();
                 $.ajax({
                     data: $("#form-input-role").serialize(),
-                    url: "{{ route('master.schedule.create') }}",
+                    url: "{{ route('admin.master.schedule.create') }}",
                     type: "GET",
                     success: function(data) {
                         if (!$("#kt_modal_create_app").is(":visible")) {
@@ -56,7 +56,7 @@
             $('.btn-edit-modal').click(function(e) {
                 e.preventDefault();
                 var id = $(this).attr("data-id");
-                let url_edit = "{{ route('master.schedule.edit', ':id') }}";
+                let url_edit = "{{ route('admin.master.schedule.edit', ':id') }}";
                 url_edit = url_edit.replace(":id", id);
 
                 $.ajax({
@@ -209,7 +209,7 @@
                                         <!--end::Menu item-->--}}
                                         <!--begin::Menu item-->
                                         @if ($schedule->jamaah_count < 1)
-                                            <form action="{{ route('master.schedule.destroy', $schedule->id) }}"
+                                            <form action="{{ route('admin.master.schedule.destroy', $schedule->id) }}"
                                                 method="post" id="delete">
                                                 @csrf
                                                 @method('delete')

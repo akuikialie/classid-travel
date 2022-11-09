@@ -6,6 +6,7 @@ use App\Enums\RoleEnum;
 use App\Models\Jamaah\Jamaah;
 use App\Models\Tenant\Tenant;
 use App\Models\User;
+use App\Services\UserService;
 use App\Services\VirtualAccountService;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
@@ -23,89 +24,74 @@ class SeedUsers extends Seeder
 
         $admins = [
             [
-                'tenant_id' => 6,
-                'name' => 'Dev Account',
+                'name' => 'Dev Super Admin Account',
                 'phone' => '083333333331',
-                'password' => Hash::make('admin'),
-                'role' => RoleEnum::Admin->keyValue(),
-            ]
-
+                'password' => 'admin',
+                'role' => 'super-administrator',
+            ],
+            [
+                'tenant_id' => 5,
+                'name' => 'Dev Admin Account',
+                'phone' => '083333333332',
+                'password' => 'admin',
+                'role' => 'administrator',
+            ],
         ];
 
-        for ($i = 1; $i <= 5; $i++){
-            $admins[] = [
-                'tenant_id' => $i,
-                'name' => 'travel admin ' . $i,
-                'phone' => '08111111111'. $i,
-                'password' => Hash::make('admin'),
-                'role' => RoleEnum::Admin->keyValue(),
-            ];
+//        for ($i = 1; $i <= 5; $i++){
+//            $admins[] = [
+//                'tenant_id' => $i,
+//                'name' => 'travel admin ' . $i,
+//                'phone' => '08111111111'. $i,
+//                'password' => 'admin',
+//                'role' => 'administrator',
+//            ];
+//
+//           /* $apps[] = [
+//                'tenant_id' => $i,
+//                'name' => 'Travel Apps ' . $i,
+//                'phone' => '08222222222'. $i,
+//                'password' => Hash::make('app'),
+//                'role' => RoleEnum::Jamaah->keyValue(),
+//            ];*/
+//        }
 
-            $apps[] = [
-                'tenant_id' => $i,
-                'name' => 'Travel Apps ' . $i,
-                'phone' => '08222222222'. $i,
-                'password' => Hash::make('app'),
-                'role' => RoleEnum::Jamaah->keyValue(),
-            ];
-        }
+        $seedUser = $admins;
 
-        $seedUser = array_merge($admins, $apps);
-
-        foreach ($seedUser as $key => $user) {
+        foreach ($seedUser as $key => $input) {
             \DB::beginTransaction();
             $newUser = null;
             try {
-                $newUser = User::create([
-                    'tenant_id' => $user['tenant_id'],
-                    'name' => $user['name'],
-                    'phone' => $user['phone'],
-                    'password' => $user['password'],
-                ]);
-
-                $newUser->syncRoles([$user['role']]);
-
-                $tenant = Tenant::query()->find($user['tenant_id']);
-                $newUser->tenant()->associate($tenant);
-
-                $newJamaah = new Jamaah([
-                    'tenant_id' => $tenant->id,
-                ]);
-                $newUser->jamaah()->save($newJamaah);
-
-                $newUser->push();
-
+                /* begin:: user service */
+                $userService = new UserService($input['tenant_id'] ?? null);
+                $userService
+                    ->createNewUser(collect($input)->forget('role')->toArray(), ($input['role'] == 'jamaah'))
+                    ->setRole($input['role'])
+                    ->get();
+                /* end:: user service */
                 \DB::commit();
             }catch (\Throwable $e){
                 \DB::rollBack();
                 $this->command->info($e->getMessage());
             }
 
-            if ($newUser instanceof User) {
-                /* begin:: start Virtual Account Service */
-                $VAService = new VirtualAccountService($user['tenant_id']);
+//            if (isset($input['tenant_id'])) {
+//                if ($newUser instanceof User) {
+//                    /* begin:: start Virtual Account Service */
+//                    $VAService = new VirtualAccountService($input['tenant_id']);
+//
+//                    try {
+//                        $VAService->vaType('tabungan')
+//                            ->createFor($newUser)
+//                            ->createVA();
+//                    } catch (DdException|\Throwable $e) {
+//                        $this->command->info($e->getMessage());
+//                    }
+//                    /* end:: start Virtual Account Service */
+//                }
+//            }
 
-                try {
-                    $VAService->vaType('tabungan')
-                        ->createFor($newUser)
-                        ->createVA();
-                } catch (DdException|\Throwable $e) {
-                    $this->command->info($e->getMessage());
-                }
-                /* end:: start Virtual Account Service */
-            }
 
         }
-
-//        /* begin:: user service */
-//        $userService = new UserService(tenantId: $user['tenant_id']);
-//        $userService
-//            ->createNewUser($input)
-//            ->setRole(RoleEnum::Jamaah->keyValue())
-//            ->createVa('tabungan')
-//            ->setDepartureStatus();
-//        /* end:: user service */
-
-
     }
 }

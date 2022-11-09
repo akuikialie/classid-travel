@@ -12,11 +12,13 @@ class DefaultRoute extends BaseRoute
 
     public function register(): void
     {
-        $this->router->middleware(['auth', 'verified', 'role:' . RoleEnum::Admin->keyValue()])->group(function () {
+        $this->router->middleware(['auth', 'verified'])->group(function () {
 //            $this->router->get('/dashboard', function () {
 //                return view('pages.web.dashboard.dashboard-index');
 //            })->name('dashboard.admin');
-            $this->router->get('/dashboard', [DashboardController::class, 'index'])->name('dashboard.admin');
+            $this->router->get('/dashboard',
+                [DashboardController::class, 'index'])
+                ->name($this->name('dashboard'));
         });
     }
 }

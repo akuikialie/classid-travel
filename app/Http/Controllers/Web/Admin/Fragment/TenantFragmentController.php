@@ -24,7 +24,7 @@ class TenantFragmentController extends Controller
         $tenant = collect(array_column($params, 'tenant'))->first();
 
         $mediaCollections = collect($tenant->media)->groupBy('collection_name');
-        $this->setGlobalParams('media_collections', $mediaCollections);
+        $this->setGlobalParams('media_collections', $mediaCollections ?? []);
 
         $this->setGlobalParams('fragment_view', 'pages.web.tenant.fragment.fragment-media');
     }
@@ -46,7 +46,11 @@ class TenantFragmentController extends Controller
         $this->setGlobalParams('fragment_view', 'pages.web.tenant.fragment.fragment-media-edit');
     }
 
-    public function setting()
+    /**
+     * @param $params
+     * @return void
+     */
+    public function setting($params)
     {
         $this->setGlobalParams('fragment_view', 'pages.web.tenant.fragment.fragment-setting');
     }

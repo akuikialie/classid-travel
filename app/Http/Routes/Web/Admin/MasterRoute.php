@@ -92,32 +92,48 @@ class MasterRoute extends BaseRoute
     {
         menus(group: 'Master')
             ->route(
+                name: 'admin.master.package.index',
                 title: 'Master Paket',
-                name: 'master.package.index',
                 attribute: [
                     'icon' => 'bx bx-right-arrow-alt',
                 ],
+                resolver: function () {
+                    $user = \auth()->user();
+                    return $user->hasRole(RoleEnum::Admin->keyValue());
+                },
             )
             ->route(
+                name: 'admin.master.facility.index',
                 title: 'Master Fasilitas',
-                name: 'master.facility.index',
                 attribute: [
                     'icon' => 'bx bx-right-arrow-alt',
                 ],
+                resolver: function () {
+                    $user = \auth()->user();
+                    return $user->hasRole(RoleEnum::Admin->keyValue());
+                },
             )
             ->route(
+                name: 'admin.master.destination.index',
                 title: 'Master Tujuan',
-                name: 'master.destination.index',
                 attribute: [
                     'icon' => 'bx bx-right-arrow-alt',
                 ],
+                resolver: function () {
+                    $user = \auth()->user();
+                    return $user->hasRole(RoleEnum::Admin->keyValue());
+                },
             )
             ->route(
+                name: 'admin.master.schedule.index',
                 title: 'Master Keberangkatan',
-                name: 'master.schedule.index',
                 attribute: [
                     'icon' => 'bx bx-right-arrow-alt',
                 ],
+                resolver: function () {
+                    $user = \auth()->user();
+                    return $user->hasRole(RoleEnum::Admin->keyValue());
+                },
             );
     }
 }

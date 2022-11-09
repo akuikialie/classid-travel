@@ -1,6 +1,6 @@
 @php
-  $menuData = menuSidebar();
-  $segment = request()->path();
+//  $menuData = menuSidebar();
+//  $segment = request()->path();
 @endphp
 
 <div class="app-sidebar flex-column" id="kt_app_sidebar" data-kt-drawer="true" data-kt-drawer-name="app-sidebar"
@@ -54,7 +54,7 @@
       <div class="menu menu-column menu-rounded menu-sub-indention px-3" id="#kt_app_sidebar_menu"
           data-kt-menu="true" data-kt-menu-expand="false">
 
-        @foreach ($menuData as $menu)
+        {{--@foreach ($menuData as $menu)
           @if (isset($menu->navheader))
             <div class="menu-item pt-5">
               <!--begin:Menu content-->
@@ -110,12 +110,12 @@
             @endif
           </div>
           <!--end:Menu item-->
-        @endforeach
+        @endforeach--}}
 
-        {{-- <div class="menu-item">
+        <div class="menu-item">
           <!--begin:Menu link-->
           <a class="menu-link {{ activeRoute('dashboard.admin', cssClass: 'active') }}"
-            href="{{ route('dashboard.admin') }}">
+            href="{{ route('admin.dashboard') }}">
             <span class="menu-icon">
               <span class="svg-icon svg-icon-2">
                 <i class="bx bxs-dashboard bx-tada"></i>
@@ -169,7 +169,7 @@
           @endforelse
         @empty
 
-        @endforelse --}}
+        @endforelse
 
       </div>
       <!--end::Menu-->

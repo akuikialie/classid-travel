@@ -8,7 +8,7 @@
   </div>
   <!--end::Card header-->
   <!--begin::Form-->
-  <form class="form" action="{{ route('tenant.update', $tenant->hash) }}" method="post" enctype="multipart/form-data">
+  <form class="form" action="{{ route('admin.tenant.update.as-profile') }}" method="post" enctype="multipart/form-data">
     @csrf
     @method('PUT')
     <!--begin::Card body-->
@@ -23,9 +23,9 @@
         <!--begin::Col-->
         <div class="col-lg-8">
           <!--begin::Image input-->
-          <div class="image-input image-input-outline" data-kt-image-input="true" style="background-image: url({{ $avatar?? asset('logo/96w/logo-pict@96px.png') }})">
+          <div class="image-input image-input-outline" data-kt-image-input="true" style="background-image: url({{ $avatar ?? asset('logo/96w/logo-pict@96px.png') }})">
             <!--begin::Preview existing avatar-->
-            <div class="image-input-wrapper w-125px h-125px bgi-position-center" style="background-size: 75%; background-image: url({{ $avatar?? asset('logo/96w/logo-pict@96px.png') }})"></div>
+            <div class="image-input-wrapper w-125px h-125px bgi-position-center" style="background-size: 75%; background-image: url({{ $avatar ?? asset('logo/96w/logo-pict@96px.png') }})"></div>
             <!--end::Preview existing avatar-->
             <!--begin::Label-->
             <label class="btn btn-icon btn-circle btn-active-color-primary w-25px h-25px bg-white shadow" data-kt-image-input-action="change" data-bs-toggle="tooltip" title="Change avatar">
