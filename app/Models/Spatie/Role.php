@@ -2,13 +2,22 @@
 
 namespace App\Models\Spatie;
 
+use App\Models\HashableId;
+use App\Traits\HasTenant;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Role extends \Spatie\Permission\Models\Role
 {
-    use HasFactory, SoftDeletes;
+    use HasFactory, SoftDeletes, HashableId, HasTenant;
 
-    const RoleSA = 'Super-Admin';
-    const RoleAdmin = 'Admin';
+    protected $table = 'rbac_roles';
+
+    protected $fillable = [
+        'tenant_id',
+        'name',
+        'guard_name',
+        'type',
+    ];
+
 }

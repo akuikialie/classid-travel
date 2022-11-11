@@ -2,12 +2,14 @@
 
 namespace App\Http\Controllers\Web\Admin\Master;
 
-use App\Http\Controllers\Web\Admin\Controller;
 use App\Enums\Kuartal;
+use App\Http\Controllers\Web\Admin\Controller;
 use App\Models\Destination\Destination;
+use App\Models\Itinerary\ItineraryActivity;
 use App\Models\Plan\Plan;
 use App\Models\Plan\PlanFacility;
 use App\Models\Plan\PlanPackage;
+use App\Services\ItineraryService;
 use App\Services\PackageService;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\View\Factory;
@@ -34,10 +36,27 @@ class PackageController extends Controller
         $user = auth()->user();
         $packages = PlanPackage::query()
             ->with(['myPlan', 'myDestinations'])
+//            ->with(['myItineraries.activities'])
             ->withCount(['jamaah'])
             ->tenantId($user->tenant_id)
             ->latest()
             ->get();
+//            ->first();
+
+//        $myItineraries = $packages->myItineraries ?? [];
+//
+//
+//        $itinerary = collect($myItineraries)->firstWhere('day', 1);
+//        $lastData = [];
+//        foreach ($itinerary->activities as $_activity) {
+//            $lastData[] = [
+//                'time' => $_activity->pivot->time,
+//                'activity' => $_activity->activity,
+//            ];
+//        }
+//        dd($lastData);
+//        dd($activities->activities->count());
+//        dd($activity->)
 
 //        dd($packages);
 
@@ -54,6 +73,7 @@ class PackageController extends Controller
     public function create(): JsonResponse|Redirector|Application|RedirectResponse
     {
         if (request()->ajax()) {
+
 
             $plans = Plan::query()
                 ->where('is_active', true)
@@ -132,7 +152,7 @@ class PackageController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  int  $id
+     * @param int $id
      * @return Application|Redirector|RedirectResponse
      */
     public function show(int $id): Redirector|RedirectResponse|Application
@@ -144,7 +164,7 @@ class PackageController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  int  $id
+     * @param int $id
      * @return Application|JsonResponse|Redirector|RedirectResponse
      */
     public function edit(int $id): JsonResponse|Redirector|RedirectResponse|Application
@@ -164,6 +184,11 @@ class PackageController extends Controller
 
             $kuartals = Kuartal::cases();
 
+            setDefaultRequest([
+                'test' => 'whatever',
+                'long_days' => $package?->long_days ?? 0,
+            ]);
+
             return response()->json([
                 'view' => view('pages.web.master.package.modal.wizard-edit-modal', [
                     'package' => $package,
@@ -174,7 +199,7 @@ class PackageController extends Controller
                 ])->render(),
             ]);
         } else {
-            notify('Opps!', 'Terjadi kesalahan saat memuat halaman!', 'error')->autoClose();
+            notify('Oops!', 'Terjadi kesalahan saat memuat halaman!', 'error')->autoClose();
             return redirect(route('master.package.index'));
         }
     }
@@ -183,7 +208,7 @@ class PackageController extends Controller
      * Update the specified resource in storage.
      *
      * @param Request $request
-     * @param  int  $id
+     * @param int $id
      * @return RedirectResponse
      */
     public function update(Request $request, int $id): RedirectResponse
@@ -238,7 +263,7 @@ class PackageController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  int  $id
+     * @param int $id
      * @return RedirectResponse
      */
     public function destroy(int $id): RedirectResponse
@@ -263,7 +288,7 @@ class PackageController extends Controller
             notify('Berhasil', 'Data paket berhasil dihapus!', 'success')->autoClose();
             return redirect()->back();
         } catch (Throwable $th) {
-            notify('Opps!', $th->getMessage(), 'error');
+            notify('Oops!', $th->getMessage(), 'error');
             return redirect()->back();
         }
     }
@@ -286,5 +311,95 @@ class PackageController extends Controller
             'destinations' => ['nullable', 'array'],
             'thumbnail' => ['nullable', 'mimes:jpg,png,jpeg', 'max:3072'],
         ]);
+    }
+
+    public function createSetupItinerary($hash)
+    {
+        if (\request()->ajax()) {
+
+            $user = auth()->user();
+            $package = PlanPackage::query()
+                ->with(['myItineraries'])
+                ->tenantId($user->tenant_id)
+                ->byHashOrFail($hash);
+
+            $myItineraries = $package->myItineraries ?? [];
+            $itineraries = ItineraryActivity::query()
+                ->tenantId($user->tenant_id)
+                ->get();
+
+            return response()->json([
+                'view' => view('pages.web.master.itinerary.modal.wizard-setup-itinerary', [
+                    'package' => $package,
+                    'myItineraries' => $myItineraries,
+                    'itineraries' => $itineraries,
+                ])->render(),
+            ]);
+        } else {
+            notify('Oops!', 'Terjadi kesalahan saat memuat halaman!', 'error')->autoClose();
+            return redirect(route('master.package.index'));
+        }
+    }
+
+    public function storeSetupItinerary(Request $request, $hash)
+    {
+        $input = $request->validate([
+            'name' => ['required', 'array'],
+            'time' => ['required', 'array'],
+            'itinerary' => ['required', 'array'],
+        ]);
+
+        DB::beginTransaction();
+        try {
+            $user = auth()->user();
+            $package = PlanPackage::query()
+                ->with(['myItineraries'])
+                ->tenantId($user->tenant_id)
+                ->byHashOrFail($hash);
+
+            if (count($input['time']) !== count($input['itinerary'])) {
+                throw new InvalidArgumentException('Terjadi perbedaan input data!. mohon di periksa kembali.', 500);
+            }
+
+            $lastData = [];
+
+            $sampleName = $input['name'];
+            $sampleTime = $input['time'];
+            $sampleItinerary = $input['itinerary'];
+
+            if ((count($sampleTime) == $package->long_days) and (count($sampleItinerary) == $package->long_days)) {
+                for ($i = 1; $i <= $package->long_days; $i++) {
+                    $timeData = $sampleTime["day-{$i}"];
+                    $itineraryData = $sampleItinerary["day-{$i}"];
+
+                    $lastData[$i]['name'] = collect($sampleName["day-{$i}"])->first() ?? "day-{$i}";
+
+                    for ($a = 0; $a < count($timeData); $a++) {
+                        if (is_null($timeData[$a]) && is_null($itineraryData[$a])) {
+                            continue;
+                        }
+                        $lastData[$i]['itineraries'][] = [
+                            'time' => $timeData[$a],
+                            'itinerary' => (int)$itineraryData[$a],
+                        ];
+                    }
+                }
+            }
+
+            /* begin:: start itinerary service */
+            $itineraryService = new ItineraryService($user->tenant_id);
+            $itineraryService
+                ->setModel($package)
+                ->addItineraries($lastData ?? []);
+            /* end:: start itinerary service */
+
+            notify('Berhasil', 'Daftar aktifitas berhasil diperbarui!', 'success')->autoClose();
+            DB::commit();
+        } catch (Throwable $e) {
+            notify('Oops!', $e->getMessage(), 'error');
+            DB::rollBack();
+        } finally {
+            return redirect()->back()->withInput();
+        }
     }
 }

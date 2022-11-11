@@ -10,7 +10,7 @@ class AuthRoute extends BaseRoute
 {
 
     protected string $prefix = 'auth';
-    protected string $name = 'admin';
+    protected string $name = '';
 
     // protected string $name = 'auth';
 
@@ -24,8 +24,12 @@ class AuthRoute extends BaseRoute
 
         $this->router->middleware(['guest'])->group(function(){
             /* login */
-            $this->router->get($this->prefix('login'), [AuthenticationSessionController::class, 'create'])->name($this->name('login'));
-            $this->router->post($this->prefix('login'), [AuthenticationSessionController::class, 'store'])->name($this->name('sign-in'));
+            $this->router->get($this->prefix('login'),
+                [AuthenticationSessionController::class, 'create'])
+                ->name($this->name('login'));
+            $this->router->post($this->prefix('login'),
+                [AuthenticationSessionController::class, 'store'])
+                ->name($this->name('sign-in'));
 
             /* register */
             // $this->router->get($this->prefix('register'), [RegisterUserController::class, 'create'])->name('register');

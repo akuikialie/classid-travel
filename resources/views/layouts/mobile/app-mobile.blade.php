@@ -2,12 +2,15 @@
 <html lang="en">
 
 @php
-     $avatars = activeTenant()->getMedia('avatars');
-     $avatar = null;
+  $tenant = activeTenant();
+  $avatar = null;
+  if (isset($tenant)){
+    $avatars = activeTenant()->getMedia('avatars');
+    if ($avatars->count() > 0) {
+        $avatar = collect($avatars)->last()->getUrl();
+    }
 
-     if ($avatars->count() > 0) {
-         $avatar = collect($avatars)->last()->getUrl();
-     }
+  }
 @endphp
 
 <head>
@@ -18,7 +21,7 @@
         content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, viewport-fit=cover" />
     <link rel="shortcut icon" href="{{ $avatar ?? asset('logo/24w/logo-pict@24px.png') }}" />
 
-    <title>{{ activeTenant()->name ?? 'ProHajj' }} - App</title>
+    <title>{{ $tenant->name ?? 'ProHajj' }} - App</title>
 
     <style>
         body {

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Web\Admin;
 
+use App\Enums\RoleEnum;
 use App\Http\Requests\Auth\Authentication;
 use App\Models\Tenant\Tenant;
 use App\Models\User;
@@ -23,29 +24,36 @@ class AuthenticationSessionController extends Controller
 
     public function store(Authentication $request)
     {
-        $tenant = Tenant::query()
-            ->where('BCN', request()->input('travel_code'))
-            ->first();
-
-        if (!$tenant){
-            notify('Gagal!', trans('auth.failed'), 'error');
-            return  redirect()->back()->withInput();
-        }
 
         $request->authenticate();
 
         $request->session()->regenerate();
 
         $user = \auth()->user();
-        if ($user->tenant_id == $tenant->id){
-            return redirect()->intended(route('dashboard.admin'));
-        }else{
-            Auth::logout();
-            $request->session()->invalidate();
-            $request->session()->regenerateToken();
-            notify('Gagal!', trans('auth.failed'), 'error');
-            return redirect()->back()->withInput();
+
+        if ($user->hasRole('administrator')){
+            $tenant = Tenant::query()
+                ->where('BCN', request()->input('travel_code'))
+                ->first();
+
+            if (!$tenant){
+                notify('Gagal!', trans('auth.failed'), 'error');
+                return  redirect()->back()->withInput();
+            }
+
+            if ($user->tenant_id == $tenant->id){
+                return redirect()->intended(route('admin.dashboard'));
+            }else{
+                Auth::logout();
+                $request->session()->invalidate();
+                $request->session()->regenerateToken();
+                notify('Gagal!', trans('auth.failed'), 'error');
+                return redirect()->back()->withInput();
+            }
+        }else if ($user->hasRole('super-administrator')){
+            return redirect()->intended(route('admin.tenant.index'));
         }
+
     }
 
     public function destroy(Request $request): Redirector|Application|RedirectResponse

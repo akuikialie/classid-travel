@@ -5,6 +5,7 @@ namespace App\Http\Requests\Auth;
 use App\Models\Master\Phone;
 use App\Models\Tenant\Tenant;
 use App\Models\User;
+use Carbon\Carbon;
 use http\Exception\InvalidArgumentException;
 use Illuminate\Auth\Events\Lockout;
 use Illuminate\Foundation\Http\FormRequest;
@@ -84,15 +85,14 @@ class Authentication extends FormRequest
     public function authenticate(): void
     {
         $this->ensureIsNotRateLimited();
-        // $this->ensureIsNotRateLimited();
 
         if (!Auth::attempt(request()->only($this->authType, 'password'), request()->boolean('remember'))) {
-
             RateLimiter::hit($this->throttleKey());
             throw ValidationException::withMessages([
                 'email' => trans('auth.failed'),
             ]);
         }
+        $this->saveLastLogin();
 
         RateLimiter::clear($this->throttleKey());
     }
@@ -104,7 +104,7 @@ class Authentication extends FormRequest
      *
      * @throws ValidationException
      */
-    public function ensureIsNotRateLimited()
+    public function ensureIsNotRateLimited(): void
     {
         if (!RateLimiter::tooManyAttempts($this->throttleKey(), 5)) {
             return;
@@ -127,8 +127,18 @@ class Authentication extends FormRequest
      *
      * @return string
      */
-    public function throttleKey()
+    public function throttleKey(): string
     {
         return Str::lower(request()->input('username')) . '|' . request()->ip();
+    }
+
+    /**
+     * @return void
+     */
+    private function saveLastLogin(): void
+    {
+        $user = User::query()->find(\auth()->user()->id);
+        $user->last_login_at = Carbon::now();
+        $user->save();
     }
 }

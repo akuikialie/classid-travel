@@ -83,11 +83,13 @@ class PerencanaanController extends Controller
             }
         }
 
+        $user = auth()->user();
         $planPackages = PlanPackage::query()
             ->where(function ($queryScope) {
                 $queryScope->where('is_publish', true)
                     ->where('status', Statuses::Active->keyValue());
             })
+            ->tenantId($user->tenant_id)
             ->get();
 
         return view('pages/mobile/perencanaan/check-estimasi-index', [

@@ -16,19 +16,19 @@ return new class extends Migration
     {
         Schema::create('users', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('tenant_id')->default(1)->nullable()->comment('reference to tenant_table');
+            $table->unsignedBigInteger('tenant_id')->nullable()->comment('reference to tenant_table');
             $table->string('name');
-            $table->string('username')->unique()->nullable();
+            $table->string('username')->nullable();
             $table->string('phone')->unique();
             $table->string('email')->nullable()->unique();
             $table->timestamp('email_verified_at', precision: 6)->nullable();
             $table->string('password');
             $table->rememberToken();
-            // $table->string('type', 20)->default(UserType::VOLUNTEER->value);
-            // $table->string('va_number')->nullable();
+            $table->string('status', 20)->default(UserStatus::ACTIVE->value);
+            $table->boolean('is_super')->default('false');
+            $table->dateTime('last_login_at')->nullable();
             $table->string('locale')->default('id_ID');
             $table->string('timezone')->default('Asia/Jakarta');
-            $table->string('status', 20)->default(UserStatus::ACTIVE->value);
             $table->timestamps(precision: 6);
             $table->softDeletes(precision: 6);
         });

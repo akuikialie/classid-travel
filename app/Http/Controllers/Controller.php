@@ -86,7 +86,7 @@ class Controller extends BaseController
             env(key: 'ADMIN_URL') === request()->host() &&
             !preg_match('/^admin(\/.*)?/i', request()->path())
         ){
-            return to_route('dashboard.admin')->send();
+            return to_route('admin.dashboard')->send();
         }
         $this->setBreadCrumb([]);
     }

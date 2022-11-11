@@ -13,15 +13,14 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('tenants', function (Blueprint $table) {
+        Schema::create('itineraries', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
-            $table->string('slug')->unique()->nullable();
-            $table->string('app_domain');
-            $table->string('BCN')->unique()->comment('Bank Code Number');
-            $table->string('locale')->default('id_ID');
-            $table->string('timezone')->default('Asia/Jakarta');
-            $table->timestamps(6);
+            $table->unsignedBigInteger('tenant_id');
+            $table->unsignedBigInteger('model_id');
+            $table->string('model_type', 50);
+            $table->string('name', 50)->comment('keterangan kegiatan untuk hari');
+            $table->integer('day');
+            $table->timestamps(precision: 6);
             $table->softDeletes(precision: 6);
         });
     }
@@ -33,6 +32,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('tenants');
+        Schema::dropIfExists('itineraries');
     }
 };

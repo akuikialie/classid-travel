@@ -196,6 +196,7 @@ return [
         App\Providers\RouteServiceProvider::class,
         browner12\helpers\HelperServiceProvider::class,
 
+        Yajra\DataTables\DataTablesServiceProvider::class,
         App\Core\Notify\NotifyServiceProvider::class,
     ],
 

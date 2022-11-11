@@ -14,7 +14,7 @@
 
               <!--begin::Label-->
                             <label for="{{ $plan->key }}" class="d-flex align-items-center fs-5 fw-semibold ms-2">
-                                <span class="required">Paket {{ $plan->value }}</span>
+                                <span class="required">Paket {{ $plan->value }} </span>
                             </label>
               <!--end::Label-->
                         </span>
@@ -87,7 +87,7 @@
       <!--begin::Input-->
       <input type="number" class="form-control form-control-lg form-control-solid" name="long_days"
              placeholder="Lama Perjalanan"
-             value="{{ old('long_days', isset($package) ? $package->long_days : null) }}"/>
+             value="{{ old('long_days') }}"/>
       <!--end::Input-->
     </div>
     <!--end::Input group-->

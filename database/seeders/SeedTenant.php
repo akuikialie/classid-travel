@@ -45,6 +45,14 @@ class SeedTenant extends Seeder
                 'app_domain' => 'travel5.demo.prohajj.app',
                 'BCN' => '857605',
             ],
+
+            /* tenant dev */
+            [
+                'name' => 'Tenant Development',
+                'slug' => 'for development',
+                'app_domain' => 'd1.'.env('ADMIN_URL'),
+                'BCN' => '000000',
+            ],
         ];
 
         foreach ($seedTenants as $tenant){

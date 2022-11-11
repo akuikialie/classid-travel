@@ -2,15 +2,34 @@
 
 namespace App\Http\Controllers\Web\Admin;
 
+use App\Enums\RoleEnum;
 use App\Models\Jamaah\Jamaah;
+use Illuminate\Contracts\Foundation\Application;
+use Illuminate\Contracts\View\Factory;
+use Illuminate\Contracts\View\View;
 
 class DashboardController extends Controller
 {
     public function index()
     {
         $user = auth()->user();
+
+        if ($user->hasRole(RoleEnum::Admin->keyValue())){
+            return $this->dashboardAdmin();
+        }else if ($user->hasRole(RoleEnum::SuperAdministrator->keyValue())){
+            return $this->dashboardSuperAdmin();
+        }
+    }
+
+    public function dashboardSuperAdmin(): Application|Factory|View
+    {
+        return view('pages.web.dashboard.dashboard-super-admin-index');
+    }
+
+    public function dashboardAdmin(): Application|Factory|View
+    {
+        $user = auth()->user();
         $dataKeberangkatan = Jamaah::query()
-            ->where('id', '!=', $user->id)
             ->tenantId($user->tenant_id)
             ->with([
                 'user',

@@ -1,0 +1,243 @@
+<?php
+
+namespace App\Http\Controllers\Web\Admin;
+
+use App\Enums\RoleType;
+use App\Enums\UserStatus;
+use App\Http\Controllers\Controller;
+use App\Models\Spatie\Role;
+use App\Models\User;
+use App\Services\UserService;
+use DB;
+use Illuminate\Contracts\Foundation\Application;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
+use Illuminate\Http\Response;
+use Illuminate\Routing\Redirector;
+use Illuminate\View\View;
+use Spatie\Permission\Exceptions\UnauthorizedException;
+use Throwable;
+use Yajra\DataTables\Exceptions\Exception;
+
+class UserController extends Controller
+{
+    /**
+     * @throws Exception
+     * @throws \Exception
+     */
+    public function datatable()
+    {
+        if (\request()->ajax()) {
+            try {
+                $user = auth()->user();
+                $users = User::query()
+                    ->with(['roles'])
+                    ->when($user->hasRole('super-administrator'), function (Builder $subQuery) use ($user) {
+                        $subQuery->where('id', '!=', $user->id);
+                    }, function (Builder $subQuery) use ($user) {
+                        $subQuery
+                            ->role(['administrator'])
+                            ->where('id', '!=', $user->id);
+                    })
+                    ->where('is_super', false)
+                    ->latest('id')
+                    ->get();
+
+                return datatables()->of($users)
+                    ->addIndexColumn()
+                    ->addColumn('role', function ($user) {
+                        return $user->roles->pluck('name')->first();
+                    })->addColumn('status', function ($user) {
+                        $status = UserStatus::tryFrom($user->status);
+                        return "<span class=\"badge badge-light-{$status->color()} text-uppercase\">{$status->label()}</span>";
+                    })->addColumn('last_login', function ($user) {
+                        if (is_null($user->last_login_at)) {
+                            return '-';
+                        }
+                        return carbon($user->last_login_at)->format('d M, Y H:i:s');
+                    })
+                    ->addColumn('actions', function ($user) {
+                        $this->setData('user', $user);
+                        return $this->view('pages.web.user.action.action-datatable');
+                    })
+                    ->rawColumns(['actions', 'status'])
+                    ->make(true);
+            } catch (Exception $e) {
+                throw $e;
+            }
+        }
+    }
+
+    /**
+     * Display a listing of the resource.
+     *
+     * @return View
+     * @throws \Exception
+     */
+    public function index(): View
+    {
+        $user = auth()->user();
+        $roles = Role::query()
+            ->when($user->tenant_id === null, function (Builder $subQuery) {
+                $subQuery->whereNull('tenant_id');
+            })
+            ->get()->unique('name');
+
+        $this->setData('roles', $roles);
+        return $this->view('pages.web.user.user-index');
+    }
+
+    /**
+     * Show the form for creating a new resource.
+     *
+     * @return Application|JsonResponse|Redirector|RedirectResponse
+     * @throws Throwable
+     */
+    public function create()
+    {
+        if (\request()->ajax()) {
+            $user = auth()->user();
+            $roles = Role::query()
+                ->when($user->tenant_id === null, function (Builder $subQuery) {
+                    $subQuery->whereNull('tenant_id');
+                })
+                ->when(!$user->hasRole('super-administrator'), function (Builder $subQuery) {
+                    $subQuery->where('name', '!=', 'super-administrator');
+                })
+                ->where([
+                    'type' => RoleType::tenant->keyValue()
+                ])
+                ->get()->unique('name');
+
+            $this->setData('roles', $roles);
+            return \response()->json([
+                'view' => $this->view('pages.web.user.modals.modal-add-admin')->render(),
+            ]);
+
+        } else {
+            notify('Opps!', 'Terjadi kesalahan saat memuat halaman!', 'error')->autoClose();
+            return redirect(route('master.destination.index'));
+        }
+    }
+
+    /**
+     * Store a newly created resource in storage.
+     *
+     * @param Request $request
+     * @return RedirectResponse
+     */
+    public function store(Request $request)
+    {
+        $input = $request->validate([
+            'phone' => ['required', 'numeric'],
+            'role' => ['required', 'string'],
+        ]);
+
+        DB::beginTransaction();
+        try {
+            /* begin: user service */
+            $user = auth()->user();
+            $userService = new UserService(tenantId: $user->tenant_id ?? null);
+            $userService->createNewUser([
+                'name' => 'Administrator',
+                'phone' => $input['phone'],
+                'password' => 'admin',
+            ], false)
+                ->setRole($input['role'])
+                ->setIsSuper(false); // except from tenant, always set to false
+            /* end: user service */
+
+            DB::commit();
+            notify('Berhasil', 'Berhasil menambahkan admin baru', 'success');
+            return redirect()->back();
+        } catch (Throwable $e) {
+            DB::rollBack();
+            notify('Oops', $e->getMessage(), 'error');
+            return redirect()->back();
+        }
+    }
+
+    /**
+     * Display the specified resource.
+     *
+     * @param int $id
+     * @return Response
+     */
+    public function show($id)
+    {
+        //
+    }
+
+    /**
+     * Show the form for editing the specified resource.
+     *
+     * @param int $id
+     * @return Response
+     */
+    public function edit($id)
+    {
+        //
+    }
+
+    /**
+     * Update the specified resource in storage.
+     *
+     * @param Request $request
+     * @param int $id
+     * @return Response
+     */
+    public function update(Request $request, $id)
+    {
+        //
+    }
+
+    /**
+     * Remove the specified resource from storage.
+     *
+     * @param User $user
+     * @return RedirectResponse
+     */
+    public function destroy(User $user)
+    {
+        try {
+            $authUser = auth()->user();
+            if ($authUser->is_super !== true) {
+                if (
+                    $user->is_super === true &&
+                    $authUser->is_super === false) {
+                    throw UnauthorizedException::forPermissions($user->roles->toArray());
+                }
+            }
+            $user->delete();
+            notify('Behasil!', 'Berhasil menghapus akun!', 'success');
+            return redirect()->back();
+        } catch (Throwable $e) {
+            notify('Oops!', $e->getMessage(), 'error');
+            return redirect()->back();
+        }
+    }
+
+    public function changeStatus(Request $request, User $user)
+    {
+        $request->validate([
+            'status' => ['required'],
+        ]);
+
+        try {
+            /* begin:: start user service */
+            $userService = new UserService($user->tenant_id ?? null);
+            $userService
+                ->userId($user->id)
+                ->setStatus(\request()->get('status'));
+            /* end:: start user service */
+
+            notify('Behasil!', 'Berhasil memperbarui status akun!', 'success');
+            return redirect()->back();
+        } catch (Throwable $e) {
+            notify('Oops!', $e->getMessage(), 'error');
+            return redirect()->back();
+        }
+    }
+}

@@ -7,11 +7,10 @@ namespace App\Services;
 use App\Models\Jamaah\Jamaah;
 use App\Models\Jamaah\JamaahHistory;
 use App\Models\User;
-use App\Models\VA\VirtualAccount;
 use Exception;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Hash;
-use Laravel\Octane\Exceptions\DdException;
 use Throwable;
 
 class UserService
@@ -21,29 +20,22 @@ class UserService
     private User $user;
 
     public function __construct(
-        private readonly int $tenantId
+        private readonly ?int $tenantId = null
     )
     {
         $this->query = User::query();
     }
 
     /**
-     * @param $hash
+     * @param int|null $userId
      * @return $this
      */
-    public function byHash(string $hash): static
+    public function userId(int $userId = null): static
     {
-        $this->query->byHashOrFail($hash);
-        return $this;
-    }
-
-    /**
-     * @param int $id
-     * @return $this
-     */
-    public function byId(int $id): static
-    {
-        $this->query->findOrFail($id);
+        if (!$userId){
+            return $this;
+        }
+        $this->query->where('id', ($userId));
         return $this;
     }
 
@@ -65,24 +57,46 @@ class UserService
     }
 
     /**
-     * @param array $input
+     * @param bool $status
      * @return $this
+     * @throws Exception
      */
-    public function createNewUser(array $input): static
+    public function setStatus(string $status): static
     {
-        $input = array_merge(['tenant_id' => $this->tenantId], $input);
-        $input = array_merge($input, ['password' => Hash::make($input['password'])]);
-        $this->user = $this->query->create($input);
-        $newJamaah = new Jamaah([
-            'tenant_id' => $this->tenantId,
-        ]);
-        $this->user->jamaah()->save($newJamaah);
+        $user = $this->user();
+        $user->status = $status;
+        $user->save();
 
         return $this;
     }
 
     /**
      * @param array $input
+     * @param bool $isJamaah
+     * @return $this
+     */
+    public function createNewUser(array $input, bool $isJamaah = true): static
+    {
+        if (is_int($this->tenantId)) {
+            $input = array_merge(['tenant_id' => $this->tenantId], $input);
+        }
+
+        $input = array_merge($input, ['password' => Hash::make($input['password'])]);
+        $this->user = $this->query->create($input);
+
+        if ($isJamaah) {
+            $newJamaah = new Jamaah([
+                'tenant_id' => $this->tenantId,
+            ]);
+            $this->user->jamaah()->save($newJamaah);
+        }
+
+        return $this;
+    }
+
+    /**
+     * @param string|null $status
+     * @param string|null $detail
      * @return $this
      * @throws Exception
      */
@@ -96,11 +110,12 @@ class UserService
                 'jamaah_id' => $user->jamaah->id,
             ];
 
-            if (!is_null($status)){
+            if (!is_null($status)) {
                 $input = array_merge($input, [
                     'departure_status' => $status,
                 ]);
-            } if (!is_null($detail)){
+            }
+            if (!is_null($detail)) {
                 $input = array_merge($input, [
                     'detail' => $detail,
                 ]);
@@ -114,29 +129,61 @@ class UserService
         }
     }
 
-    public function setRole(...$roles)
+    /**
+     * @param ...$roles
+     * @return $this
+     * @throws Exception
+     */
+    public function setRole(...$roles): static
+    {
+        /* begin:: permissions Service */
+        $user = $this->user();
+        $permissionService = new PermissionService(tenantId: $this->tenantId);
+        $permissionService->syncRole($user, $roles);
+        /* end:: permissions Service */
+        return $this;
+    }
+
+    /**
+     * @param bool $isSuper
+     * @return $this
+     * @throws Exception
+     */
+    public function setIsSuper(bool $isSuper = false): static
     {
         try {
             $user = $this->user();
-            $user->syncRoles($roles);
+            $user->is_super = $isSuper;
+            $user->save();
             return $this;
         } catch (Exception $e) {
             throw $e;
         }
     }
 
-    public function get()
+    /**
+     * @param array|null $withRelation
+     * @return Model|Builder|User|null
+     */
+    public function get(?array $withRelation = []): Model|Builder|User|null
     {
-        return $this->query->first();
+        return $this->query
+            ->when(count($withRelation) > 0, function (Builder $subQuery) use ($withRelation){
+                $subQuery->with($withRelation);
+            })
+            ->first();
     }
 
+    /**
+     * @throws Exception
+     */
     public function user(): User
     {
         if ($this->query->count() > 1) {
-            if (isset($this->user) and $this->user instanceof User) {
+            if (isset($this->user)) {
                 $user = $this->user;
             } else {
-                throw new Exception('Tujuan belum di konfigurasi');
+                throw new Exception('Data harus spesifik!.');
             }
         } else {
             $user = $this->query->first();

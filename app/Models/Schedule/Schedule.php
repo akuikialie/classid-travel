@@ -2,6 +2,7 @@
 
 namespace App\Models\Schedule;
 
+use App\Models\HashableId;
 use App\Models\Jamaah\Jamaah;
 use App\Traits\HasTenant;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -11,7 +12,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Schedule extends Model
 {
-    use HasFactory, HasTenant, SoftDeletes;
+    use HasFactory, HasTenant, SoftDeletes, HashableId;
 
     protected $table = 'schedules';
 

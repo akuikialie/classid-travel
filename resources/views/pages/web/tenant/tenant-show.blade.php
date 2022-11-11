@@ -271,13 +271,13 @@
           <input hidden class="input-fragment" name="fragment">
           <!--begin::Nav-->
           <ul class="nav nav-stretch nav-line-tabs nav-line-tabs-2x border-transparent fs-5 fw-bold">
-            {{--<!--begin::Nav item-->
+            <!--begin::Nav item-->
             <li class="nav-item">
               <a class="nav-link text-active-primary py-5 me-6 fragment {{ ($fragment_active ?? 'overview') == 'overview' ? 'active' : '' }}"
                  type="button" data-fragment="overview">Overview</a>
             </li>
             <!--end::Nav item-->
-            <!--begin::Nav item-->
+            {{--<!--begin::Nav item-->
             <li class="nav-item">
               <a class="nav-link text-active-primary py-5 me-6 fragment {{ ($fragment_active ?? 'overview') == 'metadata' ? 'active' : '' }}"
                  type="button" data-fragment="metadata">Metadata</a>
@@ -285,7 +285,13 @@
             <!--end::Nav item-->--}}
             <!--begin::Nav item-->
             <li class="nav-item">
-              <a class="nav-link text-active-primary py-5 me-6 fragment {{ ($fragment_active ?? 'setting') == 'setting' ? 'active' : '' }}"
+              <a class="nav-link text-active-primary py-5 me-6 fragment {{ ($fragment_active ?? 'overview') == 'media' ? 'active' : '' }}"
+                 type="button" data-fragment="media">Media</a>
+            </li>
+            <!--end::Nav item-->
+            <!--begin::Nav item-->
+            <li class="nav-item">
+              <a class="nav-link text-active-primary py-5 me-6 fragment {{ ($fragment_active ?? 'overview') == 'setting' ? 'active' : '' }}"
                  type="button" data-fragment="setting">Setting</a>
             </li>
             <!--end::Nav item-->

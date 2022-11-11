@@ -2,6 +2,7 @@
 
 use App\Enums\RoleEnum;
 use App\Models\Spatie\Role;
+use Vinkla\Hashids\Facades\Hashids;
 
 if (!function_exists('menuSidebar')) {
 
@@ -22,7 +23,7 @@ if (!function_exists('menuSidebar')) {
             ],
 
             [
-                'url' => route('tenant.show', auth()->user()->tenant_id),
+                'url' => route('tenant.show', Hashids::encode(auth()->user()->tenant_id)),
                 'name' => 'Tenant',
                 'icon' => 'bx bxs-dashboard bx-tada',
                 'show_in' => [
@@ -49,6 +50,10 @@ if (!function_exists('menuSidebar')) {
             ],[
                 "url" => route('master.schedule.index'),
                 "name" => "Master Keberangkatan",
+                "icon" => "bx bx-right-arrow-alt",
+            ],[
+                "url" => route('master.itinerary.index'),
+                "name" => "Master Kegiatan",
                 "icon" => "bx bx-right-arrow-alt",
             ],
             /* [

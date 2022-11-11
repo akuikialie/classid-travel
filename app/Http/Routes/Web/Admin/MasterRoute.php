@@ -5,6 +5,7 @@ namespace App\Http\Routes\Web\Admin;
 use App\Enums\RoleEnum;
 use App\Http\Controllers\Web\Admin\Master\DestinationController;
 use App\Http\Controllers\Web\Admin\Master\FacilityController;
+use App\Http\Controllers\Web\Admin\Master\ItineraryController;
 use App\Http\Controllers\Web\Admin\Master\PackageController;
 use App\Http\Controllers\Web\Admin\Master\ScheduleController;
 use Dentro\Yalr\BaseRoute;
@@ -54,8 +55,27 @@ class MasterRoute extends BaseRoute
                     'destroy' => $this->name('package.destroy'),
                 ]
             ]);
+            $this->router->get($this->prefix('package/{package}/itinerary-setup'),
+                [PackageController::class, 'createSetupItinerary'])
+                ->name($this->name('package.itinerary-setup.create'));
+            $this->router->post($this->prefix('package/{package}/itinerary-setup'),
+                [PackageController::class, 'storeSetupItinerary'])
+                ->name($this->name('package.itinerary-setup.store'));
 
             $this->router->resource($this->prefix('schedule'), ScheduleController::class)->names($this->name('schedule'));
+
+            $this->router->resource($this->prefix('itinerary'), ItineraryController::class, [
+                'names' => [
+                    'index' => $this->name('itinerary.index'),
+                    'create' => $this->name('itinerary.create'),
+                    'store' => $this->name('itinerary.store'),
+                    'show' => $this->name('itinerary.show'),
+                    'edit' => $this->name('itinerary.edit'),
+                    'update' => $this->name('itinerary.update'),
+                    'destroy' => $this->name('itinerary.destroy'),
+                ]
+            ]);
+
 
             // $this->router->get('/dashboard', function () {
             //     return view('pages.web.dashboard.dashboard-index');
@@ -72,32 +92,48 @@ class MasterRoute extends BaseRoute
     {
         menus(group: 'Master')
             ->route(
+                name: 'admin.master.package.index',
                 title: 'Master Paket',
-                name: 'master.package.index',
                 attribute: [
                     'icon' => 'bx bx-right-arrow-alt',
                 ],
+                resolver: function () {
+                    $user = \auth()->user();
+                    return $user->hasRole(RoleEnum::Admin->keyValue());
+                },
             )
             ->route(
+                name: 'admin.master.facility.index',
                 title: 'Master Fasilitas',
-                name: 'master.facility.index',
                 attribute: [
                     'icon' => 'bx bx-right-arrow-alt',
                 ],
+                resolver: function () {
+                    $user = \auth()->user();
+                    return $user->hasRole(RoleEnum::Admin->keyValue());
+                },
             )
             ->route(
+                name: 'admin.master.destination.index',
                 title: 'Master Tujuan',
-                name: 'master.destination.index',
                 attribute: [
                     'icon' => 'bx bx-right-arrow-alt',
                 ],
+                resolver: function () {
+                    $user = \auth()->user();
+                    return $user->hasRole(RoleEnum::Admin->keyValue());
+                },
             )
             ->route(
+                name: 'admin.master.schedule.index',
                 title: 'Master Keberangkatan',
-                name: 'master.schedule.index',
                 attribute: [
                     'icon' => 'bx bx-right-arrow-alt',
                 ],
+                resolver: function () {
+                    $user = \auth()->user();
+                    return $user->hasRole(RoleEnum::Admin->keyValue());
+                },
             );
     }
 }
