@@ -25,25 +25,6 @@ class TenantService
     }
 
     /**
-     * @throws Exception
-     */
-    public function createAdminAccount(array $input): static
-    {
-        /* begin:: user service */
-        $userService = new UserService(tenantId: $this->tenantId);
-        $userService->createNewUser([
-            'name' => $input['name'],
-            'phone' => $input['phone'],
-            'password' => 'admin',
-        ], false)
-            ->setRole(RoleEnum::Admin->keyValue())
-            ->setIsSuper(true);
-        /* end:: user service */
-
-        return $this;
-    }
-
-    /**
      * @param int|null $tenantId
      * @return $this
      */

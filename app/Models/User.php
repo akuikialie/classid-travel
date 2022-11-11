@@ -78,9 +78,9 @@ class User extends Authenticatable implements HasMedia
     }
 
     /**
-     * Get all of the comments for the User
+     * Get all the comments for the User
      *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     * @return HasMany
      */
     public function peopleInviteds(): HasMany
     {

@@ -16,7 +16,7 @@ class TenantRoute extends BaseRoute
     {
         $this->router->middleware(['auth', 'verified'])->group(function () {
 
-            $this->router->middleware(['role:' . RoleEnum::SuperAdministrator->keyValue()])->group(function (){
+            $this->router->middleware(['role:super-administrator'])->group(function (){
                 $this->router->post($this->prefix('datatable'),[TenantController::class, 'datatable'])
                     ->name($this->name('datatable'));
 
@@ -42,7 +42,7 @@ class TenantRoute extends BaseRoute
                     ->name($this->name('destroy'));
             });
 
-            $this->router->middleware(['role:' . RoleEnum::Admin->keyValue()])->group(function (){
+            $this->router->middleware(['role:administrator'])->group(function (){
                 $this->router->get($this->prefix('profile/{tenant_hash?}'),[TenantController::class, 'show'])
                     ->name($this->name('show'));
 
@@ -74,7 +74,7 @@ class TenantRoute extends BaseRoute
                  ],
                  resolver: function () {
                      $user = \auth()->user();
-                     return $user->hasRole(RoleEnum::SuperAdministrator->keyValue());
+                     return $user->hasRole('super-administrator');
                  },
              )
              ->route(
@@ -85,7 +85,7 @@ class TenantRoute extends BaseRoute
                  ],
                  resolver: function () {
                      $user = \auth()->user();
-                     return $user->hasRole(RoleEnum::Admin->keyValue());
+                     return $user->hasRole('administrator');
                  },
              );
     }

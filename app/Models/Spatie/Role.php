@@ -11,6 +11,8 @@ class Role extends \Spatie\Permission\Models\Role
 {
     use HasFactory, SoftDeletes, HashableId, HasTenant;
 
+    protected $table = 'rbac_roles';
+
     protected $fillable = [
         'tenant_id',
         'name',

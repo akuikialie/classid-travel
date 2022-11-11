@@ -26,13 +26,15 @@ class SeedUsers extends Seeder
             [
                 'name' => 'Dev Super Admin Account',
                 'phone' => '083333333331',
+                'username' => 'admin',
                 'password' => 'admin',
                 'role' => 'super-administrator',
             ],
             [
-                'tenant_id' => 5,
+                'tenant_id' => 6,
                 'name' => 'Dev Admin Account',
                 'phone' => '083333333332',
+                'username' => 'admin',
                 'password' => 'admin',
                 'role' => 'administrator',
             ],
@@ -65,7 +67,9 @@ class SeedUsers extends Seeder
                 /* begin:: user service */
                 $userService = new UserService($input['tenant_id'] ?? null);
                 $userService
-                    ->createNewUser(collect($input)->forget('role')->toArray(), ($input['role'] == 'jamaah'))
+                    ->createNewUser(
+                        collect($input)->forget('role')->toArray(),
+                        ($input['role'] == 'jamaah'))
                     ->setRole($input['role'])
                     ->get();
                 /* end:: user service */

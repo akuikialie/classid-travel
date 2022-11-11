@@ -44,11 +44,9 @@ let KTDatatablesServerSide = function () {
       columns: [
         {data: 'id'},
         {data: 'name'},
-        {data: 'slug'},
-        {data: 'app_domain'},
-        {data: 'BCN'},
+        {data: 'role'},
         {data: 'status'},
-        {data: 'created_date'},
+        {data: 'last_login'},
         {data: 'actions'},
       ],
       columnDefs: [
@@ -88,9 +86,9 @@ let KTDatatablesServerSide = function () {
           url: urlEdit,
           type: "GET",
           success: function (data) {
-            if (!$("#modal-create-travel-account").is(":visible")) {
+            if (!$("#modal-add-admin").is(":visible")) {
               $("#dynamic_modal").html(data.view);
-              $("#modal-create-travel-account").modal("show");
+              $("#modal-add-admin").modal("show");
             }
           },
           error: function (error) {
@@ -129,22 +127,23 @@ let KTDatatablesServerSide = function () {
     // Re-init functions on every table re-draw -- more info: https://datatables.net/reference/event/draw
     dt.on('draw', function () {
       initToggleToolbar();
-      toggleToolbars();
+      // toggleToolbars();
       handleDeleteRows();
       KTMenu.createInstances();
     });
   };
 
   // Create new travel account
-  let handleCreateTravelAccount = function () {
+  let handleAddAdmin = function () {
     $('#create-new').click(function () {
       $.ajax({
         url: createUrl,
         type: "GET",
         success: function (data) {
-          if (!$("#modal-create-travel-account").is(":visible")) {
+          if (!$("#modal-add-admin").is(":visible")) {
             $("#dynamic_modal").html(data.view);
-            $("#modal-create-travel-account").modal("show");
+            $("#modal-add-admin").modal("show");
+            $('[data-kt-user-modal-select="role"]').select2();
           }
         },
         error: function (error) {
@@ -166,7 +165,7 @@ let KTDatatablesServerSide = function () {
 
   // Search Datatable --- official docs reference: https://datatables.net/reference/api/search()
   let handleSearchDatatable = function () {
-    const filterSearch = document.querySelector('[data-kt-docs-table-filter="search"]');
+    const filterSearch = document.querySelector('[data-kt-user-table-filter="search"]');
     filterSearch.addEventListener('keyup', function (e) {
       dt.search(e.target.value).draw();
     });
@@ -175,35 +174,28 @@ let KTDatatablesServerSide = function () {
   // Filter Datatable
   let handleFilterDatatable = () => {
     // Select filter options
-    filterStatus = document.querySelectorAll('[data-kt-docs-table-filter="status"] [name="status"]');
-    const filterButton = document.querySelector('[data-kt-docs-table-filter="filter"]');
+    $('[data-kt-user-table-filter="role"]').select2({
+      templateSelection: function (data, container) {
+        // Add custom attributes to the <option> tag for the selected option
+        $(data.element).attr('data-custom-attribute', data.customValue);
+        return data.text;
+      }
+    });
+    const filterButton = document.querySelector('[data-kt-user-table-filter="filter"]');
 
     // Filter datatable on submit
     filterButton.addEventListener('click', function () {
       // Get filter values
-      let statusValue = '';
-
-      // Get payment value
-      filterStatus.forEach(r => {
-        if (r.checked) {
-          statusValue = r.value;
-        }
-
-        // Reset payment value if "All" is selected
-        if (statusValue === 'all') {
-          statusValue = '';
-        }
-      });
-
+      filterStatus = $('[data-kt-user-table-filter="role"] :selected').text();
       // Filter datatable --- official docs reference: https://datatables.net/reference/api/search()
-      dt.search(statusValue).draw();
+      dt.search(filterStatus).draw();
     });
   }
 
   // Delete customer
   let handleDeleteRows = () => {
     // Select all delete buttons
-    const deleteButtons = document.querySelectorAll('[data-kt-docs-table-filter="delete_row"]');
+    const deleteButtons = document.querySelectorAll('[data-kt-user-table-filter="delete_row"]');
 
     deleteButtons.forEach(d => {
       // Delete button on click
@@ -270,7 +262,7 @@ let KTDatatablesServerSide = function () {
   // Reset Filter
   let handleResetForm = () => {
     // Select reset button
-    const resetButton = document.querySelector('[data-kt-docs-table-filter="reset"]');
+    const resetButton = document.querySelector('[data-kt-user-table-filter="reset"]');
 
     // Reset datatable
     resetButton.addEventListener('click', function () {
@@ -297,7 +289,7 @@ let KTDatatablesServerSide = function () {
       // Checkbox on click event
       c.addEventListener('click', function () {
         setTimeout(function () {
-          toggleToolbars();
+          // toggleToolbars();
         }, 50);
       });
     });
@@ -396,7 +388,7 @@ let KTDatatablesServerSide = function () {
   // Public methods
   return {
     init: function () {
-      handleCreateTravelAccount();
+      handleAddAdmin();
       initDatatable();
       handleSearchDatatable();
       initToggleToolbar();

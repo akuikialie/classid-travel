@@ -173,6 +173,7 @@ if (!function_exists('carbon')) {
                 $locale = auth()->user()->locale;
             }
         }
+
         Carbon::setLocale($locale ?? 'id_ID');
         if (!$datetime) {
             return Carbon::now()->timezone($timezone);

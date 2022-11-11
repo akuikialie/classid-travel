@@ -18,7 +18,7 @@ return new class extends Migration
             $table->id();
             $table->unsignedBigInteger('tenant_id')->nullable()->comment('reference to tenant_table');
             $table->string('name');
-            $table->string('username')->unique()->nullable();
+            $table->string('username')->nullable();
             $table->string('phone')->unique();
             $table->string('email')->nullable()->unique();
             $table->timestamp('email_verified_at', precision: 6)->nullable();
@@ -26,6 +26,7 @@ return new class extends Migration
             $table->rememberToken();
             $table->string('status', 20)->default(UserStatus::ACTIVE->value);
             $table->boolean('is_super')->default('false');
+            $table->dateTime('last_login_at')->nullable();
             $table->string('locale')->default('id_ID');
             $table->string('timezone')->default('Asia/Jakarta');
             $table->timestamps(precision: 6);

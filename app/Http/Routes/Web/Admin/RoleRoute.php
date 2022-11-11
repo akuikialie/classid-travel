@@ -8,10 +8,10 @@ use App\Http\Controllers\Web\Admin\UserController;
 use Dentro\Yalr\BaseRoute;
 use Illuminate\Support\Facades\Auth;
 
-class UserRoute extends BaseRoute
+class RoleRoute extends BaseRoute
 {
-    protected string $prefix = 'user';
-    protected string $name = 'user';
+    protected string $prefix = 'role';
+    protected string $name = 'role';
 
     public function register(): void
     {
@@ -49,10 +49,10 @@ class UserRoute extends BaseRoute
      */
     public function afterRegister(): void
     {
-         menus(group: 'Travel')
+         menus(group: 'Setting')
              ->route(
-                 name: 'admin.user.index',
-                 title: 'Management Users',
+                 name: 'admin.role.index',
+                 title: 'Roles',
                  // param: [Auth::user()?->tenant_id ?? 0],
                  attribute: [
                      'icon' => 'fa-solid fa-users',

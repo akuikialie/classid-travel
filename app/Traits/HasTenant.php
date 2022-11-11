@@ -19,9 +19,9 @@ trait HasTenant
     {
         if (!$tenantId) return $query;
 
-        $table = $this->table.'tenant_id';
+        $table = $this->table.'.tenant_id';
 
-        return $query->where($table, $tenantId);
+        return $query->where("{$this->table}.tenant_id", $tenantId);
     }
 
 

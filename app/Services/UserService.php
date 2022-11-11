@@ -27,12 +27,15 @@ class UserService
     }
 
     /**
-     * @param string $hash
+     * @param int|null $userId
      * @return $this
      */
-    public function byHash(string $hash): static
+    public function userId(int $userId = null): static
     {
-        $this->query->byHashOrFail($hash);
+        if (!$userId){
+            return $this;
+        }
+        $this->query->where('id', ($userId));
         return $this;
     }
 
@@ -49,6 +52,20 @@ class UserService
             throw $e;
         }
         /* end:: start Virtual Account Service */
+
+        return $this;
+    }
+
+    /**
+     * @param bool $status
+     * @return $this
+     * @throws Exception
+     */
+    public function setStatus(string $status): static
+    {
+        $user = $this->user();
+        $user->status = $status;
+        $user->save();
 
         return $this;
     }
@@ -145,20 +162,28 @@ class UserService
     }
 
     /**
+     * @param array|null $withRelation
      * @return Model|Builder|User|null
      */
-    public function get(): Model|Builder|User|null
+    public function get(?array $withRelation = []): Model|Builder|User|null
     {
-        return $this->query->first();
+        return $this->query
+            ->when(count($withRelation) > 0, function (Builder $subQuery) use ($withRelation){
+                $subQuery->with($withRelation);
+            })
+            ->first();
     }
 
+    /**
+     * @throws Exception
+     */
     public function user(): User
     {
         if ($this->query->count() > 1) {
-            if (isset($this->user) and $this->user instanceof User) {
+            if (isset($this->user)) {
                 $user = $this->user;
             } else {
-                throw new Exception('Tujuan belum di konfigurasi');
+                throw new Exception('Data harus spesifik!.');
             }
         } else {
             $user = $this->query->first();

@@ -7,17 +7,21 @@ use App\Http\Controllers\Controller;
 use App\Http\Controllers\Web\Admin\Fragment\TenantFragmentController;
 use App\Models\Tenant\Tenant;
 use App\Services\TenantService;
+use App\Services\UserService;
 use App\Traits\FragmentRenderer;
 use App\Traits\ViewSupport;
 use Exception;
+use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use Illuminate\Routing\Redirector;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
+use InvalidArgumentException;
 use Psr\Container\ContainerExceptionInterface;
 use Psr\Container\NotFoundExceptionInterface;
 use ReflectionException;
@@ -58,7 +62,7 @@ class TenantController extends Controller
                             return '<span class="badge badge-danger text-uppercase">inactive</span>';
                         }
                     })->addColumn('created_date', function ($row) {
-                        return carbon($row->createda_at)->format('d M, Y');
+                        return carbon($row->created_at)->format('d M, Y');
                     })->addColumn('actions', function ($row){
                         $this->setData('tenant', $row);
                         return $this->view('pages.web.tenant.action.action-datatable');
@@ -84,7 +88,7 @@ class TenantController extends Controller
     /**
      * Show the form for creating a new resource.
      *
-     * @return JsonResponse
+     * @return Application|JsonResponse|RedirectResponse|Redirector
      * @throws Throwable
      */
     public function create()
@@ -95,6 +99,9 @@ class TenantController extends Controller
             return \response()->json([
                 'view' => $this->view('pages.web.tenant.modals.modal-create-tenant')->render(),
             ]);
+        }else {
+            notify('Opps!', 'Terjadi kesalahan saat memuat halaman!', 'error')->autoClose();
+            return redirect(route('master.destination.index'));
         }
     }
 
@@ -133,11 +140,17 @@ class TenantController extends Controller
             $newTenant = Tenant::query()->create($input);
             /* end:: create new tenant */
 
-            /* begin:: tenant service */
-            $tenantService = new TenantService($newTenant->id);
-            $tenantService
-                ->createAdminAccount($input);
-            /* end:: tenant service */
+            /* begin:: user service -- create admin account + set is super == true (fix) */
+            $userService = new UserService(tenantId: $newTenant->id);
+            $userService->createNewUser([
+                'name' => $input['name'],
+                'phone' => $input['phone'],
+                'password' => 'admin',
+            ], false)
+                ->setRole('administrator')
+                ->setIsSuper(true);
+            /* end:: user service -- create admin account + set is super == true (fix) */
+
             DB::commit();
 
             notify('Berhasil', 'Berhasil membuat akun travel baru', 'success');
@@ -195,7 +208,7 @@ class TenantController extends Controller
      * Show the form for editing the specified resource.
      *
      * @param Tenant $tenant
-     * @return JsonResponse
+     * @return Application|JsonResponse|RedirectResponse|Redirector
      * @throws Throwable
      */
     public function edit(Tenant $tenant)
@@ -210,6 +223,9 @@ class TenantController extends Controller
             return \response()->json([
                 'view' => $this->view('pages.web.tenant.modals.modal-edit-tenant')->render(),
             ]);
+        }else {
+            notify('Opps!', 'Terjadi kesalahan saat memuat halaman!', 'error')->autoClose();
+            return redirect(route('master.destination.index'));
         }
     }
 
@@ -338,7 +354,7 @@ class TenantController extends Controller
                 notify('Berhasil!', "Status telah berubah", 'success');
                 DB::commit();
             }else{
-                throw new \InvalidArgumentException('Tidak ada yang berubah!');
+                throw new InvalidArgumentException('Tidak ada yang berubah!');
             }
 
 

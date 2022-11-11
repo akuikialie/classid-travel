@@ -31,7 +31,7 @@ class AuthenticationSessionController extends Controller
 
         $user = \auth()->user();
 
-        if ($user->hasRole(RoleEnum::Admin->keyValue())){
+        if ($user->hasRole('administrator')){
             $tenant = Tenant::query()
                 ->where('BCN', request()->input('travel_code'))
                 ->first();
@@ -50,7 +50,7 @@ class AuthenticationSessionController extends Controller
                 notify('Gagal!', trans('auth.failed'), 'error');
                 return redirect()->back()->withInput();
             }
-        }else if ($user->hasRole(RoleEnum::SuperAdministrator->keyValue())){
+        }else if ($user->hasRole('super-administrator')){
             return redirect()->intended(route('admin.tenant.index'));
         }
 
