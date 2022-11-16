@@ -18,7 +18,6 @@ class UserService
     private Builder $query;
 
     private User $user;
-
     public function __construct(
         private readonly ?int $tenantId = null
     )
@@ -26,24 +25,11 @@ class UserService
         $this->query = User::query();
     }
 
-    /**
-     * @param int|null $userId
-     * @return $this
-     */
-    public function userId(int $userId = null): static
-    {
-        if (!$userId){
-            return $this;
-        }
-        $this->query->where('id', $userId);
-        return $this;
-    }
-
     public function createVa(string $vaType): static
     {
         /* begin:: start Virtual Account Service */
         try {
-            $user = $this->user();
+            $user = $this->getUser();
             $VAService = new VirtualAccountService($this->tenantId);
             $VAService->vaType($vaType)
                 ->createFor($user)
@@ -57,13 +43,13 @@ class UserService
     }
 
     /**
-     * @param bool $status
+     * @param string $status
      * @return $this
      * @throws Exception
      */
     public function setStatus(string $status): static
     {
-        $user = $this->user();
+        $user = $this->getUser();
         $user->status = $status;
         $user->save();
 
@@ -103,7 +89,7 @@ class UserService
     public function setDepartureStatus(string $status = null, string $detail = null): static
     {
         try {
-            $user = $this->user()->fresh(['jamaah']);
+            $user = $this->getUser()->fresh(['jamaah']);
 
             $input = [
                 'tenant_id' => $this->tenantId,
@@ -137,7 +123,7 @@ class UserService
     public function setRole(...$roles): static
     {
         /* begin:: permissions Service */
-        $user = $this->user();
+        $user = $this->getUser();
         $permissionService = new PermissionService(tenantId: $this->tenantId);
         $permissionService->syncRole($user, $roles);
         /* end:: permissions Service */
@@ -152,7 +138,7 @@ class UserService
     public function setIsSuper(bool $isSuper = false): static
     {
         try {
-            $user = $this->user();
+            $user = $this->getUser();
             $user->is_super = $isSuper;
             $user->save();
             return $this;
@@ -177,7 +163,7 @@ class UserService
     /**
      * @throws Exception
      */
-    public function user(): User
+    public function getUser(): User
     {
         if ($this->query->count() > 1) {
             if (isset($this->user)) {
@@ -190,5 +176,15 @@ class UserService
         }
 
         return $user;
+    }
+
+    /**
+     * @param User $user
+     * @return UserService
+     */
+    public function setUser(User $user): static
+    {
+        $this->user = $user;
+        return $this;
     }
 }

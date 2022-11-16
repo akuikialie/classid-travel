@@ -81,12 +81,6 @@ class FacilityController extends Controller
      */
     public function index(): View|Factory|Application
     {
-        $user = auth()->user();
-//        $facilities = PlanFacility::query()
-//            ->withCount(['media', 'packages'])
-//            ->tenantId($user->tenant_id)
-//            ->get();
-
         return $this->view('pages.web.master.facility.facility-index');
     }
 
@@ -106,8 +100,6 @@ class FacilityController extends Controller
             ]);
         }
         abort(404);
-        notify('Opps!', 'Terjadi kesalahan saat memuat halaman!', 'error')->autoClose();
-        return redirect(route('master.facility.index'));
     }
 
     /**
@@ -151,8 +143,6 @@ class FacilityController extends Controller
     public function show(PlanFacility $planFacility): Redirector|RedirectResponse|Application
     {
         abort(404);
-        notify('Opps!', 'Terjadi kesalahan saat memuat halaman!', 'error')->autoClose();
-        return redirect(route('master.facility.index'));
     }
 
     /**
@@ -179,8 +169,6 @@ class FacilityController extends Controller
             ]);
         }
         abort(404);
-        notify('Opps!', 'Terjadi kesalahan saat memuat halaman!', 'error')->autoClose();
-        return redirect(route('master.facility.index'));
     }
 
     /**

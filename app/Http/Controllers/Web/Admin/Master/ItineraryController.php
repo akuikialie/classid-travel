@@ -86,10 +86,8 @@ class ItineraryController extends Controller
                 'view' => view('pages.web.master.itinerary.modal.modal-create-itinerary_activity', [
                 ])->render(),
             ]);
-        } else {
-            notify('Oops!', 'Terjadi kesalahan saat memuat halaman!', 'error')->autoClose();
-            return redirect(route('master.facility.index'));
         }
+        abort(404);
     }
 
     /**
@@ -125,13 +123,13 @@ class ItineraryController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param $hash
-     * @return Application|Redirector|RedirectResponse
+     * @param ItineraryActivity $activity
+     * @return void
      */
-    public function show($hash)
+    public function show(ItineraryActivity $activity)
     {
-        notify('Oops!', 'Terjadi kesalahan saat memuat halaman!', 'error')->autoClose();
-        return redirect(route('master.facility.index'));
+        abort(404);
+
     }
 
     /**
@@ -148,10 +146,8 @@ class ItineraryController extends Controller
                     'activity' => $activity,
                 ])->render(),
             ]);
-        } else {
-            notify('Oops!', 'Terjadi kesalahan saat memuat halaman!', 'error')->autoClose();
-            return redirect()->back();
         }
+        abort(404);
     }
 
     /**

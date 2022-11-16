@@ -1,13 +1,4 @@
 @php use App\Enums\UserStatus; @endphp
-{{--<a type="button" data-id="{{ $user->hash }}" data-bs-toggle="tooltip"--}}
-{{--   title="Edit User"--}}
-{{--   class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm me-1 btn-edit-modal">--}}
-{{--  <span class="svg-icon svg-icon-3">--}}
-{{--    <i class="fa-solid fa-pen-to-square"></i>--}}
-{{--  </span>--}}
-{{--  <!--end::Svg Icon-->--}}
-{{--</a>--}}
-
 <a href="#" class="btn btn-light btn-active-light-primary btn-sm"
    data-kt-menu-trigger="click" data-kt-menu-placement="bottom-end">
   <!--begin::Svg Icon | path: icons/duotune/arrows/arr072.svg-->

@@ -122,6 +122,8 @@ class RoleController extends Controller
                 'view' => null,
             ]);
         }
+
+        abort(404);
     }
 
     /**
@@ -164,7 +166,7 @@ class RoleController extends Controller
      */
     public function show($id)
     {
-        //
+        abort(404);
     }
 
     /**
@@ -175,7 +177,7 @@ class RoleController extends Controller
      */
     public function edit($id)
     {
-        //
+        abort(404);
     }
 
     /**

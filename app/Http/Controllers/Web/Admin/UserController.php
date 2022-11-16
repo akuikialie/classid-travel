@@ -139,8 +139,7 @@ class UserController extends Controller
 
         }
 
-        notify('Opps!', 'Terjadi kesalahan saat memuat halaman!', 'error')->autoClose();
-        return redirect(route('admin.user.index'));
+        abort(404);
     }
 
     /**
@@ -183,35 +182,36 @@ class UserController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param int $id
+     * @param User $user
      * @return Response
      */
-    public function show($id)
+    public function show(User $user)
     {
-        //
+        abort(404);
     }
 
     /**
      * Show the form for editing the specified resource.
      *
-     * @param int $id
+     * @param User $user
      * @return Response
      */
-    public function edit($id)
+    public function edit(User $user)
     {
-        //
+        abort(404);
     }
 
     /**
      * Update the specified resource in storage.
      *
      * @param Request $request
-     * @param int $id
+     * @param User $user
      * @return Response
      */
-    public function update(Request $request, $id)
+    public function update(Request $request, User $user)
     {
-        //
+        abort(404);
+
     }
 
     /**
@@ -250,7 +250,7 @@ class UserController extends Controller
             /* begin:: start user service */
             $userService = new UserService($user->tenant_id ?? null);
             $userService
-                ->userId($user->id)
+                ->setUser($user)
                 ->setStatus(\request()->get('status'));
             /* end:: start user service */
 

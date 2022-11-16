@@ -31,7 +31,9 @@ class DestinationController extends Controller
     }
 
     /**
+     * @return JsonResponse|void
      * @throws Throwable
+     * @throws \Yajra\DataTables\Exceptions\Exception
      */
     public function datatable()
     {
@@ -78,12 +80,6 @@ class DestinationController extends Controller
      */
     public function index(): View|Factory|Application
     {
-        $user = auth()->user();
-//        $destinations = Destination::query()
-//            ->with(['myAddress'])
-//            ->withCount(['media', 'packages'])
-//            ->tenantId($user->tenant_id)
-//            ->get();
 
         return $this->view('pages.web.master.destination.destination-index');
     }
@@ -102,8 +98,6 @@ class DestinationController extends Controller
         }
 
         abort(404);
-        notify('Oops!', 'Terjadi kesalahan saat memuat halaman!', 'error')->autoClose();
-        return redirect(route('admin.destination.index'));
     }
 
     /**
@@ -151,10 +145,6 @@ class DestinationController extends Controller
     {
         if (request()->ajax()) {
 
-//            $destination = Destination::query()
-//                ->with(['myAddress'])
-//                ->whereId($id)->first();
-
             return response()->json([
                 'view' => view('pages.web.master.destination.modal.wizard-edit-modal', [
                     'destination' => $destination,
@@ -162,9 +152,6 @@ class DestinationController extends Controller
             ]);
         }
         abort(404);
-
-        notify('Opps!', 'Terjadi kesalahan saat memuat halaman!', 'error')->autoClose();
-        return redirect(route('master.destination.index'));
     }
 
     /**
@@ -176,9 +163,6 @@ class DestinationController extends Controller
     public function show(Destination $destination): Redirector|RedirectResponse|Application
     {
         abort(404);
-
-        notify('Opps!', 'Terjadi kesalahan saat memuat halaman!', 'error')->autoClose();
-        return redirect(route('master.destination.index'));
     }
 
     /**
@@ -230,10 +214,6 @@ class DestinationController extends Controller
     public function destroy(Destination $destination): RedirectResponse
     {
         try {
-//            $destination = Destination::query()
-//                ->withCount(['packages'])
-//                ->where('id', $id)->first();
-
             if (!isset($destination)) {
                 throw new InvalidArgumentException('Data destinasi tidak ditemukan', 500);
             }
