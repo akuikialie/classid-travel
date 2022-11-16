@@ -114,19 +114,17 @@ class ReferralController extends Controller
 
         DB::beginTransaction();
         try {
-
-            $tenant = activeTenant();
-            $userService = new UserService(tenantId: $tenant->id);
+            $userService = new UserService(tenantId: $referralLink->tenant_id);
             $newUser = $userService
                 ->createNewUser($validator)
                 ->setRole(RoleEnum::Jamaah->keyValue())
                 ->createVa('tabungan')
                 ->setDepartureStatus()
-                ->get();
+                ->getUser();
 
             /* end:: user service */
 
-            $referralService = new ReferralService(tenantId: $tenant->id);
+            $referralService = new ReferralService(tenantId: $referralLink->tenant_id);
             $referralService->saveInvitedPerson($referralLink, $newUser);
             DB::commit();
 
@@ -149,7 +147,7 @@ class ReferralController extends Controller
             $request->session()->regenerate();
 
             $referralService = new ReferralService(tenantId: $referralLink->tenant_id);
-            $referralService->saveInvitedPerson($referralLink);
+            $referralService->saveInvitedPerson($referralLink, auth()->user());
 
             notify('Selamat!', "Kamu telah mengikuti program `{$referralLink->package->name}` bersama {$referralLink->createdBy->name}", 'success');
 

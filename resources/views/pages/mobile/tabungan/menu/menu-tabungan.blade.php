@@ -1,14 +1,14 @@
 <div class="card card-style">
     <div class="content">
-        <h3 class="font-600">{{ isset($namaTabungan) ? $namaTabungan : 'Tabungan Pribadi' }}</h3>
-        <p class="font-11 mt-n2 color-highlight">VA: {{ isset($va) ? $va : rand() }}</p>
+        <h3 class="font-600">{{ $namaTabungan ?? 'Tabungan Pribadi' }}</h3>
+        <p class="font-11 mt-n2 color-highlight">VA: {{ $va ?? rand() }}</p>
 
         <div class="float-start">
             <p class="font-12 opacity-80 mb-n1"><i class="far fa-calendar"></i>
                 {{ isset($lastSavings) ? "Terakhir Menabung: {$lastSavings}" : 'Belum Pernah Menabung' }}</p>
             <p class="font-12 opacity-100"> <strong><i class="fa-solid fa-wallet"></i> Rp
-                    {{ isset($savings) ? $savings : '0' }}</strong> <small>dari
-                    {{ isset($targetSavings) ? $targetSavings : '~' }}</small></p>
+                    {{ $savings ?? '0' }}</strong> <small>dari Rp
+                    {{ $targetSavings ?? '~' }}</small></p>
 
         </div>
     </div>

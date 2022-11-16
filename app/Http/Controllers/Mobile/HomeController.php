@@ -51,9 +51,9 @@ class HomeController extends Controller
         ]);
     }
 
-
     private function listSavings(User $authUser)
     {
+        $savings = collect([]);
         /* begin:: main savings */
         $user = User::query()
             ->with(['tabungan'])
@@ -61,12 +61,12 @@ class HomeController extends Controller
             ->first();
 
         $mainSaving = [
-            [
-                'id' => $user->tabungan->hash,
-                'va' => $user->tabungan->va_number,
-                'showDetails' => true,
-            ]
+            'id' => $user->tabungan->hash,
+            'va' => $user->tabungan->va_number,
+            'showDetails' => true,
         ];
+
+        $savings->add($mainSaving);
         /* end:: main savings */
 
         /* begin:: planing savings */
@@ -79,18 +79,16 @@ class HomeController extends Controller
         foreach ($jamaah->tabunganPackages as $tabungan) {
 
             $namaTabungan = 'tabungan ' . $tabungan?->myPackage->name;
-            $planingSavings[] = [
+            $savings->add([
                 'namaTabungan' => ucwords($namaTabungan),
                 'id' => $tabungan->hash,
                 'va' => $tabungan->va_number,
-                'targetSavings' => 'Rp ' . number_format($tabungan?->myPackage?->amount),
+                'targetSavings' => $tabungan?->myPackage?->amount ?? 0,
                 'showDetails' => true,
-            ];
+            ]);
         }
         /* end:: planing savings */
 
-        return collect($mainSaving)->when(count($planingSavings) > 0, function ($subCollection) use ($planingSavings){
-            $subCollection->add($planingSavings);
-        });
+        return $savings;
     }
 }

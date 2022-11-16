@@ -5,7 +5,6 @@ namespace App\Http\Controllers\Mobile;
 use App\Models\Jamaah\Jamaah;
 use App\Models\User;
 use App\Models\VA\VirtualAccount;
-use Carbon\Carbon;
 
 class TabunganController extends Controller
 {
@@ -19,7 +18,6 @@ class TabunganController extends Controller
 
         return view('pages.mobile.tabungan.tabungan-index', [
             'list_moneyboxs' => $savings,
-
         ]);
     }
 
@@ -56,6 +54,7 @@ class TabunganController extends Controller
 
     private function listSavings(User $authUser)
     {
+        $savings = collect([]);
         /* begin:: main savings */
         $user = User::query()
             ->with(['tabungan'])
@@ -63,12 +62,12 @@ class TabunganController extends Controller
             ->first();
 
         $mainSaving = [
-            [
-                'id' => $user->tabungan->hash,
-                'va' => $user->tabungan->va_number,
-                'showDetails' => true,
-            ]
+            'id' => $user->tabungan->hash,
+            'va' => $user->tabungan->va_number,
+            'showDetails' => true,
         ];
+
+        $savings->add($mainSaving);
         /* end:: main savings */
 
         /* begin:: planing savings */
@@ -81,18 +80,16 @@ class TabunganController extends Controller
         foreach ($jamaah->tabunganPackages as $tabungan) {
 
             $namaTabungan = 'tabungan ' . $tabungan?->myPackage->name;
-            $planingSavings[] = [
+            $savings->add([
                 'namaTabungan' => ucwords($namaTabungan),
                 'id' => $tabungan->hash,
                 'va' => $tabungan->va_number,
-                'targetSavings' => 'Rp ' . number_format($tabungan?->myPackage?->amount),
+                'targetSavings' => $tabungan?->myPackage?->amount ?? 0,
                 'showDetails' => true,
-            ];
+            ]);
         }
         /* end:: planing savings */
 
-        return collect($mainSaving)->when(count($planingSavings) > 0, function ($subCollection) use ($planingSavings){
-            $subCollection->add($planingSavings);
-        });
+        return $savings;
     }
 }
