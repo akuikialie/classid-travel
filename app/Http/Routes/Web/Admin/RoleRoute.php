@@ -2,42 +2,45 @@
 
 namespace App\Http\Routes\Web\Admin;
 
-use App\Enums\RoleEnum;
-use App\Http\Controllers\Web\Admin\TenantController;
-use App\Http\Controllers\Web\Admin\UserController;
+use App\Http\Controllers\Web\Admin\RoleController;
 use Dentro\Yalr\BaseRoute;
-use Illuminate\Support\Facades\Auth;
 
 class RoleRoute extends BaseRoute
 {
     protected string $prefix = 'role';
     protected string $name = 'role';
+    protected string $page = 'role';
 
     public function register(): void
     {
         $this->router->middleware(['auth', 'verified'])->group(function () {
-            $this->router->middleware(['role:super-administrator|administrator'])->group(function (){
-                $this->router->post($this->prefix('datatable'), [UserController::class, 'datatable'])
-                    ->name($this->name('datatable'));
-                $this->router->get($this->prefix(), [UserController::class, 'index'])
+            $this->router->post($this->prefix('datatable'), [RoleController::class, 'datatable'])
+                ->name($this->name('datatable'))->middleware(["permission:view {$this->page}"]);
+
+            /* begin:: default route collection */
+
+            $this->router->middleware([ 'quick_access:role'])->group(function (){
+                $this->router->get($this->prefix(), [RoleController::class, 'index'])
                     ->name($this->name('index'));
 
-                $this->router->get($this->prefix('create'), [UserController::class, 'create'])
+                $this->router->get($this->prefix('create'), [RoleController::class, 'create'])
                     ->name($this->name('create'));
-                $this->router->post($this->prefix(), [UserController::class, 'store'])
+                $this->router->post($this->prefix(), [RoleController::class, 'store'])
                     ->name($this->name('store'));
 
-                $this->router->get($this->prefix('{user_hash}/edit'), [UserController::class, 'edit'])
+                $this->router->get($this->prefix('{role_hash}/edit'), [RoleController::class, 'edit'])
                     ->name($this->name('edit'));
-                $this->router->put($this->prefix('{user_hash}'), [UserController::class, 'update'])
+                $this->router->put($this->prefix('{role_hash}'), [RoleController::class, 'update'])
                     ->name($this->name('update'));
 
-                $this->router->delete($this->prefix('{user_hash}'), [UserController::class, 'destroy'])
+                $this->router->delete($this->prefix('{role_hash}'), [RoleController::class, 'destroy'])
                     ->name($this->name('destroy'));
 
-                $this->router->post($this->prefix('{user_hash}/change-status'),[UserController::class, 'changeStatus'])
+                $this->router->post($this->prefix('{role_hash}/change-status'),[RoleController::class, 'changeStatus'])
                     ->name($this->name('change-status'));
             });
+
+            /* end:: default route collection */
 
         });
     }
@@ -49,17 +52,16 @@ class RoleRoute extends BaseRoute
      */
     public function afterRegister(): void
     {
-         menus(group: 'Setting')
+         menus(group: 'setting')
              ->route(
                  name: 'admin.role.index',
                  title: 'Roles',
-                 // param: [Auth::user()?->tenant_id ?? 0],
                  attribute: [
                      'icon' => 'fa-solid fa-users',
                  ],
                  resolver: function () {
                      $user = \auth()->user();
-                     return $user->hasAnyRole(['super-administrator', 'administrator']);
+                     return $user->can('view role');
                  },
              );
     }

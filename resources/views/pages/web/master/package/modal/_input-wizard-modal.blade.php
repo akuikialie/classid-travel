@@ -172,120 +172,114 @@
 
 <!--begin::Step 3-->
 <div data-kt-stepper-element="content">
-  <div class="w-100 text-center">
-    <!--begin::List Widget 3-->
-    <div class="card">
-      <!--begin::Header-->
-      <div class="card-header">
-        <h3 class="card-title fw-bold text-dark">Pilih Fasilitas</h3>
-      </div>
-      <!--end::Header-->
-      <!--begin::Body-->
-      <div class="card-body">
-        <div style="overflow:hidden; overflow-y:scroll; height:320px;">
-          @forelse ($facilities as $facility)
-            @php
-              switch ($facility->type) {
-                  case 'Perjalanan':
-                      $color = 'primary';
-                      break;
-
-                  case 'Penginapan':
-                      $color = 'success';
-                      break;
-
-                  case 'Makan':
-                      $color = 'warning';
-                      break;
-
-                  default:
-                      $color = 'primary';
-                      break;
-              }
-            @endphp
-              <!--begin::Item-->
-            <div class="d-flex align-items-center mb-2">
-              <!--begin::Bullet-->
-              <span class="bullet bullet-vertical h-40px bg-success"></span>
-              <!--end::Bullet-->
-              <!--begin::Checkbox-->
-              <div class="form-check form-check-custom form-check-solid mx-5">
-                <input class="form-check-input" type="checkbox" id="facilities-{{ $facility->id }}"
-                       name="facilities[{{ $facility->id }}]"
-                  {{ in_array($facility->id, (isset($package->myFacilities) ? collect($package->myFacilities)->pluck('id')->toArray() : []) )? 'checked': '' }} />
-              </div>
-              <!--end::Checkbox-->
-              <!--begin::Description-->
-              <div class="flex-grow-1" for="facilities">
-                <label for="facilities-{{ $facility->id }}"
-                       class="text-gray-800 text-hover-primary fw-bold fs-6">{{ $facility->name }}</label>
-                <span class="text-muted fw-semibold d-block">{{-- --}}</span>
-              </div>
-              <!--end::Description-->
-              <span
-                class="badge badge-light-{{ $color }} fs-8 fw-bold">{{ $facility->type }}</span>
-            </div>
-            <!--end:Item-->
-          @empty
-          @endforelse
-        </div>
-      </div>
-      <!--end::Body-->
+  <div class="w-100 text-center" style="overflow:hidden; overflow-y:scroll; height:320px;">
+    <!--begin::Header-->
+    <div class="card-header">
+      <h3 class="card-title fw-bold text-dark py-5">Pilih Fasilitas</h3>
     </div>
-    <!--end:List Widget 3-->
+    <!--end::Header-->
+    <!--begin::Body-->
+    <div class="card-body">
+      <div style="overflow:hidden; overflow-y:scroll; height:320px;">
+        @forelse ($facilities as $facility)
+          @php
+            switch ($facility->type) {
+                case 'Perjalanan':
+                    $color = 'primary';
+                    break;
+
+                case 'Penginapan':
+                    $color = 'success';
+                    break;
+
+                case 'Makan':
+                    $color = 'warning';
+                    break;
+
+                default:
+                    $color = 'primary';
+                    break;
+            }
+          @endphp
+            <!--begin::Item-->
+          <div class="d-flex align-items-center mb-2">
+            <!--begin::Bullet-->
+            <span class="bullet bullet-vertical h-40px bg-success"></span>
+            <!--end::Bullet-->
+            <!--begin::Checkbox-->
+            <div class="form-check form-check-custom form-check-solid mx-5">
+              <input class="form-check-input" type="checkbox" id="facilities-{{ $facility->id }}"
+                     name="facilities[{{ $facility->id }}]"
+                {{ in_array($facility->id, (isset($package->myFacilities) ? collect($package->myFacilities)->pluck('id')->toArray() : []) )? 'checked': '' }} />
+            </div>
+            <!--end::Checkbox-->
+            <!--begin::Description-->
+            <div class="flex-grow-1" for="facilities">
+              <label for="facilities-{{ $facility->id }}"
+                     class="text-gray-800 text-hover-primary fw-bold fs-6">{{ $facility->name }}</label>
+              <span class="text-muted fw-semibold d-block">{{-- --}}</span>
+            </div>
+            <!--end::Description-->
+            <span
+              class="badge badge-light-{{ $color }} fs-8 fw-bold">{{ $facility->type }}</span>
+          </div>
+          <!--end:Item-->
+        @empty
+          <span>Belum ada fasilitas</span>
+        @endforelse
+      </div>
+    </div>
+    <!--end::Body-->
   </div>
 </div>
 <!--end::Step 3-->
 
 <!--begin::Step 4-->
 <div data-kt-stepper-element="content">
-  <div class="w-100 text-center">
-    <!--begin::List Widget 3-->
-    <div class="card">
-      <!--begin::Header-->
-      <div class="card-header">
-        <h3 class="card-title fw-bold text-dark">Pilih Destinasi</h3>
-      </div>
-      <!--end::Header-->
-      <!--begin::Body-->
-      <div class="card-body">
-        <div style="overflow:hidden; overflow-y:scroll; height:320px;">
-          @forelse ($destinations as $destination)
-            @php
-              $colors = ['primary', 'secondary', 'success', 'danger', 'warning', 'info'];
-              $color = $colors[rand(0, 5)];
-            @endphp
-              <!--begin::Item-->
-            <div class="d-flex align-items-center mb-2">
-              <!--begin::Bullet-->
-              <span class="bullet bullet-vertical h-40px bg-success"></span>
-              <!--end::Bullet-->
-              <!--begin::Checkbox-->
-              <div class="form-check form-check-custom form-check-solid mx-5">
-                <input class="form-check-input" type="checkbox"
-                       id="destination-{{ $destination->id }}"
-                       name="destinations[{{ $destination->id }}]"
-                  {{ in_array($destination->id,(isset($package->myDestinations) ? collect($package->myDestinations)->pluck('id')->toArray() : []))? 'checked': '' }} />
-              </div>
-              <!--end::Checkbox-->
-              <!--begin::Description-->
-              <div class="flex-grow-1">
-                <label for="destination-{{ $destination->id }}"
-                       class="text-gray-800 text-hover-primary fw-bold fs-6">{{ $destination->name }}</label>
-                <span
-                  class="text-muted fw-semibold d-block">{{ $destination?->myAddress?->address }}</span>
-              </div>
-              <!--end::Description-->
-
-            </div>
-            <!--end:Item-->
-          @empty
-          @endforelse
-        </div>
-      </div>
-      <!--end::Body-->
+  <div class="w-100 text-center" style="overflow:hidden; overflow-y:scroll; height:320px;">
+    <!--begin::Header-->
+    <div class="card-header">
+      <h3 class="card-title fw-bold text-dark py-5">Pilih Destinasi</h3>
     </div>
-    <!--end:List Widget 3-->
+    <!--end::Header-->
+    <!--begin::Body-->
+    <div class="card-body">
+      <div style="overflow:hidden; overflow-y:scroll; height:320px;">
+        @forelse ($destinations as $destination)
+          @php
+            $colors = ['primary', 'secondary', 'success', 'danger', 'warning', 'info'];
+            $color = $colors[rand(0, 5)];
+          @endphp
+            <!--begin::Item-->
+          <div class="d-flex align-items-center mb-2">
+            <!--begin::Bullet-->
+            <span class="bullet bullet-vertical h-40px bg-success"></span>
+            <!--end::Bullet-->
+            <!--begin::Checkbox-->
+            <div class="form-check form-check-custom form-check-solid mx-5">
+              <input class="form-check-input" type="checkbox"
+                     id="destination-{{ $destination->id }}"
+                     name="destinations[{{ $destination->id }}]"
+                {{ in_array($destination->id,(isset($package->myDestinations) ? collect($package->myDestinations)->pluck('id')->toArray() : []))? 'checked': '' }} />
+            </div>
+            <!--end::Checkbox-->
+            <!--begin::Description-->
+            <div class="flex-grow-1">
+              <label for="destination-{{ $destination->id }}"
+                     class="text-gray-800 text-hover-primary fw-bold fs-6">{{ $destination->name }}</label>
+              <span
+                class="text-muted fw-semibold d-block">{{ $destination?->myAddress?->address }}</span>
+            </div>
+            <!--end::Description-->
+
+          </div>
+          <!--end:Item-->
+        @empty
+          <span>Belum ada fasilitas</span>
+        @endforelse
+      </div>
+    </div>
+    <!--end::Body-->
   </div>
 </div>
 <!--end::Step 4-->

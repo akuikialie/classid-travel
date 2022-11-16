@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Web\Admin\Master;
 use App\Http\Controllers\Web\Admin\Controller;
 use App\Models\Destination\Destination;
 use App\Services\DestinationService;
+use Exception;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
@@ -19,6 +20,57 @@ use Throwable;
 class DestinationController extends Controller
 {
 
+    protected string $forPage = 'destination';
+
+    /**
+     * @throws Exception
+     */
+    public function __construct()
+    {
+        $this->setData('current_page', $this->forPage);
+    }
+
+    /**
+     * @throws Throwable
+     */
+    public function datatable()
+    {
+        if (\request()->ajax()) {
+            try {
+                $user = auth()->user();
+                $destinations = Destination::query()
+                    ->with(['myAddress'])
+                    ->withCount(['media', 'packages'])
+                    ->tenantId($user->tenant_id)
+                    ->get();
+
+                $datatable = datatables()->of($destinations)
+                    ->addIndexColumn()
+                    ->addColumn('name', function ($destination) {
+                        return $destination->name;
+                    })->addColumn('location', function ($destination) {
+                        return ($destination->myAddress->address ?? '-');
+                    })->addColumn('status', function ($destination) {
+                        if ($destination->is_active) {
+                            return '<span class="badge badge-success text-uppercase">active</span>';
+                        } else {
+                            return '<span class="badge badge-danger text-uppercase">inactive</span>';
+                        }
+                    })
+                    ->addColumn('actions', function ($destination) {
+                        $this->setData('destination', $destination);
+                        return $this->view('pages.web.master.destination.action.action-datatable');
+                    })
+                    ->rawColumns(['actions', 'status' ]);
+
+                return $datatable->make(true);
+            } catch (Throwable $e) {
+                throw $e;
+            }
+        }
+    }
+
+
     /**
      * Display a listing of the resource.
      *
@@ -27,15 +79,13 @@ class DestinationController extends Controller
     public function index(): View|Factory|Application
     {
         $user = auth()->user();
-        $destinations = Destination::query()
-            ->with(['myAddress'])
-            ->withCount(['media', 'packages'])
-            ->tenantId($user->tenant_id)
-            ->get();
+//        $destinations = Destination::query()
+//            ->with(['myAddress'])
+//            ->withCount(['media', 'packages'])
+//            ->tenantId($user->tenant_id)
+//            ->get();
 
-        return view('pages.web.master.destination.destination-index', [
-            'destinations' => $destinations,
-        ]);
+        return $this->view('pages.web.master.destination.destination-index');
     }
 
     /**
@@ -49,10 +99,11 @@ class DestinationController extends Controller
             return response()->json([
                 'view' => view('pages.web.master.destination.modal.wizard-create-modal', [])->render(),
             ]);
-        } else {
-            notify('Opps!', 'Terjadi kesalahan saat memuat halaman!', 'error')->autoClose();
-            return redirect(route('master.destination.index'));
         }
+
+        abort(404);
+        notify('Oops!', 'Terjadi kesalahan saat memuat halaman!', 'error')->autoClose();
+        return redirect(route('admin.destination.index'));
     }
 
     /**
@@ -91,50 +142,53 @@ class DestinationController extends Controller
     }
 
     /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return Application|Redirector|RedirectResponse
-     */
-    public function show(int $id): Redirector|RedirectResponse|Application
-    {
-        notify('Opps!', 'Terjadi kesalahan saat memuat halaman!', 'error')->autoClose();
-        return redirect(route('master.destination.index'));
-    }
-
-    /**
      * Show the form for editing the specified resource.
      *
-     * @param  int  $id
+     * @param Destination $destination
      * @return Application|JsonResponse|Redirector|RedirectResponse
      */
-    public function edit(int $id): JsonResponse|Redirector|RedirectResponse|Application
+    public function edit(Destination $destination): JsonResponse|Redirector|RedirectResponse|Application
     {
         if (request()->ajax()) {
 
-            $destination = Destination::query()
-                ->with(['myAddress'])
-                ->whereId($id)->first();
+//            $destination = Destination::query()
+//                ->with(['myAddress'])
+//                ->whereId($id)->first();
 
             return response()->json([
                 'view' => view('pages.web.master.destination.modal.wizard-edit-modal', [
                     'destination' => $destination,
                 ])->render(),
             ]);
-        } else {
-            notify('Opps!', 'Terjadi kesalahan saat memuat halaman!', 'error')->autoClose();
-            return redirect(route('master.destination.index'));
         }
+        abort(404);
+
+        notify('Opps!', 'Terjadi kesalahan saat memuat halaman!', 'error')->autoClose();
+        return redirect(route('master.destination.index'));
+    }
+
+    /**
+     * Display the specified resource.
+     *
+     * @param Destination $destination
+     * @return Application|Redirector|RedirectResponse
+     */
+    public function show(Destination $destination): Redirector|RedirectResponse|Application
+    {
+        abort(404);
+
+        notify('Opps!', 'Terjadi kesalahan saat memuat halaman!', 'error')->autoClose();
+        return redirect(route('master.destination.index'));
     }
 
     /**
      * Update the specified resource in storage.
      *
      * @param Request $request
-     * @param  int  $id
+     * @param Destination $destination
      * @return RedirectResponse
      */
-    public function update(Request $request, int $id): RedirectResponse
+    public function update(Request $request, Destination $destination): RedirectResponse
     {
         $validator = $request->validate([
             'name' => ['required', 'string',],
@@ -147,11 +201,11 @@ class DestinationController extends Controller
 
             $user = auth()->user();
 
-            $destination = Destination::query()->whereId($id)->first();
+//            $destination = Destination::query()->whereId($id)->first();
 
             $destinationService = new DestinationService($user->tenant_id);
             $destinationService
-                ->destinationId($destination->id)
+                ->setDestination($destination)
                 ->addAddress($validator)
                 ->addGallery($request)
                 ->update($validator);
@@ -170,30 +224,62 @@ class DestinationController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  int  $id
+     * @param Destination $destination
      * @return RedirectResponse
      */
-    public function destroy(int $id): RedirectResponse
+    public function destroy(Destination $destination): RedirectResponse
     {
         try {
-            $destination = Destination::query()
-                ->withCount(['packages'])
-                ->where('id', $id)->first();
+//            $destination = Destination::query()
+//                ->withCount(['packages'])
+//                ->where('id', $id)->first();
 
-            if (!isset($destination)){
+            if (!isset($destination)) {
                 throw new InvalidArgumentException('Data destinasi tidak ditemukan', 500);
             }
 
             if ($destination->packages_count > 0) {
                 throw new InvalidArgumentException('Tidak dapat mengapus destinasi, karena destinasi ini sedang digunakan!', 500);
             }
-            Destination::query()
-                ->find($id)->delete();
+            $destination->delete();
             notify('Berhasil', 'Data destinasi berhasil dihapus!', 'success')->autoClose();
             return redirect()->back();
         } catch (Throwable $th) {
-            notify('Opps!', $th->getMessage(), 'error');
+            notify('Oops!', $th->getMessage(), 'error');
             return redirect()->back();
         }
+    }
+
+
+    /**
+     * @param Request $request
+     * @param Destination $destination
+     * @return RedirectResponse
+     */
+    public function changeStatus(Request $request, Destination $destination)
+    {
+        $request->validate([
+            'status' => ['required', 'boolean'],
+        ]);
+
+        /* begin:: start tenant service */
+        try {
+            $user = auth()->user();
+            $destinationService = new DestinationService($user->tenant_id);
+            if ($request->has('status')) {
+                $destinationService
+                    ->setDestination($destination)
+                    ->setStatus($request->get('status'));
+                notify('Berhasil!', "Status telah berubah", 'success');
+                DB::commit();
+            }else{
+                throw new InvalidArgumentException('Tidak ada yang berubah!');
+            }
+            return redirect()->back();
+        }catch (Throwable $e){
+            notify('Oops!', $e->getMessage(), 'error');
+            return redirect()->back();
+        }
+        /* end:: start tenant service */
     }
 }

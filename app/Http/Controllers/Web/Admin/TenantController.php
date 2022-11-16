@@ -22,6 +22,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 use InvalidArgumentException;
+use Laravel\Octane\Exceptions\DdException;
 use Psr\Container\ContainerExceptionInterface;
 use Psr\Container\NotFoundExceptionInterface;
 use ReflectionException;
@@ -31,6 +32,16 @@ class TenantController extends Controller
 {
 
     use ViewSupport, FragmentRenderer;
+
+    protected string $forPage = 'travel';
+
+    /**
+     * @throws \Exception
+     */
+    public function __construct()
+    {
+        $this->setData('current_page', $this->forPage);
+    }
 
     /**
      * @throws \Yajra\DataTables\Exceptions\Exception
@@ -292,6 +303,7 @@ class TenantController extends Controller
      *
      * @param Tenant $tenant
      * @return Response
+     * @throws DdException
      */
     public function destroy(Tenant $tenant)
     {

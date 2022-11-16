@@ -15,12 +15,13 @@ class MasterRoute extends BaseRoute
 
     protected string $prefix = 'master';
     protected string $name = 'master';
+    protected string $page = 'master';
 
     public function register(): void
     {
         $this->router->middleware(['auth', 'verified', 'role:' . RoleEnum::Admin->keyValue()])->group(function () {
 
-            $this->router->resource($this->prefix('destination'), DestinationController::class, [
+           /* $this->router->resource($this->prefix('destination'), DestinationController::class, [
                 'names' => [
                     'index' => $this->name('destination.index'),
                     'create' => $this->name('destination.create'),
@@ -30,9 +31,9 @@ class MasterRoute extends BaseRoute
                     'update' => $this->name('destination.update'),
                     'destroy' => $this->name('destination.destroy'),
                 ]
-            ]);
+            ]);*/
 
-            $this->router->resource($this->prefix('facility'), FacilityController::class, [
+            /*$this->router->resource($this->prefix('facility'), FacilityController::class, [
                 'names' => [
                     'index' => $this->name('facility.index'),
                     'create' => $this->name('facility.create'),
@@ -42,9 +43,9 @@ class MasterRoute extends BaseRoute
                     'update' => $this->name('facility.update'),
                     'destroy' => $this->name('facility.destroy'),
                 ]
-            ]);
+            ]);*/
 
-            $this->router->resource($this->prefix('package'), PackageController::class, [
+            /*$this->router->resource($this->prefix('package'), PackageController::class, [
                 'names' => [
                     'index' => $this->name('package.index'),
                     'create' => $this->name('package.create'),
@@ -54,13 +55,13 @@ class MasterRoute extends BaseRoute
                     'update' => $this->name('package.update'),
                     'destroy' => $this->name('package.destroy'),
                 ]
-            ]);
-            $this->router->get($this->prefix('package/{package}/itinerary-setup'),
+            ]);*/
+            /*$this->router->get($this->prefix('package/{package}/itinerary-setup'),
                 [PackageController::class, 'createSetupItinerary'])
                 ->name($this->name('package.itinerary-setup.create'));
             $this->router->post($this->prefix('package/{package}/itinerary-setup'),
                 [PackageController::class, 'storeSetupItinerary'])
-                ->name($this->name('package.itinerary-setup.store'));
+                ->name($this->name('package.itinerary-setup.store'));*/
 
             $this->router->resource($this->prefix('schedule'), ScheduleController::class)->names($this->name('schedule'));
 
@@ -91,7 +92,7 @@ class MasterRoute extends BaseRoute
     public function afterRegister(): void
     {
         menus(group: 'Master')
-            ->route(
+           /* ->route(
                 name: 'admin.master.package.index',
                 title: 'Master Paket',
                 attribute: [
@@ -101,8 +102,8 @@ class MasterRoute extends BaseRoute
                     $user = \auth()->user();
                     return $user->hasRole(RoleEnum::Admin->keyValue());
                 },
-            )
-            ->route(
+            )*/
+        /*    ->route(
                 name: 'admin.master.facility.index',
                 title: 'Master Fasilitas',
                 attribute: [
@@ -112,8 +113,18 @@ class MasterRoute extends BaseRoute
                     $user = \auth()->user();
                     return $user->hasRole(RoleEnum::Admin->keyValue());
                 },
+            )*/->route(
+                name: 'admin.master.itinerary.index',
+                title: 'Master Kegiatan',
+                attribute: [
+                    'icon' => 'bx bx-right-arrow-alt',
+                ],
+                resolver: function () {
+                    $user = \auth()->user();
+                    return $user->hasRole(RoleEnum::Admin->keyValue());
+                },
             )
-            ->route(
+            /*->route(
                 name: 'admin.master.destination.index',
                 title: 'Master Tujuan',
                 attribute: [
@@ -123,7 +134,7 @@ class MasterRoute extends BaseRoute
                     $user = \auth()->user();
                     return $user->hasRole(RoleEnum::Admin->keyValue());
                 },
-            )
+            )*/
             ->route(
                 name: 'admin.master.schedule.index',
                 title: 'Master Keberangkatan',

@@ -32,5 +32,17 @@ enum FacilityType: string
         };
     }
 
+    /**
+     * @return string
+     */
+    public function icon(): string
+    {
+        return match ($this){
+            self::perjalanan => 'bx bx-car bx-tada',
+            self::penginapan => 'bx bx-building-house bx-tada',
+            self::makanan => 'bx bxs-bowl-hot bx-tada',
+        };
+    }
+
 
 }

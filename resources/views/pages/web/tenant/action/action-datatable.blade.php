@@ -1,11 +1,13 @@
-<a type="button" data-id="{{ $tenant->hash }}" data-bs-toggle="tooltip"
-   title="Edit Travel"
-   class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm me-1 btn-edit-modal">
+@can("update {$current_page}")
+  <a type="button" data-id="{{ $tenant->hash }}" data-bs-toggle="tooltip"
+     title="Edit Travel"
+     class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm me-1 btn-edit-modal">
   <span class="svg-icon svg-icon-3">
     <i class="fa-solid fa-pen-to-square"></i>
   </span>
-  <!--end::Svg Icon-->
-</a>
+    <!--end::Svg Icon-->
+  </a>
+@endcan
 
 <a href="#" class="btn btn-light btn-active-light-primary btn-sm"
    data-kt-menu-trigger="click" data-kt-menu-placement="bottom-end">
@@ -21,54 +23,60 @@
   class="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-600 menu-state-bg-light-primary fw-semibold fs-7 w-125px py-4"
   data-kt-menu="true">
 
-  <!--begin::Menu item-->
-  <div class="menu-item px-3" data-kt-menu-trigger="hover"
-       data-kt-menu-placement="right-start">
+  @can("update {$current_page}")
     <!--begin::Menu item-->
-    <a href="#" class="menu-link px-3">
-      <span class="me-2"><i class="fa-solid fa-caret-left"></i></span>
-      <span class="menu-title">Ubah Status</span>
-    </a>
-    <!--end::Menu item-->
-    <!--begin::Menu sub-->
-    <div class="menu-sub menu-sub-dropdown w-175px py-4 px-4 ">
-      <form method="post" data-kt-form-id="change-status-{{ $tenant->hash }}" action="{{ route('admin.tenant.change-status', $tenant->hash) }}">
-        @csrf
-        <a href="#" class="menu-link px-3 change-status {{ $tenant->is_active ? 'active' : '' }}"
-           data-id="{{ $tenant->hash }}" data-status="1">
+    <div class="menu-item px-3" data-kt-menu-trigger="hover"
+         data-kt-menu-placement="right-start">
+      <!--begin::Menu item-->
+      <a href="#" class="menu-link px-3">
+        <span class="me-2"><i class="fa-solid fa-caret-left"></i></span>
+        <span class="menu-title">Ubah Status</span>
+      </a>
+      <!--end::Menu item-->
+      <!--begin::Menu sub-->
+      <div class="menu-sub menu-sub-dropdown w-175px py-4 px-4 ">
+        <form method="post" data-kt-form-id="change-status-{{ $tenant->hash }}" action="{{ route('admin.tenant.change-status', $tenant->hash) }}">
+          @csrf
+          <a href="#" class="menu-link px-3 change-status {{ $tenant->is_active ? 'active' : '' }}"
+             data-id="{{ $tenant->hash }}" data-status="1">
         <span class="menu-bullet">
           <span class="bullet bullet-dot"></span>
         </span>
-          <span class="menu-title">Aktif</span>
-        </a>
-        <!--end::Menu item-->
-        <!--begin::Menu item-->
-        <a href="#" class="menu-link px-3 change-status {{ $tenant->is_active ? '' : 'active' }}"
-           data-id="{{ $tenant->hash }}" data-status="0">
+            <span class="menu-title">Aktif</span>
+          </a>
+          <!--end::Menu item-->
+          <!--begin::Menu item-->
+          <a href="#" class="menu-link px-3 change-status {{ $tenant->is_active ? '' : 'active' }}"
+             data-id="{{ $tenant->hash }}" data-status="0">
         <span class="menu-bullet">
           <span class="bullet bullet-dot"></span>
         </span>
-          <span class="menu-title">Tidak Aktif</span>
-        </a>
-        <!--end::Menu item-->
-      </form>
+            <span class="menu-title">Tidak Aktif</span>
+          </a>
+          <!--end::Menu item-->
+        </form>
+      </div>
+      <!--end::Menu sub-->
     </div>
-    <!--end::Menu sub-->
-  </div>
-  <!--end::Menu item-->
+    <!--end::Menu item-->
+  @endcan
+
+
 
   <!--begin::Menu item-->
-  <div class="menu-item px-3 text-nowrap">
-    <form action="{{ route('admin.tenant.destroy', $tenant->hash) }}" method="post"
-      data-kt-form-id="delete-{{ $tenant->hash }}">
-      @csrf
-      @method('DELETE')
-      <a class="menu-link px-3 btn-delete" data-id="{{ $tenant->hash }}"
-         data-bs-toggle="tooltip" title="Hapus Travel">
-        <span class="badge badge-light-danger"> Hapus Travel</span>
-      </a>
-    </form>
-  </div>
+  @can("delete {$current_page}")
+    <div class="menu-item px-3 text-nowrap">
+      <form action="{{ route('admin.tenant.destroy', $tenant->hash) }}" method="post"
+            data-kt-form-id="delete-{{ $tenant->hash }}">
+        @csrf
+        @method('DELETE')
+        <a class="menu-link px-3 btn-delete" data-id="{{ $tenant->hash }}"
+           data-bs-toggle="tooltip" title="Hapus Travel">
+          <span class="badge badge-light-danger"> Hapus Travel</span>
+        </a>
+      </form>
+    </div>
+  @endcan
   <!--end::Menu item-->
 
 

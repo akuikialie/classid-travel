@@ -12,7 +12,7 @@
              <!--end::Label-->
              <!--begin::Input-->
              <input type="text" class="form-control form-control-lg form-control-solid" name="name"
-                 placeholder="Nama Fasilitas" value="{{ old('name', isset($facility) ? $facility->name : null) }}" />
+                 placeholder="Nama Fasilitas" value="{{ old('name') }}" />
              <!--end::Input-->
          </div>
          <!--end::Input group-->
@@ -37,7 +37,7 @@
                                  <span class="symbol-label bg-light-primary">
                                      <!--begin::Svg Icon | path: icons/duotune/maps/map004.svg-->
                                      <span class="svg-icon svg-icon-1 svg-icon-primary">
-                                         <i class='{{ $categoryFacility['icon'] }}'></i>
+                                         <i class='{{ $categoryFacility->icon() }}'></i>
                                      </span>
                                      <!--end::Svg Icon-->
                                  </span>
@@ -45,7 +45,7 @@
                              <!--end:Icon-->
                              <!--begin:Info-->
                              <span class="d-flex flex-column">
-                                 <span class="fw-bold fs-6">{{ $categoryFacility['name'] }}</span>
+                                 <span class="fw-bold fs-6">{{ $categoryFacility->label() }}</span>
                              </span>
                              <!--end:Info-->
                          </span>
@@ -53,8 +53,8 @@
                          <!--begin:Input-->
                          <span class="form-check form-check-custom form-check-solid">
                              <input class="form-check-input" type="radio" name="type"
-                                 value="{{ $categoryFacility['name'] }}"
-                                 {{isset($facility) &&  ($categoryFacility['name'] == $facility->type) ? 'checked' : '' }} />
+                                 value="{{ $categoryFacility->keyValue() }}"
+                                 {{$categoryFacility->keyValue() == old('type') ? 'checked' : '' }} />
                          </span>
                          <!--end:Input-->
                      </label>

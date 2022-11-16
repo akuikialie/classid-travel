@@ -2,7 +2,7 @@
 
 namespace App\Enums;
 
-enum RoleType: string
+enum PermissionType: string
 {
     case app  = 'app';
     case tenant = 'tenant';

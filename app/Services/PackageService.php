@@ -9,6 +9,7 @@ use App\Models\Jamaah\Jamaah;
 use App\Models\Plan\Plan;
 use App\Models\Plan\PlanPackage;
 use App\Traits\HasTenant;
+use Exception;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 use InvalidArgumentException;
@@ -19,6 +20,9 @@ class PackageService
 {
     use HasTenant;
     protected Builder $query;
+
+    public PlanPackage $package;
+
     public function __construct(
         private readonly int $tenantId
     )
@@ -57,8 +61,27 @@ class PackageService
     }
 
     /**
+     * @param bool $status
+     * @return $this
+     * @throws Exception
+     */
+    public function setStatus(bool $status): static
+    {
+        try {
+            $tenant = $this->getPackage();
+            $tenant->is_active = $status;
+            $tenant->save();
+        } catch (Exception $e) {
+            throw $e;
+        }
+
+        return $this;
+    }
+
+    /**
      * @param ...$destinationIds
      * @return $this
+     * @throws Throwable
      */
     public function addDestinations(...$destinationIds): static
     {
@@ -67,7 +90,7 @@ class PackageService
             {
                 $destinationIds = collect($destinationIds)->first();
             }
-            $addDestinations = $this->query->first();
+            $addDestinations = $this->getPackage();
             $addDestinations->myDestinations()->sync($destinationIds);
         }catch (Throwable $e){
             throw $e;
@@ -78,6 +101,7 @@ class PackageService
     /**
      * @param array ...$facilityIds
      * @return $this
+     * @throws Throwable
      */
     public function addFacilities(array ...$facilityIds): static
     {
@@ -86,7 +110,7 @@ class PackageService
             {
                 $facilityIds = collect($facilityIds)->first();
             }
-            $facility = $this->query->first();
+            $facility = $this->getPackage();
             $facility->myFacilities()->sync($facilityIds);
         }catch (Throwable $e){
             throw $e;
@@ -138,54 +162,6 @@ class PackageService
         }
     }
 
-    public function addFacilitiesToPackage(PlanPackage $planPackage, array $facilitiyIds): void
-    {
-        try {
-            if (collect($facilitiyIds)->count() > 0) {
-                $planPackage->myFacilities()->sync($facilitiyIds);
-            }
-        } catch (Throwable $th) {
-            throw $th;
-        }
-    }
-
-    public function addDestinationsToPackage(PlanPackage $planPackage, array $destinationIds): void
-    {
-        try {
-            if (collect($destinationIds)->count() > 0) {
-                $planPackage->myDestinations()->sync($destinationIds);
-            }
-        } catch (Throwable $th) {
-            throw $th;
-        }
-    }
-
-    public function changePackageVisibility(PlanPackage $planPackage, string $status): void
-    {
-        try {
-            /* update package status */
-            $planPackage->status = Statuses::tryFrom($status)->keyValue();
-
-            /* save */
-            $planPackage->save();
-        } catch (Throwable $th) {
-            throw $th;
-        }
-    }
-
-    public function changePackageStatus(PlanPackage $planPackage, bool $visibility): void
-    {
-        try {
-            /* update package visibility */
-            $this->planPackage->is_publish = $visibility;
-
-            /* save */
-            $planPackage->save();
-        } catch (Throwable $th) {
-            throw $th;
-        }
-    }
-
     public function addThumbnailPackage(PlanPackage $planPackage, Request $request): void
     {
         try {
@@ -195,6 +171,35 @@ class PackageService
         } catch (Throwable $th) {
             throw $th;
         }
+    }
+
+    /**
+     * @param PlanPackage $package
+     * @return PackageService
+     */
+    public function setPackage(PlanPackage $package): static
+    {
+        $this->package = $package;
+
+        return $this;
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function getPackage(): PlanPackage
+    {
+        if ($this->query->count() > 1) {
+            if (isset($this->package)) {
+                $package = $this->package;
+            } else {
+                throw new Exception('Data harus spesifik!.');
+            }
+        } else {
+            $package = $this->query->first();
+        }
+
+        return $package;
     }
 
 }

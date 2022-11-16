@@ -25,16 +25,6 @@ class TenantService
     }
 
     /**
-     * @param int|null $tenantId
-     * @return $this
-     */
-    public function tenantId(int $tenantId = null): static
-    {
-        $this->query->where('id', ($tenantId ?? $this->tenantId));
-        return $this;
-    }
-
-    /**
      * @param bool $status
      * @return $this
      * @throws Exception

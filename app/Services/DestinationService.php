@@ -42,7 +42,7 @@ class DestinationService
     {
         try {
             if ($request->hasfile('photo_collection')) {
-                $destination = $this->destination();
+                $destination = $this->getDestination();
                 $destination->addMultipleMediaFromRequest(['photo_collection'])
                     ->each(fn($media) => $media->toMediaCollection('photo_collections'));
             }
@@ -78,7 +78,7 @@ class DestinationService
                     'address' => $input['address']
                 ]);
 
-                $destination = $this->destination();
+                $destination = $this->getDestination();
 
                 $destination->myAddress()->save($newAddress);
             }
@@ -100,7 +100,7 @@ class DestinationService
      */
     public function update(array $input): Model|Builder|Destination|null
     {
-        $destination = $this->destination();
+        $destination = $this->getDestination();
         $destination->name = $input['name'];
         $destination->save();
 
@@ -108,12 +108,30 @@ class DestinationService
     }
 
     /**
+     * @param bool $status
+     * @return $this
      * @throws Exception
      */
-    private function destination(): Model|Builder|Destination|null
+    public function setStatus(bool $status): static
+    {
+        try {
+            $destination = $this->getDestination();
+            $destination->is_active = $status;
+            $destination->save();
+        } catch (Exception $e) {
+            throw $e;
+        }
+
+        return $this;
+    }
+
+    /**
+     * @throws Exception
+     */
+    private function getDestination(): Model|Builder|Destination|null
     {
         if ($this->query->count() > 1){
-            if (isset($this->destination) and $this->destination instanceof Destination){
+            if (isset($this->destination)){
                 $destination = $this->destination;
             }else{
                 throw new Exception('Tujuan belum di konfigurasi');
@@ -165,5 +183,16 @@ class DestinationService
         } catch (Throwable $th) {
             throw $th;
         }
+    }
+
+    /**
+     * @param Destination $destination
+     * @return DestinationService
+     */
+    public function setDestination(Destination $destination): static
+    {
+        $this->destination = $destination;
+
+        return $this;
     }
 }
