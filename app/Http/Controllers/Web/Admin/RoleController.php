@@ -58,7 +58,7 @@ class RoleController extends Controller
                     })->addColumn('type', function ($role) {
                         return $role->type;
                     })
-                    ->addColumn('actions', function ($role) use ($user) {
+                    ->addColumn('actions', function ($role){
                         $this->setData('role', $role);
                         return $this->view('pages.web.role.action.action-datatable');
                     })

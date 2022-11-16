@@ -134,9 +134,7 @@ class FacilityService
                 'name' => ucwords($input['name'])
             ]);
 
-            $newFacility = PlanFacility::query()->create($input);
-
-            return $newFacility;
+            return PlanFacility::query()->create($input);
         } catch (Throwable $th) {
             throw $th;
         }

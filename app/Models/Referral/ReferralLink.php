@@ -18,6 +18,7 @@ class ReferralLink extends Model
 
     protected $fillable = [
         'summary', 'link', 'hash', 'tenant_id',
+        'package_id', 'created_by',
     ];
 
     /**

@@ -70,7 +70,7 @@ class SeedUsers extends Seeder
                         collect($input)->forget('role')->toArray(),
                         ($input['role'] == 'jamaah'))
                     ->setRole($input['role'])
-                    ->get();
+                    ->getUser();
                 /* end:: user service */
                 \DB::commit();
             }catch (\Throwable $e){

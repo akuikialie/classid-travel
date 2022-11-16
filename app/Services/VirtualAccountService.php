@@ -12,7 +12,7 @@ use Laravel\Octane\Exceptions\DdException;
 
 class VirtualAccountService
 {
-    public $query;
+    private $query;
     public function __construct(
         private readonly int $tenantId
     )

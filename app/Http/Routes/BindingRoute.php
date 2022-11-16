@@ -10,6 +10,7 @@ use App\Models\Schedule\Schedule;
 use App\Models\Spatie\Role;
 use App\Models\Tenant\Tenant;
 use App\Models\User;
+use App\Models\VA\VirtualAccount;
 use Dentro\Yalr\Contracts\Bindable;
 use Illuminate\Routing\Router;
 
@@ -43,6 +44,11 @@ class BindingRoute implements Bindable
         $this->router->bind('role_hash', fn ($value) => Role::query()
             ->withCount(['permissions', 'users'])
             ->byHashOrFail($value));
-//        $this->router->bind('tenant_with_trash_hash', fn ($value) => Tenant::query()->withTrashed()->byHashOrFail($value));
+
+        /* begin:: mobile route binding */
+        $this->router->bind('saving_hash', fn ($value) => VirtualAccount::query()
+            ->with(['myPackage'])
+            ->byHashOrFail($value));
+        /* end:: mobile route binding */
     }
 }

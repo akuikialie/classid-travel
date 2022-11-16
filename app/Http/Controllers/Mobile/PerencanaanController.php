@@ -18,7 +18,6 @@ class PerencanaanController extends Controller
             try {
                 switch (request()->get('type')) {
                     case 'perencanaan-ibadah':
-
                         $package = PlanPackage::query()
                             ->when(request()->has('package'), function ($subQuery) {
                                 $subQuery->where('id', request()->get('package'));
@@ -32,7 +31,7 @@ class PerencanaanController extends Controller
                             $priceOfPackage = $package->amount;
                             $targetSavings = $besaranMenabung;
                             $estimatedDeparture = Carbon::now()
-                                ->addMonth(($priceOfPackage / $besaranMenabung));
+                                ->addMonth($priceOfPackage / $besaranMenabung);
 
                             $hasilSimulasi = [
                                 'package' => (isset($package) ? $package->name : 'unknown'),
@@ -61,7 +60,7 @@ class PerencanaanController extends Controller
                             $range = $today->diffInMonths($tanggalBerangkat);
 
                             $priceOfPackage = $package->amount;
-                            $targetSavings = ($priceOfPackage/$range);
+                            $targetSavings = $priceOfPackage / $range;
                             $estimatedDeparture = $tanggalBerangkat;
 
                             $hasilSimulasi = [
@@ -74,7 +73,7 @@ class PerencanaanController extends Controller
                         break;
 
                     default:
-
+                        $hasilSimulasi = [];
                         break;
                 }
             } catch (NotFoundExceptionInterface|ContainerExceptionInterface $e) {

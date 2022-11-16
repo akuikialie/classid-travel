@@ -5,79 +5,40 @@ namespace App\Http\Controllers\Mobile;
 use App\Models\Jamaah\Jamaah;
 use App\Models\User;
 use App\Models\VA\VirtualAccount;
-use Carbon\Carbon;
 
 class TabunganController extends Controller
 {
 
     public function index()
     {
-        /* tampilkan semua tabungan yang ada */
-
-        /* tabungan pribadi */
-        $semuaTabungan = [];
-
-        $user = User::query()
-            ->with(['tabungan'])
-            ->where('id', '=', auth()->user()->id)
-            ->first();
-
-        $tabunganPribadi = [[
-            'id' => $user->tabungan->id,
-            'va' => $user->tabungan->va_number,
-            'showDetails' => true,
-        ]];
-
-        /* tabungan perencanaan */
-        $jamaah = Jamaah::query()
-            ->whereTenantId($user->tenant?->id)
-            ->with(['tabunganPackages.myPackage.myPlan', 'departureSchedule'])
-            ->where('user_id', '=', auth()->user()->id)
-            ->first();
-//        dd($jamaah);
-
-        $semuaTabungan = array_merge($semuaTabungan, $tabunganPribadi);
-        $tabunganPerencanaan = [];
-        foreach ($jamaah->tabunganPackages ?? [] as $key => $tabungan) {
-            $namaTabungan = 'tabungan ' . $tabungan?->myPackage?->name;
-            $tabunganPerencanaan[] = [
-                'namaTabungan' => ucwords($namaTabungan) . ' ' . Carbon::parse($jamaah->departureSchedule?->departure_date)->format('Y'),
-                'id' => $tabungan->id,
-                'va' => $tabungan->va_number,
-                'targetSavings' => 'Rp ' . number_format($tabungan?->myPackage?->amount),
-                'showDetails' => true,
-            ];
-        }
-
-        $semuaTabungan = array_merge($semuaTabungan, $tabunganPerencanaan);
+        $user = auth()->user();
+        /* begin:: show all savings */
+        $savings = $this->listSavings($user);
+        /* end:: show all savings */
 
         return view('pages.mobile.tabungan.tabungan-index', [
-            'list_moneyboxs' => collect($semuaTabungan),
+            'list_moneyboxs' => $savings,
         ]);
     }
 
-    public function show($id)
+    public function show(VirtualAccount $virtualAccount)
     {
-        $VA = VirtualAccount::query()
-            ->with(['myPackage'])
-            ->where('id', $id)->first();
 
-        switch ($VA->va_label) {
+        switch ($virtualAccount->va_label) {
             case 'tabungan':
-                $tabungan = [
-                    'id' => $VA->id,
-                    'va' => $VA->va_number,
+                $saving = [
+                    'id' => $virtualAccount->id,
+                    'va' => $virtualAccount->va_number,
                 ];
                 break;
 
             case 'perencanaan':
-                $namaTabungan = 'tabungan ' . $VA?->myPackage?->myPlan?->value;
-                $tabungan = [
-                    'namaTabungan' => ucwords($namaTabungan) . ' 2024',
-                    'id' => $VA->id,
-                    'va' => $VA->va_number,
-                    'targetSavings' => 'Rp ' . number_format($VA?->myPackage?->amount),
-
+                $name = 'tabungan ' . $virtualAccount?->myPackage->name;
+                $saving = [
+                    'namaTabungan' => ucwords($name ?? 'NN'),
+                    'id' => $virtualAccount->id,
+                    'va' => $virtualAccount->va_number,
+                    'targetSavings' => 'Rp ' . number_format($virtualAccount->myPackage?->amount ?? 0),
                 ];
                 break;
 
@@ -86,7 +47,49 @@ class TabunganController extends Controller
                 break;
         }
         return view('pages.mobile.tabungan.tabungan-show', [
-            'moneybox' => collect($tabungan),
+            'moneybox' => collect($saving),
         ]);
+    }
+
+
+    private function listSavings(User $authUser)
+    {
+        $savings = collect([]);
+        /* begin:: main savings */
+        $user = User::query()
+            ->with(['tabungan'])
+            ->where('id', '=', $authUser->id)
+            ->first();
+
+        $mainSaving = [
+            'id' => $user->tabungan->hash,
+            'va' => $user->tabungan->va_number,
+            'showDetails' => true,
+        ];
+
+        $savings->add($mainSaving);
+        /* end:: main savings */
+
+        /* begin:: planing savings */
+        $jamaah = Jamaah::query()
+            ->with(['tabunganPackages.myPackage.myPlan'])
+            ->where('user_id', '=', $authUser->id)
+            ->first();
+
+        $planingSavings = [];
+        foreach ($jamaah->tabunganPackages as $tabungan) {
+
+            $namaTabungan = 'tabungan ' . $tabungan?->myPackage->name;
+            $savings->add([
+                'namaTabungan' => ucwords($namaTabungan),
+                'id' => $tabungan->hash,
+                'va' => $tabungan->va_number,
+                'targetSavings' => $tabungan?->myPackage?->amount ?? 0,
+                'showDetails' => true,
+            ]);
+        }
+        /* end:: planing savings */
+
+        return $savings;
     }
 }

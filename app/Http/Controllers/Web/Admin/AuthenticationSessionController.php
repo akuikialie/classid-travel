@@ -41,7 +41,7 @@ class AuthenticationSessionController extends Controller
                 $request->session()->invalidate();
                 $request->session()->regenerateToken();
                 notify('Gagal!', trans('auth.failed'), 'error');
-                return  redirect()->back()->withInput();
+                return redirect()->back()->withInput();
             }
 
             if ($user->tenant_id == $tenant->id){
