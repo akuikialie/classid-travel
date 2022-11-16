@@ -8,8 +8,6 @@ use App\Models\User;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
-use Illuminate\Http\Request;
-use Illuminate\Http\Response;
 
 class HomeController extends Controller
 {
@@ -20,49 +18,11 @@ class HomeController extends Controller
      */
     public function index()
     {
-        /* tampilkan semua tabungan yang ada */
-
-        /* tabungan pribadi */
-        $semuaTabungan = [];
-
-        $user = User::query()
-            ->with(['tabungan'])
-            ->where('id', '=', auth()->user()->id)
-            ->first();
-
-        $tabunganPribadi = [[
-            'id' => $user->tabungan->id,
-            'va' => $user->tabungan->va_number,
-            'showDetails' => true,
-        ]];
-
-        /* tabungan perencanaan */
-        $jamaah = Jamaah::query()
-            ->with(['tabunganPackages.myPackage.myPlan'])
-            ->where('user_id', '=', auth()->user()->id)
-            ->first();
-
-        $semuaTabungan = array_merge($semuaTabungan, $tabunganPribadi);
-        $tabunganPerencanaan = [];
-        $targetSavings = 0;
-        $totalSavings = 0;
-        $totalTabungan = 1;
-        foreach ($jamaah->tabunganPackages as $key => $tabungan) {
-            $totalTabungan++;
-            $amount = $tabungan?->myPackage?->amount;
-            $targetSavings = ($targetSavings + intval($amount));
-            $namaTabungan = 'tabungan ' . $tabungan?->myPackage?->myPlan?->value;
-            $tabunganPerencanaan[] = [
-                'namaTabungan' => ucwords($namaTabungan) . ' 2024',
-                'id' => $tabungan->id,
-                'va' => $tabungan->va_number,
-                'targetSavings' => 'Rp ' . number_format($tabungan?->myPackage?->amount),
-                'showDetails' => true,
-            ];
-        }
 
         $user = auth()->user();
-        $tabunganUtama = array_merge($semuaTabungan, $tabunganPerencanaan);
+        /* begin:: show all savings */
+        $savings = $this->listSavings($user);
+        /* end:: show all savings */
 
         $tenant = Tenant::query()
             ->with(['media'])
@@ -82,78 +42,55 @@ class HomeController extends Controller
             'data' => collect([
                 'name' => $user->name,
                 'phone' => $user->phone,
-                'totalSavings' => 'Rp '. number_format($totalSavings),
-                'targetSavings' => 'Rp '. number_format($targetSavings),
+                'totalSavings' => 'Rp '. number_format($totalSavings ?? 0),
+                'targetSavings' => 'Rp '. number_format($savings->sum('targetSavings')),
             ]),
-            'list_moneyboxs' => collect($semuaTabungan),
-            'total_tabungan' => $totalTabungan,
+            'list_moneyboxs' => $savings,
+            'total_tabungan' => $savings->count(),
             'banners' => $bannerCollections ?? [],
         ]);
     }
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return Response
-     */
-    public function create()
-    {
-        //
-    }
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param Request $request
-     * @return Response
-     */
-    public function store(Request $request)
+    private function listSavings(User $authUser)
     {
-        //
-    }
+        /* begin:: main savings */
+        $user = User::query()
+            ->with(['tabungan'])
+            ->where('id', '=', $authUser->id)
+            ->first();
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return Response
-     */
-    public function show($id)
-    {
-        //
-    }
+        $mainSaving = [
+            [
+                'id' => $user->tabungan->hash,
+                'va' => $user->tabungan->va_number,
+                'showDetails' => true,
+            ]
+        ];
+        /* end:: main savings */
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return Response
-     */
-    public function edit($id)
-    {
-        //
-    }
+        /* begin:: planing savings */
+        $jamaah = Jamaah::query()
+            ->with(['tabunganPackages.myPackage.myPlan'])
+            ->where('user_id', '=', $authUser->id)
+            ->first();
 
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param Request $request
-     * @param  int  $id
-     * @return Response
-     */
-    public function update(Request $request, $id)
-    {
-        //
-    }
+        $planingSavings = [];
+        foreach ($jamaah->tabunganPackages as $tabungan) {
 
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int  $id
-     * @return Response
-     */
-    public function destroy($id)
-    {
-        //
+            $namaTabungan = 'tabungan ' . $tabungan?->myPackage->name;
+            $planingSavings[] = [
+                'namaTabungan' => ucwords($namaTabungan),
+                'id' => $tabungan->hash,
+                'va' => $tabungan->va_number,
+                'targetSavings' => 'Rp ' . number_format($tabungan?->myPackage?->amount),
+                'showDetails' => true,
+            ];
+        }
+        /* end:: planing savings */
+
+        return collect($mainSaving)->when(count($planingSavings) > 0, function ($subCollection) use ($planingSavings){
+            $subCollection->add($planingSavings);
+        });
     }
 }

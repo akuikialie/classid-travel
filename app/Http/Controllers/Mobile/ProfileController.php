@@ -31,25 +31,23 @@ class ProfileController extends Controller
     {
 
         $user = User::query()
-            ->with(['peopleInviteds.user'])
-            ->withCount('peopleInviteds')
+            ->with(['peopleInvites.user'])
+            ->withCount('peopleInvites')
             ->where('id', auth()->user()->id)
             ->first();
-
-        // dd($user);
 
         $jamaah = Jamaah::query()
             ->with(['planPackages'])
             ->withCount(['planPackages'])
-            ->where('id', $user->id)->first();
+            ->where('user_id', $user->id)->first();
 
-        $peopleInviteds = $user->peopleInviteds;
+        $peopleInvites = $user->peopleInvites;
 
         return view('pages.mobile.profile.profile-index', [
             'user' => $user,
             'total_tabungan' => $jamaah->plan_packages_count + 1,
             'planPackages' => $jamaah->planPackages,
-            'people_invited' => $peopleInviteds,
+            'people_invited' => $peopleInvites,
         ]);
     }
 

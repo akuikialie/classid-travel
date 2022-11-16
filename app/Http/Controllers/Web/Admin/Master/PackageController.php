@@ -400,7 +400,9 @@ class PackageController extends Controller
 
                     $lastData[$i]['name'] = collect($sampleName["day-{$i}"])->first() ?? "day-{$i}";
 
-                    for ($a = 0; $a < count($timeData); $a++) {
+                    $count = count($timeData);
+
+                    for ($a = 0; $a < $count; $a++) {
                         if (is_null($timeData[$a]) && is_null($itineraryData[$a])) {
                             continue;
                         }

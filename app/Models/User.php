@@ -82,7 +82,7 @@ class User extends Authenticatable implements HasMedia
      *
      * @return HasMany
      */
-    public function peopleInviteds(): HasMany
+    public function peopleInvites(): HasMany
     {
         return $this->hasMany(UserInvitation::class, 'invited_by');
     }

@@ -43,8 +43,6 @@ class PackageController extends Controller
             })
             ->get();
 
-
-
         return view('pages.mobile.package.package-index', ['packages' => $packages]);
     }
 
@@ -117,19 +115,16 @@ class PackageController extends Controller
      */
     public function show(int $id): View|Factory|Application
     {
-
         $with = ['myFacilities', 'myDestinations', 'myItineraries' => function($subQuery){
             $subQuery->orderBy('day', 'asc');
-        }, 'myItineraries.activities', 'media'];
+        },
+            'myItineraries.activities', 'media'];
 
         $withCount = ['myFacilities', 'myDestinations', 'myItineraries'];
-
-
         $package = PlanPackage::query()
             ->with($with)
             ->withCount($withCount)
             ->whereId($id)->first();
-//        dd($package);
 
         $user = auth()->user();
 

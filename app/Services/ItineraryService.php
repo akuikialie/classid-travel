@@ -32,54 +32,49 @@ class ItineraryService
      */
     public function addItineraries(array $itineraries): static
     {
-        try {
-            foreach ($itineraries as $key => $_itinerary){
+        foreach ($itineraries as $key => $_itinerary){
 
-                $itinerary = Itinerary::query()
-                    ->where([
-                        'tenant_id' => $this->tenantId,
-                        'day' => $key ?? null,
-                        'model_id' => $this->model->id,
-                        'model_type' => $this->model::class,
-                    ])->first();
+            $itinerary = Itinerary::query()
+                ->where([
+                    'tenant_id' => $this->tenantId,
+                    'day' => $key ?? null,
+                    'model_id' => $this->model->id,
+                    'model_type' => $this->model::class,
+                ])->first();
 
-                if (!$itinerary){
-                    /* begin:: create itinerary */
-                    $newItinerary = new Itinerary([
-                        'tenant_id' => $this->tenantId,
-                        'name' => $_itinerary['name'] ?? null,
-                        'day' => $key ?? null,
-                    ]);
+            if (!$itinerary){
+                /* begin:: create itinerary */
+                $newItinerary = new Itinerary([
+                    'tenant_id' => $this->tenantId,
+                    'name' => $_itinerary['name'] ?? null,
+                    'day' => $key ?? null,
+                ]);
 
-                    $this->model->myItineraries()->save($newItinerary);
-                    /* end:: create itinerary */
+                $this->model->myItineraries()->save($newItinerary);
+                /* end:: create itinerary */
 
-                    $itinerary = $newItinerary;
-                }else{
-                    $itinerary->name = $_itinerary['name'] ?? null;
-                    $itinerary->save();
-                }
-
-                /* begin:: add itinerary activity*/
-                $activities = [];
-                $activitiesTime = [];
-                foreach ($_itinerary['itineraries'] ?? [] as $key2 => $activity){
-                    $activities[] = $activity['itinerary'];
-                    $activitiesTime[] = [
-                        'tenant_id' => $this->tenantId,
-                        'time' => $activity['time']
-                    ];
-                }
-                $data = array_combine($activities, $activitiesTime);
-                $itinerary->activities()->sync($data);
-                /* end:: add itinerary activity*/
+                $itinerary = $newItinerary;
+            }else{
+                $itinerary->name = $_itinerary['name'] ?? null;
+                $itinerary->save();
             }
-//            dd(collect(array_column($lastData['day-1'], 'itinerary'))->unique());
 
-            return $this;
-        } catch (Exception $e) {
-            throw $e;
+            /* begin:: add itinerary activity*/
+            $activities = [];
+            $activitiesTime = [];
+            foreach ($_itinerary['itineraries'] ?? [] as $activity){
+                $activities[] = $activity['itinerary'];
+                $activitiesTime[] = [
+                    'tenant_id' => $this->tenantId,
+                    'time' => $activity['time']
+                ];
+            }
+            $data = array_combine($activities, $activitiesTime);
+            $itinerary->activities()->sync($data);
+            /* end:: add itinerary activity*/
         }
+
+        return $this;
     }
 
     /**

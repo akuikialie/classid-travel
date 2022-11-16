@@ -15,12 +15,6 @@ class PlanFacility extends Model implements HasMedia
 {
     use HasFactory, InteractsWithMedia, HasTenant, SoftDeletes, HashableId;
 
-    const TypePerjalanan = 'Perjalanan';
-    const TypePenginapan = 'Penginapan';
-    const TypeMakan = 'Makan';
-
-
-
     protected $table = 'facilities';
     protected $fillable = [
         'tenant_id', 'name', 'type',

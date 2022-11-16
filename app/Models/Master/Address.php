@@ -18,9 +18,4 @@ class Address extends Model
         'name',
         'address'
     ];
-
-    function addressable()
-    {
-        $this->morphTo(__FUNCTION__, 'model_type', 'model_id');
-    }
 }

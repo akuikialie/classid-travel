@@ -15,13 +15,13 @@
       <div class="d-flex justify-content-between">
 
         <h3 class="font-600">{{ isset($data['name']) ? $data['name'] : 'unknown' }}</h3>
-        <p class="text-nowrap"><strong>Total Tabungan</strong></p>
+        <p class="text-nowrap"><strong>Semua Tabungan</strong></p>
       </div>
       <p class="font-11 mt-n2 color-hi ghlight">{{ isset($data['phone']) ? $data['phone'] : '-' }}</p>
 
       <div class="float-start">
         <p class="font-12 opacity-80 mb-n1"><i class="far fa-calendar"></i>
-          {{ Carbon::now()->format('F m') }} <i class="ms-4 fas fa-money-check"></i>
+          {{ \carbon()->format('F d') }} <i class="ms-4 fas fa-money-check"></i>
           <strong>{{ isset($total_tabungan) ? $total_tabungan : 0 }}</strong> Tabungan
         </p>
         <p class="font-12 opacity-100"><strong><i class="fa-solid fa-wallet"></i>

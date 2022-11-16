@@ -21,7 +21,7 @@ class PackageService
     use HasTenant;
     protected Builder $query;
 
-    public PlanPackage $package;
+    private PlanPackage $package;
 
     public function __construct(
         private readonly int $tenantId

@@ -201,25 +201,21 @@
                     type: "POST",
                     dataType: "json",
                     success: function(data) {
-
                         $('#link').val(data.link);
-
                         copyToClipboard(data.link);
-
                     },
                     error: function(error) {
-                        console.log(error);
-                        // Swal.fire({
-                        //     icon: error.responseJSON.icon,
-                        //     title: error.responseJSON.title,
-                        //     text: error.responseJSON.message,
-                        //     footer:
-                        //         '<a href="">Error Code: ' +
-                        //         error.status +
-                        //         ", " +
-                        //         error.statusText +
-                        //         "...</a>",
-                        // });
+                        Swal.fire({
+                            icon: error.responseJSON.icon,
+                            title: error.responseJSON.title,
+                            text: error.responseJSON.message,
+                            footer:
+                                '<a href="">Error Code: ' +
+                                error.status +
+                                ", " +
+                                error.statusText +
+                                "...</a>",
+                        });
                     },
                 });
             });
@@ -232,8 +228,6 @@
                 document.execCommand('copy');
                 document.body.removeChild(elem);
             }
-
-
         });
     </script>
 @endsection
