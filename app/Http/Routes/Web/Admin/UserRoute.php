@@ -12,13 +12,16 @@ class UserRoute extends BaseRoute
 {
     protected string $prefix = 'user';
     protected string $name = 'user';
+    protected string $page = 'user';
 
     public function register(): void
     {
         $this->router->middleware(['auth', 'verified'])->group(function () {
-            $this->router->middleware(['role:super-administrator|administrator'])->group(function (){
-                $this->router->post($this->prefix('datatable'), [UserController::class, 'datatable'])
-                    ->name($this->name('datatable'));
+
+            $this->router->post($this->prefix('datatable'), [UserController::class, 'datatable'])
+                ->name($this->name('datatable'))->middleware(["permission:view {$this->page}"]);
+
+            $this->router->middleware([ 'quick_access:user'])->group(function (){
                 $this->router->get($this->prefix(), [UserController::class, 'index'])
                     ->name($this->name('index'));
 

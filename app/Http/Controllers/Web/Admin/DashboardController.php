@@ -14,16 +14,17 @@ class DashboardController extends Controller
     {
         $user = auth()->user();
 
-        if ($user->hasRole(RoleEnum::Admin->keyValue())){
+        if ($user->hasRole('administrator')){
             return $this->dashboardAdmin();
-        }else if ($user->hasRole(RoleEnum::SuperAdministrator->keyValue())){
+        }else if ($user->hasRole('super-administrator')){
             return $this->dashboardSuperAdmin();
         }
     }
 
-    public function dashboardSuperAdmin(): Application|Factory|View
+    public function dashboardSuperAdmin()
     {
-        return view('pages.web.dashboard.dashboard-super-admin-index');
+        return redirect(route('admin.tenant.index'));
+//        return view('pages.web.dashboard.dashboard-super-admin-index');
     }
 
     public function dashboardAdmin(): Application|Factory|View

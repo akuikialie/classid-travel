@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Web\Admin\Master;
 
 use App\Enums\Kuartal;
+use App\Enums\Statuses;
 use App\Http\Controllers\Web\Admin\Controller;
 use App\Models\Destination\Destination;
 use App\Models\Itinerary\ItineraryActivity;
@@ -11,6 +12,7 @@ use App\Models\Plan\PlanFacility;
 use App\Models\Plan\PlanPackage;
 use App\Services\ItineraryService;
 use App\Services\PackageService;
+use Exception;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
@@ -26,6 +28,72 @@ use Throwable;
 class PackageController extends Controller
 {
 
+    protected string $forPage = 'package';
+
+    /**
+     * @throws Exception
+     */
+    public function __construct()
+    {
+        $this->setData('current_page', $this->forPage);
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function datatable()
+    {
+        if (\request()->ajax()) {
+            try {
+                $user = auth()->user();
+                $packages = PlanPackage::query()
+                    ->with(['myPlan', 'myDestinations'])
+                    ->withCount(['jamaah'])
+                    ->tenantId($user->tenant_id)
+                    ->latest()
+                    ->get();
+
+                $datatable = datatables()->of($packages)
+                    ->addIndexColumn()
+                    ->addColumn('name', function ($package) {
+                        return $package->name;
+                    })->addColumn('plan', function ($package) {
+                        return ($package->myPlan->value ?? '-');
+                    })->addColumn('description', function ($package) {
+                        $desc = mb_strimwidth(($package->description ?? '-'), 0, 20, '...');
+                        if (strlen($package->description) > 20){
+                            $desc .= '<i class="fas fa-exclamation-circle ms-2 fs-7" data-bs-toggle="tooltip"
+                       title="'. $package->description. '"></i>';
+                        }
+                        return $desc ;
+                    })->addColumn('price', function ($package) {
+                        return rupiahFormat($package->amount);
+                    })->addColumn('status', function ($package) {
+                        $status = Statuses::tryFrom($package->status);
+                        $publish = ($package->is_publish ? 'Published' : 'Unpublished');
+                        return "
+                <div class=\"text-dark fw-bold text-hover-primary fs-6\">
+                  <span class=\"badge badge-light-{$status->color()} text-uppercase\">{$status->label()}</span>
+                  <span
+                    class=\"text-muted fw-semibold text-muted d-block fs-7\">{$publish}
+                  </span>
+                </div>";
+                    })->addColumn('long_days', function ($package) {
+                        return $package->long_days;
+                    })
+                    ->addColumn('actions', function ($package) {
+                        $this->setData('package', $package);
+                        return $this->view('pages.web.master.package.action.action-datatable');
+                    })
+                    ->rawColumns(['actions', 'status', 'description']);
+
+                return $datatable->make(true);
+            } catch (Throwable $e) {
+                throw $e;
+            }
+        }
+    }
+
     /**
      * Display a listing of the resource.
      *
@@ -34,35 +102,8 @@ class PackageController extends Controller
     public function index(): View|Factory|Application
     {
         $user = auth()->user();
-        $packages = PlanPackage::query()
-            ->with(['myPlan', 'myDestinations'])
-//            ->with(['myItineraries.activities'])
-            ->withCount(['jamaah'])
-            ->tenantId($user->tenant_id)
-            ->latest()
-            ->get();
-//            ->first();
 
-//        $myItineraries = $packages->myItineraries ?? [];
-//
-//
-//        $itinerary = collect($myItineraries)->firstWhere('day', 1);
-//        $lastData = [];
-//        foreach ($itinerary->activities as $_activity) {
-//            $lastData[] = [
-//                'time' => $_activity->pivot->time,
-//                'activity' => $_activity->activity,
-//            ];
-//        }
-//        dd($lastData);
-//        dd($activities->activities->count());
-//        dd($activity->)
-
-//        dd($packages);
-
-        return view('pages.web.master.package.package-index', [
-            'packages' => $packages,
-        ]);
+        return $this->view('pages.web.master.package.package-index');
     }
 
     /**
@@ -74,14 +115,20 @@ class PackageController extends Controller
     {
         if (request()->ajax()) {
 
-
             $plans = Plan::query()
                 ->where('is_active', true)
                 ->latest('id')
                 ->get();
 
-            $facilities = PlanFacility::query()->get();
-            $destinations = Destination::query()->get();
+            $user = auth()->user();
+            $facilities = PlanFacility::query()
+                ->tenantId($user->tenant_id)
+                ->where('is_active', true)
+                ->get();
+            $destinations = Destination::query()
+                ->tenantId($user->tenant_id)
+                ->where('is_active', true)
+                ->get();
 
             $kuartals = Kuartal::cases();
 
@@ -93,10 +140,8 @@ class PackageController extends Controller
                     'kuartals' => $kuartals,
                 ])->render(),
             ]);
-        } else {
-            notify('Opps!', 'Terjadi kesalahan saat memuat halaman!', 'error')->autoClose();
-            return redirect(route('master.package.index'));
         }
+        abort(404);
     }
 
     /**
@@ -104,6 +149,7 @@ class PackageController extends Controller
      *
      * @param Request $request
      * @return RedirectResponse|Response
+     * @throws Throwable
      */
     public function store(Request $request)
     {
@@ -142,9 +188,8 @@ class PackageController extends Controller
 
             return redirect()->back();
         } catch (Throwable $th) {
-            throw  $th;
             DB::rollBack();
-            notify('Opps!', $th->getMessage(), 'error');
+            notify('Oops!', $th->getMessage(), 'error');
             return redirect()->back();
         }
     }
@@ -152,37 +197,43 @@ class PackageController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param int $id
+     * @param PlanPackage $package
      * @return Application|Redirector|RedirectResponse
      */
-    public function show(int $id): Redirector|RedirectResponse|Application
+    public function show(PlanPackage $package): Redirector|RedirectResponse|Application
     {
-        notify('Opps!', 'Terjadi kesalahan saat memuat halaman!', 'error')->autoClose();
+        abort(404);
+
+        notify('Oops!', 'Terjadi kesalahan saat memuat halaman!', 'error')->autoClose();
         return redirect(route('master.package.index'));
     }
 
     /**
      * Show the form for editing the specified resource.
      *
-     * @param int $id
+     * @param PlanPackage $package
      * @return Application|JsonResponse|Redirector|RedirectResponse
      */
-    public function edit(int $id): JsonResponse|Redirector|RedirectResponse|Application
+    public function edit(PlanPackage $package): JsonResponse|Redirector|RedirectResponse|Application
     {
         if (request()->ajax()) {
-            $package = PlanPackage::query()
-                ->with(['myFacilities', 'myDestinations'])
-                ->whereId($id)->first();
 
             $plans = Plan::query()
                 ->where('is_active', true)
                 ->latest('id')
                 ->get();
 
-            $facilities = PlanFacility::query()->get();
-            $destinations = Destination::query()->get();
+            $facilities = PlanFacility::query()
+                ->tenantId($user->tenant_id)
+                ->where('is_active', true)
+                ->get();
 
-            $kuartals = Kuartal::cases();
+            $destinations = Destination::query()
+                ->tenantId($user->tenant_id)
+                ->where('is_active', true)
+                ->get();
+
+//            $kuartals = Kuartal::cases();
 
             setDefaultRequest([
                 'test' => 'whatever',
@@ -195,23 +246,24 @@ class PackageController extends Controller
                     'plans' => $plans,
                     'facilities' => $facilities,
                     'destinations' => $destinations,
-                    'kuartals' => $kuartals,
+//                    'kuartals' => $kuartals,
                 ])->render(),
             ]);
-        } else {
-            notify('Oops!', 'Terjadi kesalahan saat memuat halaman!', 'error')->autoClose();
-            return redirect(route('master.package.index'));
         }
+        abort(404);
+
+        notify('Oops!', 'Terjadi kesalahan saat memuat halaman!', 'error')->autoClose();
+        return redirect(route('master.package.index'));
     }
 
     /**
      * Update the specified resource in storage.
      *
      * @param Request $request
-     * @param int $id
+     * @param PlanPackage $package
      * @return RedirectResponse
      */
-    public function update(Request $request, int $id): RedirectResponse
+    public function update(Request $request, PlanPackage $package): RedirectResponse
     {
         $validator = $this->getArr($request);
 
@@ -219,9 +271,6 @@ class PackageController extends Controller
         try {
             $user = auth()->user();
             $packageService = new PackageService($user->tenant_id);
-
-            $package = PlanPackage::query()->whereId($id)->first();
-
 
             $facilityIds = [];
             if (isset($validator['facilities']) && is_array($validator['facilities'])) {
@@ -255,7 +304,7 @@ class PackageController extends Controller
             return redirect()->back();
         } catch (Throwable $th) {
             DB::rollBack();
-            notify('Opps!', $th->getMessage(), 'error');
+            notify('Oops!', $th->getMessage(), 'error');
             return redirect()->back();
         }
     }
@@ -263,24 +312,13 @@ class PackageController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param int $id
+     * @param PlanPackage $package
      * @return RedirectResponse
      */
-    public function destroy(int $id): RedirectResponse
+    public function destroy(PlanPackage $package): RedirectResponse
     {
         try {
-            $package = PlanPackage::query()
-                ->withCount(['jamaah', 'myDestinations', 'myFacilities'])
-                ->whereId($id)->first();
-
-
             if ($package->jamaah_count > 0) {
-                throw new InvalidArgumentException('Tidak dapat mengapus paket, karena paket ini sedang digunakan!', 500);
-            }
-            if ($package->my_destinations_count > 0) {
-                throw new InvalidArgumentException('Tidak dapat mengapus paket, karena paket ini sedang digunakan!', 500);
-            }
-            if ($package->my_facilities_count > 0) {
                 throw new InvalidArgumentException('Tidak dapat mengapus paket, karena paket ini sedang digunakan!', 500);
             }
 
@@ -335,12 +373,18 @@ class PackageController extends Controller
                     'itineraries' => $itineraries,
                 ])->render(),
             ]);
-        } else {
-            notify('Oops!', 'Terjadi kesalahan saat memuat halaman!', 'error')->autoClose();
-            return redirect(route('master.package.index'));
         }
+        abort(404);
+
+        notify('Oops!', 'Terjadi kesalahan saat memuat halaman!', 'error')->autoClose();
+        return redirect(route('master.package.index'));
     }
 
+    /**
+     * @param Request $request
+     * @param $hash
+     * @return RedirectResponse
+     */
     public function storeSetupItinerary(Request $request, $hash)
     {
         $input = $request->validate([
@@ -401,5 +445,37 @@ class PackageController extends Controller
         } finally {
             return redirect()->back()->withInput();
         }
+    }
+
+    /**
+     * @param Request $request
+     * @param PlanPackage $package
+     * @return RedirectResponse
+     */
+    public function changeStatus(Request $request, PlanPackage $package)
+    {
+        $request->validate([
+            'status' => ['required', 'boolean'],
+        ]);
+
+        /* begin:: start tenant service */
+        try {
+            $user = auth()->user();
+            $packageService = new PackageService($user->tenant_id);
+            if ($request->has('status')) {
+                $packageService
+                    ->setPackage($package)
+                    ->setStatus($request->get('status'));
+                notify('Berhasil!', "Status telah berubah", 'success');
+                DB::commit();
+            }else{
+                throw new InvalidArgumentException('Tidak ada yang berubah!');
+            }
+            return redirect()->back();
+        }catch (Throwable $e){
+            notify('Oops!', $e->getMessage(), 'error');
+            return redirect()->back();
+        }
+        /* end:: start tenant service */
     }
 }

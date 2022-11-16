@@ -9,40 +9,48 @@ use Illuminate\Support\Facades\Auth;
 
 class TenantRoute extends BaseRoute
 {
-    protected string $prefix = 'tenant';
+    protected string $prefix = 'travel';
     protected string $name = 'tenant';
+    protected string $page = 'travel';
 
     public function register(): void
     {
         $this->router->middleware(['auth', 'verified'])->group(function () {
 
             $this->router->middleware(['role:super-administrator'])->group(function (){
+
                 $this->router->post($this->prefix('datatable'),[TenantController::class, 'datatable'])
-                    ->name($this->name('datatable'));
+                    ->name($this->name('datatable'))->middleware(["permission:view {$this->page}"]);
 
-                $this->router->get($this->prefix(),[TenantController::class, 'index'])
-                    ->name($this->name('index'));
+                /* begin:: default route collection */
 
-                $this->router->get($this->prefix('create'),[TenantController::class, 'create'])
-                    ->name($this->name('create'));
+                $this->router->middleware([ 'quick_access:travel'])->group(function (){
+                    $this->router->get($this->prefix(),[TenantController::class, 'index'])
+                        ->name($this->name('index'));
 
-                $this->router->post($this->prefix(),[TenantController::class, 'store'])
-                    ->name($this->name('store'));
+                    $this->router->get($this->prefix('create'),[TenantController::class, 'create'])
+                        ->name($this->name('create'));
 
-                $this->router->get($this->prefix('{tenant_hash}/edit'),[TenantController::class, 'edit'])
-                    ->name($this->name('edit'));
+                    $this->router->post($this->prefix(),[TenantController::class, 'store'])
+                        ->name($this->name('store'));
 
-                $this->router->put($this->prefix('{tenant_hash}/update'),[TenantController::class, 'update'])
-                    ->name($this->name('update'));
+                    $this->router->get($this->prefix('{tenant_hash}/edit'),[TenantController::class, 'edit'])
+                        ->name($this->name('edit'));
 
-                $this->router->post($this->prefix('{tenant_hash}/change-status'),[TenantController::class, 'changeStatus'])
-                    ->name($this->name('change-status'));
+                    $this->router->put($this->prefix('{tenant_hash}/update'),[TenantController::class, 'update'])
+                        ->name($this->name('update'));
 
-                $this->router->delete($this->prefix('{tenant_hash}'),[TenantController::class, 'destroy'])
-                    ->name($this->name('destroy'));
+                    $this->router->delete($this->prefix('{tenant_hash}'),[TenantController::class, 'destroy'])
+                        ->name($this->name('destroy'));
+
+                    $this->router->post($this->prefix('{tenant_hash}/change-status'),[TenantController::class, 'changeStatus'])
+                        ->name($this->name('change-status'));
+                });
+
+                /* end:: default route collection */
             });
 
-            $this->router->middleware(['role:administrator'])->group(function (){
+            $this->router->middleware([ 'quick_access:role'])->group(function (){
                 $this->router->get($this->prefix('profile/{tenant_hash?}'),[TenantController::class, 'show'])
                     ->name($this->name('show'));
 
@@ -70,22 +78,22 @@ class TenantRoute extends BaseRoute
                  title: 'Travel',
                  // param: [Auth::user()?->tenant_id ?? 0],
                  attribute: [
-                     'icon' => 'fa-solid fa-plane',
+                     'icon' => 'fa-solid fa-globe',
                  ],
                  resolver: function () {
                      $user = \auth()->user();
-                     return $user->hasRole('super-administrator');
+                     return ($user->can('view travel') && $user->hasRole('super-administrator'));
                  },
              )
              ->route(
                  name: 'admin.tenant.show',
                  title: 'Profil Travel',
                  attribute: [
-                     'icon' => 'bx bxs-dashboard',
+                     'icon' => 'fa-solid fa-globe',
                  ],
                  resolver: function () {
                      $user = \auth()->user();
-                     return $user->hasRole('administrator');
+                     return ($user->can('view travel') && $user->tenant_id != null);
                  },
              );
     }

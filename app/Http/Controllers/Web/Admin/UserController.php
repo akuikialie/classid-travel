@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers\Web\Admin;
 
-use App\Enums\RoleType;
+use App\Enums\PermissionType;
 use App\Enums\UserStatus;
 use App\Http\Controllers\Controller;
 use App\Models\Spatie\Role;
@@ -23,6 +23,16 @@ use Yajra\DataTables\Exceptions\Exception;
 
 class UserController extends Controller
 {
+
+    protected string $forPage = 'user';
+
+    /**
+     * @throws \Exception
+     */
+    public function __construct()
+    {
+        $this->setData('current_page', $this->forPage);
+    }
     /**
      * @throws Exception
      * @throws \Exception
@@ -36,6 +46,7 @@ class UserController extends Controller
                     ->with(['roles'])
                     ->when($user->hasRole('super-administrator'), function (Builder $subQuery) use ($user) {
                         $subQuery->where('id', '!=', $user->id);
+                        $subQuery->with(['tenant']);
                     }, function (Builder $subQuery) use ($user) {
                         $subQuery
                             ->role(['administrator'])
@@ -45,7 +56,7 @@ class UserController extends Controller
                     ->latest('id')
                     ->get();
 
-                return datatables()->of($users)
+                $datatable = datatables()->of($users)
                     ->addIndexColumn()
                     ->addColumn('role', function ($user) {
                         return $user->roles->pluck('name')->first();
@@ -62,8 +73,18 @@ class UserController extends Controller
                         $this->setData('user', $user);
                         return $this->view('pages.web.user.action.action-datatable');
                     })
-                    ->rawColumns(['actions', 'status'])
-                    ->make(true);
+                    ->rawColumns(['actions', 'status']);
+
+                if ($user->hasRole('super-administrator')){
+                    $datatable->addColumn('tenant', function ($user) {
+                        if (is_null($user->tenant)) {
+                            return '-';
+                        }
+                        return $user->tenant->name;
+                    });
+                }
+
+                return $datatable->make(true);
             } catch (Exception $e) {
                 throw $e;
             }
@@ -107,7 +128,7 @@ class UserController extends Controller
                     $subQuery->where('name', '!=', 'super-administrator');
                 })
                 ->where([
-                    'type' => RoleType::tenant->keyValue()
+                    'type' => PermissionType::tenant->keyValue()
                 ])
                 ->get()->unique('name');
 
@@ -116,10 +137,10 @@ class UserController extends Controller
                 'view' => $this->view('pages.web.user.modals.modal-add-admin')->render(),
             ]);
 
-        } else {
-            notify('Opps!', 'Terjadi kesalahan saat memuat halaman!', 'error')->autoClose();
-            return redirect(route('master.destination.index'));
         }
+
+        notify('Opps!', 'Terjadi kesalahan saat memuat halaman!', 'error')->autoClose();
+        return redirect(route('admin.user.index'));
     }
 
     /**

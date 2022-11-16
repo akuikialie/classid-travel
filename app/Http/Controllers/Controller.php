@@ -108,7 +108,7 @@ class Controller extends BaseController
         $this->controllerData['activeUser'] = auth()->check() ? auth()->user() : null;
         $this->controllerData['activeMenu'] = $this->activeMenu;
         $this->controllerData['pageMeta'] = $this->pageMeta;
-        $this->controllerData['breadCrumbs'] = $this->breadCrumbs;
+        $this->controllerData['breadCrumbs'] = $this->breadCrumbs ?? [];
 
         if ($this->viewPath) {
             $view = preg_replace(['/\.+/i', '/(^\.+)|(\.+$)/i'], ['.', ''], trim($this->viewPath)) . ".{$view}";

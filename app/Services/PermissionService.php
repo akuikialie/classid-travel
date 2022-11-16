@@ -2,12 +2,15 @@
 
 namespace App\Services;
 
+use App\Models\Spatie\Permission;
 use App\Models\Spatie\Role;
 use Illuminate\Database\Eloquent\Builder;
 use Spatie\Permission\Exceptions\RoleDoesNotExist;
+use function PHPUnit\Framework\isNull;
 
 class PermissionService
 {
+    private $model = null;
     public function __construct(
         private readonly ?int $tenantId = null
     )
@@ -27,7 +30,21 @@ class PermissionService
                 'guard_name' => $guard,
             ]);
         }
-        Role::query()->create($input);
+        $this->model = Role::query()->create($input);
+        return $this;
+    }
+
+    /**
+     * @param null $modelClass
+     * @param array $permissions
+     * @return $this
+     */
+    public function syncPermissions(array $permissions, $modelClass = null): static
+    {
+        $permission = Permission::query()
+            ->whereIn('id', $permissions)->get()->pluck('id')->toArray();
+
+        ($modelClass ?? $this->model)->syncPermissions($permission);
         return $this;
     }
 

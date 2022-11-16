@@ -35,7 +35,7 @@ class UserService
         if (!$userId){
             return $this;
         }
-        $this->query->where('id', ($userId));
+        $this->query->where('id', $userId);
         return $this;
     }
 

@@ -74,7 +74,7 @@
           <div class="flex-row-fluid">
             <!--begin::Form-->
             <form class="form w-lg-500px mx-auto"
-                  action="{{ route('admin.master.package.itinerary-setup.store', $package->hash) }}" method="post">
+                  action="{{ route('admin.package.itinerary-setup.store', $package->hash) }}" method="post">
               <!--begin::Group-->
               <div class="mb-5 scroll-y h-375px">
                 @for($i = 1; $i <= $package->long_days ?? 0; $i++)

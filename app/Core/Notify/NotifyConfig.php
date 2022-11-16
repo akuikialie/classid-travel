@@ -437,7 +437,7 @@ class NotifyConfig
      */
     public function autoClose($milliseconds = 5000)
     {
-        $this->config['timer'] = ($milliseconds ?: config('notify.duration'));
+        $this->config['timer'] = ($milliseconds ?? config('notify.duration'));
 
         $this->flash();
         return $this;
@@ -449,7 +449,7 @@ class NotifyConfig
      * @param string $btnText
      * @param string $btnColor
      */
-    public function showConfirmButton($btnText = 'Ok', $btnColor = '#3085d6')
+    public function showConfirmButton(string $btnText = 'Ok', string $btnColor = '#3085d6')
     {
         $this->config['showConfirmButton'] = true;
         $this->config['confirmButtonText'] = $btnText;

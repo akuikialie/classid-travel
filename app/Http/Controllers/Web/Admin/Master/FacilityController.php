@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Web\Admin\Master;
 
+use App\Enums\FacilityType;
 use App\Http\Controllers\Web\Admin\Controller;
 use App\Models\Plan\PlanFacility;
 use App\Services\FacilityService;
@@ -14,9 +15,64 @@ use Illuminate\Http\Request;
 use Illuminate\Routing\Redirector;
 use Illuminate\Support\Facades\DB;
 use InvalidArgumentException;
+use Throwable;
+use Yajra\DataTables\Exceptions\Exception;
 
 class FacilityController extends Controller
 {
+
+    protected string $forPage = 'facility';
+
+    /**
+     * @throws Exception
+     * @throws \Exception
+     */
+    public function __construct()
+    {
+        $this->setData('current_page', $this->forPage);
+    }
+
+    /**
+     * @return JsonResponse|void
+     * @throws Exception
+     * @throws Throwable
+     */
+    public function datatable()
+    {
+        if (\request()->ajax()) {
+            try {
+                $user = auth()->user();
+                $facilities = PlanFacility::query()
+                    ->withCount(['media', 'packages'])
+                    ->tenantId($user->tenant_id)
+                    ->get();
+
+                $datatable = datatables()->of($facilities)
+                    ->addIndexColumn()
+                    ->addColumn('name', function ($model) {
+                        return $model->name;
+                    })->addColumn('type', function ($model) {
+                        return ($model->type ?? '-');
+                    })->addColumn('status', function ($model) {
+                        if ($model->is_active) {
+                            return '<span class="badge badge-success text-uppercase">active</span>';
+                        } else {
+                            return '<span class="badge badge-danger text-uppercase">inactive</span>';
+                        }
+                    })
+                    ->addColumn('actions', function ($model) {
+                        $this->setData('facility', $model);
+                        return $this->view('pages.web.master.facility.action.action-datatable');
+                    })
+                    ->rawColumns(['actions', 'status' ]);
+
+                return $datatable->make(true);
+            } catch (Throwable $e) {
+                throw $e;
+            }
+        }
+    }
+
 
     /**
      * Display a listing of the resource.
@@ -26,14 +82,12 @@ class FacilityController extends Controller
     public function index(): View|Factory|Application
     {
         $user = auth()->user();
-        $facilities = PlanFacility::query()
-            ->withCount(['media', 'packages'])
-            ->tenantId($user->tenant_id)
-            ->get();
+//        $facilities = PlanFacility::query()
+//            ->withCount(['media', 'packages'])
+//            ->tenantId($user->tenant_id)
+//            ->get();
 
-        return view('pages.web.master.facility.facility-index', [
-            'facilities' => $facilities,
-        ]);
+        return $this->view('pages.web.master.facility.facility-index');
     }
 
     /**
@@ -45,28 +99,15 @@ class FacilityController extends Controller
     {
         if (request()->ajax()) {
 
-            $categoryFacilities = [
-                [
-                    'name' => 'Perjalanan',
-                    'icon' => 'bx bx-car bx-tada',
-                ], [
-                    'name' => 'Penginapan',
-                    'icon' => 'bx bx-building-house bx-tada',
-                ], [
-                    'name' => 'Makan',
-                    'icon' => 'bx bxs-bowl-hot bx-tada',
-                ],
-            ];
-
             return response()->json([
                 'view' => view('pages.web.master.facility.modal.wizard-create-modal', [
-                    'category_facilities' => $categoryFacilities,
+                    'category_facilities' => FacilityType::cases(),
                 ])->render(),
             ]);
-        }else{
-            notify('Opps!', 'Terjadi kesalahan saat memuat halaman!', 'error')->autoClose();
-            return redirect(route('master.facility.index'));
         }
+        abort(404);
+        notify('Opps!', 'Terjadi kesalahan saat memuat halaman!', 'error')->autoClose();
+        return redirect(route('master.facility.index'));
     }
 
     /**
@@ -104,11 +145,12 @@ class FacilityController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  int  $id
+     * @param PlanFacility $planFacility
      * @return Application|Redirector|RedirectResponse
      */
-    public function show(int $id): Redirector|RedirectResponse|Application
+    public function show(PlanFacility $planFacility): Redirector|RedirectResponse|Application
     {
+        abort(404);
         notify('Opps!', 'Terjadi kesalahan saat memuat halaman!', 'error')->autoClose();
         return redirect(route('master.facility.index'));
     }
@@ -116,51 +158,42 @@ class FacilityController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  int  $id
+     * @param PlanFacility $facility
      * @return Application|JsonResponse|Redirector|RedirectResponse
+     * @throws \Exception|Throwable
      */
-    public function edit(int $id): JsonResponse|Redirector|RedirectResponse|Application
+    public function edit(PlanFacility $facility): JsonResponse|Redirector|RedirectResponse|Application
     {
         if (request()->ajax()) {
 
-            $facility = PlanFacility::query()->whereId($id)->first();
+            setDefaultRequest([
+                'name' => $facility->name,
+                'type' => $facility->type,
+            ]);
 
-            $categoryFacilities = [
-                [
-                    'name' => 'Perjalanan',
-                    'icon' => 'bx bx-car bx-tada',
-                ], [
-                    'name' => 'Penginapan',
-                    'icon' => 'bx bx-building-house bx-tada',
-                ], [
-                    'name' => 'Makan',
-                    'icon' => 'bx bxs-bowl-hot bx-tada',
-                ],
-            ];
+            $this->setData('category_facilities', FacilityType::cases());
+            $this->setData('facility', $facility);
 
             return response()->json([
-                'view' => view('pages.web.master.facility.modal.wizard-edit-modal', [
-                    'facility' => $facility,
-                    'category_facilities' => $categoryFacilities,
-                ])->render(),
+                'view' => $this->view('pages.web.master.facility.modal.wizard-edit-modal')->render(),
             ]);
-        }else{
-            notify('Opps!', 'Terjadi kesalahan saat memuat halaman!', 'error')->autoClose();
-            return redirect(route('master.facility.index'));
         }
+        abort(404);
+        notify('Opps!', 'Terjadi kesalahan saat memuat halaman!', 'error')->autoClose();
+        return redirect(route('master.facility.index'));
     }
 
     /**
      * Update the specified resource in storage.
      *
      * @param Request $request
-     * @param  int  $id
+     * @param PlanFacility $facility
      * @return RedirectResponse
      */
-    public function update(Request $request, int $id): RedirectResponse
+    public function update(Request $request, PlanFacility $facility): RedirectResponse
     {
         $validator = $request->validate([
-            'name' => ['required', 'unique:facilities,name', 'string'],
+            'name' => ['required', 'unique:facilities,name,'.$facility->id, 'string'],
             'type' => ['required', 'string'],
             'photo_collection' => ['nullable', 'array'],
         ]);
@@ -171,7 +204,7 @@ class FacilityController extends Controller
             $user = auth()->user();
             $facilityService = new FacilityService($user->tenant_id);
             $facilityService
-                ->facilityId($id)
+                ->setPlanFacility($facility)
                 ->addGallery($request)
                 ->update($validator);
 
@@ -188,18 +221,14 @@ class FacilityController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  int  $id
+     * @param PlanFacility $facility
      * @return RedirectResponse
      */
-    public function destroy(int $id): RedirectResponse
+    public function destroy(PlanFacility $facility): RedirectResponse
     {
         try {
-            $facility = PlanFacility::query()
-                ->withCount(['packages'])
-                ->whereId($id)->first();
-
             if ($facility->packages_count > 0) {
-                throw new InvalidArgumentException('Tidak dapat mengapus fasilitas, karena fasilitas ini sedang digunakan!', 500);
+                throw new \Exception('Tidak dapat mengapus fasilitas, karena fasilitas ini sedang digunakan!', 500);
             }
             $facility->delete();
 
@@ -209,5 +238,36 @@ class FacilityController extends Controller
             notify('Opps!', $th->getMessage(), 'error');
             return redirect()->back();
         }
+    }
+
+    /**
+     * @param Request $request
+     * @param PlanFacility $facility
+     * @return RedirectResponse
+     */
+    public function changeStatus(Request $request, PlanFacility $facility)
+    {
+        $request->validate([
+            'status' => ['required', 'boolean'],
+        ]);
+
+        /* begin:: start tenant service */
+        try {
+            $user = auth()->user();
+            $destinationService = new FacilityService($user->tenant_id);
+            if ($request->has('status')) {
+                $destinationService
+                    ->setPlanFacility($facility)
+                    ->setStatus($request->get('status'));
+                notify('Berhasil!', "Status telah berubah", 'success');
+            }else{
+                throw new InvalidArgumentException('Tidak ada yang berubah!');
+            }
+            return redirect()->back();
+        }catch (Throwable $e){
+            notify('Oops!', $e->getMessage(), 'error');
+            return redirect()->back();
+        }
+        /* end:: start tenant service */
     }
 }

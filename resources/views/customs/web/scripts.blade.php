@@ -30,6 +30,7 @@
 <script src="{{ asset('web/vendor/sweetalert/sweetalert2.js') }}"></script>
 <script src="{{ asset('web/js/global-helper.js') }}"></script>
 @yield('page-scripts')
+@stack('scripts')
 
 @yield('page-custom-scripts')
 {{-- <script src="/metronic8/demo1/assets/js/widgets.bundle.js"></script>

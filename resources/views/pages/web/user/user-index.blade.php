@@ -107,14 +107,16 @@
               <!--end::Menu 1-->
               <!--end::Filter-->
 
-              <button type="button" class="btn btn-primary" id="create-new" data-bs-toggle="tooltip"
-                      title="Tambahkan Admin">
-                <!--begin::Svg Icon | path: icons/duotune/arrows/arr075.svg-->
-                <span class="svg-icon svg-icon-2">
+              @can("create {$current_page}")
+                <button type="button" class="btn btn-primary" id="create-new" data-bs-toggle="tooltip"
+                        title="Tambahkan Admin">
+                  <!--begin::Svg Icon | path: icons/duotune/arrows/arr075.svg-->
+                  <span class="svg-icon svg-icon-2">
                   <i class="fa-solid fa-plus"></i>
                 </span>
-                <!--end::Svg Icon-->Tambah Admin
-              </button>
+                  <!--end::Svg Icon-->Tambah Admin
+                </button>
+              @endcan
             </div>
             <!--end::Toolbar-->
             <!--begin::Group actions-->
