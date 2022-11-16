@@ -39,7 +39,9 @@ class PackageController extends Controller
     }
 
     /**
-     * @throws Exception
+     * @return JsonResponse|void
+     * @throws Throwable
+     * @throws \Yajra\DataTables\Exceptions\Exception
      */
     public function datatable()
     {
@@ -101,8 +103,6 @@ class PackageController extends Controller
      */
     public function index(): View|Factory|Application
     {
-        $user = auth()->user();
-
         return $this->view('pages.web.master.package.package-index');
     }
 
@@ -130,14 +130,11 @@ class PackageController extends Controller
                 ->where('is_active', true)
                 ->get();
 
-            $kuartals = Kuartal::cases();
-
             return response()->json([
                 'view' => view('pages.web.master.package.modal.wizard-create-modal', [
                     'plans' => $plans,
                     'facilities' => $facilities,
                     'destinations' => $destinations,
-                    'kuartals' => $kuartals,
                 ])->render(),
             ]);
         }
@@ -148,7 +145,7 @@ class PackageController extends Controller
      * Store a newly created resource in storage.
      *
      * @param Request $request
-     * @return RedirectResponse|Response
+     * @return RedirectResponse
      * @throws Throwable
      */
     public function store(Request $request)
@@ -165,13 +162,11 @@ class PackageController extends Controller
             $facilityIds = [];
             if (isset($validator['facilities']) && is_array($validator['facilities'])) {
                 $facilityIds = array_keys($validator['facilities']);
-//                $packageService->addFacilitiesToPackage($package, $facilityIds);
             }
 
             $destinationIds = [];
             if (isset($validator['destinations']) && is_array($validator['destinations'])) {
                 $destinationIds = array_keys($validator['destinations']);
-//                $packageService->addDestinationsToPackage($package, $destinationIds);
             }
 
             $packageService
@@ -203,9 +198,6 @@ class PackageController extends Controller
     public function show(PlanPackage $package): Redirector|RedirectResponse|Application
     {
         abort(404);
-
-        notify('Oops!', 'Terjadi kesalahan saat memuat halaman!', 'error')->autoClose();
-        return redirect(route('master.package.index'));
     }
 
     /**
@@ -217,6 +209,7 @@ class PackageController extends Controller
     public function edit(PlanPackage $package): JsonResponse|Redirector|RedirectResponse|Application
     {
         if (request()->ajax()) {
+            $user = auth()->user();
 
             $plans = Plan::query()
                 ->where('is_active', true)
@@ -233,8 +226,6 @@ class PackageController extends Controller
                 ->where('is_active', true)
                 ->get();
 
-//            $kuartals = Kuartal::cases();
-
             setDefaultRequest([
                 'test' => 'whatever',
                 'long_days' => $package?->long_days ?? 0,
@@ -246,14 +237,10 @@ class PackageController extends Controller
                     'plans' => $plans,
                     'facilities' => $facilities,
                     'destinations' => $destinations,
-//                    'kuartals' => $kuartals,
                 ])->render(),
             ]);
         }
         abort(404);
-
-        notify('Oops!', 'Terjadi kesalahan saat memuat halaman!', 'error')->autoClose();
-        return redirect(route('master.package.index'));
     }
 
     /**
@@ -275,13 +262,11 @@ class PackageController extends Controller
             $facilityIds = [];
             if (isset($validator['facilities']) && is_array($validator['facilities'])) {
                 $facilityIds = array_keys($validator['facilities']);
-//                $packageService->addFacilitiesToPackage($package, $facilityIds);
             }
 
             $destinationIds = [];
             if (isset($validator['destinations']) && is_array($validator['destinations'])) {
                 $destinationIds = array_keys($validator['destinations']);
-//                $packageService->addDestinationsToPackage($package, $destinationIds);
             }
 
             $packageService
@@ -375,9 +360,6 @@ class PackageController extends Controller
             ]);
         }
         abort(404);
-
-        notify('Oops!', 'Terjadi kesalahan saat memuat halaman!', 'error')->autoClose();
-        return redirect(route('master.package.index'));
     }
 
     /**

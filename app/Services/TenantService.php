@@ -32,7 +32,7 @@ class TenantService
     public function setStatus(bool $status): static
     {
         try {
-            $tenant = $this->tenant();
+            $tenant = $this->getTenant();
             $tenant->is_active = $status;
             $tenant->save();
         } catch (Exception $e) {
@@ -50,7 +50,7 @@ class TenantService
     public function setAvatar(Request $request): static
     {
         try {
-            $tenant = $this->tenant();
+            $tenant = $this->getTenant();
 
             if ($request->hasFile('avatar')) {
                 $tenant->addMediaFromRequest('avatar')
@@ -75,7 +75,7 @@ class TenantService
     public function addMediaCollection(Request $request, string $collectionName): static
     {
         try {
-            $tenant = $this->tenant();
+            $tenant = $this->getTenant();
             if ($request->hasfile('collections')) {
                 foreach ($request->file('collections') as $key => $media){
                     $tenant
@@ -103,11 +103,11 @@ class TenantService
      */
     public function update(array $input,User $user = null): ?Tenant
     {
-        $tenant = $this->tenant();
-        if (isset($user) and $user->hasRole(RoleEnum::SuperAdministrator->keyValue())){
+        $tenant = $this->getTenant();
+        if (isset($user) and $user->tenant_id === null){
             $tenant->BCN = $input['BCN'];
             $tenant->app_domain = $input['app_domain'];
-        }else if (isset($user) and $user->hasRole(RoleEnum::Admin->keyValue())){
+        }else if (isset($user) and $user->tenant_id !== null){
             $tenant->name = $input['name'];
             $tenant->slug = $input['slug'];
         }
@@ -124,19 +124,31 @@ class TenantService
         return $this->query->first();
     }
 
-    public function tenant(): Tenant
+    /**
+     * @return Tenant
+     * @throws Exception
+     */
+    public function getTenant(): Tenant
     {
         if ($this->query->count() > 1) {
-            if (isset($this->tenant) and $this->tenant instanceof Tenant) {
+            if (isset($this->tenant)) {
                 $tenant = $this->tenant;
             } else {
-                throw new Exception('Tenant belum di konfigurasi');
+                throw new Exception('Data harus spesifik!.');
             }
         } else {
             $tenant = $this->query->first();
         }
 
         return $tenant;
+    }
+
+    /**
+     * @param Tenant $tenant
+     */
+    public function setTenant(Tenant $tenant): void
+    {
+        $this->tenant = $tenant;
     }
 
 }

@@ -78,11 +78,6 @@ class ScheduleController extends Controller
      */
     public function index(): View|Factory|Application
     {
-//        $user = auth()->user();
-//        $schedules = Schedule::query()
-//            ->withCount(['jamaah'])
-//            ->tenantId($user->tenant_id)
-//            ->get();
         return $this->view('pages.web.master.schedule.schedule-index');
     }
 
@@ -97,10 +92,8 @@ class ScheduleController extends Controller
             return response()->json([
                 'view' => view('pages.web.master.schedule.modal.wizard-create-modal', [])->render(),
             ]);
-        }else{
-            notify('Opps!', 'Terjadi kesalahan saat memuat halaman!', 'error')->autoClose();
-            return redirect(route('master.schedule.index'));
         }
+        abort(404);
     }
 
     /**
@@ -133,13 +126,12 @@ class ScheduleController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  int  $id
+     * @param Schedule $schedule
      * @return Application|Redirector|RedirectResponse
      */
-    public function show(int $id): Redirector|RedirectResponse|Application
+    public function show(Schedule $schedule): Redirector|RedirectResponse|Application
     {
-        notify('Opps!', 'Terjadi kesalahan saat memuat halaman!', 'error')->autoClose();
-        return redirect(route('master.schedule.index'));
+        abort(404);
     }
 
     /**
@@ -157,10 +149,8 @@ class ScheduleController extends Controller
             return response()->json([
                 'view' => $this->view('pages.web.master.schedule.modal.wizard-edit-modal')->render(),
             ]);
-        }else{
-            notify('Opps!', 'Terjadi kesalahan saat memuat halaman!', 'error')->autoClose();
-            return redirect(route('master.schedule.index'));
         }
+        abort(404);
     }
 
     /**
@@ -184,7 +174,7 @@ class ScheduleController extends Controller
             notify('Berhasil', 'Data jadwal berhasil diperbarui!', 'success')->autoClose();
             return redirect()->back()->with('success', 'success');
         } catch (Throwable $th) {
-            notify('Opps!', $th->getMessage(), 'error');
+            notify('Oops!', $th->getMessage(), 'error');
             return redirect()->back();
         }
     }
@@ -205,7 +195,7 @@ class ScheduleController extends Controller
             notify('Berhasil', 'Data jadwal berhasil dihapus!', 'success')->autoClose();
             return redirect()->back();
         } catch (Throwable $th) {
-            notify('Opps!', $th->getMessage(), 'error');
+            notify('Oops!', $th->getMessage(), 'error');
             return redirect()->back();
         }
     }
