@@ -17,7 +17,7 @@
       </div>
       <!--end::Modal header-->
       <!--begin::Form-->
-      <form class="form" action="{{ route('admin.master.itinerary.store') }}" method="post">
+      <form class="form" action="{{ route('admin.itinerary.store') }}" method="post">
         @csrf
         <!--begin::Modal body-->
         <div class="modal-body ">

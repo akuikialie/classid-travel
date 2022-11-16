@@ -134,7 +134,7 @@ class DestinationService
             if (isset($this->destination)){
                 $destination = $this->destination;
             }else{
-                throw new Exception('Tujuan belum di konfigurasi');
+                throw new Exception('Data harus spesifik!');
             }
         }else{
             $destination = $this->query->first();

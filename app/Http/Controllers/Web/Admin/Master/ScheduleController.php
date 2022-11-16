@@ -6,6 +6,7 @@ use App\Http\Controllers\Web\Admin\Controller;
 use App\Models\Schedule\Schedule;
 use App\Services\ScheduleService;
 use Carbon\Carbon;
+use Exception;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
@@ -20,11 +21,54 @@ use Throwable;
 class ScheduleController extends Controller
 {
 
-    protected ScheduleService $scheduleService;
 
-    public function __construct(ScheduleService $scheduleService)
+    protected string $forPage = 'schedule';
+
+    /**
+     * @throws Exception
+     */
+    public function __construct()
     {
-        $this->scheduleService = $scheduleService;
+        $this->setData('current_page', $this->forPage);
+    }
+
+    /**
+     * @return JsonResponse|void
+     * @throws Throwable
+     * @throws \Yajra\DataTables\Exceptions\Exception
+     */
+    public function datatable()
+    {
+        if (\request()->ajax()) {
+            try {
+                $user = auth()->user();
+                $schedules = Schedule::query()
+                    ->withCount(['jamaah'])
+                    ->tenantId($user->tenant_id)
+                    ->get();
+
+                $datatable = datatables()->of($schedules)
+                    ->addIndexColumn()
+                    ->addColumn('departure_date', function ($model) {
+                        return Carbon::parse($model->departure_date)->format('d M, Y');
+                    })->addColumn('status', function ($model) {
+                        if ($model->is_active) {
+                            return '<span class="badge badge-success text-uppercase">active</span>';
+                        } else {
+                            return '<span class="badge badge-danger text-uppercase">inactive</span>';
+                        }
+                    })
+                    ->addColumn('actions', function ($model) {
+                        $this->setData('schedule', $model);
+                        return $this->view('pages.web.master.schedule.action.action-datatable');
+                    })
+                    ->rawColumns(['actions', 'status' ]);
+
+                return $datatable->make(true);
+            } catch (Throwable $e) {
+                throw $e;
+            }
+        }
     }
 
     /**
@@ -34,14 +78,12 @@ class ScheduleController extends Controller
      */
     public function index(): View|Factory|Application
     {
-        $user = auth()->user();
-        $schedules = Schedule::query()
-            ->withCount(['jamaah'])
-            ->tenantId($user->tenant_id)
-            ->get();
-        return view('pages.web.master.schedule.schedule-index', [
-            'schedules' => $schedules,
-        ]);
+//        $user = auth()->user();
+//        $schedules = Schedule::query()
+//            ->withCount(['jamaah'])
+//            ->tenantId($user->tenant_id)
+//            ->get();
+        return $this->view('pages.web.master.schedule.schedule-index');
     }
 
     /**
@@ -83,7 +125,7 @@ class ScheduleController extends Controller
             notify('Berhasil', 'Jadwal baru berhasil dibuat!', 'success')->autoClose();
             return redirect()->back();
         } catch (Throwable $th) {
-            notify('Opps!', $th->getMessage(), 'error');
+            notify('Oops!', $th->getMessage(), 'error');
             return redirect()->back();
         }
     }
@@ -103,19 +145,17 @@ class ScheduleController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  int  $id
+     * @param Schedule $schedule
      * @return Application|JsonResponse|Redirector|RedirectResponse
+     * @throws Throwable
      */
-    public function edit(int $id): JsonResponse|Redirector|RedirectResponse|Application
+    public function edit(Schedule $schedule): JsonResponse|Redirector|RedirectResponse|Application
     {
         if (request()->ajax()) {
 
-            $schedule = Schedule::query()->whereId($id)->first();
-
+            $this->setData('schedule', $schedule);
             return response()->json([
-                'view' => view('pages.web.master.schedule.modal.wizard-edit-modal', [
-                    'schedule' => $schedule,
-                ])->render(),
+                'view' => $this->view('pages.web.master.schedule.modal.wizard-edit-modal')->render(),
             ]);
         }else{
             notify('Opps!', 'Terjadi kesalahan saat memuat halaman!', 'error')->autoClose();
@@ -127,17 +167,17 @@ class ScheduleController extends Controller
      * Update the specified resource in storage.
      *
      * @param Request $request
-     * @param  int  $id
+     * @param Schedule $schedule
      * @return RedirectResponse|Response
      */
-    public function update(Request $request, int $id): Response|RedirectResponse
+    public function update(Request $request, Schedule $schedule): Response|RedirectResponse
     {
         $validator = $request->validate([
             'departure_date' => ['required', 'string'],
         ]);
 
         try {
-            Schedule::query()->whereId($id)->update([
+            $schedule->update([
                 'departure_date' => Carbon::parse($validator['departure_date']),
             ]);
 
@@ -152,16 +192,12 @@ class ScheduleController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  int  $id
+     * @param Schedule $schedule
      * @return RedirectResponse
      */
-    public function destroy(int $id): RedirectResponse
+    public function destroy(Schedule $schedule): RedirectResponse
     {
         try {
-            $schedule = Schedule::query()
-                ->withCount(['jamaah'])
-                ->whereId($id)->first();
-
             if ($schedule->jamaah_count > 0) {
                 throw new InvalidArgumentException('Tidak dapat mengapus jadwal, karena jadwal ini sedang digunakan!', 500);
             }
@@ -172,5 +208,36 @@ class ScheduleController extends Controller
             notify('Opps!', $th->getMessage(), 'error');
             return redirect()->back();
         }
+    }
+
+    /**
+     * @param Request $request
+     * @param Schedule $schedule
+     * @return RedirectResponse
+     */
+    public function changeStatus(Request $request, Schedule $schedule)
+    {
+        $request->validate([
+            'status' => ['required', 'boolean'],
+        ]);
+
+        /* begin:: start tenant service */
+        try {
+            $user = auth()->user();
+            $destinationService = new ScheduleService($user->tenant_id);
+            if ($request->has('status')) {
+                $destinationService
+                    ->setSchedule($schedule)
+                    ->setStatus($request->get('status'));
+                notify('Berhasil!', "Status telah berubah", 'success');
+            }else{
+                throw new InvalidArgumentException('Tidak ada yang berubah!');
+            }
+            return redirect()->back();
+        }catch (Throwable $e){
+            notify('Oops!', $e->getMessage(), 'error');
+            return redirect()->back();
+        }
+        /* end:: start tenant service */
     }
 }

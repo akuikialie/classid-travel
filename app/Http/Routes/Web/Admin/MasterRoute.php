@@ -63,7 +63,7 @@ class MasterRoute extends BaseRoute
                 [PackageController::class, 'storeSetupItinerary'])
                 ->name($this->name('package.itinerary-setup.store'));*/
 
-            $this->router->resource($this->prefix('schedule'), ScheduleController::class)->names($this->name('schedule'));
+//            $this->router->resource($this->prefix('schedule'), ScheduleController::class)->names($this->name('schedule'));
 
             $this->router->resource($this->prefix('itinerary'), ItineraryController::class, [
                 'names' => [
@@ -116,28 +116,6 @@ class MasterRoute extends BaseRoute
             )*/->route(
                 name: 'admin.master.itinerary.index',
                 title: 'Master Kegiatan',
-                attribute: [
-                    'icon' => 'bx bx-right-arrow-alt',
-                ],
-                resolver: function () {
-                    $user = \auth()->user();
-                    return $user->hasRole(RoleEnum::Admin->keyValue());
-                },
-            )
-            /*->route(
-                name: 'admin.master.destination.index',
-                title: 'Master Tujuan',
-                attribute: [
-                    'icon' => 'bx bx-right-arrow-alt',
-                ],
-                resolver: function () {
-                    $user = \auth()->user();
-                    return $user->hasRole(RoleEnum::Admin->keyValue());
-                },
-            )*/
-            ->route(
-                name: 'admin.master.schedule.index',
-                title: 'Master Keberangkatan',
                 attribute: [
                     'icon' => 'bx bx-right-arrow-alt',
                 ],

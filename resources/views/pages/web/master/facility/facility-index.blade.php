@@ -13,7 +13,7 @@
     let urlTable = "{{ route('admin.facility.datatable') }}";
     let createUrl = "{{ route('admin.facility.create') }}";
     let editUrl = "{{ route('admin.facility.edit', ':id') }}";
-  </script>-
+  </script>
 @endsection
 
 @section('page-content')
@@ -23,7 +23,7 @@
     <div class="card-body fs-6 py-15 px-10 py-lg-15 px-lg-15 text-gray-700">
       <div class="p-0">
         <!--begin::Heading-->
-        <h3 class="card-title">Daftar Tujuan</h3>
+        <h3 class="card-title">Daftar Fasilitas</h3>
         <!--end::Heading-->
         <!--begin::CRUD-->
         <div class="py-5">
@@ -37,7 +37,7 @@
               </span>
               <!--end::Svg Icon-->
               <input type="text" data-kt-user-table-filter="search"
-                     class="form-control form-control-solid w-250px ps-15" placeholder="Search Tujuan"/>
+                     class="form-control form-control-solid w-250px ps-15" placeholder="Search Fasilitas"/>
             </div>
             <!--end::Search-->
             <!--begin::Toolbar-->
@@ -106,12 +106,12 @@
 
               @can("create {$current_page}")
                 <button type="button" class="btn btn-primary" id="create-new" data-bs-toggle="tooltip"
-                        title="Setup Tujuan">
+                        title="Setup Fasilitas">
                   <!--begin::Svg Icon | path: icons/duotune/arrows/arr075.svg-->
                   <span class="svg-icon svg-icon-2">
                   <i class="fa-solid fa-plus"></i>
                 </span>
-                  <!--end::Svg Icon-->Setup Tujuan
+                  <!--end::Svg Icon-->Setup Fasilitas
                 </button>
 
               @endcan

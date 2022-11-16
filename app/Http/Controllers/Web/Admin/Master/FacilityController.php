@@ -21,7 +21,7 @@ use Yajra\DataTables\Exceptions\Exception;
 class FacilityController extends Controller
 {
 
-    protected string $forPage = 'destination';
+    protected string $forPage = 'facility';
 
     /**
      * @throws Exception
@@ -33,9 +33,9 @@ class FacilityController extends Controller
     }
 
     /**
-     * @throws Throwable
+     * @return JsonResponse|void
      * @throws Exception
-     * @throws \Exception
+     * @throws Throwable
      */
     public function datatable()
     {
@@ -260,7 +260,6 @@ class FacilityController extends Controller
                     ->setPlanFacility($facility)
                     ->setStatus($request->get('status'));
                 notify('Berhasil!', "Status telah berubah", 'success');
-                DB::commit();
             }else{
                 throw new InvalidArgumentException('Tidak ada yang berubah!');
             }

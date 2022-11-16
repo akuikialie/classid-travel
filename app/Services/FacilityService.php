@@ -68,7 +68,7 @@ class FacilityService
             if (isset($this->planFacility) and $this->planFacility instanceof PlanFacility){
                 $facility = $this->planFacility;
             }else{
-                throw new Exception('Tujuan belum di konfigurasi');
+                throw new Exception('Data harus spesifik!');
             }
         }else{
             $facility = $this->query->first();

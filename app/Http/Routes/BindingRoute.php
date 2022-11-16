@@ -3,8 +3,10 @@
 namespace App\Http\Routes;
 
 use App\Models\Destination\Destination;
+use App\Models\Itinerary\ItineraryActivity;
 use App\Models\Plan\PlanFacility;
 use App\Models\Plan\PlanPackage;
+use App\Models\Schedule\Schedule;
 use App\Models\Spatie\Role;
 use App\Models\Tenant\Tenant;
 use App\Models\User;
@@ -22,6 +24,12 @@ class BindingRoute implements Bindable
     {
         $this->router->bind('tenant_hash', fn ($value) => Tenant::byHashOrFail($value));
         $this->router->bind('user_hash', fn ($value) => User::byHashOrFail($value));
+        $this->router->bind('itinerary_hash', fn ($value) => ItineraryActivity::query()
+            ->withCount(['hasItineraries'])
+            ->byHashOrFail($value));
+        $this->router->bind('schedule_hash', fn ($value) => Schedule::query()
+            ->withCount(['jamaah'])
+            ->byHashOrFail($value));
         $this->router->bind('facility_hash', fn ($value) => PlanFacility::query()
             ->withCount(['packages'])
             ->byHashOrFail($value));
