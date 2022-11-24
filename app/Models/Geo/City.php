@@ -12,6 +12,4 @@ class City extends Model
     protected $table = 'geo_cities';
 
     protected $fillable = ['name'];
-
-    public $timestamps = false;
 }

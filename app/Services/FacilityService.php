@@ -37,7 +37,7 @@ class FacilityService
     {
         try {
             if ($request->hasfile('photo_collection')) {
-                $facility = $this->facility();
+                $facility = $this->getFacility();
                 $facility->addMultipleMediaFromRequest(['photo_collection'])
                     ->each(fn($media) => $media->toMediaCollection('photo_collections'));
             }
@@ -62,13 +62,13 @@ class FacilityService
         return $this;
     }
 
-    public function facility(): PlanFacility
+    public function getFacility(): PlanFacility
     {
         if ($this->query->count() > 1){
             if (isset($this->planFacility) and $this->planFacility instanceof PlanFacility){
                 $facility = $this->planFacility;
             }else{
-                throw new Exception('Tujuan belum di konfigurasi');
+                throw new Exception('Data harus spesifik!');
             }
         }else{
             $facility = $this->query->first();
@@ -89,7 +89,7 @@ class FacilityService
      */
     public function update(array $input): Model|Builder|Destination|null
     {
-        $facility = $this->facility();
+        $facility = $this->getFacility();
         $facility->name = $input['name'];
         $facility->type = $input['type'];
         $facility->save();
@@ -97,6 +97,23 @@ class FacilityService
         return $facility->fresh();
     }
 
+    /**
+     * @param bool $status
+     * @return $this
+     * @throws Exception
+     */
+    public function setStatus(bool $status): static
+    {
+        try {
+            $facility = $this->getFacility();
+            $facility->is_active = $status;
+            $facility->save();
+        } catch (Exception $e) {
+            throw $e;
+        }
+
+        return $this;
+    }
 
 
 
@@ -117,9 +134,7 @@ class FacilityService
                 'name' => ucwords($input['name'])
             ]);
 
-            $newFacility = PlanFacility::query()->create($input);
-
-            return $newFacility;
+            return PlanFacility::query()->create($input);
         } catch (Throwable $th) {
             throw $th;
         }
@@ -138,5 +153,15 @@ class FacilityService
         } catch (Throwable $th) {
             throw $th;
         }
+    }
+
+    /**
+     * @param PlanFacility $planFacility
+     * @return FacilityService
+     */
+    public function setPlanFacility(PlanFacility $planFacility): static
+    {
+        $this->planFacility = $planFacility;
+        return $this;
     }
 }

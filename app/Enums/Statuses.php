@@ -22,4 +22,12 @@ enum Statuses: string
             self::NonActive => 'nonactive',
         };
     }
+
+    public function color(): string
+    {
+        return match($this) {
+            self::Active => 'success',
+            self::NonActive => 'danger',
+        };
+    }
 }

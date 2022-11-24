@@ -66,7 +66,7 @@ return [
         App\Http\Routes\Mobile\PackageRoute::class,
         App\Http\Routes\Mobile\TabunganRoute::class,
         App\Http\Routes\Mobile\ProfileRoute::class,
-        App\Http\Routes\Mobile\ReferalRoute::class,
+        App\Http\Routes\Mobile\ReferralRoute::class,
         App\Http\Routes\Mobile\PerencanaanRoute::class,
 
     ],
@@ -79,8 +79,13 @@ return [
         App\Http\Routes\Web\Admin\DefaultRoute::class,
         App\Http\Routes\Web\Admin\AuthRoute::class,
         App\Http\Routes\Web\Admin\TenantRoute::class,
-        App\Http\Routes\Web\Admin\MasterRoute::class,
+        App\Http\Routes\Web\Admin\PackageRoute::class,
+        App\Http\Routes\Web\Admin\DestinationRoute::class,
+        App\Http\Routes\Web\Admin\FacilityRoute::class,
+        App\Http\Routes\Web\Admin\ScheduleRoute::class,
+        App\Http\Routes\Web\Admin\ItineraryRoute::class,
         App\Http\Routes\Web\Admin\UserRoute::class,
+        App\Http\Routes\Web\Admin\RoleRoute::class,
     ],
     'api' => [
         /** @inject api **/

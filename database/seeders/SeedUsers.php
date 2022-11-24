@@ -25,7 +25,7 @@ class SeedUsers extends Seeder
         $admins = [
             [
                 'name' => 'Dev Super Admin Account',
-                'phone' => '083333333331',
+                'phone' => '0831',
                 'username' => 'admin',
                 'password' => 'admin',
                 'role' => 'super-administrator',
@@ -33,7 +33,7 @@ class SeedUsers extends Seeder
             [
                 'tenant_id' => 6,
                 'name' => 'Dev Admin Account',
-                'phone' => '083333333332',
+                'phone' => '0832',
                 'username' => 'admin',
                 'password' => 'admin',
                 'role' => 'administrator',
@@ -62,7 +62,6 @@ class SeedUsers extends Seeder
 
         foreach ($seedUser as $key => $input) {
             \DB::beginTransaction();
-            $newUser = null;
             try {
                 /* begin:: user service */
                 $userService = new UserService($input['tenant_id'] ?? null);
@@ -71,7 +70,7 @@ class SeedUsers extends Seeder
                         collect($input)->forget('role')->toArray(),
                         ($input['role'] == 'jamaah'))
                     ->setRole($input['role'])
-                    ->get();
+                    ->getUser();
                 /* end:: user service */
                 \DB::commit();
             }catch (\Throwable $e){

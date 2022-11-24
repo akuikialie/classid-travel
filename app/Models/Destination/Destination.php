@@ -2,6 +2,7 @@
 
 namespace App\Models\Destination;
 
+use App\Models\HashableId;
 use App\Models\Master\Address;
 use App\Models\Plan\PlanPackage;
 use App\Traits\HasTenant;
@@ -15,7 +16,7 @@ use Spatie\MediaLibrary\InteractsWithMedia;
 
 class Destination extends Model implements HasMedia
 {
-    use HasFactory, InteractsWithMedia, HasTenant, SoftDeletes;
+    use HasFactory, InteractsWithMedia, HasTenant, SoftDeletes, HashableId;
 
     protected $table = 'destinations';
 

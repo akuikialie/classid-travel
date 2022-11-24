@@ -2,9 +2,8 @@
 
 namespace Database\Seeders;
 
-use App\Enums\RoleEnum;
-use App\Models\Spatie\Role;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+use App\Enums\PermissionType;
+use App\Models\Spatie\Permission;
 use Illuminate\Database\Seeder;
 
 class SeedPermissions extends Seeder
@@ -16,12 +15,33 @@ class SeedPermissions extends Seeder
      */
     public function run()
     {
-        $seedRoles = RoleEnum::cases();
+        $pages = [
+            'role',
+            'travel',
+            'user',
+            'destination',
+            'package',
+            'facility',
+            'schedule',
+            'itinerary',
+        ];
 
-        foreach ($seedRoles as $key => $role) {
-            Role::create([
-                'name' => $role->keyValue(),
-            ]);
+        $default = [
+            'view',
+            'create',
+            'update',
+            'delete',
+        ];
+
+        foreach ($pages as $page){
+            foreach ($default as $permission){
+                Permission::query()
+                    ->create([
+                        'name' => "{$permission} {$page}",
+                        'guard_name' => 'web',
+                        'type' => PermissionType::tenant->value,
+                    ]);
+            }
         }
     }
 }

@@ -22,6 +22,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 use InvalidArgumentException;
+use Laravel\Octane\Exceptions\DdException;
 use Psr\Container\ContainerExceptionInterface;
 use Psr\Container\NotFoundExceptionInterface;
 use ReflectionException;
@@ -32,9 +33,20 @@ class TenantController extends Controller
 
     use ViewSupport, FragmentRenderer;
 
+    protected string $forPage = 'travel';
+
     /**
-     * @throws \Yajra\DataTables\Exceptions\Exception
      * @throws Exception
+     */
+    public function __construct()
+    {
+        $this->setData('current_page', $this->forPage);
+    }
+
+
+    /**
+     * @return JsonResponse|void
+     * @throws \Yajra\DataTables\Exceptions\Exception
      */
     public function datatable()
     {
@@ -88,7 +100,7 @@ class TenantController extends Controller
     /**
      * Show the form for creating a new resource.
      *
-     * @return Application|JsonResponse|RedirectResponse|Redirector
+     * @return JsonResponse
      * @throws Throwable
      */
     public function create()
@@ -99,10 +111,8 @@ class TenantController extends Controller
             return \response()->json([
                 'view' => $this->view('pages.web.tenant.modals.modal-create-tenant')->render(),
             ]);
-        }else {
-            notify('Opps!', 'Terjadi kesalahan saat memuat halaman!', 'error')->autoClose();
-            return redirect(route('master.destination.index'));
         }
+        abort(404);
     }
 
     /**
@@ -208,7 +218,7 @@ class TenantController extends Controller
      * Show the form for editing the specified resource.
      *
      * @param Tenant $tenant
-     * @return Application|JsonResponse|RedirectResponse|Redirector
+     * @return JsonResponse
      * @throws Throwable
      */
     public function edit(Tenant $tenant)
@@ -223,10 +233,8 @@ class TenantController extends Controller
             return \response()->json([
                 'view' => $this->view('pages.web.tenant.modals.modal-edit-tenant')->render(),
             ]);
-        }else {
-            notify('Opps!', 'Terjadi kesalahan saat memuat halaman!', 'error')->autoClose();
-            return redirect(route('master.destination.index'));
         }
+        abort(404);
     }
 
     /**
@@ -242,10 +250,10 @@ class TenantController extends Controller
 
         $input = $request->validate([
             'avatar_remove' => ['nullable', 'string'],
-            'name' => [Rule::requiredIf($user->hasRole(RoleEnum::Admin->keyValue())), 'string'],
-            'slug' => [Rule::requiredIf($user->hasRole(RoleEnum::Admin->keyValue())), 'string'],
-            'BCN' => [Rule::requiredIf($user->hasRole(RoleEnum::SuperAdministrator->keyValue())), 'numeric'],
-            'app_domain' => [Rule::requiredIf($user->hasRole(RoleEnum::SuperAdministrator->keyValue())), 'string'],
+            'name' => [Rule::requiredIf($user->tenant_id !== null), 'string'],
+            'slug' => [Rule::requiredIf($user->tenant_id !== null), 'string'],
+            'BCN' => [Rule::requiredIf($user->tenant_id === null), 'numeric'],
+            'app_domain' => [Rule::requiredIf($user->tenant_id === null), 'string'],
         ]);
 
         DB::beginTransaction();
@@ -261,7 +269,7 @@ class TenantController extends Controller
 
             $tenantService = new TenantService($user->tenant_id ?? $tenant->id);
             $tenantService
-                ->tenantId($tenant->id);
+                ->setTenant($tenant);
 
             if (isset($input['avatar_remove'])) {
                 $tenantService->unsetAvatar();
@@ -291,11 +299,11 @@ class TenantController extends Controller
      * Remove the specified resource from storage.
      *
      * @param Tenant $tenant
-     * @return Response
+     * @return RedirectResponse
      */
     public function destroy(Tenant $tenant)
     {
-        dd($tenant);
+        return redirect()->back();
     }
 
     public function addMedia(Request $request, ?Tenant $tenant = null)

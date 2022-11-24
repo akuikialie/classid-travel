@@ -36,9 +36,12 @@ class AuthenticationSessionController extends Controller
                 ->where('BCN', request()->input('travel_code'))
                 ->first();
 
-            if (!$tenant){
+            if (is_null($tenant)){
+                Auth::logout();
+                $request->session()->invalidate();
+                $request->session()->regenerateToken();
                 notify('Gagal!', trans('auth.failed'), 'error');
-                return  redirect()->back()->withInput();
+                return redirect()->back()->withInput();
             }
 
             if ($user->tenant_id == $tenant->id){

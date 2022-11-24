@@ -13,23 +13,65 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Routing\Redirector;
 use InvalidArgumentException;
+use Throwable;
+use Yajra\DataTables\Exceptions\Exception;
 
 class ItineraryController extends Controller
 {
+
+    protected string $forPage = 'itinerary';
+
+    /**
+     * @throws Exception
+     * @throws \Exception
+     */
+    public function __construct()
+    {
+        $this->setData('current_page', $this->forPage);
+    }
+
+    /**
+     * @return JsonResponse|void
+     * @throws Exception
+     * @throws Throwable
+     */
+    public function datatable()
+    {
+        if (\request()->ajax()) {
+            try {
+                $user = auth()->user();
+                $itineraries = ItineraryActivity::query()
+                    ->tenantId($user->tenant_id)
+                    ->get();
+
+                $datatable = datatables()->of($itineraries)
+                    ->addIndexColumn()
+                    ->addColumn('name', function ($model) {
+                        return $model->activity;
+                    })->addColumn('detail', function ($model) {
+                        return ($model->detail ?? '-');
+                    })
+                    ->addColumn('actions', function ($model) {
+                        $this->setData('itinerary', $model);
+                        return $this->view('pages.web.master.itinerary.action.action-datatable');
+                    })
+                    ->rawColumns(['actions', 'status' ]);
+
+                return $datatable->make(true);
+            } catch (Throwable $e) {
+                throw $e;
+            }
+        }
+    }
+
     /**
      * Display a listing of the resource.
      *
-     * @return Application|Factory|View
+     * @return View
      */
     public function index()
     {
-        $user = auth()->user();
-        $itinerary = ItineraryActivity::query()
-            ->tenantId($user->tenant_id)
-            ->get();
-        return view('pages.web.master.itinerary.itinerary-index', [
-            'itineraries' => $itinerary,
-        ]);
+        return $this->view('pages.web.master.itinerary.itinerary-index');
     }
 
     /**
@@ -44,10 +86,8 @@ class ItineraryController extends Controller
                 'view' => view('pages.web.master.itinerary.modal.modal-create-itinerary_activity', [
                 ])->render(),
             ]);
-        } else {
-            notify('Oops!', 'Terjadi kesalahan saat memuat halaman!', 'error')->autoClose();
-            return redirect(route('master.facility.index'));
         }
+        abort(404);
     }
 
     /**
@@ -83,45 +123,41 @@ class ItineraryController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param $hash
-     * @return Application|Redirector|RedirectResponse
+     * @param ItineraryActivity $activity
+     * @return void
      */
-    public function show($hash)
+    public function show(ItineraryActivity $activity)
     {
-        notify('Oops!', 'Terjadi kesalahan saat memuat halaman!', 'error')->autoClose();
-        return redirect(route('master.facility.index'));
+        abort(404);
+
     }
 
     /**
      * Show the form for editing the specified resource.
      *
-     * @param $hash
+     * @param ItineraryActivity $activity
      * @return JsonResponse|RedirectResponse
      */
-    public function edit($hash)
+    public function edit(ItineraryActivity $activity)
     {
         if (request()->ajax()) {
-            $activity = ItineraryActivity::query()
-                ->byHashOrFail($hash);
             return response()->json([
                 'view' => view('pages.web.master.itinerary.modal.modal-edit-itinerary_activity', [
                     'activity' => $activity,
                 ])->render(),
             ]);
-        } else {
-            notify('Oops!', 'Terjadi kesalahan saat memuat halaman!', 'error')->autoClose();
-            return redirect()->back();
         }
+        abort(404);
     }
 
     /**
      * Update the specified resource in storage.
      *
      * @param Request $request
-     * @param $hash
+     * @param ItineraryActivity $activity
      * @return RedirectResponse
      */
-    public function update(Request $request, $hash)
+    public function update(Request $request, ItineraryActivity $activity)
     {
         $input = $request->validate([
             'activity' => ['required', 'string'],
@@ -130,8 +166,6 @@ class ItineraryController extends Controller
 
         try {
             /* begin:: update itinerary activity */
-            $activity = ItineraryActivity::query()
-                ->byHashOrFail($hash);
             $activity->activity = $input['activity'];
             $activity->detail = $input['detail'];
             $activity->save();
@@ -148,16 +182,12 @@ class ItineraryController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param $hash
+     * @param ItineraryActivity $activity
      * @return RedirectResponse
      */
-    public function destroy($hash)
+    public function destroy(ItineraryActivity $activity)
     {
         try {
-           $activity = ItineraryActivity::query()
-               ->withCount(['hasItineraries'])
-               ->byHashOrFail($hash);
-
             if ($activity->has_itineraries_count > 0) {
                 throw new InvalidArgumentException('Tidak dapat mengapus kegiatan, karena kegiatan ini sedang digunakan!', 500);
             }

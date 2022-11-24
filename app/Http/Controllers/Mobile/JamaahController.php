@@ -18,14 +18,14 @@ class JamaahController extends Controller
     public function index()
     {
         $user = User::query()
-            ->with(['peopleInviteds.user'])
+            ->with(['peopleInvites.user'])
             ->where('id', auth()->user()->id)
             ->first();
 
-        $peopleInviteds = $user->peopleInviteds;
+        $peopleInvites = $user->peopleInvites;
 
         return view('pages.mobile.jamaah.jamaah-index', [
-            'people_invited' => $peopleInviteds,
+            'people_invited' => $peopleInvites,
         ]);
     }
 

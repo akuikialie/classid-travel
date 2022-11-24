@@ -2,7 +2,8 @@
 
 namespace Database\Seeders;
 
-use App\Enums\RoleType;
+use App\Enums\PermissionType;
+use App\Models\Spatie\Permission;
 use App\Services\PermissionService;
 use App\Services\RoleService;
 use Illuminate\Database\Seeder;
@@ -19,27 +20,29 @@ class SeedRoles extends Seeder
         $seedRoles = [
             [
                 'name' => 'super-administrator',
-                'type' => RoleType::tenant->keyValue(),
+                'type' => PermissionType::tenant->keyValue(),
             ],[
                 'name' => 'administrator',
-                'type' => RoleType::tenant->keyValue(),
+                'type' => PermissionType::tenant->keyValue(),
             ],[
                 'tenant_id' => 6,
                 'name' => 'administrator',
-                'type' => RoleType::tenant->keyValue(),
+                'type' => PermissionType::tenant->keyValue(),
             ],[
                 'name' => 'jamaah',
-                'type' => RoleType::app->keyValue(),
+                'type' => PermissionType::app->keyValue(),
             ],
         ];
 
         foreach ($seedRoles as $input){
             \DB::beginTransaction();
             try {
+                $permissions = Permission::query()->get()->pluck('id')->toArray();
                 /* begin: permission service */
                 $permissionService = new PermissionService($input['tenant_id'] ?? null);
                 $permissionService
-                    ->createNewRole($input);
+                    ->createNewRole($input)
+                    ->syncPermissions(permissions: $permissions);
                 /* end: role service */
                 \DB::commit();
             }catch (\Throwable $e){

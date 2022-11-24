@@ -76,7 +76,7 @@
           <div class="flex-row-fluid py-lg-5 px-lg-15">
             <!--begin::Form-->
             <form class="form" novalidate="novalidate" id="kt_modal_create_app_form"
-                  enctype="multipart/form-data" action="{{ route('admin.master.schedule.update', $schedule->id) }}"
+                  enctype="multipart/form-data" action="{{ route('admin.schedule.update', $schedule->hash) }}"
                   method="POST">
               @include('pages.web.master.schedule.modal._input-wizard-modal')
               <!--begin::Actions-->
