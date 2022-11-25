@@ -39,8 +39,11 @@ return new class extends Migration
             $table->string('name');
             $table->string('admin_code');
             $table->unsignedBigInteger('wilayah_code');
+            $table->timestamps(precision: 6);
+            $table->softDeletes(precision: 6);
         });
     }
+
     public function geoCity(): void
     {
         Schema::create('geo_cities', function (Blueprint $table) {
@@ -52,12 +55,15 @@ return new class extends Migration
             $table->string('longitude', 40)->nullable();
             $table->string('admin_code')->nullable();
             $table->unsignedBigInteger('wilayah_code')->nullable();
+            $table->timestamps(precision: 6);
+            $table->softDeletes(precision: 6);
 
             /* foreign key */
             $table->foreign('province_id')->on('geo_provinces')->references('id')->onDelete('cascade');
         });
 
     }
+
     public function geoDistrict(): void
     {
         Schema::create('geo_districts', function (Blueprint $table) {
@@ -66,11 +72,14 @@ return new class extends Migration
             $table->string('name');
             $table->string('admin_code');
             $table->unsignedBigInteger('wilayah_code');
+            $table->timestamps(precision: 6);
+            $table->softDeletes(precision: 6);
 
              /* foreign key */
              $table->foreign('city_id')->on('geo_cities')->references('id')->onDelete('cascade');
         });
     }
+
     public function geoSubDistrict(): void
     {
         Schema::create('geo_subdistricts', function (Blueprint $table) {
@@ -79,12 +88,11 @@ return new class extends Migration
             $table->string('name');
             $table->string('admin_code');
             $table->unsignedBigInteger('wilayah_code');
+            $table->timestamps(precision: 6);
+            $table->softDeletes(precision: 6);
 
              /* foreign key */
              $table->foreign('district_id')->on('geo_districts')->references('id')->onDelete('cascade');
         });
     }
-
-
-
 };
