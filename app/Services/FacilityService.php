@@ -62,6 +62,9 @@ class FacilityService
         return $this;
     }
 
+    /**
+     * @throws Exception
+     */
     public function getFacility(): PlanFacility
     {
         if ($this->query->count() > 1){

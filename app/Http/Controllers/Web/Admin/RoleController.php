@@ -119,7 +119,7 @@ class RoleController extends Controller
     {
         if (\request()->ajax()){
             return \response()->json([
-                'view' => null,
+                'view' => $this->view('pages.web.role.modals.modal-create-role')->render(),
             ]);
         }
 

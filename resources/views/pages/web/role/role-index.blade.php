@@ -10,7 +10,7 @@
     let urlTable = "{{ route('admin.role.datatable') }}";
     let createUrl = "{{ route('admin.role.create') }}";
     let columns = @json($columns);
-    {{--let editUrl = "{{ route('admin.role.edit', ':id') }}";--}}
+    let editUrl = "{{ route('admin.role.edit', ':id') }}";
   </script>
 @endsection
 

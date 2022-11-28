@@ -37,7 +37,6 @@ if (!function_exists('isActiveTenant')) {
 if (!function_exists('isMobile')) {
     /**
      * @return bool
-     * @throws BindingResolutionException
      */
     function isMobile(): bool
     {
@@ -50,7 +49,6 @@ if (!function_exists('isNativeMobile')) {
      * @param null|string $type
      *
      * @return bool
-     * @throws BindingResolutionException
      */
     function isNativeMobile(?string $type = null): bool
     {
