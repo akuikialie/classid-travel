@@ -126,16 +126,15 @@ let KTDatatablesServerSide = function () {
   };
 
   // Create new travel account
-  let handleAddAdmin = function () {
+  let handleCreate = function () {
     $('#create-new').click(function () {
       $.ajax({
         url: createUrl,
         type: "GET",
         success: function (data) {
-          if (!$("#modal-add-admin").is(":visible")) {
+          if (!$("#modal-create").is(":visible")) {
             $("#dynamic_modal").html(data.view);
-            $("#modal-add-admin").modal("show");
-            $('[data-kt-user-modal-select="role"]').select2();
+            $("#modal-create").modal("show");
           }
         },
         error: function (error) {
@@ -380,7 +379,7 @@ let KTDatatablesServerSide = function () {
   // Public methods
   return {
     init: function () {
-      handleAddAdmin();
+      handleCreate();
       initDatatable();
       handleSearchDatatable();
       initToggleToolbar();
