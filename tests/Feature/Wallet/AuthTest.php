@@ -26,16 +26,22 @@ class AuthTest extends TestCase
         $this->assertStringContainsStringIgnoringCase('sidik', $admin->name);
     }
 
+    /**
+     * @return void
+     * @throws \Exception
+     */
     public function testCreateUser(): void
     {
         $wallet = new WalletService();
 
         $wallet->admin();
 
-        $user = $wallet->createUser(14, '8574000060118955', 'Yusron Arif', 'yusron3@email.com');
+        $wallet->login();
+
+        $user = $wallet->createUser("jamaah-14", '8574000060118956', 'Yusron Arif - ', 'string@prohajj.app');
 
         $this->assertInstanceOf(WalletUser::class, $user);
 
-        $this->assertEquals('8574000060118955', $user->va);
+        $this->assertEquals('8574000060118956', $user->va);
     }
 }

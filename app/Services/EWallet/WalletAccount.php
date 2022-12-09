@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Services\EWallet;
 
 use App\Services\EWallet\Entity\WalletUser;
@@ -17,32 +19,22 @@ trait WalletAccount
      */
     public function login(string $username, string $password): bool
     {
-        $post = $this->client()->post('auth/oauth/login', [
-            'school_key' => config('wallet.bcn'),
-            'username' => $username,
-            'password' => $password,
-        ]);
+        if ($username == config('wallet.admin.username')) {
+            return $this->_doLogin($username, $password);
+        }
 
-        if ($post->ok()) {
-            $body = $post->object();
-            if ($body->user && $body->access_token) {
-                $this->user = new WalletUser(
-                    id: $body->user?->id ?? null,
-                    va: config('wallet.bcn') . str_pad($body->user?->virtual_account ?? '', 10, '0', STR_PAD_LEFT),
-                    name: $body->user?->name ?? '',
-                    token: $body->user?->access_token ?? '',
-                    isAdmin: config('wallet.admin.username')!='' && $username == config('wallet.admin.username'),
-                );
-                return true;
+        $userLogin = Cache::remember("walletUser.$username", now()->addMonths(6), function () use ($username, $password) {
+            if ($this->_doLogin($username, $password)) {
+                return $this->user;
             }
+            return null;
+        });
+
+        if (!$userLogin) {
+            Cache::forget("walletUser.$username");
         }
 
-        if ($post->clientError()) {
-            throw new Exception($post->object()->error, $post->status());
-            // dump($post->toException()->response->json());
-        }
-
-        return false;
+        return $userLogin instanceof WalletUser;
     }
 
     /**
@@ -50,16 +42,22 @@ trait WalletAccount
      */
     public function admin(): ?WalletUser
     {
-        return Cache::rememberForever('walletAdmin', function () {
+        $adminUser = Cache::rememberForever('walletAdmin', function () {
             if ($this->login(config('wallet.admin.username'), config('wallet.admin.password'))) {
                 return $this->user;
             }
             return null;
         });
+
+        if (!$adminUser) {
+            Cache::forget("walletAdmin");
+        }
+
+        return $adminUser;
     }
 
     /**
-     * @param int         $id
+     * @param string      $id
      * @param string      $va
      * @param string      $name
      * @param string|null $email
@@ -67,7 +65,7 @@ trait WalletAccount
      * @return \App\Services\EWallet\Entity\WalletUser|null
      * @throws \Exception
      */
-    public function createUser(int $id, string $va, string $name, ?string $email = null): ?WalletUser
+    public function createUser(string $id, string $va, string $name, ?string $email = null): ?WalletUser
     {
         if (!$this->user->isAdmin()) {
             throw new Exception('not authorized', 403);
@@ -101,11 +99,32 @@ trait WalletAccount
             }
         }
 
-        if ($post->clientError()) {
-            throw new Exception($post->object()->error, $post->status());
-            // dump($post->toException()->response->json());
+        return null;
+    }
+
+    private function _doLogin(string $username, string $password): bool
+    {
+        $post = $this->client()->post('auth/oauth/login', [
+            'school_key' => config('wallet.bcn'),
+            'username' => $username,
+            'password' => $password,
+        ]);
+
+        if ($post->ok()) {
+            $body = $post->object();
+            if ($body->user && $body->access_token) {
+                $this->user = new WalletUser(
+                    id: $body->user?->id ?? null,
+                    va: config('wallet.bcn') . str_pad($body->user?->virtual_account ?? '', 10, '0', STR_PAD_LEFT),
+                    name: $body->user?->name ?? '',
+                    token: $body->access_token,
+                    isAdmin: config('wallet.admin.username')!='' && $username == config('wallet.admin.username'),
+                );
+
+                return true;
+            }
         }
 
-        return null;
+        return false;
     }
 }
