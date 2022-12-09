@@ -1,5 +1,5 @@
 <!--begin::Modal - Create App-->
-<div class="modal fade" id="modal-add-admin" tabindex="-1" aria-hidden="true">
+<div class="modal fade" id="modal-create" tabindex="-1" aria-hidden="true">
   <!--begin::Modal dialog-->
   <div class="modal-dialog modal-dialog-centered mw-700px">
     <!--begin::Modal content-->
@@ -7,7 +7,7 @@
       <!--begin::Modal header-->
       <div class="modal-header">
         <!--begin::Modal title-->
-        <h2>Tambahkan Admin Baru</h2>
+        <h2>Edit Role</h2>
         <!--end::Modal title-->
         <!--begin::Close-->
         <div class="btn btn-icon btn-sm btn-active-light-primary ms-2" data-bs-dismiss="modal" aria-label="Close">
@@ -19,7 +19,7 @@
       <!--begin::Modal body-->
       <div class="modal-body py-lg-10 px-lg-10">
         <!--begin::Form-->
-        <form class="form" action="{{ route('admin.user.store') }}" method="post">
+        <form class="form" action="{{ route('admin.role.update', $role->hash) }}" method="post">
           @csrf
           <!--begin::Modal body-->
           <div class="modal-body py-1 px-lg-17">
