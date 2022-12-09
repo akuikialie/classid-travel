@@ -1,7 +1,10 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Services\EWallet;
 
+use App\Core\Bus\Http;
 use GuzzleHttp\HandlerStack;
 use GuzzleHttp\Middleware;
 use Illuminate\Container\Container;
@@ -9,7 +12,6 @@ use Illuminate\Http\Client\PendingRequest;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Arr;
-use Illuminate\Support\Facades\Http;
 use Psr\Http\Message\RequestInterface;
 
 trait WalletBase
@@ -40,14 +42,15 @@ trait WalletBase
             return $request;
         }));
 
-        $http = Http::baseUrl($this->baseUrl)
+        $http = Http::init($this->baseUrl)
             ->acceptJson()
             ->timeout(180)
             ->withoutVerifying()
             ->withoutRedirecting()
             ->setHandler($stack);
 
-        if ($token = auth()->user()?->api_token) {
+        $token = $this->user?->token ?? null;
+        if ($token) {
             $http->withToken($token);
         }
 

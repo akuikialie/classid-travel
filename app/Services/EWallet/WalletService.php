@@ -36,10 +36,6 @@ class WalletService implements Contract\WalletService
             $list = $http->json();
         }
 
-        if ($http->clientError()) {
-            throw new Exception($http->object()->error, $http->status());
-        }
-
         return $this->toPaginate($list);
     }
 
@@ -61,10 +57,6 @@ class WalletService implements Contract\WalletService
 
         if ($http->successful() && $http->json('success', false)) {
             return $http->json()['data'];
-        }
-
-        if ($http->clientError()) {
-            throw new Exception($http->object()->error, $http->status());
         }
 
         return [];
@@ -90,10 +82,6 @@ class WalletService implements Contract\WalletService
             return $http->json()['data'];
         }
 
-        if ($http->clientError()) {
-            throw new Exception($http->object()->error, $http->status());
-        }
-
         return [];
     }
 
@@ -115,10 +103,6 @@ class WalletService implements Contract\WalletService
 
         if ($http->successful() && $http->json('success', false)) {
             return $http->json()['data'];
-        }
-
-        if ($http->clientError()) {
-            throw new Exception($http->object()->error, $http->status());
         }
 
         return [];

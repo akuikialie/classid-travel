@@ -11,6 +11,7 @@ use Carbon\Carbon;
 use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\ViewErrorBag;
 use Psr\Container\NotFoundExceptionInterface;
 use Psr\Container\ContainerExceptionInterface;
 
@@ -526,5 +527,46 @@ if (!function_exists('paginateStyleReset')) {
             }
         } catch (Exception $e) {}
         return '';
+    }
+}
+
+if (!function_exists('logError')) {
+    /**
+     * @param string|\Exception $exception
+     * @param string|null $title
+     * @param string|array|null $data
+     *
+     * @return void
+     */
+    function logError(string|Exception $exception, ?string $title = null, string|array|null $data = null): void
+    {
+        if ($title) {
+            app('log')->error("=====#   {$title}   #=====");
+        }
+
+        if ($data) {
+            $data = json_encode($data, JSON_PRETTY_PRINT);
+        }
+
+        if (is_string($exception)) {
+            app('log')->error("message : {$exception}");
+            app('log')->error("code : 4xx");
+            if ($data) {
+                app('log')->error("data : {$data}");
+            }
+        }
+
+        if ($exception instanceof Exception) {
+            app('log')->error("message : " . $exception->getMessage());
+            app('log')->error("code : " . $exception->getCode());
+            app('log')->error("file : " . $exception->getFile());
+            app('log')->error("line : " . $exception->getLine());
+            if ($data) {
+                app('log')->error("data : {$data}");
+            }
+            app('log')->error("trace :\n" . $exception->getTraceAsString());
+        }
+
+        app('log')->error("===== ===== ===== ===== ===== ===== ===== ===== ===== =====\n");
     }
 }
