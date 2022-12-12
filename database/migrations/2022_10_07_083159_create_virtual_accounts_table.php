@@ -20,10 +20,15 @@ return new class extends Migration
             $table->unsignedBigInteger('model_id');
             $table->unsignedBigInteger('package_id')->nullable()->comment('reference to package_table');
             $table->string('model_type', 80)->comment('users_table, jamaah table');
-            $table->string('va_number', 30);
+            $table->string('va_number', 30)->comment('as a username to login in wallet service');
             $table->string('va_label', 30)->default(VirtualAccount::tryFrom('tabungan')->keyValue())->comment('tabungan pribadi, perencanaan');
             $table->timestamps(precision: 6);
             $table->softDeletes(precision: 6);
+
+            /* for authentication */
+
+            $table->string('email')->unique();
+            $table->string('password')->nullable();
 
             /* foreign key */
             $table->foreign('package_id')->on('plan_packages')->references('id')->onDelete('cascade');

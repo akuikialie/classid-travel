@@ -36,8 +36,6 @@ class AuthTest extends TestCase
 
         $wallet->admin();
 
-        $wallet->login();
-
         $user = $wallet->createUser("jamaah-14", '8574000060118956', 'Yusron Arif - ', 'string@prohajj.app');
 
         $this->assertInstanceOf(WalletUser::class, $user);

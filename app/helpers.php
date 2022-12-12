@@ -80,6 +80,16 @@ if (!function_exists('isNonProduction')) {
     }
 }
 
+if (!function_exists('isDevelopmentMode')) {
+    /**
+     * @return bool
+     */
+    function isDevelopmentMode(): bool
+    {
+        return in_array(app()->environment(), ['local', 'demo']);
+    }
+}
+
 if (!function_exists('debugNonProduction')) {
     /**
      * @return bool

@@ -15,7 +15,7 @@ trait WalletAccount
      * @param string $password
      *
      * @return bool
-     * @throws \Exception
+     * @throws Exception
      */
     public function login(string $username, string $password): bool
     {
@@ -38,7 +38,7 @@ trait WalletAccount
     }
 
     /**
-     * @return \App\Services\EWallet\Entity\WalletUser|null
+     * @return WalletUser|null
      */
     public function admin(): ?WalletUser
     {
@@ -49,10 +49,13 @@ trait WalletAccount
             return null;
         });
 
-        if (!$adminUser) {
+        if (is_null($adminUser)) {
             Cache::forget("walletAdmin");
         }
 
+        if (is_null($this->user)){
+            $this->user = $adminUser;
+        }
         return $adminUser;
     }
 
@@ -61,9 +64,8 @@ trait WalletAccount
      * @param string      $va
      * @param string      $name
      * @param string|null $email
-     *
-     * @return \App\Services\EWallet\Entity\WalletUser|null
-     * @throws \Exception
+     * @return WalletUser|null
+     * @throws Exception
      */
     public function createUser(string $id, string $va, string $name, ?string $email = null): ?WalletUser
     {
@@ -88,7 +90,6 @@ trait WalletAccount
 
         if ($post->successful()) {
             // dump($post->object());
-
             $user = $post->object()->data;
             if ($user) {
                 return new WalletUser(
@@ -98,7 +99,6 @@ trait WalletAccount
                 );
             }
         }
-
         return null;
     }
 

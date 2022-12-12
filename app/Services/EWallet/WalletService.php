@@ -63,6 +63,24 @@ class WalletService implements Contract\WalletService
     }
 
     /**
+     * @param int $amount
+     * @return array
+     */
+    public function createInvoice(int $amount): array
+    {
+        $http = $this->client()->post('/api/finance/va-billing/submit', [
+            'deposit' => $amount,
+            'payment_method[transfer_amount]' => $amount,
+        ]);
+
+        if ($http->successful() && $http->json('success', false)) {
+            return $http->json()['data'];
+        }
+
+        return [];
+    }
+
+    /**
      * @param int         $amount
      * @param string|null $description
      *

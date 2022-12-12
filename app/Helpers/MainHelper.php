@@ -58,13 +58,14 @@ if (!function_exists('createNewVA')) {
     /**
      * Convert Array into Object in deep
      *
-     * @param array $array
-     * @return
+     * @param string $type
+     * @param string|null $lastVA
+     * @return int
      */
-    function createNewVA(string $type = 'tabungan', string $lastVA = null)
+    function createNewVA(string $type = 'tabungan', ?string $lastVA = null): int
     {
         /*
-            format va
+            format va00001
                 1. 8576000220900001 : tabungan
                 2. 857600.1.2209.00001 : paket
         */
@@ -72,40 +73,30 @@ if (!function_exists('createNewVA')) {
         $time_now = Carbon::now();
         $start_of_month = Carbon::now()->startOfMonth();
         $monthDate = substr($time_now->format('Ym'), 2);
+        if (isset($lastVA)) {
 
-        $count = null;
-        if (isset($lastVA) && !empty($lastVA)) {
+            $getBcn = substr($lastVA, '0', 6);
+            $getType = $type == 'tabungan' ? 0 : 1;
+            $getMonthYear = substr($lastVA, '7', 4);
+            $increment = substr($lastVA, '11') ?? 0;
+
             if ($time_now->toDateString() == $start_of_month->toDateString()) {
                 // today is a start of month
-                if (empty($lastVA) && $lastVA === null) {
-                    /* reset count */
-                    $count = 10000;
-                }else{
-                    $count = (int)collect(explode('.', $lastVA))->last();
-                }
+                $count = 1;
+                $month = $monthDate;
             } else {
-
-                $count = (int)collect(explode('.', $lastVA))->last();
+                $count = $increment + 1;
+                $month = $getMonthYear;
             }
+
+            $getIncrement = str_pad($count, '5', '0', STR_PAD_LEFT);
+            return $getBcn.$getType.$month.$getIncrement;
+        }else{
+            $getBcn = config('wallet.bcn');
+            $getType = $type == 'tabungan' ? 0 : 1;
+            $getIncrement = str_pad(1, '5', '0', STR_PAD_LEFT);
+            return $getBcn.$getType.$monthDate.$getIncrement;
         }
-
-        switch ($type) {
-            case 'tabungan':
-                /* format va */
-                $outFormat = '857600.0.' . $monthDate . '.' . ((isset($count) && !empty($count) ? ($count + 1) : 10001));
-                break;
-
-            case 'perencanaan':
-                $outFormat = '857600.1.' . $monthDate . '.' .  ((isset($count) && !empty($count)) ? ($count + 1) : 10001);
-
-                break;
-
-            default:
-                throw new InvalidArgumentException('Invalid parameter type!.');
-                break;
-        }
-
-        return $outFormat;
     }
 }
 

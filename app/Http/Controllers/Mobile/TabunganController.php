@@ -5,6 +5,11 @@ namespace App\Http\Controllers\Mobile;
 use App\Models\Jamaah\Jamaah;
 use App\Models\User;
 use App\Models\VA\VirtualAccount;
+use App\Services\EWallet\WalletService;
+use Exception;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
+use Throwable;
 
 class TabunganController extends Controller
 {
@@ -19,6 +24,41 @@ class TabunganController extends Controller
         return view('pages.mobile.tabungan.tabungan-index', [
             'list_moneyboxs' => $savings,
         ]);
+    }
+
+    /**
+     * @param VirtualAccount $virtualAccount
+     * @return string
+     */
+    public function create(VirtualAccount $virtualAccount)
+    {
+        return '';
+    }
+
+    /**
+     * @param Request $request
+     * @param VirtualAccount $virtualAccount
+     * @return RedirectResponse
+     * @throws Exception|Throwable
+     */
+    public function createInvoice(Request $request, VirtualAccount $virtualAccount)
+    {
+        try {
+            $wallet = new WalletService();
+            if ($wallet->login($virtualAccount->va_number, $virtualAccount->password)){
+                $invoice = $wallet->createInvoice($request->get('amount'));
+
+                return redirect()->back()->with(['invoice' => $invoice]);
+            }
+        }catch (Throwable $e){
+            if (isDevelopmentMode()) {
+                throw $e;
+            } else {
+                notify('Oops!', 'Terjadi kesalahan!', 'error');
+            }
+        }
+        return redirect()->back();
+
     }
 
     public function show(VirtualAccount $virtualAccount)

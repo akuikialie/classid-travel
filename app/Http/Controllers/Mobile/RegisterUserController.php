@@ -17,6 +17,9 @@ class RegisterUserController extends Controller
         return view('pages.mobile.auth.register-index');
     }
 
+    /**
+     * @throws \Throwable
+     */
     public function store(Request $request)
     {
         $validator = $request->validate([
@@ -44,9 +47,13 @@ class RegisterUserController extends Controller
 
             notify('Berhasil!!', 'Anda berhasil membuat akun, silahkan login menggunakan akun anda', 'success');
             return redirect(route('login'));
-        }catch (\Throwable $throwable){
+        }catch (\Throwable $e){
             DB::rollBack();
-            notify('Gagal!!', $throwable->getMessage(), 'error');
+            if (isDevelopmentMode()) {
+                throw $e;
+            } else {
+                notify('Oops!', 'Terjadi kesalahan!', 'error');
+            }
             return redirect()->back();
         }
 
