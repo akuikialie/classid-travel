@@ -67,15 +67,21 @@ class ReferralController extends Controller
             $this->referalService->saveInvitedPerson($invitation);
 
             DB::commit();
-        } catch (Throwable $th) {
+        } catch (Throwable $e) {
             DB::rollBack();
 
-            notify('Oops!', $th->getMessage(), 'error');
+            if (isDevelopmentMode()) {
+                throw $e;
+            } else {
+                notify('Oops!', 'Terjadi kesalahan!', 'error');
+            }
             return redirect()->back();
-            throw $th;
         }
     }
 
+    /**
+     * @throws Throwable
+     */
     public function store(Request $request) // ajax
     {
         $validator = $request->validate([
@@ -96,9 +102,13 @@ class ReferralController extends Controller
                 return response()->json([
                     'link' => collect($invitedLink)->toArray()['link'],
                 ]);
-            } catch (Throwable $th) {
+            } catch (Throwable $e) {
                 DB::rollBack();
-                throw $th;
+                if (isDevelopmentMode()) {
+                    throw $e;
+                } else {
+                   throw new \Exception('terjadi kesalahan!.');
+                }
             }
         }
     }
@@ -131,13 +141,20 @@ class ReferralController extends Controller
             notify('Selamat!', "Kamu telah berhasil membuat akun dan mengikuti program `{$referralLink->package->name}` bersama {$referralLink->createdBy->name}", 'success');
 
             return redirect(route('login'));
-        }catch (Throwable $throwable){
+        }catch (Throwable $e){
             DB::rollBack();
-            notify('Oops!!', $throwable->getMessage(), 'error');
+            if (isDevelopmentMode()) {
+                throw $e;
+            } else {
+                notify('Oops!', 'Terjadi kesalahan!', 'error');
+            }
             return redirect()->back();
         }
     }
 
+    /**
+     * @throws Throwable
+     */
     public function authStore(Request $request, ReferralLink $referralLink)
     {
         try {
@@ -153,10 +170,12 @@ class ReferralController extends Controller
 
             return redirect(route('home.index'));
         } catch (Throwable $e) {
-            notify('Oops!', $e->getMessage(), 'error');
+            if (isDevelopmentMode()) {
+                throw $e;
+            } else {
+                notify('Oops!', 'Terjadi kesalahan!', 'error');
+            }
             return redirect()->back();
         }
-
-
     }
 }

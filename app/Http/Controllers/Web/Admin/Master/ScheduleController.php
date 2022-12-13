@@ -66,7 +66,11 @@ class ScheduleController extends Controller
 
                 return $datatable->make(true);
             } catch (Throwable $e) {
-                throw $e;
+                if (isDevelopmentMode()) {
+                    throw $e;
+                } else {
+                    throw new Exception('Terjadi kesalahan!.');
+                }
             }
         }
     }
@@ -101,6 +105,7 @@ class ScheduleController extends Controller
      *
      * @param Request $request
      * @return RedirectResponse
+     * @throws Throwable
      */
     public function store(Request $request): RedirectResponse
     {
@@ -117,8 +122,12 @@ class ScheduleController extends Controller
 
             notify('Berhasil', 'Jadwal baru berhasil dibuat!', 'success')->autoClose();
             return redirect()->back();
-        } catch (Throwable $th) {
-            notify('Oops!', $th->getMessage(), 'error');
+        } catch (Throwable $e) {
+            if (isDevelopmentMode()) {
+                throw $e;
+            } else {
+                notify('Oops!', 'Terjadi kesalahan!', 'error');
+            }
             return redirect()->back();
         }
     }
@@ -159,6 +168,7 @@ class ScheduleController extends Controller
      * @param Request $request
      * @param Schedule $schedule
      * @return RedirectResponse|Response
+     * @throws Throwable
      */
     public function update(Request $request, Schedule $schedule): Response|RedirectResponse
     {
@@ -173,8 +183,12 @@ class ScheduleController extends Controller
 
             notify('Berhasil', 'Data jadwal berhasil diperbarui!', 'success')->autoClose();
             return redirect()->back()->with('success', 'success');
-        } catch (Throwable $th) {
-            notify('Oops!', $th->getMessage(), 'error');
+        } catch (Throwable $e) {
+            if (isDevelopmentMode()) {
+                throw $e;
+            } else {
+                notify('Oops!', 'Terjadi kesalahan!', 'error');
+            }
             return redirect()->back();
         }
     }
@@ -184,6 +198,7 @@ class ScheduleController extends Controller
      *
      * @param Schedule $schedule
      * @return RedirectResponse
+     * @throws Throwable
      */
     public function destroy(Schedule $schedule): RedirectResponse
     {
@@ -194,8 +209,12 @@ class ScheduleController extends Controller
             $schedule->delete();
             notify('Berhasil', 'Data jadwal berhasil dihapus!', 'success')->autoClose();
             return redirect()->back();
-        } catch (Throwable $th) {
-            notify('Oops!', $th->getMessage(), 'error');
+        } catch (Throwable $e) {
+            if (isDevelopmentMode()) {
+                throw $e;
+            } else {
+                notify('Oops!', 'Terjadi kesalahan!', 'error');
+            }
             return redirect()->back();
         }
     }
@@ -204,6 +223,7 @@ class ScheduleController extends Controller
      * @param Request $request
      * @param Schedule $schedule
      * @return RedirectResponse
+     * @throws Throwable
      */
     public function changeStatus(Request $request, Schedule $schedule)
     {
@@ -225,7 +245,11 @@ class ScheduleController extends Controller
             }
             return redirect()->back();
         }catch (Throwable $e){
-            notify('Oops!', $e->getMessage(), 'error');
+            if (isDevelopmentMode()) {
+                throw $e;
+            } else {
+                notify('Oops!', 'Terjadi kesalahan!', 'error');
+            }
             return redirect()->back();
         }
         /* end:: start tenant service */

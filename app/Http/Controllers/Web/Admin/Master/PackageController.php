@@ -23,6 +23,7 @@ use Illuminate\Http\Response;
 use Illuminate\Routing\Redirector;
 use Illuminate\Support\Facades\DB;
 use InvalidArgumentException;
+use Laravel\Octane\Exceptions\DdException;
 use Throwable;
 
 class PackageController extends Controller
@@ -91,7 +92,11 @@ class PackageController extends Controller
 
                 return $datatable->make(true);
             } catch (Throwable $e) {
-                throw $e;
+                if (isDevelopmentMode()) {
+                    throw $e;
+                } else {
+                    throw new Exception('Terjadi kesalahan!');
+                }
             }
         }
     }
@@ -182,9 +187,13 @@ class PackageController extends Controller
             notify('Berhasil', 'Data paket berhasil dibuat!', 'success')->autoClose();
 
             return redirect()->back();
-        } catch (Throwable $th) {
+        } catch (Throwable $e) {
             DB::rollBack();
-            notify('Oops!', $th->getMessage(), 'error');
+            if (isDevelopmentMode()) {
+                throw $e;
+            } else {
+                notify('Oops!', 'Terjadi kesalahan!', 'error');
+            }
             return redirect()->back();
         }
     }
@@ -249,6 +258,7 @@ class PackageController extends Controller
      * @param Request $request
      * @param PlanPackage $package
      * @return RedirectResponse
+     * @throws Throwable
      */
     public function update(Request $request, PlanPackage $package): RedirectResponse
     {
@@ -287,9 +297,13 @@ class PackageController extends Controller
             DB::commit();
             notify('Berhasil', 'Data paket berhasil diperbarui!', 'success')->autoClose();
             return redirect()->back();
-        } catch (Throwable $th) {
+        } catch (Throwable $e) {
             DB::rollBack();
-            notify('Oops!', $th->getMessage(), 'error');
+            if (isDevelopmentMode()) {
+                throw $e;
+            } else {
+                notify('Oops!', 'Terjadi kesalahan!', 'error');
+            }
             return redirect()->back();
         }
     }
@@ -299,6 +313,7 @@ class PackageController extends Controller
      *
      * @param PlanPackage $package
      * @return RedirectResponse
+     * @throws Throwable
      */
     public function destroy(PlanPackage $package): RedirectResponse
     {
@@ -310,8 +325,12 @@ class PackageController extends Controller
             $package->delete();
             notify('Berhasil', 'Data paket berhasil dihapus!', 'success')->autoClose();
             return redirect()->back();
-        } catch (Throwable $th) {
-            notify('Oops!', $th->getMessage(), 'error');
+        } catch (Throwable $e) {
+            if (isDevelopmentMode()) {
+                throw $e;
+            } else {
+                notify('Oops!', 'Terjadi kesalahan!', 'error');
+            }
             return redirect()->back();
         }
     }
@@ -366,6 +385,7 @@ class PackageController extends Controller
      * @param Request $request
      * @param $hash
      * @return RedirectResponse
+     * @throws Throwable
      */
     public function storeSetupItinerary(Request $request, $hash)
     {
@@ -423,10 +443,14 @@ class PackageController extends Controller
 
             notify('Berhasil', 'Daftar aktifitas berhasil diperbarui!', 'success')->autoClose();
             DB::commit();
+
+            return redirect()->back()->withInput();
         } catch (Throwable $e) {
-            notify('Oops!', $e->getMessage(), 'error');
-            DB::rollBack();
-        } finally {
+            if (isDevelopmentMode()) {
+                throw $e;
+            } else {
+                notify('Oops!', 'Terjadi kesalahan!', 'error');
+            }
             return redirect()->back()->withInput();
         }
     }
@@ -435,6 +459,7 @@ class PackageController extends Controller
      * @param Request $request
      * @param PlanPackage $package
      * @return RedirectResponse
+     * @throws Throwable
      */
     public function changeStatus(Request $request, PlanPackage $package)
     {
@@ -457,7 +482,11 @@ class PackageController extends Controller
             }
             return redirect()->back();
         }catch (Throwable $e){
-            notify('Oops!', $e->getMessage(), 'error');
+            if (isDevelopmentMode()) {
+                throw $e;
+            } else {
+                notify('Oops!', 'Terjadi kesalahan!', 'error');
+            }
             return redirect()->back();
         }
         /* end:: start tenant service */

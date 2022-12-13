@@ -37,6 +37,7 @@ class RoleController extends Controller
 
     /**
      * @throws Exception
+     * @throws \Exception
      */
     public function datatable()
     {
@@ -75,7 +76,11 @@ class RoleController extends Controller
 
                 return $datatable->make(true);
             } catch (Exception|\Exception $e) {
-                throw $e;
+                if (isDevelopmentMode()) {
+                    throw $e;
+                } else {
+                    throw new \Exception('Terjadi kesalahan!');
+                }
             }
         }
     }
@@ -131,6 +136,7 @@ class RoleController extends Controller
      *
      * @param Request $request
      * @return RedirectResponse
+     * @throws Throwable
      */
     public function store(Request $request)
     {
@@ -153,7 +159,11 @@ class RoleController extends Controller
             notify('Berhasil!', 'Behasil membuat role baru', 'success');
             return redirect()->back();
         }catch (Throwable $e){
-            notify('Oops!', $e->getMessage(), 'error');
+            if (isDevelopmentMode()) {
+                throw $e;
+            } else {
+                notify('Oops!', 'Terjadi kesalahan!', 'error');
+            }
             return redirect()->back();
         }
     }
@@ -197,6 +207,7 @@ class RoleController extends Controller
      *
      * @param Role $role
      * @return RedirectResponse
+     * @throws Throwable
      */
     public function destroy(Role $role)
     {
@@ -210,7 +221,11 @@ class RoleController extends Controller
             notify('Berhasil!', 'Berhasil menghapus role', 'success');
             return redirect()->back();
         }catch (Throwable $e){
-            notify('Oops!', $e->getMessage(), 'error');
+            if (isDevelopmentMode()) {
+                throw $e;
+            } else {
+                notify('Oops!', 'Terjadi kesalahan!', 'error');
+            }
             return redirect()->back();
         }
     }

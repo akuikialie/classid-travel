@@ -96,6 +96,9 @@ class ProfileController extends Controller
         return view('pages.mobile.profile.profile-edit', ['user' => $user]);
     }
 
+    /**
+     * @throws Throwable
+     */
     public function editInformation(Request $request, int $id)
     {
         $validator = $request->validate([
@@ -110,12 +113,19 @@ class ProfileController extends Controller
 
             notify('Berhasil', 'Data berhasil diperbarui!.', 'success');
             return redirect()->back();
-        } catch (Throwable $th) {
-            notify('Oops!', $th->getMessage(), 'error');
+        } catch (Throwable $e) {
+            if (isDevelopmentMode()) {
+                throw $e;
+            } else {
+                notify('Oops!', 'Terjadi kesalahan!', 'error');
+            }
             return redirect()->back();
         }
     }
 
+    /**
+     * @throws Throwable
+     */
     public function updatePassword(Request $request, int $id)
     {
         $request->validate([
@@ -136,12 +146,19 @@ class ProfileController extends Controller
 
             $request->session()->regenerateToken();
             return redirect(route('login'));
-        } catch (Throwable $th) {
-            notify('Oops!', $th->getMessage(), 'error');
+        } catch (Throwable $e) {
+            if (isDevelopmentMode()) {
+                throw $e;
+            } else {
+                notify('Oops!', 'Terjadi kesalahan!', 'error');
+            }
             return redirect()->back();
         }
     }
 
+    /**
+     * @throws Throwable
+     */
     public function changeProfile(Request $request, ChangeAvatar $changeAvatar){
         $request->validate([
             'avatar' => ['required', 'max:2048']
@@ -154,10 +171,14 @@ class ProfileController extends Controller
             notify('Berhasil!', 'Photo profil berhasil di perbarui', 'success');
             DB::commit();
             return \redirect()->back();
-        }catch (\Throwable $th){
+        }catch (\Throwable $e){
             DB::rollBack();
-            notify('Oops!', $th->getMessage(), 'error');
-            return \redirect()->back();
+            if (isDevelopmentMode()) {
+                throw $e;
+            } else {
+                notify('Oops!', 'Terjadi kesalahan!', 'error');
+            }
+            return redirect()->back();
         }
     }
 

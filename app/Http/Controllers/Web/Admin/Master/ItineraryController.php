@@ -59,7 +59,11 @@ class ItineraryController extends Controller
 
                 return $datatable->make(true);
             } catch (Throwable $e) {
-                throw $e;
+                if (isDevelopmentMode()) {
+                    throw $e;
+                } else {
+                    throw new \Exception('Terjadi kesalahan!.');
+                }
             }
         }
     }
@@ -77,7 +81,7 @@ class ItineraryController extends Controller
     /**
      * Show the form for creating a new resource.
      *
-     * @return Application|JsonResponse|RedirectResponse|Redirector
+     * @return JsonResponse
      */
     public function create()
     {
@@ -95,6 +99,7 @@ class ItineraryController extends Controller
      *
      * @param Request $request
      * @return RedirectResponse
+     * @throws Throwable
      */
     public function store(Request $request)
     {
@@ -113,9 +118,13 @@ class ItineraryController extends Controller
             /* end:: create new itinerary activity */
 
             notify('Berhasil', 'Berhasil membuat kegiatan baru!.', 'success');
+            return redirect()->back();
         }catch (\Throwable $e){
-            notify('Gagal', $e->getMessage(), 'error');
-        } finally {
+            if (isDevelopmentMode()) {
+                throw $e;
+            } else {
+                notify('Oops!', 'Terjadi kesalahan!', 'error');
+            }
             return redirect()->back();
         }
     }
@@ -156,6 +165,7 @@ class ItineraryController extends Controller
      * @param Request $request
      * @param ItineraryActivity $activity
      * @return RedirectResponse
+     * @throws Throwable
      */
     public function update(Request $request, ItineraryActivity $activity)
     {
@@ -172,9 +182,13 @@ class ItineraryController extends Controller
             /* end:: update itinerary activity */
 
             notify('Berhasil', 'Berhasil memperbarui data kegiatan!.', 'success');
+            return redirect()->back();
         }catch (\Throwable $e){
-            notify('Gagal', $e->getMessage(), 'error');
-        } finally {
+            if (isDevelopmentMode()) {
+                throw $e;
+            } else {
+                notify('Oops!', 'Terjadi kesalahan!', 'error');
+            }
             return redirect()->back();
         }
     }
@@ -184,6 +198,7 @@ class ItineraryController extends Controller
      *
      * @param ItineraryActivity $activity
      * @return RedirectResponse
+     * @throws Throwable
      */
     public function destroy(ItineraryActivity $activity)
     {
@@ -194,9 +209,13 @@ class ItineraryController extends Controller
             $activity->delete();
 
             notify('Berhasil', 'Data Aktifitas berhasil dihapus!', 'success')->autoClose();
-        } catch (\Throwable $th) {
-            notify('Oops!', $th->getMessage(), 'error');
-        } finally {
+            return redirect()->back();
+        } catch (\Throwable $e) {
+            if (isDevelopmentMode()) {
+                throw $e;
+            } else {
+                notify('Oops!', 'Terjadi kesalahan!', 'error');
+            }
             return redirect()->back();
         }
     }

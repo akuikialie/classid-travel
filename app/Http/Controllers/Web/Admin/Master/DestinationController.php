@@ -67,7 +67,11 @@ class DestinationController extends Controller
 
                 return $datatable->make(true);
             } catch (Throwable $e) {
-                throw $e;
+                if (isDevelopmentMode()) {
+                    throw $e;
+                } else {
+                    throw new Exception('Terjadi kesalahan!.');
+                }
             }
         }
     }
@@ -128,9 +132,13 @@ class DestinationController extends Controller
             DB::commit();
             notify('Berhasil', 'Data destinasi berhasil dibuat!', 'success')->autoClose();
             return redirect()->back();
-        } catch (Throwable $th) {
+        } catch (Throwable $e) {
             DB::rollBack();
-            notify('Oops!', $th->getMessage(), 'error');
+            if (isDevelopmentMode()) {
+                throw $e;
+            } else {
+                notify('Oops!', 'Terjadi kesalahan!', 'error');
+            }
             return redirect()->back();
         }
     }
@@ -171,6 +179,7 @@ class DestinationController extends Controller
      * @param Request $request
      * @param Destination $destination
      * @return RedirectResponse
+     * @throws Throwable
      */
     public function update(Request $request, Destination $destination): RedirectResponse
     {
@@ -198,9 +207,13 @@ class DestinationController extends Controller
             notify('Berhasil', 'Data destinasi berhasil diperbarui!', 'success')->autoClose();
 
             return redirect()->back();
-        } catch (Throwable $th) {
+        } catch (Throwable $e) {
             DB::rollBack();
-            notify('Opps!', $th->getMessage(), 'error');
+            if (isDevelopmentMode()) {
+                throw $e;
+            } else {
+                notify('Oops!', 'Terjadi kesalahan!', 'error');
+            }
             return redirect()->back();
         }
     }
@@ -210,6 +223,7 @@ class DestinationController extends Controller
      *
      * @param Destination $destination
      * @return RedirectResponse
+     * @throws Throwable
      */
     public function destroy(Destination $destination): RedirectResponse
     {
@@ -224,8 +238,12 @@ class DestinationController extends Controller
             $destination->delete();
             notify('Berhasil', 'Data destinasi berhasil dihapus!', 'success')->autoClose();
             return redirect()->back();
-        } catch (Throwable $th) {
-            notify('Oops!', $th->getMessage(), 'error');
+        } catch (Throwable $e) {
+            if (isDevelopmentMode()) {
+                throw $e;
+            } else {
+                notify('Oops!', 'Terjadi kesalahan!', 'error');
+            }
             return redirect()->back();
         }
     }
@@ -235,6 +253,7 @@ class DestinationController extends Controller
      * @param Request $request
      * @param Destination $destination
      * @return RedirectResponse
+     * @throws Throwable
      */
     public function changeStatus(Request $request, Destination $destination)
     {
@@ -258,6 +277,11 @@ class DestinationController extends Controller
             return redirect()->back();
         }catch (Throwable $e){
             notify('Oops!', $e->getMessage(), 'error');
+            if (isDevelopmentMode()) {
+                throw $e;
+            } else {
+                notify('Oops!', 'Terjadi kesalahan!', 'error');
+            }
             return redirect()->back();
         }
         /* end:: start tenant service */

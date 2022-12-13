@@ -17,6 +17,8 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Routing\Redirector;
 use Illuminate\View\View;
+use Psr\Container\ContainerExceptionInterface;
+use Psr\Container\NotFoundExceptionInterface;
 use Spatie\Permission\Exceptions\UnauthorizedException;
 use Throwable;
 use Yajra\DataTables\Exceptions\Exception;
@@ -86,9 +88,14 @@ class UserController extends Controller
 
                 return $datatable->make(true);
             } catch (Exception $e) {
-                throw $e;
+                if (isDevelopmentMode()) {
+                    throw $e;
+                } else {
+                    throw new \Exception('Terjadi kesalahan!');
+                }
             }
         }
+        abort(404);
     }
 
     /**
@@ -113,7 +120,7 @@ class UserController extends Controller
     /**
      * Show the form for creating a new resource.
      *
-     * @return Application|JsonResponse|Redirector|RedirectResponse
+     * @return JsonResponse
      * @throws Throwable
      */
     public function create()
@@ -147,6 +154,7 @@ class UserController extends Controller
      *
      * @param Request $request
      * @return RedirectResponse
+     * @throws Throwable
      */
     public function store(Request $request)
     {
@@ -174,7 +182,11 @@ class UserController extends Controller
             return redirect()->back();
         } catch (Throwable $e) {
             DB::rollBack();
-            notify('Oops', $e->getMessage(), 'error');
+            if (isDevelopmentMode()) {
+                throw $e;
+            } else {
+                notify('Oops!', 'Terjadi kesalahan!', 'error');
+            }
             return redirect()->back();
         }
     }
@@ -219,6 +231,7 @@ class UserController extends Controller
      *
      * @param User $user
      * @return RedirectResponse
+     * @throws Throwable
      */
     public function destroy(User $user)
     {
@@ -235,11 +248,20 @@ class UserController extends Controller
             notify('Behasil!', 'Berhasil menghapus akun!', 'success');
             return redirect()->back();
         } catch (Throwable $e) {
-            notify('Oops!', $e->getMessage(), 'error');
+            if (isDevelopmentMode()) {
+                throw $e;
+            } else {
+                notify('Oops!', 'Terjadi kesalahan!', 'error');
+            }
             return redirect()->back();
         }
     }
 
+    /**
+     * @throws ContainerExceptionInterface
+     * @throws NotFoundExceptionInterface
+     * @throws Throwable
+     */
     public function changeStatus(Request $request, User $user)
     {
         $request->validate([
@@ -257,7 +279,11 @@ class UserController extends Controller
             notify('Behasil!', 'Berhasil memperbarui status akun!', 'success');
             return redirect()->back();
         } catch (Throwable $e) {
-            notify('Oops!', $e->getMessage(), 'error');
+            if (isDevelopmentMode()) {
+                throw $e;
+            } else {
+                notify('Oops!', 'Terjadi kesalahan!', 'error');
+            }
             return redirect()->back();
         }
     }

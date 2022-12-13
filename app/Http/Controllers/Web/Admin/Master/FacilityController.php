@@ -68,7 +68,11 @@ class FacilityController extends Controller
 
                 return $datatable->make(true);
             } catch (Throwable $e) {
-                throw $e;
+                if (isDevelopmentMode()) {
+                    throw $e;
+                } else {
+                    throw new \Exception('Terjadi kesalahan!');
+                }
             }
         }
     }
@@ -107,6 +111,7 @@ class FacilityController extends Controller
      *
      * @param Request $request
      * @return RedirectResponse
+     * @throws Throwable
      */
     public function store(Request $request): RedirectResponse
     {
@@ -127,9 +132,13 @@ class FacilityController extends Controller
             DB::commit();
             notify('Berhasil', 'Data fasilitas berhasil dibuat!', 'success')->autoClose();
             return redirect()->back();
-        } catch (\Throwable $th) {
+        } catch (\Throwable $e) {
             DB::rollBack();
-            notify('Opps!', $th->getMessage(), 'error');
+            if (isDevelopmentMode()) {
+                throw $e;
+            } else {
+                notify('Oops!', 'Terjadi kesalahan!', 'error');
+            }
             return redirect()->back();
         }
     }
@@ -177,6 +186,7 @@ class FacilityController extends Controller
      * @param Request $request
      * @param PlanFacility $facility
      * @return RedirectResponse
+     * @throws Throwable
      */
     public function update(Request $request, PlanFacility $facility): RedirectResponse
     {
@@ -199,9 +209,13 @@ class FacilityController extends Controller
             DB::commit();
             notify('Berhasil', 'Data fasilitas berhasil diperbarui!', 'success')->autoClose();
             return redirect()->back();
-        } catch (\Throwable $th) {
+        } catch (\Throwable $e) {
             DB::rollBack();
-            notify('Opps!', $th->getMessage(), 'error');
+            if (isDevelopmentMode()) {
+                throw $e;
+            } else {
+                notify('Oops!', 'Terjadi kesalahan!', 'error');
+            }
             return redirect()->back();
         }
     }
@@ -211,6 +225,7 @@ class FacilityController extends Controller
      *
      * @param PlanFacility $facility
      * @return RedirectResponse
+     * @throws Throwable
      */
     public function destroy(PlanFacility $facility): RedirectResponse
     {
@@ -222,8 +237,12 @@ class FacilityController extends Controller
 
             notify('Berhasil', 'Data fasilitas berhasil dihapus!', 'success')->autoClose();
             return redirect()->back();
-        } catch (\Throwable $th) {
-            notify('Opps!', $th->getMessage(), 'error');
+        } catch (\Throwable $e) {
+            if (isDevelopmentMode()) {
+                throw $e;
+            } else {
+                notify('Oops!', 'Terjadi kesalahan!', 'error');
+            }
             return redirect()->back();
         }
     }
@@ -232,6 +251,7 @@ class FacilityController extends Controller
      * @param Request $request
      * @param PlanFacility $facility
      * @return RedirectResponse
+     * @throws Throwable
      */
     public function changeStatus(Request $request, PlanFacility $facility)
     {
@@ -253,7 +273,11 @@ class FacilityController extends Controller
             }
             return redirect()->back();
         }catch (Throwable $e){
-            notify('Oops!', $e->getMessage(), 'error');
+            if (isDevelopmentMode()) {
+                throw $e;
+            } else {
+                notify('Oops!', 'Terjadi kesalahan!', 'error');
+            }
             return redirect()->back();
         }
         /* end:: start tenant service */

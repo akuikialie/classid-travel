@@ -26,6 +26,8 @@ use Laravel\Octane\Exceptions\DdException;
 use Psr\Container\ContainerExceptionInterface;
 use Psr\Container\NotFoundExceptionInterface;
 use ReflectionException;
+use Spatie\MediaLibrary\MediaCollections\Exceptions\FileDoesNotExist;
+use Spatie\MediaLibrary\MediaCollections\Exceptions\FileIsTooBig;
 use Throwable;
 
 class TenantController extends Controller
@@ -47,6 +49,7 @@ class TenantController extends Controller
     /**
      * @return JsonResponse|void
      * @throws \Yajra\DataTables\Exceptions\Exception
+     * @throws Exception
      */
     public function datatable()
     {
@@ -75,14 +78,18 @@ class TenantController extends Controller
                         }
                     })->addColumn('created_date', function ($row) {
                         return carbon($row->created_at)->format('d M, Y');
-                    })->addColumn('actions', function ($row){
+                    })->addColumn('actions', function ($row) {
                         $this->setData('tenant', $row);
                         return $this->view('pages.web.tenant.action.action-datatable');
                     })
                     ->rawColumns(['actions', 'status'])
                     ->make(true);
             } catch (\Yajra\DataTables\Exceptions\Exception $e) {
-                throw $e;
+                if (isDevelopmentMode()) {
+                    throw $e;
+                } else {
+                    throw new Exception('Terjadi kesalahan!.');
+                }
             }
         }
     }
@@ -120,6 +127,7 @@ class TenantController extends Controller
      *
      * @param Request $request
      * @return RedirectResponse
+     * @throws Throwable
      */
     public function store(Request $request)
     {
@@ -167,7 +175,11 @@ class TenantController extends Controller
             return redirect()->back();
         } catch (Throwable $e) {
             DB::rollBack();
-            notify('Oops', $e->getMessage(), 'error');
+            if (isDevelopmentMode()) {
+                throw $e;
+            } else {
+                notify('Oops!', 'Terjadi kesalahan!', 'error');
+            }
             return redirect()->back();
         }
     }
@@ -179,19 +191,21 @@ class TenantController extends Controller
      * @return View
      * @throws ContainerExceptionInterface
      * @throws NotFoundExceptionInterface
+     * @throws ReflectionException
      */
     public function show(?Tenant $tenant = null): View
     {
-        if (is_null($tenant)) {
-            $user = auth()->user();
-            $tenant = Tenant::query()
-                ->with(['media'])
-                ->whereId($user->tenant_id)
-                ->first();
-        }
+        try {
 
-        if (\request()->has('fragment')) {
-            try {
+            if (is_null($tenant)) {
+                $user = auth()->user();
+                $tenant = Tenant::query()
+                    ->with(['media'])
+                    ->whereId($user->tenant_id)
+                    ->first();
+            }
+
+            if (\request()->has('fragment')) {
                 $fragmentName = \request()->get('fragment');
                 $fragmentParameter = \request()->get('parameter');
                 $this->setGlobalParams('fragment_active', $fragmentName);
@@ -200,15 +214,15 @@ class TenantController extends Controller
                         'tenant' => $tenant,
                         'parameter' => $fragmentParameter ?? null,
                     ]);
-            } catch (ReflectionException $e) {
-                notify('Oops!', $e->getMessage(), 'error');
             }
-        }
 
-        try {
             $this->setData('tenant', $tenant);
         } catch (Exception $e) {
-            notify('Oops!', $e->getMessage(), 'error');
+            if (isDevelopmentMode()) {
+                throw $e;
+            } else {
+                notify('Oops!', 'Terjadi kesalahan!', 'error');
+            }
         }
 
         return $this->view('pages.web.tenant.tenant-show');
@@ -243,6 +257,9 @@ class TenantController extends Controller
      * @param Request $request
      * @param Tenant|null $tenant
      * @return RedirectResponse
+     * @throws Throwable
+     * @throws FileDoesNotExist
+     * @throws FileIsTooBig
      */
     public function update(Request $request, ?Tenant $tenant = null)
     {
@@ -288,8 +305,11 @@ class TenantController extends Controller
         } catch (Throwable $e) {
 
             DB::rollBack();
-            notify('Oops!', $e->getMessage(), 'error');
-
+            if (isDevelopmentMode()) {
+                throw $e;
+            } else {
+                notify('Oops!', 'Terjadi kesalahan!', 'error');
+            }
             return redirect()->back();
         }
 
@@ -306,6 +326,9 @@ class TenantController extends Controller
         return redirect()->back();
     }
 
+    /**
+     * @throws Throwable
+     */
     public function addMedia(Request $request, ?Tenant $tenant = null)
     {
         $request->validate([
@@ -336,7 +359,11 @@ class TenantController extends Controller
             return redirect()->back();
         } catch (Throwable $e) {
             DB::rollBack();
-            notify('Oops!', $e->getMessage(), 'error');
+            if (isDevelopmentMode()) {
+                throw $e;
+            } else {
+                notify('Oops!', 'Terjadi kesalahan!', 'error');
+            }
             return redirect()->back();
         }
     }
@@ -345,6 +372,7 @@ class TenantController extends Controller
      * @param Request $request
      * @param Tenant $tenant
      * @return RedirectResponse
+     * @throws Throwable
      */
     public function changeStatus(Request $request, Tenant $tenant)
     {
@@ -361,14 +389,18 @@ class TenantController extends Controller
                     ->setStatus($request->get('status'));
                 notify('Berhasil!', "Status telah berubah", 'success');
                 DB::commit();
-            }else{
+            } else {
                 throw new InvalidArgumentException('Tidak ada yang berubah!');
             }
 
 
             return redirect()->back();
-        }catch (Throwable $e){
-            notify('Oops!', $e->getMessage(), 'error');
+        } catch (Throwable $e) {
+            if (isDevelopmentMode()) {
+                throw $e;
+            } else {
+                notify('Oops!', 'Terjadi kesalahan!', 'error');
+            }
             return redirect()->back();
         }
         /* end:: start tenant service */
