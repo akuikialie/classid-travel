@@ -22,10 +22,11 @@ if (!function_exists('rupiahFormat')) {
     /**
      * description
      *
-     * @param
-     * @return
+     * @param int $amount
+     * @param int $precision
+     * @return string
      */
-    function rupiahFormat(int $amount, $precision = 1)
+    function rupiahFormat(int $amount, int $precision = 1)
     {
         if ($amount < 900) {
             $format = number_format($amount, $precision);
@@ -75,7 +76,7 @@ if (!function_exists('createNewVA')) {
         $monthDate = substr($time_now->format('Ym'), 2);
         if (isset($lastVA)) {
 
-            $getBcn = substr($lastVA, '0', 6);
+            $getBcn = config('wallet.bcn');
             $getType = $type == 'tabungan' ? 0 : 1;
             $getMonthYear = substr($lastVA, '7', 4);
             $increment = substr($lastVA, '11') ?? 0;

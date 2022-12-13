@@ -108,6 +108,7 @@ class VirtualAccountService
         if (is_null($name)){
             throw new Exception('Pemilik va tidak di ketahui!');
         }
+        $newVA->name = $name;
         $newVA->password = "{$newVA->id}@{$VANumber}";
         $newVA->push();
 

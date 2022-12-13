@@ -12,4 +12,10 @@
     @foreach ($list_moneyboxs as $moneybox)
         @include('pages.mobile.tabungan.menu.menu-tabungan', $moneybox)
     @endforeach
+
+{{--    @section('external-mobile-content')--}}
+{{--      @for($i = 0; $i < count($list_moneyboxs); $i++)--}}
+{{--        @include('pages.mobile.tabungan.menu.va-billing', ['id' => $list_moneyboxs[$i]['id'], 'data' => $list_moneyboxs[$i]])--}}
+{{--      @endfor--}}
+{{--    @endsection--}}
 @endsection

@@ -19,6 +19,7 @@ class VirtualAccount extends Model
         'tenant_id',
         'va_number',
         'va_label',
+        'name',
         'email',
         'password',
     ];

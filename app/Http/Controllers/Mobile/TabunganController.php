@@ -61,6 +61,15 @@ class TabunganController extends Controller
 
     }
 
+    /**
+     * @throws Exception
+     */
+    public function billing(VirtualAccount $virtualAccount)
+    {
+        $this->setData('va', $virtualAccount);
+        return $this->view('pages.mobile.tabungan.tabungan-billing');
+    }
+
     public function show(VirtualAccount $virtualAccount)
     {
 
