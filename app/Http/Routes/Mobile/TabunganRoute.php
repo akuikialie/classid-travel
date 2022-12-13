@@ -20,6 +20,7 @@ class TabunganRoute extends BaseRoute
             $route->get($this->prefix(''), [TabunganController::class, 'index'])->name('tabungan.index');
 
             $route->get($this->prefix('show/{saving_hash}'), [TabunganController::class, 'show'])->name('tabungan.show');
+            $route->get($this->prefix('show/{saving_hash}/billing'), [TabunganController::class, 'billing'])->name('tabungan.billing');
 
         });
     }

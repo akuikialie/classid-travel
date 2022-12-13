@@ -17,8 +17,8 @@ class SeedCity extends Seeder
     {
 
         $cities = [
-            'name' => 'Surabaya',
-            'name' => 'Jakarta',
+            'Surabaya',
+            'Jakarta',
         ];
         foreach ($cities as $city){
             City::query()->create([

@@ -56,7 +56,6 @@
             <div class="splide__slide">
               <div class="card rounded-l mx-2 text-center shadow-l" style="background-image: url({{$currentBanner}})" data-card-height="320">
                 <div class="card-bottom">
-                  <h1 class="font-24 font-700">{{--Meet Azures--}}</h1>
                   <p class="boxed-text-xl">
                     {{--Azures brings beauty and colors to your Mobile device with a stunning user interface to match.--}}
                   </p>
@@ -109,4 +108,5 @@
 
 @section('external-mobile-content')
   @include('pages.mobile.home.menu.mulai-menabung')
+{{--  @yield('external-mobile-content-sub')--}}
 @endsection

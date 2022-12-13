@@ -18,7 +18,10 @@ class VirtualAccount extends Model
     protected $fillable = [
         'tenant_id',
         'va_number',
-        'va_label'
+        'va_label',
+        'name',
+        'email',
+        'password',
     ];
 
 

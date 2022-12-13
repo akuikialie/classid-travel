@@ -40,24 +40,6 @@ class SeedUsers extends Seeder
             ],
         ];
 
-//        for ($i = 1; $i <= 5; $i++){
-//            $admins[] = [
-//                'tenant_id' => $i,
-//                'name' => 'travel admin ' . $i,
-//                'phone' => '08111111111'. $i,
-//                'password' => 'admin',
-//                'role' => 'administrator',
-//            ];
-//
-//           /* $apps[] = [
-//                'tenant_id' => $i,
-//                'name' => 'Travel Apps ' . $i,
-//                'phone' => '08222222222'. $i,
-//                'password' => Hash::make('app'),
-//                'role' => RoleEnum::Jamaah->keyValue(),
-//            ];*/
-//        }
-
         $seedUser = $admins;
 
         foreach ($seedUser as $key => $input) {
@@ -77,23 +59,6 @@ class SeedUsers extends Seeder
                 \DB::rollBack();
                 $this->command->info($e->getMessage());
             }
-
-//            if (isset($input['tenant_id'])) {
-//                if ($newUser instanceof User) {
-//                    /* begin:: start Virtual Account Service */
-//                    $VAService = new VirtualAccountService($input['tenant_id']);
-//
-//                    try {
-//                        $VAService->vaType('tabungan')
-//                            ->createFor($newUser)
-//                            ->createVA();
-//                    } catch (DdException|\Throwable $e) {
-//                        $this->command->info($e->getMessage());
-//                    }
-//                    /* end:: start Virtual Account Service */
-//                }
-//            }
-
 
         }
     }

@@ -27,7 +27,8 @@ class PackageController extends Controller
      */
     public function index()
     {
-        $with = ['myPlan:id,value', 'myFacilities', 'myDestinations', 'myItineraries' => function($subQuery){
+
+        $with = ['myPlan:id,value', 'myFacilities', 'myDestinations', 'myItineraries' => function ($subQuery) {
             $subQuery->orderBy('day', 'asc');
         }, 'myItineraries.activities', 'media'];
         $withCount = ['myFacilities', 'myDestinations', 'myItineraries'];
@@ -57,13 +58,14 @@ class PackageController extends Controller
         DB::beginTransaction();
 
         try {
+            $user = auth()->user();
+
             $package = PlanPackage::query()->where('id', $package_id)->first();
             $jamaah = Jamaah::query()
                 ->with(['planPackages'])
-                ->where('user_id', auth()->user()->id)->first();
+                ->where('user_id', $user->id)->first();
 
             /* add package to jamaah */
-            $user = auth()->user();
             $packageService = new PackageService($user->tenant_id);
             $packageService->addPackageToJamaah($package, $jamaah);
 
@@ -78,10 +80,14 @@ class PackageController extends Controller
             DB::commit();
             notify('Berhasil', "Paket  {$package->name} berhasil ditambahkan!.", 'success');
             return redirect(route('tabungan.index'));
-        } catch (Throwable $th) {
+        } catch (Throwable $e) {
             DB::rollBack();
 
-            notify('Oops!', $th->getMessage(), 'error');
+            if (isDevelopmentMode()) {
+                throw $e;
+            } else {
+                notify('Oops!', 'Terjadi kesalahan!', 'error');
+            }
             return redirect()->back();
         }
     }
@@ -110,12 +116,12 @@ class PackageController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  int  $id
+     * @param int $id
      * @return Application|Factory|View
      */
     public function show(int $id): View|Factory|Application
     {
-        $with = ['myFacilities', 'myDestinations', 'myItineraries' => function($subQuery){
+        $with = ['myFacilities', 'myDestinations', 'myItineraries' => function ($subQuery) {
             $subQuery->orderBy('day', 'asc');
         },
             'myItineraries.activities', 'media'];
@@ -145,7 +151,7 @@ class PackageController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  int  $id
+     * @param int $id
      * @return Response
      */
     public function edit($id)
@@ -157,7 +163,7 @@ class PackageController extends Controller
      * Update the specified resource in storage.
      *
      * @param Request $request
-     * @param  int  $id
+     * @param int $id
      * @return Response
      */
     public function update(Request $request, $id)
@@ -168,7 +174,7 @@ class PackageController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  int  $id
+     * @param int $id
      * @return Response
      */
     public function destroy($id)

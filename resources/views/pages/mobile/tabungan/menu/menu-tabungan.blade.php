@@ -1,7 +1,7 @@
 <div class="card card-style">
     <div class="content">
         <h3 class="font-600">{{ $namaTabungan ?? 'Tabungan Pribadi' }}</h3>
-        <p class="font-11 mt-n2 color-highlight">VA: {{ $va ?? rand() }}</p>
+        <p class="font-11 mt-n2 color-highlight">VA: {{ $va }}</p>
 
         <div class="float-start">
             <p class="font-12 opacity-80 mb-n1"><i class="far fa-calendar"></i>
@@ -14,7 +14,7 @@
     </div>
     <div class="body">
         <div class="d-flex justify-content-end">
-            <div class=""><a href="#" data-menu="mulai-menabung"
+            <div class=""><a href="{{ route('tabungan.billing', $moneybox['id']) }}"
                     class="back-button btn btn-s bg-highlight rounded-s shadow-xl text-uppercase font-900 font-11 me-2 mb-2">Tabung</a>
             </div>
             @if (isset($showDetails) && $showDetails)
@@ -25,3 +25,6 @@
         </div>
     </div>
 </div>
+
+
+
