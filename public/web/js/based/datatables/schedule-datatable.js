@@ -85,7 +85,17 @@ let KTDatatablesServerSide = function () {
           success: function (data) {
             if (!$("#kt_modal_create_app").is(":visible")) {
               $("#dynamic_modal").html(data.view);
-              $("#kt_modal_create_app").modal("show");
+              let modal = new bootstrap.Modal('#kt_modal_create_app')
+              modal.show();
+
+              /* begin:: dismiss modal helper*/
+              $("[data-bs-dismiss=modal]").click(function(){
+                if ($("#kt_modal_create_app").is(":visible")) {
+                  modal.hide();
+                }
+
+              });
+              /* end:: dismiss modal helper*/
             }
 
             loadSetupCreateApp();
@@ -146,7 +156,17 @@ let KTDatatablesServerSide = function () {
         success: function (data) {
           if (!$("#kt_modal_create_app").is(":visible")) {
             $("#dynamic_modal").html(data.view);
-            $("#kt_modal_create_app").modal("show");
+            let modal = new bootstrap.Modal('#kt_modal_create_app')
+            modal.show();
+
+            /* begin:: dismiss modal helper*/
+            $("[data-bs-dismiss=modal]").click(function(){
+              if ($("#kt_modal_create_app").is(":visible")) {
+                modal.hide();
+              }
+
+            });
+            /* end:: dismiss modal helper*/
           }
 
           loadSetupCreateApp();

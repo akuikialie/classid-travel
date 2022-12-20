@@ -42,8 +42,16 @@ trait WalletAccount
      */
     public function admin(): ?WalletUser
     {
-        $adminUser = Cache::rememberForever('walletAdmin', function () {
-            if ($this->login(config('wallet.admin.username'), config('wallet.admin.password'))) {
+        $username = config('wallet.admin.username');
+        $password = config('wallet.admin.password');
+
+        if ($this->tenantCredentials){
+            $username = $this->tenantCredentials['WALLET_ADMIN_USER'];
+            $password = $this->tenantCredentials['WALLET_ADMIN_PASS'];
+        }
+
+        $adminUser = Cache::rememberForever('walletAdmin', function () use ($username, $password) {
+            if ($this->login(username: $username, password: $password)) {
                 return $this->user;
             }
             return null;
@@ -75,7 +83,9 @@ trait WalletAccount
 
         $username = $va;
         $password = "{$id}@{$va}";
-        $vaCode = (int) preg_replace('/^('. config('wallet.bcn') .')(\d+)/', '$2', $va);
+
+        $getBcn = $this->tenantCredentials['WALLET_BCN'] ?? config('wallet.bcn');
+        $vaCode = (int) preg_replace('/^('. $getBcn .')(\d+)/', '$2', $va);
 
         $post = $this->client()->post('api/user/create', [
             // 'username' => config('wallet.bcn'),
@@ -87,6 +97,12 @@ trait WalletAccount
             'pin' => '123456',
             'va_code' => $vaCode,
         ]);
+
+        $getBody = json_decode($post->body(), true);
+
+        if (isset($getBody['error'])){
+            throw new Exception($getBody['error']);
+        }
 
         if ($post->successful()) {
             // dump($post->object());

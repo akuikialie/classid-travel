@@ -129,7 +129,7 @@
 
 
         @forelse (menus()->get() as $group => $menus)
-          @if ($loop->count > 1)
+          @if ($loop->count > 1 && $menus->filter(fn($it) => $it->resolve())->count() > 0)
             <div class="menu-item pt-5">
               <div class="menu-content">
                 <span class="menu-heading fw-bold text-uppercase fs-7">{{ $group }}</span>

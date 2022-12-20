@@ -85,7 +85,17 @@ let KTDatatablesServerSide = function () {
           success: function (data) {
             if (!$("#modal_itinerary_activity").is(":visible")) {
               $("#dynamic_modal").html(data.view);
-              $("#modal_itinerary_activity").modal("show");
+              let modal = new bootstrap.Modal('#modal_itinerary_activity')
+              modal.show();
+
+              /* begin:: dismiss modal helper*/
+              $("[data-bs-dismiss=modal]").click(function(){
+                if ($("#modal_itinerary_activity").is(":visible")) {
+                  modal.hide();
+                }
+
+              });
+              /* end:: dismiss modal helper*/
             }
           },
           error: function (error) {
@@ -141,7 +151,17 @@ let KTDatatablesServerSide = function () {
         success: function (data) {
           if (!$("#modal_itinerary_activity").is(":visible")) {
             $("#dynamic_modal").html(data.view);
-            $("#modal_itinerary_activity").modal("show");
+            let modal = new bootstrap.Modal('#modal_itinerary_activity')
+            modal.show();
+
+            /* begin:: dismiss modal helper*/
+            $("[data-bs-dismiss=modal]").click(function(){
+              if ($("#modal_itinerary_activity").is(":visible")) {
+                modal.hide();
+              }
+
+            });
+            /* end:: dismiss modal helper*/
           }
         },
         error: function (error) {

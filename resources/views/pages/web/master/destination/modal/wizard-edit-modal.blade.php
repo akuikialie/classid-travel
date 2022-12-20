@@ -10,7 +10,7 @@
         <h2>Setup Destinasi</h2>
         <!--end::Modal title-->
         <!--begin::Close-->
-        <div class="btn btn-icon btn-sm btn-active-light-primary ms-2" data-bs-dismiss="modal" aria-label="Close">
+        <div class="btn btn-icon btn-sm btn-active-light-primary ms-2" data-bs-dismiss="modal">
           <i class="fa-solid fa-xmark"></i>
         </div>
         <!--end::Close-->

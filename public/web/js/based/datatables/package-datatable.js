@@ -89,7 +89,17 @@ let KTDatatablesServerSide = function () {
           success: function (data) {
             if (!$("#kt_modal_create_app").is(":visible")) {
               $("#dynamic_modal").html(data.view);
-              $("#kt_modal_create_app").modal("show");
+              let modal = new bootstrap.Modal('#kt_modal_create_app')
+              modal.show();
+
+              /* begin:: dismiss modal helper*/
+              $("[data-bs-dismiss=modal]").click(function(){
+                if ($("#kt_modal_create_app").is(":visible")) {
+                  modal.hide();
+                }
+
+              });
+              /* end:: dismiss modal helper*/
             }
 
             $(".datepicker-year").flatpickr({
@@ -141,7 +151,17 @@ let KTDatatablesServerSide = function () {
           success: function (data) {
             if (!$("#modal_wizard_setup_itinerary").is(":visible")) {
               $("#dynamic_modal").html(data.view);
-              $("#modal_wizard_setup_itinerary").modal("show");
+              let modal = new bootstrap.Modal('#modal_wizard_setup_itinerary')
+              modal.show();
+
+              /* begin:: dismiss modal helper*/
+              $("[data-bs-dismiss=modal]").click(function(){
+                if ($("#kt_modal_create_app").is(":visible")) {
+                  modal.hide();
+                }
+
+              });
+              /* end:: dismiss modal helper*/
             }
             wizardSetupItinerary();
 
@@ -230,9 +250,19 @@ let KTDatatablesServerSide = function () {
         success: function (data) {
           if (!$("#kt_modal_create_app").is(":visible")) {
             $("#dynamic_modal").html(data.view);
-            $("#kt_modal_create_app").modal("show");
+
+            let modal = new bootstrap.Modal('#kt_modal_create_app')
+            modal.show();
+
+            /* begin:: dismiss modal helper*/
+            $("[data-bs-dismiss=modal]").click(function(){
+              if ($("#kt_modal_create_app").is(":visible")) {
+                modal.hide();
+              }
+
+            });
+            /* end:: dismiss modal helper*/
           }
-          $("#kt_modal_create_app_form")[0].reset();
 
           $(".datepicker-year").flatpickr({
             altInput: true,
@@ -246,6 +276,8 @@ let KTDatatablesServerSide = function () {
             ]
           });
           loadSetupCreateApp();
+
+
         },
         error: function (error) {
           Swal.fire({

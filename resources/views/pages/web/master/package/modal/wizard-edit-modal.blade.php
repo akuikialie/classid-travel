@@ -1,5 +1,5 @@
 <!--begin::Modal - Create App-->
-<div class="modal fade" id="kt_modal_create_app" tabindex="-1" aria-hidden="true">
+<div class="modal fade" id="kt_modal_create_app" tabindex="-1">
   <!--begin::Modal dialog-->
   <div class="modal-dialog modal-dialog-centered mw-900px">
     <!--begin::Modal content-->
@@ -10,7 +10,7 @@
         <h2>Setup Paket</h2>
         <!--end::Modal title-->
         <!--begin::Close-->
-        <div class="btn btn-icon btn-sm btn-active-light-primary ms-2" data-bs-dismiss="modal" aria-label="Close">
+        <div class="btn btn-icon btn-sm btn-active-light-primary ms-2 " data-bs-dismiss="modal">
           <i class="fa-solid fa-xmark"></i>
         </div>
         <!--end::Close-->

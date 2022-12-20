@@ -9,15 +9,19 @@ use Exception;
 
 class WalletService implements Contract\WalletService
 {
+    private array $tenantCredentials;
+
     use WalletBase;
     use WalletAccount;
 
     private string $baseUrl;
     private ?WalletUser $user = null;
 
-    public function __construct(private ?string $token = null)
+    public function __construct(private readonly ?string $token = null)
     {
-        $this->baseUrl = config('wallet.url');
+        $this->tenantCredentials = collect(json_decode(activeTenant()->wallet_login, true))->toArray();
+        $url = $this->tenantCredentials['WALLET_URL'] ?? config('wallet.url');
+        $this->baseUrl = $url;
     }
 
     /**
