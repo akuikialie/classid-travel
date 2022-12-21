@@ -117,9 +117,10 @@ class UserController extends Controller
     {
         $user = auth()->user();
         $roles = Role::query()
-            ->when($user->tenant_id === null, function (Builder $subQuery) {
-                $subQuery->whereNull('tenant_id');
-            })
+            ->when(!$user->hasRole('super-administrator') && isset($user->tenant_id),
+                function (Builder $subQuery) use ($user) {
+                    $subQuery->where('tenant_id', $user->tenant_id ?? null);
+                })
             ->get()->unique('name');
 
         $this->setData('roles', $roles);
