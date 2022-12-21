@@ -22,9 +22,6 @@ class SeedRoles extends Seeder
                 'name' => 'super-administrator',
                 'type' => PermissionType::tenant->keyValue(),
             ],[
-                'name' => 'administrator',
-                'type' => PermissionType::tenant->keyValue(),
-            ],[
                 'tenant_id' => 6,
                 'name' => 'administrator',
                 'type' => PermissionType::tenant->keyValue(),

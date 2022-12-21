@@ -28,6 +28,9 @@ class RoleRoute extends BaseRoute
                 $this->router->post($this->prefix(), [RoleController::class, 'store'])
                     ->name($this->name('store'));
 
+                $this->router->get($this->prefix('{role_hash}/show'), [RoleController::class, 'show'])
+                    ->name($this->name('show'));
+
                 $this->router->get($this->prefix('{role_hash}/edit'), [RoleController::class, 'edit'])
                     ->name($this->name('edit'));
                 $this->router->put($this->prefix('{role_hash}'), [RoleController::class, 'update'])

@@ -42,6 +42,7 @@ class BindingRoute implements Bindable
             ->withCount(['jamaah', 'myDestinations', 'myFacilities'])
             ->byHashOrFail($value));
         $this->router->bind('role_hash', fn ($value) => Role::query()
+            ->with(['permissions', 'users'])
             ->withCount(['permissions', 'users'])
             ->byHashOrFail($value));
 

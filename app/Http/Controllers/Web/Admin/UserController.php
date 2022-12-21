@@ -35,6 +35,7 @@ class UserController extends Controller
     {
         $this->setData('current_page', $this->forPage);
     }
+
     /**
      * @throws Exception
      * @throws \Exception
@@ -47,12 +48,20 @@ class UserController extends Controller
                 $users = User::query()
                     ->with(['roles'])
                     ->when($user->hasRole('super-administrator'), function (Builder $subQuery) use ($user) {
-                        $subQuery->where('id', '!=', $user->id);
+                        $subQuery->when(!\request()->has('scope_display_users'), function (Builder $subQuery) use ($user) {
+                            $subQuery->where('id', '!=', $user->id);
+                        });
                         $subQuery->with(['tenant']);
                     }, function (Builder $subQuery) use ($user) {
                         $subQuery
-                            ->role(['administrator'])
-                            ->where('id', '!=', $user->id);
+                            ->role(['administrator']);
+                        $subQuery->when(!\request()->has('scope_display_users'), function (Builder $subQuery) use ($user) { // for role
+                            $subQuery->where('id', '!=', $user->id);
+
+                        });
+                    })
+                    ->when(\request()->has('scope_display_users'), function (Builder $subQuery) { // for role
+                        $subQuery->whereIn('id', \request()->get('scope_display_users'));
                     })
                     ->where('is_super', false)
                     ->latest('id')
@@ -77,7 +86,7 @@ class UserController extends Controller
                     })
                     ->rawColumns(['actions', 'status']);
 
-                if ($user->hasRole('super-administrator')){
+                if ($user->hasRole('super-administrator')) {
                     $datatable->addColumn('tenant', function ($user) {
                         if (is_null($user->tenant)) {
                             return '-';

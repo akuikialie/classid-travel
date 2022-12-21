@@ -29,6 +29,7 @@ class CreatePermissionTables extends Migration
             $table->bigIncrements('id'); // permission id
             $table->unsignedBigInteger('tenant_id')->nullable();
             $table->string('name');
+            $table->string('group',100)->nullable();
             $table->string('guard_name');
             $table->string('type', 50)->nullable();
             $table->timestamps(precision: 6);
