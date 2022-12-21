@@ -39,6 +39,7 @@ class SeedPermissions extends Seeder
                     ->create([
                         'name' => "{$permission} {$page}",
                         'guard_name' => 'web',
+                        'group' => $page,
                         'type' => PermissionType::tenant->value,
                     ]);
             }

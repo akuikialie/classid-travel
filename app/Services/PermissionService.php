@@ -27,6 +27,7 @@ class PermissionService
     {
         if ($guard){
             $input = array_merge($input, [
+                'tenant_id' => $this->tenantId,
                 'guard_name' => $guard,
             ]);
         }
@@ -42,7 +43,7 @@ class PermissionService
     public function syncPermissions(array $permissions, $modelClass = null): static
     {
         $permission = Permission::query()
-            ->whereIn('id', $permissions)->get()->pluck('id')->toArray();
+            ->whereIn('name', $permissions)->get()->pluck('id')->toArray();
 
         ($modelClass ?? $this->model)->syncPermissions($permission);
         return $this;
