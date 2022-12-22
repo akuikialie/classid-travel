@@ -82,6 +82,8 @@ class ScheduleController extends Controller
      */
     public function index(): View|Factory|Application
     {
+        $this->setPageTitle('Jadwal');
+        $this->setBreadCrumb('Jadwal');
         return $this->view('pages.web.master.schedule.schedule-index');
     }
 

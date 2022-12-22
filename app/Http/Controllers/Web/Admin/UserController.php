@@ -106,6 +106,9 @@ class UserController extends Controller
      */
     public function index(): View
     {
+        $this->setPageTitle('Users');
+        $this->setBreadCrumb('Users');
+
         $user = auth()->user();
         $roles = Role::query()
             ->when(!$user->hasRole('super-administrator') && isset($user->tenant_id),

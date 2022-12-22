@@ -85,6 +85,8 @@ class FacilityController extends Controller
      */
     public function index(): View|Factory|Application
     {
+        $this->setPageTitle('Fasilitas');
+        $this->setBreadCrumb('Fasilitas');
         return $this->view('pages.web.master.facility.facility-index');
     }
 

@@ -125,6 +125,9 @@ class RoleController extends Controller
      */
     public function index()
     {
+        $this->setPageTitle('Roles');
+        $this->setBreadCrumb('Roles');
+
         $user = auth()->user();
         $roles = Role::query();
 
@@ -351,6 +354,9 @@ class RoleController extends Controller
      */
     public function show(Role $role)
     {
+        $this->setPageTitle('Roles');
+        $this->setBreadCrumb('View Detail');
+
         $user = auth()->user();
         $roles = Role::query()
             ->when($user->tenant_id === null, function (Builder $subQuery) {

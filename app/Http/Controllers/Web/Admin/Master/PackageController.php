@@ -108,6 +108,8 @@ class PackageController extends Controller
      */
     public function index(): View|Factory|Application
     {
+        $this->setPageTitle('Paket');
+        $this->setBreadCrumb('Paket');
         return $this->view('pages.web.master.package.package-index');
     }
 
