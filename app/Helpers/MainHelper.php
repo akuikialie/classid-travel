@@ -75,8 +75,7 @@ if (!function_exists('createNewVA')) {
         $start_of_month = Carbon::now()->startOfMonth();
         $monthDate = substr($time_now->format('Ym'), 2);
         if (isset($lastVA)) {
-
-            $getBcn = config('wallet.bcn');
+            $getBcn = activeTenant()->BCN;
             $getType = $type == 'tabungan' ? 0 : 1;
             $getMonthYear = substr($lastVA, '7', 4);
             $increment = substr($lastVA, '11') ?? 0;
@@ -93,7 +92,7 @@ if (!function_exists('createNewVA')) {
             $getIncrement = str_pad($count, '5', '0', STR_PAD_LEFT);
             return $getBcn.$getType.$month.$getIncrement;
         }else{
-            $getBcn = config('wallet.bcn');
+            $getBcn = activeTenant()->BCN;
             $getType = $type == 'tabungan' ? 0 : 1;
             $getIncrement = str_pad(1, '5', '0', STR_PAD_LEFT);
             return $getBcn.$getType.$monthDate.$getIncrement;

@@ -35,6 +35,7 @@ class UserController extends Controller
     {
         $this->setData('current_page', $this->forPage);
     }
+
     /**
      * @throws Exception
      * @throws \Exception
@@ -47,12 +48,10 @@ class UserController extends Controller
                 $users = User::query()
                     ->with(['roles'])
                     ->when($user->hasRole('super-administrator'), function (Builder $subQuery) use ($user) {
-                        $subQuery->where('id', '!=', $user->id);
                         $subQuery->with(['tenant']);
                     }, function (Builder $subQuery) use ($user) {
-                        $subQuery
-                            ->role(['administrator'])
-                            ->where('id', '!=', $user->id);
+                        $subQuery->where('tenant_id', $user->tenant_id);
+                        $subQuery->where('id', '!=', $user->id);
                     })
                     ->where('is_super', false)
                     ->latest('id')
@@ -77,7 +76,7 @@ class UserController extends Controller
                     })
                     ->rawColumns(['actions', 'status']);
 
-                if ($user->hasRole('super-administrator')){
+                if ($user->hasRole('super-administrator')) {
                     $datatable->addColumn('tenant', function ($user) {
                         if (is_null($user->tenant)) {
                             return '-';
@@ -93,6 +92,7 @@ class UserController extends Controller
                 } else {
                     throw new \Exception('Terjadi kesalahan!');
                 }
+            } catch (NotFoundExceptionInterface|ContainerExceptionInterface $e) {
             }
         }
         abort(404);
@@ -108,9 +108,10 @@ class UserController extends Controller
     {
         $user = auth()->user();
         $roles = Role::query()
-            ->when($user->tenant_id === null, function (Builder $subQuery) {
-                $subQuery->whereNull('tenant_id');
-            })
+            ->when(!$user->hasRole('super-administrator') && isset($user->tenant_id),
+                function (Builder $subQuery) use ($user) {
+                    $subQuery->where('tenant_id', $user->tenant_id ?? null);
+                })
             ->get()->unique('name');
 
         $this->setData('roles', $roles);

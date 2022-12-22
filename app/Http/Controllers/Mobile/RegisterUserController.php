@@ -8,6 +8,7 @@ use App\Models\Jamaah\JamaahHistory;
 use App\Services\UserService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Throwable;
 
 class RegisterUserController extends Controller
 {
@@ -18,7 +19,7 @@ class RegisterUserController extends Controller
     }
 
     /**
-     * @throws \Throwable
+     * @throws Throwable
      */
     public function store(Request $request)
     {
@@ -47,7 +48,7 @@ class RegisterUserController extends Controller
 
             notify('Berhasil!!', 'Anda berhasil membuat akun, silahkan login menggunakan akun anda', 'success');
             return redirect(route('login'));
-        }catch (\Throwable $e){
+        }catch (Throwable $e){
             DB::rollBack();
             if (isDevelopmentMode()) {
                 throw $e;
@@ -56,7 +57,5 @@ class RegisterUserController extends Controller
             }
             return redirect()->back();
         }
-
-
     }
 }

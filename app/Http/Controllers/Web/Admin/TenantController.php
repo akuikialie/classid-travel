@@ -147,7 +147,13 @@ class TenantController extends Controller
 
             if (str_contains($input['app_domain'], ' ')) {
                 $input = array_merge($input, [
-                    'app_domain' => Str::lower(str_replace(' ', '.', $input['app_domain']))
+                    'app_domain' => Str::lower(str_replace(' ', '.', $input['app_domain'])),
+                    'wallet_login' => json_encode([
+                        'WALLET_URL' => "https://demo.biznet.class.id",
+                        'WALLET_BCN' => "857400",
+                        'WALLET_ADMIN_USER' => "fahrudinsidik88@gmail.com",
+                        'WALLET_ADMIN_PASS' => "password",
+                    ])
                 ]);
             }
 

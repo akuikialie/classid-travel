@@ -25,18 +25,17 @@ class UserService
         $this->query = User::query();
     }
 
+    /**
+     * @throws Throwable
+     */
     public function createVa(string $vaType): static
     {
         /* begin:: start Virtual Account Service */
-        try {
-            $user = $this->getUser();
-            $VAService = new VirtualAccountService($this->tenantId);
-            $VAService->vaType($vaType)
-                ->createFor($user)
-                ->createVA();
-        } catch (Throwable $e) {
-            throw $e;
-        }
+        $user = $this->getUser();
+        $VAService = new VirtualAccountService($this->tenantId);
+        $VAService->vaType($vaType)
+            ->createFor($user)
+            ->createVA();
         /* end:: start Virtual Account Service */
 
         return $this;

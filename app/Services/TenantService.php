@@ -31,13 +31,9 @@ class TenantService
      */
     public function setStatus(bool $status): static
     {
-        try {
-            $tenant = $this->getTenant();
-            $tenant->is_active = $status;
-            $tenant->save();
-        } catch (Exception $e) {
-            throw $e;
-        }
+        $tenant = $this->getTenant();
+        $tenant->is_active = $status;
+        $tenant->save();
 
         return $this;
     }
@@ -46,20 +42,17 @@ class TenantService
      * @return $this
      * @throws FileDoesNotExist
      * @throws FileIsTooBig
+     * @throws Exception
      */
     public function setAvatar(Request $request): static
     {
-        try {
-            $tenant = $this->getTenant();
+        $tenant = $this->getTenant();
 
-            if ($request->hasFile('avatar')) {
-                $tenant->addMediaFromRequest('avatar')
-                    ->toMediaCollection('avatars');
-            }
-            return $this;
-        } catch (FileDoesNotExist|FileIsTooBig|Exception $e) {
-            throw $e;
+        if ($request->hasFile('avatar')) {
+            $tenant->addMediaFromRequest('avatar')
+                ->toMediaCollection('avatars');
         }
+        return $this;
     }
 
     public function unsetAvatar()

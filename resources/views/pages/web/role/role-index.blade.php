@@ -22,7 +22,6 @@
 @section('page-content')
 
   <div id="dynamic_modal"></div>
-
   <div class="card card-docs flex-row-fluid mb-2">
     <div class="card-body fs-6 py-15 px-10 py-lg-15 px-lg-15 text-gray-700">
       <div class="p-0">
@@ -67,20 +66,55 @@
                 <!--end::Separator-->
                 <!--begin::Content-->
                 <div class="px-7 py-5" data-kt-user-table-filter="form">
+
                   <!--begin::Input group-->
                   <div class="mb-10">
-                    <label class="form-label fs-6 fw-semibold">Role:</label>
-                    <select class="form-select form-select-solid fw-bold" data-kt-select2="true"
-                            data-placeholder="Select option" data-allow-clear="true" data-kt-user-table-filter="role"
-                            data-hide-search="true">
-                      <option></option>
-                      @foreach($roles as $role)
-                        <option value="{{ $role->name }}">{{ \Illuminate\Support\Str::ucfirst($role->name) }}</option>
-                      @endforeach
-                    </select>
+                    <!--begin::Label-->
+                    <label class="form-label fw-semibold">Filter By Role:</label>
+                    <!--end::Label-->
+                    <!--begin::Input-->
+                    <div>
+                      <select class="form-select form-select-solid" data-kt-select2="true"
+                              data-placeholder="Select option" data-allow-clear="true"
+                              data-kt-user-table-filter="travel_name"
+                              data-hide-search="true" name="role_name">
+                        <option></option>
+                        @foreach($role_filters AS $_role)
+                          <option value="{{ $_role->name }}"
+                            {{ request()->get('role_name') == $_role->name ? 'selected' : '' }}
+                          >{{ $_role->name }}</option>
+
+                        @endforeach
+                      </select>
+                    </div>
+                    <!--end::Input-->
                   </div>
                   <!--end::Input group-->
-                                    <!--begin::Actions-->
+
+                  <!--begin::Input group-->
+                  <div class="mb-10">
+                    <!--begin::Label-->
+                    <label class="form-label fw-semibold">Filter Travel:</label>
+                    <!--end::Label-->
+                    <!--begin::Input-->
+                    <div>
+                      <select class="form-select form-select-solid" data-kt-select2="true"
+                              data-placeholder="Select option" data-allow-clear="true"
+                              data-kt-user-table-filter="travel_name"
+                              data-hide-search="true" name="travel_name">
+                        <option></option>
+                        @foreach($tenant_filters AS $tenant)
+                          <option value="{{ $tenant->hash }}"
+                            {{ request()->get('travel_name') == $tenant->hash ? 'selected' : '' }}
+                          >{{ $tenant->name }}</option>
+                        @endforeach
+                      </select>
+                    </div>
+                    <!--end::Input-->
+                  </div>
+                  <!--end::Input group-->
+
+                  <!--begin::Actions-->
                   <div class="d-flex justify-content-end">
                     <button type="reset" class="btn btn-light btn-active-light-primary fw-semibold me-2 px-6"
                             data-kt-menu-dismiss="true" data-kt-user-table-filter="reset">Reset
@@ -95,9 +129,8 @@
               </div>
               <!--end::Menu 1-->
               <!--end::Filter-->
-
               @can("create {$current_page}")
-              <button type="button" class="btn btn-primary" id="create-new" data-bs-toggle="tooltip"
+                <button type="button" class="btn btn-primary" id="create-new" data-bs-toggle="tooltip"
                         title="Buat Role">
                   <!--begin::Svg Icon | path: icons/duotune/arrows/arr075.svg-->
                   <span class="svg-icon svg-icon-2">
@@ -105,7 +138,6 @@
                 </span>
                   <!--end::Svg Icon-->Buat Role
                 </button>
-
               @endcan
             </div>
             <!--end::Toolbar-->
@@ -134,8 +166,9 @@
               <th>Nama</th>
               <th>type</th>
               @if(auth()->user()->hasRole('super-administrator'))
-                <th>tenant</th>
+                <th >tenant</th>
               @endif
+              <th class="text-center">Usages</th>
               <th class="text-end min-w-100px">Actions</th>
             </tr>
             </thead>
@@ -143,11 +176,9 @@
             </tbody>
           </table>
           <!--end::Datatable-->
-
         </div>
         <!--end::CRUD-->
       </div>
     </div>
   </div>
-
 @endsection

@@ -23,6 +23,7 @@
 @endsection
 
 @section('page-content')
+
   <div id="dynamic_modal"></div>
 
   <div class="card card-docs flex-row-fluid mb-2">
