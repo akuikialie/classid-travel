@@ -252,4 +252,25 @@ class Controller extends BaseController
 
         return (object) array_merge($def, Arr::only($breadcrumb, ['title', 'url']));
     }
+
+    /**
+     * @param string $parameter
+     * @param $value
+     * @return $this
+     */
+    public function setGlobalParams(string $parameter, $value): static
+    {
+        $this->shareGlobalParams($parameter, $value);
+        return $this;
+    }
+
+    /**
+     * @param string $argument
+     * @param $value
+     * @return void
+     */
+    public function shareGlobalParams(string $argument, $value): void
+    {
+        view()->share($argument, $value);
+    }
 }
