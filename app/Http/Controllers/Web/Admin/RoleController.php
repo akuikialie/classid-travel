@@ -3,26 +3,27 @@
 namespace App\Http\Controllers\Web\Admin;
 
 use App\Enums\PermissionType;
+use App\Enums\RoleEnum;
+use App\Enums\UserStatus;
 use App\Http\Controllers\Controller;
 use App\Models\Spatie\Permission;
 use App\Models\Spatie\Role;
 use App\Models\Tenant\Tenant;
+use App\Models\User;
 use App\Services\PermissionService;
 use DB;
 use Hashids;
-use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\View\Factory;
+use Illuminate\Contracts\View\View;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Http\Response;
-use Illuminate\View\View;
 use Psr\Container\ContainerExceptionInterface;
 use Psr\Container\NotFoundExceptionInterface;
 use Throwable;
 use Yajra\DataTables\Exceptions\Exception;
+use function response;
 
 class RoleController extends Controller
 {
@@ -34,6 +35,7 @@ class RoleController extends Controller
         ['data' => 'name'],
         ['data' => 'type'],
         ['data' => 'tenant'],
+        ['data' => 'usages'],
         ['data' => 'actions'],
     ];
 
@@ -46,21 +48,31 @@ class RoleController extends Controller
     }
 
     /**
+     * @return JsonResponse|void
+     * @throws ContainerExceptionInterface
      * @throws Exception
-     * @throws \Exception
+     * @throws NotFoundExceptionInterface
      */
-    public function datatable(Role $role)
+    public function datatable()
     {
         if (\request()->ajax()) {
             try {
                 $user = auth()->user();
                 $roles = Role::query()
-                    ->when($user->tenant_id !== null, function (Builder $subQuery) use ($user) {
-                        $subQuery->where('tenant_id', $user->tenant_id);
+                    ->when(\request()->get('role_name'), function (Builder $subQuery) {
+                        $subQuery->where('name', \request()->get('role_name'));
                     })
+                    ->when(\request()->get('travel_name'), function (Builder $subQuery) {
+                        $subQuery->where('tenant_id', Hashids::decode(\request()->get('travel_name')));
+                    })
+                    ->when(!$user->hasRole('super-administrator') && isset($user->tenant_id),
+                        function (Builder $subQuery) use ($user) {
+                            $subQuery->where('tenant_id', $user->tenant_id);
+                            $subQuery->orWhere('type','=', 'app');
+                        })
                     ->with(['permissions', 'users', 'tenant'])
-                    ->latest('id')
-                    ->get();
+                    ->withCount(['users'])
+                    ->oldest('id')->get();
 
                 $datatable = datatables()->of($roles)
                     ->addIndexColumn()
@@ -68,12 +80,20 @@ class RoleController extends Controller
                         return $role->name;
                     })->addColumn('type', function ($role) {
                         return $role->type;
+                    })->addColumn('usages', function ($role) {
+                        $permissionGroups = collect($role->permissions)->groupBy('group');
+                        $permissionsTotal = $permissionGroups->count();
+
+                        return '<div class="ms-5 text-center">
+    <a href="#" class="fs-5 fw-bold text-gray-900 text-hover-primary mb-2">' . $role->users_count . ' users</a>
+    <div class="fw-semibold text-muted">' . $permissionsTotal . ' Permmissions</div>
+</div>';
                     })
                     ->addColumn('actions', function ($role) {
                         $this->setData('role', $role);
                         return $this->view('pages.web.role.action.action-datatable');
                     })
-                    ->rawColumns(['actions', 'status']);
+                    ->rawColumns(['actions', 'status', 'usages']);
 
                 if ($user->hasRole('super-administrator')) {
                     $datatable->addColumn('tenant', function ($role) {
@@ -98,12 +118,12 @@ class RoleController extends Controller
     /**
      * Display a listing of the resource.
      *
-     * @return \Illuminate\Contracts\View\View|Factory
+     * @return Factory|View|RedirectResponse
      * @throws ContainerExceptionInterface
      * @throws NotFoundExceptionInterface
      * @throws \Exception
      */
-    public function index(): Factory|\Illuminate\Contracts\View\View
+    public function index()
     {
         $user = auth()->user();
         $roles = Role::query();
@@ -122,30 +142,43 @@ class RoleController extends Controller
             ->select('id', 'name')
             ->get();
 
-        try {
-            $roles->when(\request()->get('role_name'), function (Builder $subQuery) {
-                $subQuery->where('name', \request()->get('role_name'));
-            })
-                ->when(\request()->get('travel_name'), function (Builder $subQuery) {
-                    $subQuery->where('tenant_id', Hashids::decode(\request()->get('travel_name')));
-                })
-                ->when(!$user->hasRole('super-administrator') && isset($user->tenant_id),
-                    function (Builder $subQuery) use ($user) {
-                        $subQuery->where('tenant_id', $user->tenant_id);
-                    })
-                ->with(['permissions', 'users', 'tenant'])
-                ->withCount(['users'])
-                ->oldest('id');
-        } catch (NotFoundExceptionInterface|ContainerExceptionInterface $e) {
-            if (isDevelopmentMode()) {
-                throw $e;
-            } else {
-                notify('Oops!', 'Terjadi kesalahan!', 'error');
-            }
-            return redirect()->back();
-        }
+        /* try {
+             $roles->when(\request()->get('role_name'), function (Builder $subQuery) {
+                 $subQuery->where('name', \request()->get('role_name'));
+             })
+                 ->when(\request()->get('travel_name'), function (Builder $subQuery) {
+                     $subQuery->where('tenant_id', Hashids::decode(\request()->get('travel_name')));
+                 })
+                 ->when(!$user->hasRole('super-administrator') && isset($user->tenant_id),
+                     function (Builder $subQuery) use ($user) {
+                         $subQuery->where('tenant_id', $user->tenant_id);
+                     })
+                 ->with(['permissions', 'users', 'tenant'])
+                 ->withCount(['users'])
+                 ->oldest('id');
+         } catch (NotFoundExceptionInterface|ContainerExceptionInterface $e) {
+             if (isDevelopmentMode()) {
+                 throw $e;
+             } else {
+                 notify('Oops!', 'Terjadi kesalahan!', 'error');
+             }
+             return redirect()->back();
+         }*/
 
-        $this->setData('roles', $roles->paginate());
+        if (!$user->hasRole('super-administrator')) {
+            unset($this->columns);
+            $this->columns = [
+                ['data' => 'id'],
+                ['data' => 'name'],
+                ['data' => 'type'],
+                ['data' => 'usages'],
+                ['data' => 'actions'],
+            ];
+        }
+        $this->setData('columns', $this->columns);
+
+
+//        $this->setData('roles', $roles->paginate());
         $this->setData('role_filters', $roleFilters);
         $this->setData('tenant_filters', $tenantFilters);
 //        $this->setData('columns', $this->columns);
@@ -186,7 +219,7 @@ class RoleController extends Controller
             $this->setData('permission_grouped', $permissionGroupedList);
 
 
-            return \response()->json([
+            return response()->json([
                 'view' => $this->view('pages.web.role.modals.modal-create-role')->render(),
             ]);
         }
@@ -241,10 +274,79 @@ class RoleController extends Controller
     }
 
     /**
+     * @throws Exception
+     */
+    public function datatableRoleUsers(Role $role)
+    {
+        if (\request()->ajax()) {
+            try {
+                $user = auth()->user();
+                $users = User::query()
+                    ->with(['roles', 'tenant'])
+                    ->when($user->hasRole('super-administrator'), function (Builder $subQuery) use ($user) {
+                        $subQuery->with(['tenant']);
+                    })
+                    ->when($role->name == RoleEnum::Jamaah->keyValue(), function (Builder $subQuery) use ($user) {
+                        if (!$user->hasRole('super-administrator')) {
+                            $subQuery->where('tenant_id', $user->tenant_id);
+                        }
+                    })
+                    ->role([$role->name])
+                    ->where('is_super', false)
+                    ->latest('id')
+                    ->get();
+
+                $datatable = datatables()->of($users)
+                    ->addIndexColumn()
+                    ->addColumn('status', function ($user) {
+                        $status = UserStatus::tryFrom($user->status);
+                        return "<span class=\"badge badge-light-{$status->color()} text-uppercase\">{$status->label()}</span>";
+                    })->addColumn('last_login', function ($user) {
+                        if (is_null($user->last_login_at)) {
+                            return '-';
+                        }
+                        return carbon($user->last_login_at)->format('d M, Y H:i:s');
+                    })
+                    ->addColumn('actions', function ($user) {
+                        $this->setData('user', $user);
+                        return $this->view('pages.web.user.action.action-datatable');
+                    })
+                    ->rawColumns(['actions', 'status']);
+
+                if ($user->hasRole('super-administrator')) {
+                    $datatable->addColumn('tenant', function ($user) {
+                        if (is_null($user->tenant)) {
+                            return '-';
+                        }
+                        return $user->tenant->name;
+                    });
+                }
+
+                $datatable->addColumn('tenant', function ($user) {
+                    if (is_null($user->tenant)) {
+                        return '-';
+                    }
+                    return $user->tenant->name;
+                });
+
+                return $datatable->make(true);
+            } catch (Exception $e) {
+                if (isDevelopmentMode()) {
+                    throw $e;
+                } else {
+                    throw new \Exception('Terjadi kesalahan!');
+                }
+            } catch (NotFoundExceptionInterface|ContainerExceptionInterface $e) {
+            }
+        }
+        abort(404);
+    }
+
+    /**
      * Display the specified resource.
      *
      * @param Role $role
-     * @return Factory|\Illuminate\Contracts\View\View
+     * @return Factory|View
      * @throws \Exception
      */
     public function show(Role $role)
@@ -257,10 +359,18 @@ class RoleController extends Controller
             ->where('id', '!=', 1)
             ->get()->unique('name');
 
-        $userIds = collect($role->users)->pluck('id');
+        $columns = [
+            ['data' => 'id'],
+            ['data' => 'name'],
+            ['data' => 'tenant'],
+            ['data' => 'status'],
+            ['data' => 'last_login'],
+            ['data' => 'actions'],
+        ];
+
+        $this->setData('columns', $columns);
 
         $this->setData('roles', $roles);
-        $this->setData('search_users', $userIds);
 
         $this->setData('role', $role);
         return $this->view('pages.web.role.role-show');
@@ -306,7 +416,7 @@ class RoleController extends Controller
             $this->setData('permission_grouped', $permissionGroupedList);
 
             $this->setData('role', $role);
-            return \response()->json([
+            return response()->json([
                 'view' => $this->view('pages.web.role.modals.modal-edit-role')->render()
             ]);
         }

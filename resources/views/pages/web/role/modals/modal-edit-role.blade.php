@@ -33,7 +33,7 @@
           @method('PUT')
           @csrf
 
-          @include('pages.web.role.modals._input-field-role')
+          @include('pages.web.role.modals._input-field-role', ['is_on_edit' => true])
 
           <!--begin::Actions-->
           <div class="text-center pt-15">

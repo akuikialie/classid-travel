@@ -6,7 +6,8 @@
   </label>
   <!--end::Label-->
   <!--begin::Input-->
-  <input class="form-control form-control-solid" value="{{ $role->name ?? null }}" placeholder="Enter a role name"
+  <input class="form-control form-control-solid" {{ $is_on_edit ?? false ? 'readonly' : '' }}
+  value="{{ $role->name ?? null }}" placeholder="Enter a role name"
          name="name"/>
   <!--end::Input-->
 </div>
@@ -54,7 +55,9 @@
                 @foreach($permissions as $permission)
                   <!--begin::Checkbox-->
                   <label class="form-check form-check-sm form-check-custom form-check-solid me-5 me-lg-20">
-                    <input class="form-check-input" type="checkbox" value="{{ strtolower("{$permission['name']} {$permissionGroup}") }}" {{ $permission['is_active'] ? 'checked' : '' }} name="permissions[]"/>
+                    <input class="form-check-input" type="checkbox"
+                           value="{{ strtolower("{$permission['name']} {$permissionGroup}") }}"
+                           {{ $permission['is_active'] ? 'checked' : '' }} name="permissions[]"/>
                     <span class="form-check-label">{{ ucfirst($permission['name']) }}</span>
                   </label>
                   <!--end::Checkbox-->

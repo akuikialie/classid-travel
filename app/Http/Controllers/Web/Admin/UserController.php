@@ -48,20 +48,10 @@ class UserController extends Controller
                 $users = User::query()
                     ->with(['roles'])
                     ->when($user->hasRole('super-administrator'), function (Builder $subQuery) use ($user) {
-                        $subQuery->when(!\request()->has('scope_display_users'), function (Builder $subQuery) use ($user) {
-                            $subQuery->where('id', '!=', $user->id);
-                        });
                         $subQuery->with(['tenant']);
                     }, function (Builder $subQuery) use ($user) {
-                        $subQuery
-                            ->role(['administrator']);
-                        $subQuery->when(!\request()->has('scope_display_users'), function (Builder $subQuery) use ($user) { // for role
-                            $subQuery->where('id', '!=', $user->id);
-
-                        });
-                    })
-                    ->when(\request()->has('scope_display_users'), function (Builder $subQuery) { // for role
-                        $subQuery->whereIn('id', \request()->get('scope_display_users'));
+                        $subQuery->where('tenant_id', $user->tenant_id);
+                        $subQuery->where('id', '!=', $user->id);
                     })
                     ->where('is_super', false)
                     ->latest('id')
@@ -102,6 +92,7 @@ class UserController extends Controller
                 } else {
                     throw new \Exception('Terjadi kesalahan!');
                 }
+            } catch (NotFoundExceptionInterface|ContainerExceptionInterface $e) {
             }
         }
         abort(404);

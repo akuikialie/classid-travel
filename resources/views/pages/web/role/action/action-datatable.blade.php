@@ -1,12 +1,27 @@
-
 @can("delete {$current_page}")
+
+  <a href="{{ route('admin.role.show', $role->hash) }}" class="btn btn-light btn-active-light-primary btn-sm" >
+    <!--begin::Svg Icon | path: icons/duotune/arrows/arr072.svg-->
+    <span class="svg-icon svg-icon-5 m-0">
+      <i class="fa-solid fa-eye"></i>
+    </span>
+    <!--end::Svg Icon-->
+  </a>
+
+  <a type="button" data-id="{{ $role->hash }}" class="btn btn-light btn-active-light-primary btn-sm update-role">
+    <!--begin::Svg Icon | path: icons/duotune/arrows/arr072.svg-->
+    <span class="svg-icon svg-icon-5 m-0">
+      <i class="fa-solid fa-pen-to-square"></i>
+    </span>
+    <!--end::Svg Icon-->
+  </a>
 
   <a href="#" class="btn btn-light btn-active-light-primary btn-sm"
      data-kt-menu-trigger="click" data-kt-menu-placement="bottom-end">
     <!--begin::Svg Icon | path: icons/duotune/arrows/arr072.svg-->
     <span class="svg-icon svg-icon-5 m-0">
-    <i class="fa-solid fa-caret-down"></i>
-  </span>
+      <i class="fa-solid fa-caret-down"></i>
+    </span>
     <!--end::Svg Icon-->
   </a>
 
@@ -20,6 +35,7 @@
             data-kt-form-id="delete-{{ $role->hash }}">
         @csrf
         @method('DELETE')
+
         <a class="menu-link px-3 btn-delete" data-id="{{ $role->hash }}"
            data-bs-toggle="tooltip" title="Hapus Role ">
           <span class="badge badge-light-danger"> Hapus Role </span>
