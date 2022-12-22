@@ -17,6 +17,9 @@ class RoleRoute extends BaseRoute
             $this->router->post($this->prefix('datatable'), [RoleController::class, 'datatable'])
                 ->name($this->name('datatable'))->middleware(["permission:view {$this->page}"]);
 
+            $this->router->post($this->prefix('datatable/{role_hash}/users'), [RoleController::class, 'datatableRoleUsers'])
+                ->name($this->name('datatable.role-user'))->middleware(["permission:view {$this->page}"]);
+
             /* begin:: default route collection */
 
             $this->router->middleware([ 'quick_access:role'])->group(function (){

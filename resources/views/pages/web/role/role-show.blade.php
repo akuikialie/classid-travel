@@ -7,21 +7,17 @@
 @section('page-custom-scripts')
   <script>
     let csrf_token = "{{ csrf_token() }}";
-    let urlTable = "{{ route('admin.user.datatable') }}";
+    let urlTable = "{{ route('admin.role.datatable.role-user', $role->hash) }}";
     let createUrl = "{{ route('admin.user.create') }}";
     let editUrl = "{{ route('admin.role.edit', ':id') }}";
-    let searchUsers = @json($search_users);
+    let columns = @json($columns);
     let deleteUrl = "{{ route('admin.role.destroy', ':id') }}";
-  </script>
-
-  <script>
-    initDatatable();
   </script>
 @endsection
 
 @section('page-scripts')
   <script src="{{ asset('web/plugins/custom/datatables/datatables.bundle.js') }}"></script>
-  <script src="{{ asset('web/js/based/datatables/role-datatable.js') }}"></script>
+  <script src="{{ asset('web/js/based/datatables/role-show-datatable.js') }}"></script>
 @endsection
 
 @section('page-content')
@@ -597,70 +593,7 @@
                                class="form-control form-control-solid w-250px ps-15" placeholder="Search Pengguna"/>
                       </div>
                       <!--end::Search-->
-                      <!--begin::Toolbar-->
-                      <div class="d-flex justify-content-end" data-kt-user-table-toolbar="base">
-                        <!--begin::Filter-->
-                        <button type="button" class="btn btn-light-primary me-3" data-kt-menu-trigger="click"
-                                data-kt-menu-placement="bottom-end">
-                          <!--begin::Svg Icon | path: icons/duotune/general/gen031.svg-->
-                          <span class="svg-icon svg-icon-2">
-                  <i class="fa-solid fa-filter"></i>
-                </span>
-                          <!--end::Svg Icon-->Filter
-                        </button>
-                        <!--begin::Menu 1-->
-                        <div class="menu menu-sub menu-sub-dropdown w-300px w-md-325px" data-kt-menu="true">
-                          <!--begin::Header-->
-                          <div class="px-7 py-5">
-                            <div class="fs-5 text-dark fw-bold">Filter Options</div>
-                          </div>
-                          <!--end::Header-->
-                          <!--begin::Separator-->
-                          <div class="separator border-gray-200"></div>
-                          <!--end::Separator-->
-                          <!--begin::Content-->
-                          <div class="px-7 py-5" data-kt-user-table-filter="form">
-                            <!--begin::Input group-->
-                            <div class="mb-10">
-                              <label class="form-label fs-6 fw-semibold">Role:</label>
-                              <select class="form-select form-select-solid fw-bold" data-kt-select2="true"
-                                      data-placeholder="Select option" data-allow-clear="true" data-kt-user-table-filter="role"
-                                      data-hide-search="true">
-                                <option></option>
-                                @foreach($roles as $role)
-                                  <option value="{{ $role->name }}">{{ \Illuminate\Support\Str::ucfirst($role->name) }}</option>
-                                @endforeach
-                              </select>
-                            </div>
-                            <!--end::Input group-->
-                            <!--begin::Input group-->
-                            <div class="mb-10">
-                              <label class="form-label fs-6 fw-semibold">Two Step Verification:</label>
-                              <select class="form-select form-select-solid fw-bold" data-kt-select2="true"
-                                      data-placeholder="Select option" data-allow-clear="true"
-                                      data-kt-user-table-filter="two-step" data-hide-search="true">
-                                <option></option>
-                                <option value="Enabled">Enabled</option>
-                              </select>
-                            </div>
-                            <!--end::Input group-->
-                            <!--begin::Actions-->
-                            <div class="d-flex justify-content-end">
-                              <button type="reset" class="btn btn-light btn-active-light-primary fw-semibold me-2 px-6"
-                                      data-kt-menu-dismiss="true" data-kt-user-table-filter="reset">Reset
-                              </button>
-                              <button type="submit" class="btn btn-primary fw-semibold px-6" data-kt-menu-dismiss="true"
-                                      data-kt-user-table-filter="filter">Apply
-                              </button>
-                            </div>
-                            <!--end::Actions-->
-                          </div>
-                          <!--end::Content-->
-                        </div>
-                        <!--end::Menu 1-->
-                        <!--end::Filter-->
-                      </div>
-                      <!--end::Toolbar-->
+
                       <!--begin::Group actions-->
                       <div class="d-flex justify-content-end align-items-center d-none" data-kt-user-table-toolbar="selected">
                         <div class="fw-bold me-5">
@@ -684,7 +617,8 @@
                           </div>
                         </th>
                         <th>Nama</th>
-                        <th>Role</th>
+
+                        <th >tenant</th>
                         <th>Status</th>
                         <th>Terakhir Login</th>
                         <th class="text-end min-w-100px">Actions</th>
