@@ -1,20 +1,7 @@
 <!DOCTYPE html>
-<!--
-Author: Keenthemes
-Product Name: Metronic | Bootstrap HTML, VueJS, React, Angular, Asp.Net Core, Rails, Spring, Blazor, Django, Flask & Laravel Admin Dashboard Theme
-Purchase: https://1.envato.market/EA4JP
-Website: http://www.keenthemes.com
-Contact: support@keenthemes.com
-Follow: www.twitter.com/keenthemes
-Dribbble: www.dribbble.com/keenthemes
-Like: www.facebook.com/keenthemes
-License: For each use you must have a valid license purchased only from above link in order to legally use the theme for your project.
--->
-<html lang="en">
-<!--begin::Head-->
-
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 <head>
-    <title>{{ activeTenant()->name ?? 'ProHajj' }} - Admin</title>
+    <title>{{ activeTenant()->name ?? 'ProHajj Admin' }} - {{ $pageTitle }}</title>
     <meta charset="utf-8" />
     <meta name="description"
         content="The most advanced Bootstrap Admin Theme on Themeforest trusted by 100,000 beginners and professionals. Multi-demo, Dark Mode, RTL support and complete React, Angular, Vue, Asp.Net Core, Rails, Spring, Blazor, Django, Flask & Laravel versions. Grab your copy now and get life-time updates for free." />

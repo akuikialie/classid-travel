@@ -2,27 +2,20 @@
 
 namespace App\Http\Controllers\Web\Admin;
 
-use App\Enums\RoleEnum;
 use App\Http\Controllers\Controller;
 use App\Http\Controllers\Web\Admin\Fragment\TenantFragmentController;
 use App\Models\Tenant\Tenant;
 use App\Services\TenantService;
 use App\Services\UserService;
-use App\Traits\FragmentRenderer;
-use App\Traits\ViewSupport;
 use Exception;
-use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Http\Response;
-use Illuminate\Routing\Redirector;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 use InvalidArgumentException;
-use Laravel\Octane\Exceptions\DdException;
 use Psr\Container\ContainerExceptionInterface;
 use Psr\Container\NotFoundExceptionInterface;
 use ReflectionException;
@@ -32,9 +25,6 @@ use Throwable;
 
 class TenantController extends Controller
 {
-
-    use ViewSupport, FragmentRenderer;
-
     protected string $forPage = 'travel';
 
     /**
@@ -42,7 +32,9 @@ class TenantController extends Controller
      */
     public function __construct()
     {
+        parent::__construct();
         $this->setData('current_page', $this->forPage);
+        $this->setBreadCrumb(['title' => 'Travel', 'url' => routed('admin.tenant.index')]);
     }
 
 
@@ -101,6 +93,9 @@ class TenantController extends Controller
      */
     public function index(): View
     {
+        $this->setPageTitle('Travel');
+        $this->setBreadCrumb('Travel');
+
         return $this->view('pages.web.tenant.tenant-index');
     }
 
@@ -110,7 +105,7 @@ class TenantController extends Controller
      * @return JsonResponse
      * @throws Throwable
      */
-    public function create()
+    public function create(): JsonResponse
     {
         if (\request()->ajax()) {
             $lastBCN = Tenant::query()->max('BCN');
@@ -129,7 +124,7 @@ class TenantController extends Controller
      * @return RedirectResponse
      * @throws Throwable
      */
-    public function store(Request $request)
+    public function store(Request $request): RedirectResponse
     {
         $input = $request->validate([
             'BCN' => ['required', 'integer'],
@@ -202,9 +197,12 @@ class TenantController extends Controller
     public function show(?Tenant $tenant = null): View
     {
         try {
+            $user = auth()->user();
+            if (!($user->tenant_id ?? null)) {
+                abort(404);
+            }
 
             if (is_null($tenant)) {
-                $user = auth()->user();
                 $tenant = Tenant::query()
                     ->with(['media'])
                     ->whereId($user->tenant_id)

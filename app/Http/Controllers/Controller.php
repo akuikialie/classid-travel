@@ -11,7 +11,6 @@ use Illuminate\Foundation\Validation\ValidatesRequests;
 use Illuminate\Routing\Controller as BaseController;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
-use Illuminate\View\View;
 use JetBrains\PhpStorm\Pure;
 
 class Controller extends BaseController
