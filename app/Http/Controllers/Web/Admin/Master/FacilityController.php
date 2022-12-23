@@ -68,6 +68,7 @@ class FacilityController extends Controller
 
                 return $datatable->make(true);
             } catch (Throwable $e) {
+                logError($e, title: 'Facility');
                 if (isDevelopmentMode()) {
                     throw $e;
                 } else {
@@ -136,6 +137,7 @@ class FacilityController extends Controller
             return redirect()->back();
         } catch (\Throwable $e) {
             DB::rollBack();
+            logError($e, title: 'Facility');
             if (isDevelopmentMode()) {
                 throw $e;
             } else {
@@ -213,6 +215,7 @@ class FacilityController extends Controller
             return redirect()->back();
         } catch (\Throwable $e) {
             DB::rollBack();
+            logError($e, title: 'Facility');
             if (isDevelopmentMode()) {
                 throw $e;
             } else {
@@ -240,6 +243,7 @@ class FacilityController extends Controller
             notify('Berhasil', 'Data fasilitas berhasil dihapus!', 'success')->autoClose();
             return redirect()->back();
         } catch (\Throwable $e) {
+            logError($e, title: 'Facility');
             if (isDevelopmentMode()) {
                 throw $e;
             } else {
@@ -275,6 +279,7 @@ class FacilityController extends Controller
             }
             return redirect()->back();
         }catch (Throwable $e){
+            logError($e, title: 'Facility');
             if (isDevelopmentMode()) {
                 throw $e;
             } else {

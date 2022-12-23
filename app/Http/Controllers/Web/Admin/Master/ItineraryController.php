@@ -59,6 +59,7 @@ class ItineraryController extends Controller
 
                 return $datatable->make(true);
             } catch (Throwable $e) {
+                logError($e, title: 'Itinerary');
                 if (isDevelopmentMode()) {
                     throw $e;
                 } else {
@@ -122,6 +123,7 @@ class ItineraryController extends Controller
             notify('Berhasil', 'Berhasil membuat kegiatan baru!.', 'success');
             return redirect()->back();
         }catch (\Throwable $e){
+            logError($e, title: 'Itinerary');
             if (isDevelopmentMode()) {
                 throw $e;
             } else {
@@ -186,6 +188,7 @@ class ItineraryController extends Controller
             notify('Berhasil', 'Berhasil memperbarui data kegiatan!.', 'success');
             return redirect()->back();
         }catch (\Throwable $e){
+            logError($e, title: 'Itinerary');
             if (isDevelopmentMode()) {
                 throw $e;
             } else {
@@ -213,6 +216,7 @@ class ItineraryController extends Controller
             notify('Berhasil', 'Data Aktifitas berhasil dihapus!', 'success')->autoClose();
             return redirect()->back();
         } catch (\Throwable $e) {
+            logError($e, title: 'Itinerary');
             if (isDevelopmentMode()) {
                 throw $e;
             } else {

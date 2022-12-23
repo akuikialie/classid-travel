@@ -114,6 +114,7 @@ class ProfileController extends Controller
             notify('Berhasil', 'Data berhasil diperbarui!.', 'success');
             return redirect()->back();
         } catch (Throwable $e) {
+            logError($e, title: 'Mobile profile');
             if (isDevelopmentMode()) {
                 throw $e;
             } else {
@@ -147,6 +148,7 @@ class ProfileController extends Controller
             $request->session()->regenerateToken();
             return redirect(route('login'));
         } catch (Throwable $e) {
+            logError($e, title: 'Mobile profile');
             if (isDevelopmentMode()) {
                 throw $e;
             } else {
@@ -173,6 +175,7 @@ class ProfileController extends Controller
             return \redirect()->back();
         }catch (\Throwable $e){
             DB::rollBack();
+            logError($e, title: 'Mobile profile');
             if (isDevelopmentMode()) {
                 throw $e;
             } else {

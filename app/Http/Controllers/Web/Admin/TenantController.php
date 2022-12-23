@@ -79,6 +79,7 @@ class TenantController extends Controller
                     ->rawColumns(['actions', 'status'])
                     ->make(true);
             } catch (\Yajra\DataTables\Exceptions\Exception $e) {
+                logError($e, title: 'Tenant');
                 if (isDevelopmentMode()) {
                     throw $e;
                 } else {
@@ -178,6 +179,7 @@ class TenantController extends Controller
             return redirect()->back();
         } catch (Throwable $e) {
             DB::rollBack();
+            logError($e, title: 'Tenant');
             if (isDevelopmentMode()) {
                 throw $e;
             } else {
@@ -228,6 +230,7 @@ class TenantController extends Controller
 
             $this->setData('tenant', $tenant);
         } catch (Exception $e) {
+            logError($e, title: 'Tenant');
             if (isDevelopmentMode()) {
                 throw $e;
             } else {
@@ -313,8 +316,8 @@ class TenantController extends Controller
             return redirect()->back();
 
         } catch (Throwable $e) {
-
             DB::rollBack();
+            logError($e, title: 'Tenant');
             if (isDevelopmentMode()) {
                 throw $e;
             } else {
@@ -369,6 +372,7 @@ class TenantController extends Controller
             return redirect()->back();
         } catch (Throwable $e) {
             DB::rollBack();
+            logError($e, title: 'Tenant');
             if (isDevelopmentMode()) {
                 throw $e;
             } else {
@@ -406,6 +410,7 @@ class TenantController extends Controller
 
             return redirect()->back();
         } catch (Throwable $e) {
+            logError($e, title: 'Tenant');
             if (isDevelopmentMode()) {
                 throw $e;
             } else {

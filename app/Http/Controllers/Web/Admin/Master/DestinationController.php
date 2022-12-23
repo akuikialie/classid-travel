@@ -67,6 +67,7 @@ class DestinationController extends Controller
 
                 return $datatable->make(true);
             } catch (Throwable $e) {
+                logError($e, title: 'Destination');
                 if (isDevelopmentMode()) {
                     throw $e;
                 } else {
@@ -135,6 +136,7 @@ class DestinationController extends Controller
             return redirect()->back();
         } catch (Throwable $e) {
             DB::rollBack();
+            logError($e, title: 'Destination');
             if (isDevelopmentMode()) {
                 throw $e;
             } else {
@@ -210,6 +212,7 @@ class DestinationController extends Controller
             return redirect()->back();
         } catch (Throwable $e) {
             DB::rollBack();
+            logError($e, title: 'Destination');
             if (isDevelopmentMode()) {
                 throw $e;
             } else {
@@ -240,6 +243,7 @@ class DestinationController extends Controller
             notify('Berhasil', 'Data destinasi berhasil dihapus!', 'success')->autoClose();
             return redirect()->back();
         } catch (Throwable $e) {
+            logError($e, title: 'Destination');
             if (isDevelopmentMode()) {
                 throw $e;
             } else {
@@ -278,6 +282,7 @@ class DestinationController extends Controller
             return redirect()->back();
         }catch (Throwable $e){
             notify('Oops!', $e->getMessage(), 'error');
+            logError($e, title: 'Destination');
             if (isDevelopmentMode()) {
                 throw $e;
             } else {

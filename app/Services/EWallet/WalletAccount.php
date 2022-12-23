@@ -66,6 +66,8 @@ trait WalletAccount
             Cache::forget("walletAdmin");
         }
 
+        dd($adminUser);
+
         if (is_null($this->user)){
             $this->user = $adminUser;
         }
