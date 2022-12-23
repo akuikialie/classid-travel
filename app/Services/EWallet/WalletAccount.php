@@ -19,7 +19,12 @@ trait WalletAccount
      */
     public function login(string $username, string $password): bool
     {
-        if ($username == config('wallet.admin.username')) {
+        $walletUser = config('wallet.admin.username');
+
+        if ($this->tenantCredentials){
+            $walletUser = $this->tenantCredentials['WALLET_ADMIN_USER'];
+        }
+        if ($username == $walletUser) {
             return $this->_doLogin($username, $password);
         }
 
@@ -77,6 +82,7 @@ trait WalletAccount
      */
     public function createUser(string $id, string $va, string $name, ?string $email = null): ?WalletUser
     {
+        dd($this->user);
         if (!$this->user->isAdmin()) {
             throw new Exception('not authorized', 403);
         }
@@ -120,8 +126,9 @@ trait WalletAccount
 
     private function _doLogin(string $username, string $password): bool
     {
+        $credentials = $this->tenantCredentials;
         $post = $this->client()->post('auth/oauth/login', [
-            'school_key' => config('wallet.bcn'),
+            'school_key' => $credentials['WALLET_BCN'] ?? config('wallet.bcn'),
             'username' => $username,
             'password' => $password,
         ]);
