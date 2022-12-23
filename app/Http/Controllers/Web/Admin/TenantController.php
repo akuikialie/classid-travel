@@ -7,6 +7,7 @@ use App\Http\Controllers\Web\Admin\Fragment\TenantFragmentController;
 use App\Models\Tenant\Tenant;
 use App\Services\TenantService;
 use App\Services\UserService;
+use App\Traits\FragmentRenderer;
 use Exception;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\JsonResponse;
@@ -25,6 +26,8 @@ use Throwable;
 
 class TenantController extends Controller
 {
+    use FragmentRenderer;
+
     protected string $forPage = 'travel';
 
     /**
@@ -34,7 +37,6 @@ class TenantController extends Controller
     {
         parent::__construct();
         $this->setData('current_page', $this->forPage);
-        $this->setBreadCrumb(['title' => 'Travel', 'url' => routed('admin.tenant.index')]);
     }
 
 
@@ -196,6 +198,10 @@ class TenantController extends Controller
      */
     public function show(?Tenant $tenant = null): View
     {
+        $this->setPageTitle('Profil Travel');
+        $this->setBreadCrumb('Profil Travel');
+
+
         try {
             $user = auth()->user();
             if (!($user->tenant_id ?? null)) {

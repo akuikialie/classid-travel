@@ -1,5 +1,4 @@
-@can("delete {$current_page}")
-
+@can("view {$current_page}")
   <a href="{{ route('admin.role.show', $role->hash) }}" class="btn btn-light btn-active-light-primary btn-sm" >
     <!--begin::Svg Icon | path: icons/duotune/arrows/arr072.svg-->
     <span class="svg-icon svg-icon-5 m-0">
@@ -7,7 +6,9 @@
     </span>
     <!--end::Svg Icon-->
   </a>
+@endcan
 
+@can("update {$current_page}")
   <a type="button" data-id="{{ $role->hash }}" class="btn btn-light btn-active-light-primary btn-sm update-role">
     <!--begin::Svg Icon | path: icons/duotune/arrows/arr072.svg-->
     <span class="svg-icon svg-icon-5 m-0">
@@ -15,8 +16,10 @@
     </span>
     <!--end::Svg Icon-->
   </a>
+@endcan
 
-  <a href="#" class="btn btn-light btn-active-light-primary btn-sm"
+@can("delete {$current_page}")
+  <a class="btn btn-light btn-active-light-primary btn-sm"
      data-kt-menu-trigger="click" data-kt-menu-placement="bottom-end">
     <!--begin::Svg Icon | path: icons/duotune/arrows/arr072.svg-->
     <span class="svg-icon svg-icon-5 m-0">

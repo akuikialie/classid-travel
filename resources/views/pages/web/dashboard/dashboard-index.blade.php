@@ -8,10 +8,6 @@
   <script src="{{ asset('web/plugins/custom/datatables/datatables.bundle.js') }}"></script>
 @endsection
 
-@section('page-custom-scripts')
-
-@endsection
-
 @section('page-content')
   <!--begin::Row-->
   <div class="row g-5 g-xl-10 mb-5 mb-xl-10">

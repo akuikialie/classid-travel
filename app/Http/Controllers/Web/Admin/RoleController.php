@@ -68,7 +68,7 @@ class RoleController extends Controller
                     ->when(!$user->hasRole('super-administrator') && isset($user->tenant_id),
                         function (Builder $subQuery) use ($user) {
                             $subQuery->where('tenant_id', $user->tenant_id);
-                            $subQuery->orWhere('type','=', 'app');
+                            $subQuery->orWhere('type', '=', 'app');
                         })
                     ->with(['permissions', 'users', 'tenant'])
                     ->withCount(['users'])
@@ -118,13 +118,18 @@ class RoleController extends Controller
     /**
      * Display a listing of the resource.
      *
-     * @return Factory|View|RedirectResponse
+     * @return Factory|View
      * @throws ContainerExceptionInterface
      * @throws NotFoundExceptionInterface
      * @throws \Exception
      */
     public function index()
     {
+        $this->setPageTitle('Roles');
+        $this->setBreadCrumb([
+            ['title' => 'Roles', 'url' => route('admin.role.index')],
+        ]);
+
         $user = auth()->user();
         $roles = Role::query();
 
@@ -351,6 +356,12 @@ class RoleController extends Controller
      */
     public function show(Role $role)
     {
+        $this->setPageTitle('View Role Details');
+        $this->setBreadCrumb([
+            ['title' => 'Roles', 'url' => route('admin.role.index')],
+            ['title' => 'View Role Details', 'url' => '#']
+        ]);
+
         $user = auth()->user();
         $roles = Role::query()
             ->when($user->tenant_id === null, function (Builder $subQuery) {

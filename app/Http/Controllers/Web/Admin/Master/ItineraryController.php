@@ -75,6 +75,8 @@ class ItineraryController extends Controller
      */
     public function index()
     {
+        $this->setPageTitle('Rencana');
+        $this->setBreadCrumb('Rencana');
         return $this->view('pages.web.master.itinerary.itinerary-index');
     }
 

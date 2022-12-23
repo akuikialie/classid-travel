@@ -84,7 +84,8 @@ class DestinationController extends Controller
      */
     public function index(): View|Factory|Application
     {
-
+        $this->setPageTitle('Destinasi');
+        $this->setBreadCrumb('Destinasi');
         return $this->view('pages.web.master.destination.destination-index');
     }
 
