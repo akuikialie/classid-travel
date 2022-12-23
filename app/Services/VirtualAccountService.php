@@ -11,6 +11,7 @@ use App\Services\EWallet\WalletService;
 use Carbon\Carbon;
 use Exception;
 use http\Exception\InvalidArgumentException;
+use Illuminate\Database\Eloquent\Builder;
 use Laravel\Octane\Exceptions\DdException;
 
 class VirtualAccountService
@@ -76,11 +77,12 @@ class VirtualAccountService
     {
         /* begin:: generate new VA ID */
         $VA = VirtualAccount::query()
-            ->where(function ($subQuery) {
-                $subQuery->where('va_label', $this->vaType)
+            ->where(function (Builder $subQuery) {
+                $subQuery
+                    ->where('va_label', $this->vaType)
+                    ->where('tenant_id', $this->tenantId)
                     ->whereMonth('created_at', Carbon::now());
             })->max('va_number');
-
 
         $VANumber = createNewVA($this->vaType, $VA);
 
