@@ -50,6 +50,7 @@ class RegisterUserController extends Controller
             return redirect(route('login'));
         }catch (Throwable $e){
             DB::rollBack();
+            logError($e, title: 'Mobile Register');
             if (isDevelopmentMode()) {
                 throw $e;
             } else {
