@@ -45,8 +45,12 @@ class DefaultRoute extends BaseRoute
         //     })->name('tabungan');
         // });
 
-        $this->router->get('cache-clear', function (string $key) {
-            Cache::forget($key);
+        $this->router->get('cache-clear/{key}', function (string $key) {
+            try {
+                Cache::forget($key);
+            } catch (\Exception $e) {
+                throw $e;
+            }
         })->middleware('auth');
     }
 }
