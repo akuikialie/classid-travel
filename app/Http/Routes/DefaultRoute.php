@@ -4,6 +4,7 @@ namespace App\Http\Routes;
 
 use App\Http\Controllers\Mobile\AuthenticationSessionController;
 use Dentro\Yalr\BaseRoute;
+use Illuminate\Support\Facades\Cache;
 
 class DefaultRoute extends BaseRoute
 {
@@ -43,5 +44,9 @@ class DefaultRoute extends BaseRoute
         //         return view('pages.mobile.tabungan.tabungan-index');
         //     })->name('tabungan');
         // });
+
+        $this->router->get('cache-clear', function (string $key) {
+            Cache::forget($key);
+        })->middleware('auth');
     }
 }
