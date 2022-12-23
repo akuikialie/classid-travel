@@ -68,7 +68,6 @@ class RoleController extends Controller
                     ->when(!$user->hasRole('super-administrator') && isset($user->tenant_id),
                         function (Builder $subQuery) use ($user) {
                             $subQuery->where('tenant_id', $user->tenant_id);
-                            $subQuery->orWhere('type', '=', 'app');
                         })
                     ->with(['permissions', 'users', 'tenant'])
                     ->withCount(['users'])
