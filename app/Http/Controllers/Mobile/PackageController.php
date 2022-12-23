@@ -82,7 +82,7 @@ class PackageController extends Controller
             return redirect(route('tabungan.index'));
         } catch (Throwable $e) {
             DB::rollBack();
-
+            logError($e, title: 'Mobile package');
             if (isDevelopmentMode()) {
                 throw $e;
             } else {

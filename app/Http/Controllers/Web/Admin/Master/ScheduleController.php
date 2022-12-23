@@ -66,6 +66,7 @@ class ScheduleController extends Controller
 
                 return $datatable->make(true);
             } catch (Throwable $e) {
+                logError($e, title: 'Schedule');
                 if (isDevelopmentMode()) {
                     throw $e;
                 } else {
@@ -125,6 +126,7 @@ class ScheduleController extends Controller
             notify('Berhasil', 'Jadwal baru berhasil dibuat!', 'success')->autoClose();
             return redirect()->back();
         } catch (Throwable $e) {
+            logError($e, title: 'Schedule');
             if (isDevelopmentMode()) {
                 throw $e;
             } else {
@@ -186,6 +188,7 @@ class ScheduleController extends Controller
             notify('Berhasil', 'Data jadwal berhasil diperbarui!', 'success')->autoClose();
             return redirect()->back()->with('success', 'success');
         } catch (Throwable $e) {
+            logError($e, title: 'Schedule');
             if (isDevelopmentMode()) {
                 throw $e;
             } else {
@@ -212,6 +215,7 @@ class ScheduleController extends Controller
             notify('Berhasil', 'Data jadwal berhasil dihapus!', 'success')->autoClose();
             return redirect()->back();
         } catch (Throwable $e) {
+            logError($e, title: 'Schedule');
             if (isDevelopmentMode()) {
                 throw $e;
             } else {
@@ -247,6 +251,7 @@ class ScheduleController extends Controller
             }
             return redirect()->back();
         }catch (Throwable $e){
+            logError($e, title: 'Schedule');
             if (isDevelopmentMode()) {
                 throw $e;
             } else {

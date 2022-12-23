@@ -78,6 +78,7 @@ class PerencanaanController extends Controller
                 }
             } catch (NotFoundExceptionInterface|ContainerExceptionInterface $e) {
                 notify('Gagal', $e->getMessage(), 'error');
+                logError($e, title: 'Mobile perencanaan');
                 return redirect()->back();
             }
         }
