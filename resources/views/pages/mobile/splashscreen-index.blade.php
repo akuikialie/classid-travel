@@ -11,14 +11,12 @@
           $avatar = collect($avatars)->last()->getUrl();
       }
     }
+    $avatar = $avatar ?? asset('mobile/images/logo/logo_umrah_haji.jpeg');
   @endphp
-  <div class="card preload-img" data-src="{{ $avatar ?? asset('mobile/images/logo/logo_umrah_haji.jpeg') }}"
-       data-card-height="cover">
+  <div class="card h-100 preload-img">
 
     <div class="card-top mt-5 text-center">
-      <img class="preload-img rounded-circle mt-5 mb-5"
-           data-src="{{ $avatar ?? asset('mobile/images/logo/logo_umrah_haji.jpeg') }}"
-           src="{{ $avatar ?? asset('mobile/images/logo/logo_umrah_haji.jpeg') }}" width="220" alt="Logo">
+      <img class="preload-img rounded-circle mt-5 mb-5" data-src="{{ $avatar }}" src="{{ $avatar }}" width="220" alt="Logo">
       {{-- <h1 class="fa-3x color-theme font-900">Pro Hajj APP</h1> --}}
       <h6 class="font-300 color-highlight mt-1">Selamat datang di {{ $tenant->name ?? 'ProHajj' }} APP. </h6>
 
@@ -41,4 +39,20 @@
 
     <div class="card-overlay bg-theme opacity-95"></div>
   </div>
+@endsection
+
+@section('vendor-styles')
+  <style>
+    #page {
+      background-color: #fafafa;
+      background-image: url("{{ $avatar }}");
+      background-repeat: no-repeat;
+      background-size: cover;
+      background-blend-mode: overlay;
+      background-position: center center;
+    }
+    #page .page-content > .card, .theme-light .bg-theme {
+      background: transparent !important;
+    }
+  </style>
 @endsection

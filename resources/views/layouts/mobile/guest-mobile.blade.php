@@ -22,10 +22,7 @@
   <title>{{ $tenant->name ?? 'ProHajj' }} - App</title>
 
   <link rel="shortcut icon" href="{{ $avatar ?? asset('logo/24w/logo-pict@24px.png') }}"/>
-
-
   @include('customs.mobile.styles')
-
 </head>
 
 <body class="theme-light">
@@ -34,7 +31,7 @@
   <div class="spinner-border color-highlight" role="status"></div>
 </div>
 
-<div id="page">
+<div id="page" class="d-flex justify-content-center">
 
   <div class="page-content pb-0">
 
@@ -43,9 +40,9 @@
   </div>
   <!-- end of page content-->
 
-  <div id="menu-highlights" class="menu menu-box-bottom menu-box-detached rounded-m"
+  {{--<div id="menu-highlights" class="menu menu-box-bottom menu-box-detached rounded-m"
        data-menu-load="menu-colors.html" data-menu-height="510" data-menu-effect="menu-over">
-  </div>
+  </div>--}}
 
 </div>
 
