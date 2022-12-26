@@ -92,6 +92,7 @@ class PackageController extends Controller
 
                 return $datatable->make(true);
             } catch (Throwable $e) {
+                logError($e, title: 'Package');
                 if (isDevelopmentMode()) {
                     throw $e;
                 } else {
@@ -191,6 +192,7 @@ class PackageController extends Controller
             return redirect()->back();
         } catch (Throwable $e) {
             DB::rollBack();
+            logError($e, title: 'Package');
             if (isDevelopmentMode()) {
                 throw $e;
             } else {
@@ -301,6 +303,7 @@ class PackageController extends Controller
             return redirect()->back();
         } catch (Throwable $e) {
             DB::rollBack();
+            logError($e, title: 'Package');
             if (isDevelopmentMode()) {
                 throw $e;
             } else {
@@ -328,6 +331,7 @@ class PackageController extends Controller
             notify('Berhasil', 'Data paket berhasil dihapus!', 'success')->autoClose();
             return redirect()->back();
         } catch (Throwable $e) {
+            logError($e, title: 'Package');
             if (isDevelopmentMode()) {
                 throw $e;
             } else {
@@ -448,6 +452,7 @@ class PackageController extends Controller
 
             return redirect()->back()->withInput();
         } catch (Throwable $e) {
+            logError($e, title: 'Package');
             if (isDevelopmentMode()) {
                 throw $e;
             } else {
@@ -484,6 +489,7 @@ class PackageController extends Controller
             }
             return redirect()->back();
         }catch (Throwable $e){
+            logError($e, title: 'Package');
             if (isDevelopmentMode()) {
                 throw $e;
             } else {

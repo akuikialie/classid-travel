@@ -34,8 +34,9 @@ class ReferralController extends Controller
             if ($auth == 'register') {
                 return view('pages.mobile.referal.referal-register-index', ['hash' => $hashableId]);
             }
-        } catch (Throwable $th) {
-            throw $th;
+        } catch (Throwable $e) {
+            logError($e, title: 'Mobile referral');
+            throw $e;
         }
     }
 
@@ -58,6 +59,9 @@ class ReferralController extends Controller
         }
     }
 
+    /**
+     * @throws Throwable
+     */
     public function saved($hashableId)
     {
         DB::beginTransaction();
@@ -69,7 +73,7 @@ class ReferralController extends Controller
             DB::commit();
         } catch (Throwable $e) {
             DB::rollBack();
-
+            logError($e, title: 'Mobile referral');
             if (isDevelopmentMode()) {
                 throw $e;
             } else {
@@ -104,6 +108,7 @@ class ReferralController extends Controller
                 ]);
             } catch (Throwable $e) {
                 DB::rollBack();
+                logError($e, title: 'Mobile referral');
                 if (isDevelopmentMode()) {
                     throw $e;
                 } else {
@@ -143,6 +148,7 @@ class ReferralController extends Controller
             return redirect(route('login'));
         }catch (Throwable $e){
             DB::rollBack();
+            logError($e, title: 'Mobile referral');
             if (isDevelopmentMode()) {
                 throw $e;
             } else {
@@ -170,6 +176,7 @@ class ReferralController extends Controller
 
             return redirect(route('home.index'));
         } catch (Throwable $e) {
+            logError($e, title: 'Mobile referral');
             if (isDevelopmentMode()) {
                 throw $e;
             } else {

@@ -10,6 +10,7 @@ use App\Models\User;
 use App\Services\UserService;
 use DB;
 use Illuminate\Contracts\Foundation\Application;
+use Illuminate\Contracts\View\Factory;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
@@ -86,13 +87,13 @@ class UserController extends Controller
                 }
 
                 return $datatable->make(true);
-            } catch (Exception $e) {
+            } catch (Exception|NotFoundExceptionInterface|ContainerExceptionInterface $e) {
+                logError($e, title: 'User');
                 if (isDevelopmentMode()) {
                     throw $e;
                 } else {
                     throw new \Exception('Terjadi kesalahan!');
                 }
-            } catch (NotFoundExceptionInterface|ContainerExceptionInterface $e) {
             }
         }
         abort(404);
@@ -101,10 +102,10 @@ class UserController extends Controller
     /**
      * Display a listing of the resource.
      *
-     * @return View
+     * @return Factory|\Illuminate\Contracts\View\View
      * @throws \Exception
      */
-    public function index(): View
+    public function index()
     {
         $this->setPageTitle('Users');
         $this->setBreadCrumb('Users');
@@ -186,6 +187,7 @@ class UserController extends Controller
             return redirect()->back();
         } catch (Throwable $e) {
             DB::rollBack();
+            logError($e, title: 'User');
             if (isDevelopmentMode()) {
                 throw $e;
             } else {
@@ -252,6 +254,7 @@ class UserController extends Controller
             notify('Behasil!', 'Berhasil menghapus akun!', 'success');
             return redirect()->back();
         } catch (Throwable $e) {
+            logError($e, title: 'User');
             if (isDevelopmentMode()) {
                 throw $e;
             } else {
@@ -283,6 +286,7 @@ class UserController extends Controller
             notify('Behasil!', 'Berhasil memperbarui status akun!', 'success');
             return redirect()->back();
         } catch (Throwable $e) {
+            logError($e, title: 'User');
             if (isDevelopmentMode()) {
                 throw $e;
             } else {

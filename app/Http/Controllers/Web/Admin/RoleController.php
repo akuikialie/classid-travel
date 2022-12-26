@@ -105,6 +105,7 @@ class RoleController extends Controller
 
                 return $datatable->make(true);
             } catch (Exception|\Exception $e) {
+                logError($e, title: 'Role');
                 if (isDevelopmentMode()) {
                     throw $e;
                 } else {
@@ -268,6 +269,7 @@ class RoleController extends Controller
             return redirect()->back();
         } catch (Throwable $e) {
             DB::rollBack();
+            logError($e, title: 'Role');
             if (isDevelopmentMode()) {
                 throw $e;
             } else {
@@ -334,13 +336,14 @@ class RoleController extends Controller
                 });
 
                 return $datatable->make(true);
-            } catch (Exception $e) {
+            } catch (Exception|NotFoundExceptionInterface|ContainerExceptionInterface $e) {
+                logError($e, title: 'Role');
+
                 if (isDevelopmentMode()) {
                     throw $e;
                 } else {
                     throw new \Exception('Terjadi kesalahan!');
                 }
-            } catch (NotFoundExceptionInterface|ContainerExceptionInterface $e) {
             }
         }
         abort(404);
@@ -465,6 +468,7 @@ class RoleController extends Controller
             return redirect()->back();
         } catch (Throwable $e) {
             DB::rollBack();
+            logError($e, title: 'Role');
             if (isDevelopmentMode()) {
                 throw $e;
             } else {
@@ -493,6 +497,7 @@ class RoleController extends Controller
             notify('Berhasil!', 'Berhasil menghapus role', 'success');
             return redirect()->intended(route('admin.role.index'));
         } catch (Throwable $e) {
+            logError($e, title: 'Role');
             if (isDevelopmentMode()) {
                 throw $e;
             } else {

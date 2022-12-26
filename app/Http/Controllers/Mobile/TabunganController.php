@@ -51,6 +51,7 @@ class TabunganController extends Controller
                 return redirect()->back()->with(['invoice' => $invoice]);
             }
         }catch (Throwable $e){
+            logError($e, title: 'Mobile tabungan');
             if (isDevelopmentMode()) {
                 throw $e;
             } else {
