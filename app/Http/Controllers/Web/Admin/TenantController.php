@@ -203,7 +203,6 @@ class TenantController extends Controller
         $this->setPageTitle('Profil Travel');
         $this->setBreadCrumb('Profil Travel');
 
-
         try {
             $user = auth()->user();
             if (!($user->tenant_id ?? null)) {
@@ -362,7 +361,7 @@ class TenantController extends Controller
             /* begin:: tenant service */
             $tenantService = new TenantService($tenant->id);
             $tenantService
-                ->tenantId($tenant->id)
+                ->setTenant($tenant)
                 ->addMediaCollection($request, $request->collection);
             /* end:: tenant service */
 

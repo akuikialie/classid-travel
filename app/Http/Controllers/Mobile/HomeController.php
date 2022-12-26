@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Mobile;
 use App\Models\Jamaah\Jamaah;
 use App\Models\Tenant\Tenant;
 use App\Models\User;
+use App\Services\EWallet\WalletService;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
@@ -15,11 +16,14 @@ class HomeController extends Controller
      * Display a listing of the resource.
      *
      * @return Application|Factory|View
+     * @throws \Exception
      */
     public function index()
     {
-
         $user = auth()->user();
+       /* $walletService = new WalletService();
+        $walletService->login($user->tabungan->va_number, $user->tabungan->password);
+        $walletService->getUser();*/
         /* begin:: show all savings */
         $savings = $this->listSavings($user);
         /* end:: show all savings */

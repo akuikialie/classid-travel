@@ -63,6 +63,9 @@ class DashboardController extends Controller
 
         $arrayData = [];
         foreach ($dataKeberangkatan as $item) {
+            if (!$item->user){
+                continue;
+            }
             $arrayData[] = [
                 'id' => $item->id,
                 'name' => $item->user?->name,

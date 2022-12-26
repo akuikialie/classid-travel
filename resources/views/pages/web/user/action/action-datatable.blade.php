@@ -26,7 +26,7 @@
       <!--begin::Menu sub-->
       <div class="menu-sub menu-sub-dropdown w-175px py-4 px-4 ">
         <form method="post" data-kt-form-id="change-status-{{ $user->hash }}"
-              action="{{ route('admin.user.change-status', $user->hash) }}">
+              action="{{ route('admin.user.change-status', ['type' => $type,'user_hash' => $user->hash]) }}">
           @csrf
           @foreach(UserStatus::cases() as $status)
             <a href="#" class="menu-link px-3 change-status {{ $status->value == $user->status ? 'active' : '' }}"
@@ -48,7 +48,7 @@
 
     <!--begin::Menu item-->
     <div class="menu-item px-3 text-nowrap">
-      <form action="{{ route('admin.user.destroy', $user->hash) }}" method="post"
+      <form action="{{ route('admin.user.destroy', ['type' => $type,'user_hash' => $user->hash]) }}" method="post"
             data-kt-form-id="delete-{{ $user->hash }}">
         @csrf
         @method('DELETE')
