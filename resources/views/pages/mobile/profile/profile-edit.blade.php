@@ -18,7 +18,8 @@
     <div class="content">
       <div class="d-flex">
         <div>
-          <img src="{{ isset($mediaUrl) ? $mediaUrl : asset('mobile/images/pictures/20s.jpg') }}" width="50" class="me-3 bg-highlight rounded-xl">
+          <img src="{{ isset($mediaUrl) ? $mediaUrl : asset('mobile/images/pictures/20s.jpg') }}" width="50"
+               class="me-3 bg-highlight rounded-xl">
         </div>
         <div>
           <h1 class="mb-0 pt-1">{{ isset($user) ? $user?->name : 'unknown' }}</h1>
@@ -120,11 +121,11 @@
       <h3 class="font-600">Lain Lain</h3>
 
       <div class="list-group list-custom-small">
-        {{-- <a href="#">
-            <i class="fas fa-phone-alt"></i>
-            <span>Ubah Nomor Pengguna</span>
-            <i class="fa fa-arrow-right"></i>
-        </a> --}}
+        <a href="#" data-menu="menu-reschedule">
+          <i class="fa-solid fa-plane"></i>
+          <span>Ubah Keberangkatan</span>
+          <i class="fa fa-arrow-right"></i>
+        </a>
         <a href="#" data-menu="change-password">
           <i class="fas fa-unlock-alt"></i>
           <span>Ubah Password</span>
@@ -137,6 +138,22 @@
 @endsection
 
 @section('external-mobile-content')
+
+  <!---------------->
+  <!---------------->
+  <!--Menu Confirm-->
+  <!---------------->
+  <!---------------->
+  <div id="menu-reschedule" class="menu menu-box-bottom menu-box-detached rounded-m" data-menu-height="360"
+       data-menu-effect="menu-over">
+    <form action="{{ route('profile.reschedule', $user->hash) }}" method="post">
+      @csrf
+      @method('PUT')
+
+      @include('pages.mobile.package.menu.menu-data-keberangkatan')
+    </form>
+  </div>
+
   <!--------------->
   <!--------------->
   <!--Menu Forgot-->

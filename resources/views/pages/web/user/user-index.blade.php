@@ -97,17 +97,17 @@
               <!--end::Menu 1-->
               <!--end::Filter-->
 
-              @can("create {$current_page}")
-                <button type="button" class="btn btn-primary" id="create-new" data-bs-toggle="tooltip"
-                        title="Tambahkan Admin">
-                  <!--begin::Svg Icon | path: icons/duotune/arrows/arr075.svg-->
-                  <span class="svg-icon svg-icon-2">
+            @if($pageTitle == 'Staff')
+                @can("create {$current_page}")
+                  <button type="button" class="btn btn-primary" id="create-new" data-bs-toggle="tooltip"
+                          title="Tambahkan Admin">
+                    <!--begin::Svg Icon | path: icons/duotune/arrows/arr075.svg-->
+                    <span class="svg-icon svg-icon-2">
                   <i class="fa-solid fa-plus"></i>
                 </span>
-                  <!--end::Svg Icon-->Tambah Admin
-                </button>
-              @endcan
-            @if($pageTitle == 'Staff')
+                    <!--end::Svg Icon-->Tambah Admin
+                  </button>
+                @endcan
               @endif
             </div>
             <!--end::Toolbar-->
