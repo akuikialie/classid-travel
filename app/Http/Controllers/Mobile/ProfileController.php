@@ -5,13 +5,17 @@ namespace App\Http\Controllers\Mobile;
 use App\Actions\Users\ChangeAvatar;
 use App\Http\Controllers\AuthenticationSessionController;
 use App\Http\Controllers\Controller;
+use App\Models\Geo\City;
 use App\Models\Jamaah\Jamaah;
 use App\Models\Referral\UserInvitation;
+use App\Models\Schedule\Schedule;
 use App\Models\User;
 use App\Rules\OldPasswordRule;
+use Carbon\Carbon;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
@@ -75,7 +79,7 @@ class ProfileController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  int  $id
+     * @param int $id
      * @return Response
      */
     public function show($id)
@@ -86,14 +90,32 @@ class ProfileController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  int  $id
+     * @param int $id
      * @return Application|Factory|View
+     * @throws \Exception
      */
     public function edit(int $id)
     {
-        $user = User::query()->where('id', $id)->first();
-        // dd($user);
-        return view('pages.mobile.profile.profile-edit', ['user' => $user]);
+        $user = User::query()
+            ->with(['jamaah'])->where('id', $id)->first();
+//        dd($user);
+
+        $schedules = Schedule::query()
+            ->tenantId($user->tenant_id)
+            ->whereDate('departure_date', '>', Carbon::now()->addDay(7))
+            ->get();
+
+        $cities = City::query()->get();
+
+        setDefaultRequest([
+            'schedule_id' => $user->jamaah->schedule_id,
+            'departure_city_id' => $user->jamaah->departure_city_id,
+        ]);
+
+        $this->setData('user', $user);
+        $this->setData('cities', $cities);
+        $this->setData('schedules', $schedules);
+        return $this->view('pages.mobile.profile.profile-edit');
     }
 
     /**
@@ -161,7 +183,8 @@ class ProfileController extends Controller
     /**
      * @throws Throwable
      */
-    public function changeProfile(Request $request, ChangeAvatar $changeAvatar){
+    public function changeProfile(Request $request, ChangeAvatar $changeAvatar)
+    {
         $request->validate([
             'avatar' => ['required', 'max:2048']
         ]);
@@ -173,7 +196,7 @@ class ProfileController extends Controller
             notify('Berhasil!', 'Photo profil berhasil di perbarui', 'success');
             DB::commit();
             return \redirect()->back();
-        }catch (\Throwable $e){
+        } catch (Throwable $e) {
             DB::rollBack();
             logError($e, title: 'Mobile profile');
             if (isDevelopmentMode()) {
@@ -189,7 +212,7 @@ class ProfileController extends Controller
      * Update the specified resource in storage.
      *
      * @param Request $request
-     * @param  int  $id
+     * @param int $id
      * @return Response
      */
     public function update(Request $request, $id)
@@ -200,11 +223,40 @@ class ProfileController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  int  $id
+     * @param int $id
      * @return Response
      */
     public function destroy($id)
     {
         //
+    }
+
+    /**
+     * @param Request $request
+     * @param User $user
+     * @return RedirectResponse
+     * @throws Throwable
+     */
+    public function reschedule(Request $request, User $user)
+    {
+        $input = $request->validate([
+            'departure_city_id' => ['required', 'integer'],
+            'schedule_id' => ['required', 'string'],
+        ]);
+        try {
+            $user->jamaah->schedule_id = $input['schedule_id'];
+            $user->jamaah->departure_city_id = $input['departure_city_id'];
+            $user->push();
+            notify('Berhasil', 'Data berhasil diperbarui!.', 'success');
+            return \redirect()->back();
+        } catch (Throwable $e) {
+            logError($e, title: 'Mobile package');
+            if (isDevelopmentMode()) {
+                throw $e;
+            } else {
+                notify('Oops!', 'Terjadi kesalahan!', 'error');
+            }
+            return redirect()->back();
+        }
     }
 }
