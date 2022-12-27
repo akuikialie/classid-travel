@@ -66,8 +66,6 @@ trait WalletAccount
             Cache::forget("walletAdmin");
         }
 
-        dd($adminUser);
-
         if (is_null($this->user)){
             $this->user = $adminUser;
         }
@@ -84,7 +82,6 @@ trait WalletAccount
      */
     public function createUser(string $id, string $va, string $name, ?string $email = null): ?WalletUser
     {
-        dd($this->user);
         if (!$this->user->isAdmin()) {
             throw new Exception('not authorized', 403);
         }

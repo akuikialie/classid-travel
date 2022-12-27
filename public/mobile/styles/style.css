@@ -75,7 +75,7 @@ body {
   overflow-x: hidden;
 }
 
-#page > .page-content {
+#page > .page-content, #footer-bar > .content {
   width: 100%;
   height: 100%;
   max-width: 500px;

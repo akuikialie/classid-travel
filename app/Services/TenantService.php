@@ -39,6 +39,17 @@ class TenantService
     }
 
     /**
+     * @param Tenant $tenant
+     * @return $this
+     */
+    public function setTenant(Tenant $tenant): static
+    {
+        $this->tenant = $tenant;
+
+        return $this;
+    }
+
+    /**
      * @return $this
      * @throws FileDoesNotExist
      * @throws FileIsTooBig
@@ -135,13 +146,4 @@ class TenantService
 
         return $tenant;
     }
-
-    /**
-     * @param Tenant $tenant
-     */
-    public function setTenant(Tenant $tenant): void
-    {
-        $this->tenant = $tenant;
-    }
-
 }
