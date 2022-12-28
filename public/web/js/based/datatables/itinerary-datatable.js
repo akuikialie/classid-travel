@@ -27,7 +27,7 @@ let KTDatatablesServerSide = function () {
           _token: csrf_token,
         },
 
-        error: function(error){
+        error: function (error) {
           Swal.fire({
             icon: error.responseJSON.icon,
             title: error.responseJSON.title,
@@ -89,7 +89,7 @@ let KTDatatablesServerSide = function () {
               modal.show();
 
               /* begin:: dismiss modal helper*/
-              $("[data-bs-dismiss=modal]").click(function(){
+              $("[data-bs-dismiss=modal]").click(function () {
                 if ($("#modal_itinerary_activity").is(":visible")) {
                   modal.hide();
                 }
@@ -118,15 +118,15 @@ let KTDatatablesServerSide = function () {
         e.preventDefault();
         let status = $(this).attr("data-status");
         let hash = $(this).attr("data-id");
-        const form = $('form[data-kt-form-id="change-status-'+hash+'"]');
-        form.append('<input type="hidden" name="status" value="'+status+'" />')
+        const form = $('form[data-kt-form-id="change-status-' + hash + '"]');
+        form.append('<input type="hidden" name="status" value="' + status + '" />')
         form.submit();
       }),
 
       $("#kt_datatable_example_1 tbody").on("click", ".btn-delete", function (e) {
         e.preventDefault();
         let hash = $(this).attr("data-id");
-        const form = $('form[data-kt-form-id="delete-'+hash+'"]');
+        const form = $('form[data-kt-form-id="delete-' + hash + '"]');
         form.submit();
       });
 
@@ -155,7 +155,7 @@ let KTDatatablesServerSide = function () {
             modal.show();
 
             /* begin:: dismiss modal helper*/
-            $("[data-bs-dismiss=modal]").click(function(){
+            $("[data-bs-dismiss=modal]").click(function () {
               if ($("#modal_itinerary_activity").is(":visible")) {
                 modal.hide();
               }

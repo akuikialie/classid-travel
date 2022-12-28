@@ -119,7 +119,6 @@
                 </span>
                   <!--end::Svg Icon-->Setup Paket
                 </button>
-
               @endcan
             </div>
             <!--end::Toolbar-->

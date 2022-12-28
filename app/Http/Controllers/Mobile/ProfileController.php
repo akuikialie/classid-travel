@@ -7,7 +7,6 @@ use App\Http\Controllers\AuthenticationSessionController;
 use App\Http\Controllers\Controller;
 use App\Models\Geo\City;
 use App\Models\Jamaah\Jamaah;
-use App\Models\Referral\UserInvitation;
 use App\Models\Schedule\Schedule;
 use App\Models\User;
 use App\Rules\OldPasswordRule;
@@ -21,7 +20,6 @@ use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Redirect;
 use Throwable;
 
 class ProfileController extends Controller

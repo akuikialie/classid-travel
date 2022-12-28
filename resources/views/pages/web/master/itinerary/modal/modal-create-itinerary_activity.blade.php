@@ -17,7 +17,7 @@
       </div>
       <!--end::Modal header-->
       <!--begin::Form-->
-      <form class="form" action="{{ route('admin.itinerary.store') }}" method="post">
+      <form class="form" id="form-create-itinerary" action="{{ route('admin.itinerary.store') }}" method="post">
         @csrf
         <!--begin::Modal body-->
         <div class="modal-body ">
@@ -38,11 +38,11 @@
           <button type="reset" class="btn btn-light me-3">Batal</button>
           <!--end::Button-->
           <!--begin::Button-->
-          <button type="submit" class="btn btn-primary">
+          <button type="submit" class="btn btn-primary" id="create-itinerary" onclick="$('#form-create-itinerary').submit(); $('#create-itinerary').attr('disabled', 'disabled');">
             <span class="indicator-label">Submit</span>
           </button>
           <!--end::Button-->
-        </div>
+        </div>r
         <!--end::Modal footer-->
       </form>
       <!--end::Form-->
