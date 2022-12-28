@@ -140,8 +140,8 @@ $('.fragment').click(function () {
   let formRenderer = $('#form-renderer');
   let inputFragment = $('.input-fragment');
   inputFragment.val(fragmentName);
-  if (fragmentParameter){
-    formRenderer.append('<input type="hidden" name="parameter" value="'+fragmentParameter+'" />');
+  if (fragmentParameter) {
+    formRenderer.append('<input type="hidden" name="parameter" value="' + fragmentParameter + '" />');
   }
   formRenderer.submit();
 });
