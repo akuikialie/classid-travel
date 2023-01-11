@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Notifications\WaTestNotif;
 use App\Models\User;
 use Illuminate\Foundation\Inspiring;
 use Illuminate\Support\Facades\Artisan;
@@ -26,5 +27,5 @@ Artisan::command('msnotif:test', function () {
     // return $woowa->send('msnotif.test', $msg, config('msnotif.woowa.eco.sender'), '089626336461');
 
     $user = User::query()->orderBy('created_at')->first();
-    dispatch_sync(new \App\Notifications\Whatsapp\WaTestNotif($user));
+    dispatch_sync(new WaTestNotif($user));
 });

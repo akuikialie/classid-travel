@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Notifications\Whatsapp;
+namespace App\Http\Notifications;
 
 use Exception;
 use App\Core\Bus\AbstractNotification;
