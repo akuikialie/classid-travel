@@ -117,6 +117,16 @@ return [
         'emergency' => [
             'path' => storage_path('logs/laravel.log'),
         ],
+
+        'msnotif' => [
+            'name' => 'msnotif_service',
+            'driver' => 'daily',
+            'path' => storage_path('logs/msnotif/msnotif.log'),
+            'level' => 'debug',
+            'permission' => 0777,
+            'tap' => [App\Core\Logging\CustomizeFormatter::class],
+            'days' => 7
+        ],
     ],
 
 ];

@@ -3,14 +3,12 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
-
 use App\Models\Jamaah\Jamaah;
 use App\Models\Referral\UserInvitation;
 use App\Models\Tenant\Tenant;
 use App\Models\VA\VirtualAccount;
 use App\Traits\HasTenant;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\MorphOne;
@@ -35,11 +33,9 @@ class User extends Authenticatable implements HasMedia
      */
     protected $fillable = [
         'tenant_id',
-        'name',
-        'username',
-        'phone',
-        'password',
+        'name', 'username', 'phone', 'password',
         'is_super',
+        'locale', 'timezone',
     ];
 
     /**

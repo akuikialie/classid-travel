@@ -7,6 +7,7 @@
  */
 
 use App\Models\Tenant\Tenant;
+use App\Services\Notification\NotifManager;
 use Carbon\Carbon;
 use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Database\Eloquent\Builder;
@@ -191,6 +192,31 @@ if (!function_exists('carbon')) {
     }
 }
 
+if (!function_exists('msnotif')) {
+    /**
+     * @param string   $channel
+     * @param int|null $schoolId
+     *
+     * @return \App\Services\Notification\NotifManager
+     */
+    function msnotif(string $channel, ?int $schoolId = null): NotifManager
+    {
+        return new NotifManager($channel, $schoolId);
+    }
+}
+
+if (!function_exists('whatsappMessage')) {
+    /**
+     * @param string|null $key
+     * @return \App\Core\Whatsapp\Messages\WhatsappMessage
+     * @throws Exception
+     */
+    function whatsappMessage(?string $key = null): \App\Core\Whatsapp\Messages\WhatsappMessage
+    {
+        return (new \App\Core\Whatsapp\Messages\WhatsappMessage($key));
+    }
+}
+
 if (!function_exists('numberFormat')) {
     /**
      * @param mixed $integer
@@ -263,20 +289,20 @@ if (!function_exists('romanicToInt')) {
         }
         return $result;
     }
+}
 
-    if (!function_exists('numberSpell')) {
-        /**
-         * Spell number to words.
-         *
-         * @param $value
-         * @return string
-         */
-        function numberSpell($value)
-        {
-            $f = new NumberFormatter('id', NumberFormatter::SPELLOUT);
+if (!function_exists('numberSpell')) {
+    /**
+     * Spell number to words.
+     *
+     * @param $value
+     * @return string
+     */
+    function numberSpell($value): string
+    {
+        $f = new NumberFormatter('id', NumberFormatter::SPELLOUT);
 
-            return $f->format($value);
-        }
+        return $f->format($value);
     }
 }
 

@@ -17,6 +17,10 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register()
     {
+        $this->app->singleton('request_id', fn ($app) => uniqid("REQUEST_"));
+
+        $this->app->singleton('notifLog', fn() => app('log')->channel('msnotif'));
+
         app()->singleton('activeTenant', function(): ?Tenant {
             try {
                 if (auth()->user()?->tenant_id){
