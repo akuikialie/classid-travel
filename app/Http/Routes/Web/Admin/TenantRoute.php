@@ -54,7 +54,7 @@ class TenantRoute extends BaseRoute
                 $this->router->get($this->prefix('profile/{tenant_hash?}'),[TenantController::class, 'show'])
                     ->name($this->name('show'));
 
-                $this->router->put($this->prefix('profile/update/{tenant_hash?}'),[TenantController::class, 'update'])
+                $this->router->put($this->prefix('profile/{tenant_hash?}'),[TenantController::class, 'update'])
                     ->name($this->name('update.as-profile'));
 
                 $this->router->post($this->prefix('add-media-collections/{tenant_hash?}'),

@@ -82,9 +82,11 @@ class VirtualAccountService
                     ->where('va_label', $this->vaType)
                     ->where('tenant_id', $this->tenantId)
                     ->whereMonth('created_at', Carbon::now());
-            })->max('va_number');
+            })
+            ->latest('id')
+            ->first('va_number');
 
-        $VANumber = createNewVA($this->vaType, $VA);
+        $VANumber = createNewVA($this->vaType, $VA->va_number);
 
         $setEmail = "{$VANumber}@prohajj.app";
 

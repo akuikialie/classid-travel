@@ -18,27 +18,27 @@ class UserRoute extends BaseRoute
     {
         $this->router->middleware(['auth', 'verified'])->group(function () {
 
-            $this->router->post($this->prefix('datatable'), [UserController::class, 'datatable'])
+            $this->router->post($this->prefix('{type}/datatable'), [UserController::class, 'datatable'])
                 ->name($this->name('datatable'))->middleware(["permission:view {$this->page}"]);
 
             $this->router->middleware([ 'quick_access:user'])->group(function (){
-                $this->router->get($this->prefix(), [UserController::class, 'index'])
+                $this->router->get($this->prefix('{type?}'), [UserController::class, 'index'])
                     ->name($this->name('index'));
 
-                $this->router->get($this->prefix('create'), [UserController::class, 'create'])
+                $this->router->get($this->prefix('{type}/create'), [UserController::class, 'create'])
                     ->name($this->name('create'));
                 $this->router->post($this->prefix(), [UserController::class, 'store'])
                     ->name($this->name('store'));
 
-                $this->router->get($this->prefix('{user_hash}/edit'), [UserController::class, 'edit'])
+                $this->router->get($this->prefix('{type}/{user_hash}/edit'), [UserController::class, 'edit'])
                     ->name($this->name('edit'));
-                $this->router->put($this->prefix('{user_hash}'), [UserController::class, 'update'])
+                $this->router->put($this->prefix('{type}/{user_hash}'), [UserController::class, 'update'])
                     ->name($this->name('update'));
 
-                $this->router->delete($this->prefix('{user_hash}'), [UserController::class, 'destroy'])
+                $this->router->delete($this->prefix('{type}/{user_hash}'), [UserController::class, 'destroy'])
                     ->name($this->name('destroy'));
 
-                $this->router->post($this->prefix('{user_hash}/change-status'),[UserController::class, 'changeStatus'])
+                $this->router->post($this->prefix('{type}/{user_hash}/change-status'),[UserController::class, 'changeStatus'])
                     ->name($this->name('change-status'));
             });
 
@@ -52,7 +52,7 @@ class UserRoute extends BaseRoute
      */
     public function afterRegister(): void
     {
-         menus(group: 'Travel')
+         menus(group: 'setting')
              ->route(
                  name: 'admin.user.index',
                  title: 'Management Users',
@@ -60,6 +60,21 @@ class UserRoute extends BaseRoute
                  attribute: [
                      'icon' => 'fa-solid fa-users',
                  ],
+                 param: ['type' => 'staff'],
+                 resolver: function () {
+                     $user = \auth()->user();
+                     return $user->hasAnyRole(['super-administrator', 'administrator']);
+                 },
+             );
+
+         menus(group: 'Travel')
+             ->route(
+                 name: 'admin.user.index',
+                 title: 'Calon Jamaah',
+                 attribute: [
+                     'icon' => 'fa-solid fa-users',
+                 ],
+                 param: ['type' => 'calon-jamaah'],
                  resolver: function () {
                      $user = \auth()->user();
                      return $user->hasAnyRole(['super-administrator', 'administrator']);

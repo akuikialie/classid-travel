@@ -38,10 +38,12 @@ class UserController extends Controller
     }
 
     /**
+     * @return JsonResponse|void
+     * @throws ContainerExceptionInterface
      * @throws Exception
-     * @throws \Exception
+     * @throws NotFoundExceptionInterface
      */
-    public function datatable()
+    public function datatable(?string $type = null)
     {
         if (\request()->ajax()) {
             try {
@@ -53,6 +55,13 @@ class UserController extends Controller
                     }, function (Builder $subQuery) use ($user) {
                         $subQuery->where('tenant_id', $user->tenant_id);
                         $subQuery->where('id', '!=', $user->id);
+                    })
+                    ->when($type == 'calon-jamaah', function (Builder $subQuery) {
+                        $subQuery->role(['jamaah']);
+                    }, function (Builder $subQuery) {
+                        $subQuery->whereHas('roles', function (Builder $subQuery) {
+                            $subQuery->where('name', '!=', 'jamaah');
+                        });
                     })
                     ->where('is_super', false)
                     ->latest('id')
@@ -71,8 +80,9 @@ class UserController extends Controller
                         }
                         return carbon($user->last_login_at)->format('d M, Y H:i:s');
                     })
-                    ->addColumn('actions', function ($user) {
+                    ->addColumn('actions', function ($user) use ($type) {
                         $this->setData('user', $user);
+                        $this->setData('type', $type);
                         return $this->view('pages.web.user.action.action-datatable');
                     })
                     ->rawColumns(['actions', 'status']);
@@ -102,13 +112,15 @@ class UserController extends Controller
     /**
      * Display a listing of the resource.
      *
-     * @return Factory|\Illuminate\Contracts\View\View
      * @throws \Exception
      */
-    public function index()
+    public function index(?string $type = null)
     {
-        $this->setPageTitle('Users');
-        $this->setBreadCrumb('Users');
+        if (is_null($type)) {
+            return redirect()->route('admin.user.index', 'staff');
+        }
+        $this->setPageTitle(ucwords($type));
+        $this->setBreadCrumb(ucwords($type));
 
         $user = auth()->user();
         $roles = Role::query()
@@ -118,6 +130,7 @@ class UserController extends Controller
                 })
             ->get()->unique('name');
 
+        $this->setData('type', $type);
         $this->setData('roles', $roles);
         return $this->view('pages.web.user.user-index');
     }
@@ -128,7 +141,7 @@ class UserController extends Controller
      * @return JsonResponse
      * @throws Throwable
      */
-    public function create()
+    public function create(?string $type = null)
     {
         if (\request()->ajax()) {
             $user = auth()->user();
@@ -150,7 +163,6 @@ class UserController extends Controller
             ]);
 
         }
-
         abort(404);
     }
 
@@ -158,10 +170,11 @@ class UserController extends Controller
      * Store a newly created resource in storage.
      *
      * @param Request $request
+     * @param string|null $type
      * @return RedirectResponse
      * @throws Throwable
      */
-    public function store(Request $request)
+    public function store(Request $request, ?string $type = null)
     {
         $input = $request->validate([
             'phone' => ['required', 'numeric'],
@@ -174,12 +187,12 @@ class UserController extends Controller
             $user = auth()->user();
             $userService = new UserService(tenantId: $user->tenant_id ?? null);
             $userService->createNewUser([
-                'name' => 'Administrator',
+                'name' => "{$input['role']} - $user->id",
                 'phone' => $input['phone'],
                 'password' => 'admin',
             ], false)
                 ->setRole($input['role'])
-                ->setIsSuper(false); // except from tenant, always set to false
+                ->setIsSuper(); // except from tenant, always set to false
             /* end: user service */
 
             DB::commit();
@@ -200,10 +213,11 @@ class UserController extends Controller
     /**
      * Display the specified resource.
      *
+     * @param string|null $type
      * @param User $user
      * @return Response
      */
-    public function show(User $user)
+    public function show(?string $type = null, User $user)
     {
         abort(404);
     }
@@ -211,10 +225,11 @@ class UserController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
+     * @param string|null $type
      * @param User $user
      * @return Response
      */
-    public function edit(User $user)
+    public function edit(?string $type = null, User $user)
     {
         abort(404);
     }
@@ -223,10 +238,11 @@ class UserController extends Controller
      * Update the specified resource in storage.
      *
      * @param Request $request
+     * @param string|null $type
      * @param User $user
      * @return Response
      */
-    public function update(Request $request, User $user)
+    public function update(Request $request, ?string $type = null, User $user)
     {
         abort(404);
 
@@ -235,11 +251,12 @@ class UserController extends Controller
     /**
      * Remove the specified resource from storage.
      *
+     * @param string|null $type
      * @param User $user
      * @return RedirectResponse
      * @throws Throwable
      */
-    public function destroy(User $user)
+    public function destroy(?string $type = null, User $user)
     {
         try {
             $authUser = auth()->user();
@@ -269,7 +286,7 @@ class UserController extends Controller
      * @throws NotFoundExceptionInterface
      * @throws Throwable
      */
-    public function changeStatus(Request $request, User $user)
+    public function changeStatus(Request $request, ?string $type = null, User $user)
     {
         $request->validate([
             'status' => ['required'],

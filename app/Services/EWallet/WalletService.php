@@ -26,7 +26,7 @@ class WalletService implements Contract\WalletService
 
     /**
      * @return array|object
-     * @throws \Exception
+     * @throws Exception
      */
     public function transactionList(): array|object
     {
@@ -43,12 +43,34 @@ class WalletService implements Contract\WalletService
         return $this->toPaginate($list);
     }
 
+
+    /**
+     * @return array|object
+     * @throws Exception
+     */
+    public function getUser(): array|object
+    {
+        $http = $this->client()->get('api/user');
+
+        $getBody = json_decode($http->body(), true);
+
+        if (isset($getBody['error'])){
+            throw new Exception($getBody['error']);
+        }
+
+        if ($http) {
+            return $http->json()['data'];
+        }
+
+        return [];
+    }
+
     /**
      * @param int         $amount
      * @param string|null $description
      *
      * @return array
-     * @throws \Exception
+     * @throws Exception
      */
     public function deposit(int $amount, ?string $description = null): array
     {
@@ -89,7 +111,7 @@ class WalletService implements Contract\WalletService
      * @param string|null $description
      *
      * @return array
-     * @throws \Exception
+     * @throws Exception
      */
     public function withdrawal(int $amount, ?string $description = null): array
     {
@@ -113,7 +135,7 @@ class WalletService implements Contract\WalletService
      * @param string|null $description
      *
      * @return array
-     * @throws \Exception
+     * @throws Exception
      */
     public function transfer(int $to, int $amount, ?string $description = null): array
     {

@@ -8,8 +8,8 @@
 @section('page-custom-scripts')
   <script>
     let csrf_token = "{{ csrf_token() }}";
-    let urlTable = "{{ route('admin.user.datatable') }}";
-    let createUrl = "{{ route('admin.user.create') }}";
+    let urlTable = "{{ route('admin.user.datatable',$type ) }}";
+    let createUrl = "{{ route('admin.user.create', $type) }}";
     {{--let editUrl = "{{ route('admin.user.edit', ':id') }}";--}}
   </script>
 @endsection
@@ -27,7 +27,7 @@
     <div class="card-body fs-6 py-15 px-10 py-lg-15 px-lg-15 text-gray-700">
       <div class="p-0">
         <!--begin::Heading-->
-        <h3 class="card-title">User Management</h3>
+        <h3 class="card-title">{{ $pageTitle }}</h3>
         <!--end::Heading-->
         <!--begin::CRUD-->
         <div class="py-5">
@@ -80,7 +80,7 @@
                     </select>
                   </div>
                   <!--end::Input group-->
-                
+
                   <!--begin::Actions-->
                   <div class="d-flex justify-content-end">
                     <button type="reset" class="btn btn-light btn-active-light-primary fw-semibold me-2 px-6"
@@ -97,16 +97,18 @@
               <!--end::Menu 1-->
               <!--end::Filter-->
 
-              @can("create {$current_page}")
-                <button type="button" class="btn btn-primary" id="create-new" data-bs-toggle="tooltip"
-                        title="Tambahkan Admin">
-                  <!--begin::Svg Icon | path: icons/duotune/arrows/arr075.svg-->
-                  <span class="svg-icon svg-icon-2">
+            @if($pageTitle == 'Staff')
+                @can("create {$current_page}")
+                  <button type="button" class="btn btn-primary" id="create-new" data-bs-toggle="tooltip"
+                          title="Tambahkan Admin">
+                    <!--begin::Svg Icon | path: icons/duotune/arrows/arr075.svg-->
+                    <span class="svg-icon svg-icon-2">
                   <i class="fa-solid fa-plus"></i>
                 </span>
-                  <!--end::Svg Icon-->Tambah Admin
-                </button>
-              @endcan
+                    <!--end::Svg Icon-->Tambah Admin
+                  </button>
+                @endcan
+              @endif
             </div>
             <!--end::Toolbar-->
             <!--begin::Group actions-->

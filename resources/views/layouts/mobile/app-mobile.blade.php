@@ -40,7 +40,7 @@
         <div class="spinner-border color-highlight" role="status"></div>
     </div>
 
-    <div id="page">
+    <div id="page" class="d-flex justify-content-center">
 
         <!-- header and footer bar go here-->
         {{-- @include('components.mobile.header-bar') --}}
