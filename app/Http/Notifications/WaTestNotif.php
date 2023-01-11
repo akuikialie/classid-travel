@@ -19,7 +19,7 @@ class WaTestNotif extends AbstractNotification implements ShouldQueue
      *
      * @return void
      */
-    public function __construct(User $user)
+    public function __construct(User $user, private readonly ?string $message = null)
     {
         parent::__construct($user);
     }
@@ -60,10 +60,8 @@ class WaTestNotif extends AbstractNotification implements ShouldQueue
      */
     private function toWoowa(object $user): void
     {
-        $msg = "Selamat *{$user->name}*, Anda telah terdaftar";
-
         $woowa = msnotif($user->woowa_channel);
-        $woowa->send('msnotif.test', $msg, $user->woowa_key, $user->phone);
+        $woowa->send('msnotif.test', $this->message, $user->woowa_key, $user->phone);
     }
 
 
