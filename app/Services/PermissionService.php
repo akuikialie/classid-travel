@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Models\Spatie\Permission;
 use App\Models\Spatie\Role;
 use Illuminate\Database\Eloquent\Builder;
+use Laravel\Octane\Exceptions\DdException;
 use Spatie\Permission\Exceptions\RoleDoesNotExist;
 use function PHPUnit\Framework\isNull;
 
@@ -39,11 +40,17 @@ class PermissionService
      * @param null $modelClass
      * @param array $permissions
      * @return $this
+     * @throws DdException
      */
     public function syncPermissions(array $permissions, $modelClass = null): static
     {
+        $checkTypeData = collect($permissions)->first();
+        $column = 'name';
+        if (is_int($checkTypeData)){
+            $column = 'id';
+        }
         $permission = Permission::query()
-            ->whereIn('name', $permissions)->get()->pluck('id')->toArray();
+            ->whereIn($column, $permissions)->get()->pluck('id')->toArray();
 
         ($modelClass ?? $this->model)->syncPermissions($permission);
         return $this;

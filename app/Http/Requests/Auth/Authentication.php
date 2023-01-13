@@ -31,7 +31,7 @@ class Authentication extends FormRequest
         $usernameOrEmail = request()->input('login');
         if (is_numeric($usernameOrEmail)) {
             $fieldType = 'phone';
-        }else{
+        } else {
             $fieldType = filter_var($usernameOrEmail, FILTER_VALIDATE_EMAIL) ? 'email' : 'username';
         }
         request()->merge([$fieldType => $usernameOrEmail]);
@@ -86,11 +86,35 @@ class Authentication extends FormRequest
     {
         $this->ensureIsNotRateLimited();
 
-        if (!Auth::attempt(request()->only($this->authType, 'password'), request()->boolean('remember'))) {
-            RateLimiter::hit($this->throttleKey());
-            throw ValidationException::withMessages([
-                'email' => trans('auth.failed'),
-            ]);
+        try {
+            if (request()->get('travel_code')) {
+                $tenant = Tenant::query()
+                    ->select('id')
+                    ->firstWhere('BCN', request()->get('travel_code'));
+
+                if (!$tenant){
+                    throw ValidationException::withMessages([
+                        'email' => trans('auth.failed'),
+                    ]);
+                }
+
+                request()->merge(['tenant_id' => $tenant?->id]);
+
+                if (!Auth::attempt(request()->only($this->authType, 'password', 'tenant_id'), request()->boolean('remember'))) {
+                    RateLimiter::hit($this->throttleKey());
+                    throw ValidationException::withMessages([
+                        'email' => trans('auth.failed'),
+                    ]);
+                }
+            }else{
+                if (!Auth::attempt(request()->only($this->authType, 'password'), request()->boolean('remember'))) {
+                    RateLimiter::hit($this->throttleKey());
+                    throw ValidationException::withMessages([
+                        'email' => trans('auth.failed'),
+                    ]);
+                }
+            }
+        } catch (NotFoundExceptionInterface|ContainerExceptionInterface $e) {
         }
         $this->saveLastLogin();
 
