@@ -1,4 +1,4 @@
-<?php
+<?php /** @noinspection ALL */
 
 namespace App\Http\Controllers\Web\Admin;
 
@@ -11,17 +11,17 @@ use App\Models\Spatie\Role;
 use App\Models\Tenant\Tenant;
 use App\Models\User;
 use App\Services\PermissionService;
-use DB;
-use Hashids;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Psr\Container\ContainerExceptionInterface;
 use Psr\Container\NotFoundExceptionInterface;
 use Throwable;
+use Vinkla\Hashids\Facades\Hashids;
 use Yajra\DataTables\Exceptions\Exception;
 use function response;
 
@@ -500,9 +500,13 @@ class RoleController extends Controller
             logError($e, title: 'Role');
             if (isDevelopmentMode()) {
                 throw $e;
-            } else {
-                notify('Oops!', 'Terjadi kesalahan!', 'error');
             }
+            $message = 'Terjadi kesalahan!';
+            if ($e->getCode() > 900){
+                $message = $e->getMessage();
+            }
+            notify('Oops!', $message, 'error');
+
             return redirect()->back();
         }
     }
