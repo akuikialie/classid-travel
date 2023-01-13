@@ -2,6 +2,7 @@
 
 use App\Http\Notifications\WaTestNotif;
 use App\Models\User;
+use App\Services\Whatsapp\NotificationService;
 use Illuminate\Foundation\Inspiring;
 use Illuminate\Support\Facades\Artisan;
 
@@ -21,11 +22,17 @@ Artisan::command('inspire', function () {
 })->purpose('Display an inspiring quote');
 
 Artisan::command('msnotif:test', function () {
-    // $msg = "Rela di Test jilid 2";
-
-    // $woowa = msnotif('woowa_eco');
-    // return $woowa->send('msnotif.test', $msg, config('msnotif.woowa.eco.sender'), '089626336461');
-
     $user = User::query()->orderBy('created_at')->first();
-    dispatch_sync(new WaTestNotif($user));
+
+    (new NotificationService())
+        ->setReceiver($user)
+        ->setSubject([
+            'invited_by' => 'winata',
+            'package' => 'wowww',
+        ])
+        ->setMessage(
+            'Selamat *:receiver.name*, Anda telah terdaftar di :subject.package bersama :subject.invited_by'
+        )
+        ->sendMessage();
+
 });
