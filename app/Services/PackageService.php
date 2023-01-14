@@ -67,113 +67,100 @@ class PackageService
      */
     public function setStatus(bool $status): static
     {
-        try {
-            $tenant = $this->getPackage();
-            $tenant->is_active = $status;
-            $tenant->save();
-        } catch (Exception $e) {
-            throw $e;
+        $package = $this->getPackage();
+        if ($package instanceof PlanPackage){
+            $package->is_active = $status;
+            $package->save();
         }
 
         return $this;
     }
 
     /**
-     * @param ...$destinationIds
+     * @param array $destinationIds
      * @return $this
      * @throws Throwable
      */
-    public function addDestinations(...$destinationIds): static
+    public function addDestinations(array $destinationIds): static
     {
-        try {
-            if (count($destinationIds) != count($destinationIds, COUNT_RECURSIVE))
-            {
-                $destinationIds = collect($destinationIds)->first();
-            }
+        if (count($destinationIds) != count($destinationIds, COUNT_RECURSIVE))
+        {
+            $destinationIds = collect($destinationIds)->first();
+        }
+
+        if (collect($destinationIds)->count() > 0){
             $addDestinations = $this->getPackage();
             $addDestinations->myDestinations()->sync($destinationIds);
-        }catch (Throwable $e){
-            throw $e;
         }
         return $this;
     }
 
     /**
-     * @param array ...$facilityIds
+     * @param array $facilityIds
      * @return $this
      * @throws Throwable
      */
-    public function addFacilities(array ...$facilityIds): static
+    public function addFacilities(array $facilityIds): static
     {
-        try {
-            if (count($facilityIds) != count($facilityIds, COUNT_RECURSIVE))
-            {
-                $facilityIds = collect($facilityIds)->first();
-            }
+        if (count($facilityIds) != count($facilityIds, COUNT_RECURSIVE))
+        {
+            $facilityIds = collect($facilityIds)->first();
+        }
+        if (collect($facilityIds)->count() > 0){
             $facility = $this->getPackage();
             $facility->myFacilities()->sync($facilityIds);
-        }catch (Throwable $e){
-            throw $e;
         }
 
         return $this;
     }
 
+    /**
+     * @throws Throwable
+     */
     public function addPackageToJamaah(PlanPackage $planPackage, Jamaah $jamaah, string $key = 'perencanaan'): void
     {
-        try {
-            /* check package on jamaah */
-            $existingPackageInJamaah = collect($jamaah->planPackages)->where('id', $planPackage->id)->first();
-            if ($existingPackageInJamaah) {
-                throw new InvalidArgumentException('Kamu sudah mengambil paket ini!.');
-            }
-
-            /* add package to jamaah */
-            $jamaah->planPackages()->attach($planPackage->id);
-
-            /* add jamaah history */
-            $jamaahHistory = new AddJamaahHistory();
-            $jamaahHistory->handle($jamaah, $planPackage, null);
-
-            /* creating va */
-            $VAService = new VirtualAccountService($this->tenantId);
-            $VAService->vaType(VirtualAccount::tryFrom($key)->keyValue())
-                ->addToPlan($planPackage)
-                ->createFor($jamaah)
-                ->createVA();
-
-        } catch (Throwable $th) {
-            throw $th;
+        /* check package on jamaah */
+        $existingPackageInJamaah = collect($jamaah->planPackages)->where('id', $planPackage->id)->first();
+        if ($existingPackageInJamaah) {
+            throw new InvalidArgumentException('Kamu sudah mengambil paket ini!.');
         }
+
+        /* add package to jamaah */
+        $jamaah->planPackages()->attach($planPackage->id);
+
+        /* add jamaah history */
+        $jamaahHistory = new AddJamaahHistory();
+        $jamaahHistory->handle($jamaah, $planPackage, null);
+
+        /* creating va */
+        $VAService = new VirtualAccountService($this->tenantId);
+        $VAService->vaType(VirtualAccount::tryFrom($key)->keyValue())
+            ->addToPlan($planPackage)
+            ->createFor($jamaah)
+            ->createVA();
     }
 
+    /**
+     * @throws Throwable
+     */
     public function createNewPackage(int $planId, array $input): PlanPackage
     {
-        try {
+        $input = array_merge(['tenant_id' => $this->tenantId], $input);
 
-            $input = array_merge(['tenant_id' => $this->tenantId], $input);
+        $plan = Plan::query()->find($planId);
 
-            $plan = Plan::query()->find($planId);
+        $newPackage = new PlanPackage($input);
 
-            $newPackage = new PlanPackage($input);
+        $newPackage->myPlan()->associate($plan);
+        $newPackage->save();
 
-            $newPackage->myPlan()->associate($plan);
-            $newPackage->save();
-
-            return $newPackage->fresh();
-        } catch (Throwable $th) {
-            throw $th;
-        }
+        return $newPackage->fresh();
     }
 
     public function addThumbnailPackage(PlanPackage $planPackage, Request $request): void
     {
-        try {
-            if ($request->hasfile('thumbnail')) {
-                $planPackage->addMediaFromRequest('thumbnail')->toMediaCollection('thumbnail');
-            }
-        } catch (Throwable $th) {
-            throw $th;
+        if ($request->hasfile('thumbnail')) {
+            $planPackage->addMediaFromRequest('thumbnail')->toMediaCollection('thumbnail');
         }
     }
 
