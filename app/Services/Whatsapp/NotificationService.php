@@ -74,7 +74,7 @@ class NotificationService
     private function notify(): void
     {
         if (!$this->receiver instanceof User){
-            throw new Exception('Penerima tidak boleh kosong!');
+            throw new Exception('Penerima tidak boleh kosong!', 900);
         }
         dispatch_sync(new WaTestNotif($this->receiver, $this->message));
     }
