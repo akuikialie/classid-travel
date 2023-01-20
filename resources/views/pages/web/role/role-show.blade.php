@@ -8,7 +8,7 @@
   <script>
     let csrf_token = "{{ csrf_token() }}";
     let urlTable = "{{ route('admin.role.datatable.role-user', $role->hash) }}";
-    let createUrl = "{{ route('admin.user.create') }}";
+    let createUrl = "{{ route('admin.user.create', $type) }}";
     let editUrl = "{{ route('admin.role.edit', ':id') }}";
     let columns = @json($columns);
     let deleteUrl = "{{ route('admin.role.destroy', ':id') }}";

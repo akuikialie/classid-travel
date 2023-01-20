@@ -315,6 +315,7 @@ class RoleController extends Controller
                     })
                     ->addColumn('actions', function ($user) {
                         $this->setData('user', $user);
+                        $this->setData('type', 'staff');
                         return $this->view('pages.web.user.action.action-datatable');
                     })
                     ->rawColumns(['actions', 'status']);
@@ -384,6 +385,7 @@ class RoleController extends Controller
         $this->setData('columns', $columns);
 
         $this->setData('roles', $roles);
+        $this->setData('type', 'staff');
 
         $this->setData('role', $role);
         return $this->view('pages.web.role.role-show');

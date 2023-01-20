@@ -138,41 +138,12 @@ class TenantController extends Controller
 
         DB::beginTransaction();
         try {
-            /* begin:: create new tenant */
             $input = array_merge($input, [
                 'slug' => $input['name'],
             ]);
 
-            if (str_contains($input['app_domain'], ' ')) {
-                $input = array_merge($input, [
-                    'app_domain' => Str::lower(str_replace(' ', '.', $input['app_domain'])),
-                    'wallet_login' => json_encode([
-                        'WALLET_URL' => "https://demo.biznet.class.id",
-                        'WALLET_BCN' => "857400",
-                        'WALLET_ADMIN_USER' => "fahrudinsidik88@gmail.com",
-                        'WALLET_ADMIN_PASS' => "password",
-                    ])
-                ]);
-            }
-
-            $validAppDomain = dns_get_record($input['app_domain']);
-            if (!is_array($validAppDomain) || count($validAppDomain) < 1) {
-                throw new Exception('App domain tidak tersedia');
-            }
-            $newTenant = Tenant::query()->create($input);
-            /* end:: create new tenant */
-
-            /* begin:: user service -- create admin account + set is super == true (fix) */
-            $userService = new UserService(tenantId: $newTenant->id);
-            $userService->createNewUser([
-                'name' => $input['name'],
-                'phone' => $input['phone'],
-                'password' => 'admin',
-            ], false)
-                ->setRole('administrator')
-                ->setIsSuper(true);
-            /* end:: user service -- create admin account + set is super == true (fix) */
-
+            (new TenantService())
+                ->createNewtenant($input);
             DB::commit();
 
             notify('Berhasil', 'Berhasil membuat akun travel baru', 'success');

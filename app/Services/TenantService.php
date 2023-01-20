@@ -3,22 +3,24 @@
 namespace App\Services;
 
 use App\Enums\RoleEnum;
+use App\Exceptions\HandleCatchableException;
 use App\Models\Tenant\Tenant;
 use App\Models\User;
 use Exception;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 use Spatie\MediaLibrary\MediaCollections\Exceptions\FileDoesNotExist;
 use Spatie\MediaLibrary\MediaCollections\Exceptions\FileIsTooBig;
 
 class TenantService
 {
     private Builder $query;
-    private Tenant $tenant;
+    private ?Tenant $tenant = null;
 
     public function __construct(
-        private readonly int $tenantId
+        private readonly ?int $tenantId = null
     )
     {
         $this->query = Tenant::query();
@@ -31,9 +33,54 @@ class TenantService
      */
     public function setStatus(bool $status): static
     {
-        $tenant = $this->getTenant();
-        $tenant->is_active = $status;
-        $tenant->save();
+        if (!$this->tenant instanceof Tenant){
+            throw HandleCatchableException::catchable('Travel tidak di ditemukan!');
+        }
+        $this->tenant->is_active = $status;
+        $this->tenant->save();
+
+        return $this;
+    }
+
+    /**
+     * @throws HandleCatchableException
+     * @throws Exception
+     */
+    public function createNewTenant(array $input): static
+    {
+        /* begin: check app domain is existed */
+        if (str_contains($input['app_domain'], ' ')) {
+            $input = array_merge($input, [
+                'app_domain' => Str::lower(str_replace(' ', '.', $input['app_domain'])),
+                'wallet_login' => json_encode([
+                    'WALLET_URL' => "https://demo.biznet.class.id",
+                    'WALLET_BCN' => "857400",
+                    'WALLET_ADMIN_USER' => "fahrudinsidik88@gmail.com",
+                    'WALLET_ADMIN_PASS' => "password",
+                ])
+            ]);
+        }
+        /* end: check app domain is existed */
+
+        $validAppDomain = dns_get_record($input['app_domain']);
+        if (!is_array($validAppDomain) || count($validAppDomain) < 1) {
+            throw HandleCatchableException::catchable(message: 'App domain tidak tersedia!');
+        }
+
+        /* begin:: create new tenant */
+        $this->tenant = Tenant::query()->create($input);
+        /* end:: create new tenant */
+
+        /* begin:: user service -- create admin account + set is super == true (fix) */
+        (new UserService(tenantId: $this->tenant->id))
+            ->createNewUser([
+                'name' => $input['name'],
+                'phone' => $input['phone'],
+                'password' => 'admin',
+            ], false)
+            ->setRole('administrator')
+            ->setIsSuper(true);
+        /* end:: user service -- create admin account + set is super == true (fix) */
 
         return $this;
     }
@@ -81,7 +128,7 @@ class TenantService
         try {
             $tenant = $this->getTenant();
             if ($request->hasfile('collections')) {
-                foreach ($request->file('collections') as $key => $media){
+                foreach ($request->file('collections') as $key => $media) {
                     $tenant
                         ->addMedia($media)
                         ->withCustomProperties([
@@ -105,13 +152,13 @@ class TenantService
      * @return Tenant|null
      * @throws Exception
      */
-    public function update(array $input,User $user = null): ?Tenant
+    public function update(array $input, User $user = null): ?Tenant
     {
         $tenant = $this->getTenant();
-        if (isset($user) and $user->tenant_id === null){
+        if (isset($user) and $user->tenant_id === null) {
             $tenant->BCN = $input['BCN'];
             $tenant->app_domain = $input['app_domain'];
-        }else if (isset($user) and $user->tenant_id !== null){
+        } else if (isset($user) and $user->tenant_id !== null) {
             $tenant->name = $input['name'];
             $tenant->slug = $input['slug'];
         }

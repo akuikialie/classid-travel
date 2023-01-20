@@ -107,7 +107,8 @@ class Authentication extends FormRequest
                     ]);
                 }
             }else{
-                if (!Auth::attempt(request()->only($this->authType, 'password'), request()->boolean('remember'))) {
+                request()->merge(['tenant_id' => null]);
+                if (!Auth::attempt(request()->only($this->authType, 'password', 'tenant_id'), request()->boolean('remember'))) {
                     RateLimiter::hit($this->throttleKey());
                     throw ValidationException::withMessages([
                         'email' => trans('auth.failed'),
