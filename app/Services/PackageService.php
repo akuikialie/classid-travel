@@ -158,10 +158,10 @@ class PackageService
     }
 
     public function addThumbnailPackage(PlanPackage $planPackage, Request $request): void
-    {
-        if ($request->hasfile('thumbnail')) {
-            $planPackage->addMediaFromRequest('thumbnail')->toMediaCollection('thumbnail');
-        }
+    {if ($request->hasfile('thumbnail')) {
+        $planPackage->addMediaFromRequest('thumbnail')->toMediaCollection('thumbnail');
+    }
+
     }
 
     /**

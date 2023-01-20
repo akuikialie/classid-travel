@@ -24,7 +24,6 @@ class BindingRoute implements Bindable
     public function bind(): void
     {
         $this->router->bind('tenant_hash', function ($value) {
-            dd($value);
             if ($value){
                 Tenant::byHashOrFail($value);
             }
