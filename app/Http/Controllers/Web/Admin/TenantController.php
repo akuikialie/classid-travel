@@ -6,15 +6,14 @@ use App\Http\Controllers\Controller;
 use App\Http\Controllers\Web\Admin\Fragment\TenantFragmentController;
 use App\Models\Tenant\Tenant;
 use App\Services\TenantService;
-use App\Services\UserService;
 use App\Traits\FragmentRenderer;
 use Exception;
 use Illuminate\Contracts\View\View;
+use Illuminate\Contracts\Database\Eloquent\Builder;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 use InvalidArgumentException;
 use Psr\Container\ContainerExceptionInterface;
@@ -45,14 +44,21 @@ class TenantController extends Controller
      * @throws \Yajra\DataTables\Exceptions\Exception
      * @throws Exception
      */
-    public function datatable()
+    public function datatable(Request $request)
     {
         if (\request()->ajax()) {
             $tenants = Tenant::query()
-                ->latest('id')
-                ->get();
+                ->latest('id');
             try {
-                return datatables()->of($tenants)
+                return datatables()->eloquent($tenants)
+                    ->filter(function (Builder $query) use ($request){
+                        $query->when($request->input('search')['value'], function (Builder $subQuery) use ($request){
+                            $subQuery->where('slug', 'like', "%" . $request->input('search')['value'] . "%");
+                            $subQuery->orWhere('app_domain', 'like', "%" . $request->input('search')['value'] . "%");
+                            $subQuery->orWhere('name', 'like', "%" . $request->input('search')['value'] . "%");
+                            $subQuery->orWhere('BCN', 'like', "%" . $request->input('search')['value'] . "%");
+                        });
+                    })
                     ->addIndexColumn()
                     ->addColumn('name', function ($row) {
                         return $row->name;
