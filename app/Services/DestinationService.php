@@ -2,8 +2,10 @@
 
 namespace App\Services;
 
+use App\Exceptions\HandleCatchableException;
 use App\Models\Destination\Destination;
 use App\Models\Master\Address;
+use App\Models\Tenant\Tenant;
 use App\Traits\HasTenant;
 use Exception;
 use Illuminate\Database\Eloquent\Builder;
@@ -15,29 +17,12 @@ use Throwable;
 
 class DestinationService
 {
-    use HasTenant;
-
-    private Builder $query;
-    private Destination $destination;
+    private ?Destination $destination = null;
 
     public function __construct(
         private readonly int $tenantId
     )
-    {
-        $this->query = Destination::query();
-        $this->query->with(['myAddress'])
-            ->withCount(['media', 'packages']);
-    }
-
-    /**
-     * @param int $id
-     * @return $this
-     */
-    public function destinationId(int $id): static
-    {
-        $this->query->where('id', $id);
-        return $this;
-    }
+    {}
 
     /**
      * @param Request $request
@@ -63,7 +48,7 @@ class DestinationService
     public function createDestination(array $input): static
     {
         $input = array_merge(['tenant_id' => $this->tenantId], $input);
-        $this->destination = $this->query->create($input);
+        $this->destination = Destination::query()->create($input);
 
         return $this;
     }
@@ -85,11 +70,6 @@ class DestinationService
             $destination->myAddress()->save($newAddress);
         }
         return $this;
-    }
-
-    public function get(): Model|Builder|Destination|null
-    {
-        return $this->query->first();
     }
 
     /**
@@ -121,69 +101,6 @@ class DestinationService
     }
 
     /**
-     * @throws Exception
-     */
-    private function getDestination(): Model|Builder|Destination|null
-    {
-        if ($this->query->count() > 1){
-            if (isset($this->destination)){
-                $destination = $this->destination;
-            }else{
-                throw new Exception('Data harus spesifik!');
-            }
-        }else{
-            $destination = $this->query->first();
-        }
-
-        return $destination;
-    }
-
-    /**
-     * @param array $input
-     * @return $this
-     * @throws Throwable
-     */
-    public function createNewDestination(array $input): static
-    {
-        $newDestination = $this->query->create($input);
-
-        /* add destination address when posible */
-        if (isset($input['address']) && !empty($input['address'])) {
-            $this->addDestinationAddress($newDestination, $input);
-        }
-
-
-        return $this;
-    }
-
-    public function updateDestinationAddress(Destination $destination, array $input)
-    {
-        try {
-            $destination->myAddress->address = $input['address'];
-            $destination->myAddress->save();
-        } catch (Throwable $th) {
-            throw $th;
-        }
-    }
-
-    /**
-     * @param Destination $destination
-     * @param Request $request
-     * @return void
-     * @throws FileDoesNotExist
-     * @throws FileIsTooBig
-     */
-    public function addImageToDestination(Destination $destination, Request $request)
-    {
-        if ($request->hasfile('photo_collection')) {
-            $destination->addMultipleMediaFromRequest(['photo_collection'])
-                ->each(function ($media) {
-                    $media->toMediaCollection('photo_collections');
-                });
-        }
-    }
-
-    /**
      * @param Destination $destination
      * @return DestinationService
      */
@@ -192,5 +109,17 @@ class DestinationService
         $this->destination = $destination;
 
         return $this;
+    }
+
+    /**
+     * @return Destination|null
+     * @throws HandleCatchableException
+     */
+    public function getDestination(): ?Destination
+    {
+        if (!$this->destination instanceof Tenant){
+            throw HandleCatchableException::catchable('Destinasi tujuan tidak di ditemukan!');
+        }
+        return $this->destination;
     }
 }

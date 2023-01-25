@@ -129,8 +129,7 @@ class FacilityController extends Controller
             $user = auth()->user();
             $facilityService = new FacilityService($user->tenant_id);
             $facilityService->createFacility($validator)
-                ->addGallery($request)
-                ->get();
+                ->addGallery($request);
 
             DB::commit();
             notify('Berhasil', 'Data fasilitas berhasil dibuat!', 'success')->autoClose();

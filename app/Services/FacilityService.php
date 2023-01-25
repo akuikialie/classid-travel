@@ -2,47 +2,38 @@
 
 namespace App\Services;
 
+use App\Exceptions\HandleCatchableException;
 use App\Models\Destination\Destination;
 use App\Models\Plan\PlanFacility;
-use App\Traits\HasTenant;
+use App\Models\Tenant\Tenant;
 use Exception;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
-use Throwable;
+use Spatie\MediaLibrary\MediaCollections\Exceptions\FileDoesNotExist;
+use Spatie\MediaLibrary\MediaCollections\Exceptions\FileIsTooBig;
 
 class FacilityService
 {
-    private Builder $query;
-    private PlanFacility $planFacility;
+    private ?PlanFacility $planFacility = null;
 
     public function __construct(
         private readonly int $tenantId
     )
     {
-        $this->query = PlanFacility::query();
     }
 
     /**
-     * @param int $id
-     * @return $this
+     * @throws FileDoesNotExist
+     * @throws FileIsTooBig
+     * @throws Exception
      */
-    public function facilityId(int $id): static
-    {
-        $this->query->where('id', $id);
-        return $this;
-    }
-
     public function addGallery(Request $request): static
     {
-        try {
-            if ($request->hasfile('photo_collection')) {
-                $facility = $this->getFacility();
-                $facility->addMultipleMediaFromRequest(['photo_collection'])
-                    ->each(fn($media) => $media->toMediaCollection('photo_collections'));
-            }
-        } catch (Throwable $th) {
-            throw $th;
+        if ($request->hasfile('photo_collection')) {
+            $facility = $this->getPlanFacility();
+            $facility->addMultipleMediaFromRequest(['photo_collection'])
+                ->each(fn($media) => $media->toMediaCollection('photo_collections'));
         }
 
         return $this;
@@ -58,31 +49,8 @@ class FacilityService
         $input = array_merge($input, [
             'name' => ucwords($input['name'])
         ]);
-        $this->planFacility = $this->query->create($input);
+        $this->planFacility = PlanFacility::query()->create($input);
         return $this;
-    }
-
-    /**
-     * @throws Exception
-     */
-    public function getFacility(): PlanFacility
-    {
-        if ($this->query->count() > 1){
-            if (isset($this->planFacility) and $this->planFacility instanceof PlanFacility){
-                $facility = $this->planFacility;
-            }else{
-                throw new Exception('Data harus spesifik!');
-            }
-        }else{
-            $facility = $this->query->first();
-        }
-
-        return $facility;
-    }
-
-    public function get(): Model|Builder|Destination|null
-    {
-        return $this->query->first();
     }
 
     /**
@@ -92,7 +60,7 @@ class FacilityService
      */
     public function update(array $input): Model|Builder|Destination|null
     {
-        $facility = $this->getFacility();
+        $facility = $this->getPlanFacility();
         $facility->name = $input['name'];
         $facility->type = $input['type'];
         $facility->save();
@@ -107,55 +75,11 @@ class FacilityService
      */
     public function setStatus(bool $status): static
     {
-        try {
-            $facility = $this->getFacility();
-            $facility->is_active = $status;
-            $facility->save();
-        } catch (Exception $e) {
-            throw $e;
-        }
+        $facility = $this->getPlanFacility();
+        $facility->is_active = $status;
+        $facility->save();
 
         return $this;
-    }
-
-
-
-
-
-
-
-
-
-
-
-
-    public function createNewFacility(array $input): PlanFacility
-    {
-        try {
-
-            $input = array_merge($input, [
-                'name' => ucwords($input['name'])
-            ]);
-
-            return PlanFacility::query()->create($input);
-        } catch (Throwable $th) {
-            throw $th;
-        }
-    }
-
-    public function AddImagesToFacility(PlanFacility $planFacility, Request $request)
-    {
-        try {
-            if ($request->hasfile('photo_collection')) {
-                $planFacility->addMultipleMediaFromRequest(['photo_collection'])
-                    ->each(function ($media) {
-                        $media->toMediaCollection('photo_collections');
-                    });
-
-            }
-        } catch (Throwable $th) {
-            throw $th;
-        }
     }
 
     /**
@@ -166,5 +90,17 @@ class FacilityService
     {
         $this->planFacility = $planFacility;
         return $this;
+    }
+
+    /**
+     * @return PlanFacility|null
+     * @throws HandleCatchableException
+     */
+    public function getPlanFacility(): ?PlanFacility
+    {
+        if (!$this->planFacility instanceof Tenant) {
+            throw HandleCatchableException::catchable('Fasilitas tidak di ditemukan!');
+        }
+        return $this->planFacility;
     }
 }

@@ -30,11 +30,9 @@ class TenantService
      */
     public function setStatus(bool $status): static
     {
-        if (!$this->tenant instanceof Tenant){
-            throw HandleCatchableException::catchable('Travel tidak di ditemukan!');
-        }
-        $this->tenant->is_active = $status;
-        $this->tenant->save();
+        $tenant = $this->getTenant();
+        $tenant->is_active = $status;
+        $tenant->save();
 
         return $this;
     }
@@ -162,9 +160,13 @@ class TenantService
 
     /**
      * @return Tenant|null
+     * @throws HandleCatchableException
      */
     public function getTenant(): ?Tenant
     {
+        if (!$this->tenant instanceof Tenant){
+            throw HandleCatchableException::catchable('Travel tidak di ditemukan!');
+        }
         return $this->tenant;
     }
 }
