@@ -118,8 +118,8 @@ class UserService
     {
         /* begin:: permissions Service */
         $user = $this->getUser();
-        $permissionService = new PermissionService(tenantId: $this->tenantId);
-        $permissionService->syncRole($user, $roles);
+        (new PermissionService(tenantId: $this->tenantId))
+            ->syncRole($roles, $user);
         /* end:: permissions Service */
         return $this;
     }

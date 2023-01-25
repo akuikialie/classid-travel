@@ -233,7 +233,6 @@ class PackageController extends Controller
                 ->get();
 
             setDefaultRequest([
-                'test' => 'whatever',
                 'long_days' => $package?->long_days ?? 0,
             ]);
 
@@ -275,6 +274,10 @@ class PackageController extends Controller
             if (isset($input['destinations']) && is_array($input['destinations'])) {
                 $destinationIds = array_keys($input['destinations']);
             }
+
+            $input = collect($input)
+                ->forget('destinations')
+                ->forget('facilities')->toArray();
 
             $packageService
                 ->setPackage($package)
@@ -333,7 +336,7 @@ class PackageController extends Controller
     public function getArr(Request $request): array
     {
         return $request->validate([
-            'type' => ['required', 'string'],
+            'type' => ['nullable', 'string'],
             'departure_year' => ['nullable', 'string'],
             'kuartal' => ['nullable', 'string'],
             'long_days' => ['required', 'integer'],

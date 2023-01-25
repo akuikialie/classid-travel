@@ -117,7 +117,7 @@ class DestinationService
      */
     public function getDestination(): ?Destination
     {
-        if (!$this->destination instanceof Tenant){
+        if (!$this->destination instanceof Destination){
             throw HandleCatchableException::catchable('Destinasi tujuan tidak di ditemukan!');
         }
         return $this->destination;

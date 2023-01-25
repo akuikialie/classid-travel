@@ -98,7 +98,7 @@ class FacilityService
      */
     public function getPlanFacility(): ?PlanFacility
     {
-        if (!$this->planFacility instanceof Tenant) {
+        if (!$this->planFacility instanceof PlanFacility) {
             throw HandleCatchableException::catchable('Fasilitas tidak di ditemukan!');
         }
         return $this->planFacility;

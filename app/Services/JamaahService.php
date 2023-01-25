@@ -105,7 +105,7 @@ class JamaahService
      */
     public function getJamaah(): Jamaah
     {
-        if (!$this->jamaah instanceof Tenant) {
+        if (!$this->jamaah instanceof Jamaah) {
             throw HandleCatchableException::catchable('Jamaah tidak di ditemukan!');
         }
         return $this->jamaah;
@@ -137,7 +137,7 @@ class JamaahService
      */
     public function getPackage(): PlanPackage
     {
-        if (!$this->package instanceof Tenant) {
+        if (!$this->package instanceof PlanPackage) {
             throw HandleCatchableException::catchable('Paket tidak di ditemukan!');
         }
         return $this->package;
@@ -159,7 +159,7 @@ class JamaahService
      */
     public function getUser(): User
     {
-        if (!$this->user instanceof Tenant) {
+        if (!$this->user instanceof User) {
             throw HandleCatchableException::catchable('User tidak di ditemukan!');
         }
         return $this->user;

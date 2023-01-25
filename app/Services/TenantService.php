@@ -71,6 +71,7 @@ class TenantService
             ->createNewUser([
                 'name' => $input['name'],
                 'phone' => $input['phone'],
+                'username' => 'admin',
                 'password' => 'admin',
             ], false)
             ->setRole('administrator')

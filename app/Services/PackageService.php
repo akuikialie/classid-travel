@@ -136,7 +136,7 @@ class PackageService
      */
     public function getPackage(): ?PlanPackage
     {
-        if (!$this->package instanceof Tenant) {
+        if (!$this->package instanceof PlanPackage) {
             throw HandleCatchableException::catchable('Paket tidak di ditemukan!');
         }
         return $this->package;
