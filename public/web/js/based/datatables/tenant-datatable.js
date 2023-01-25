@@ -7,6 +7,10 @@ let KTDatatablesServerSide = function () {
   let dt;
   let filterStatus;
 
+  $('#apply-filter').click(function () {
+    initDatatable();
+  });
+
   // Private functions
   let initDatatable = function () {
     dt = $("#kt_datatable_example_1").DataTable({
@@ -26,6 +30,7 @@ let KTDatatablesServerSide = function () {
         dataType: "json",
         data: {
           _token: csrf_token,
+          filter: $('#form-filter').serializeArray(),
         },
         error: function(error){
           Swal.fire({

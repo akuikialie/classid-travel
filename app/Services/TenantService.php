@@ -2,13 +2,10 @@
 
 namespace App\Services;
 
-use App\Enums\RoleEnum;
 use App\Exceptions\HandleCatchableException;
 use App\Models\Tenant\Tenant;
 use App\Models\User;
 use Exception;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Spatie\MediaLibrary\MediaCollections\Exceptions\FileDoesNotExist;
@@ -16,15 +13,15 @@ use Spatie\MediaLibrary\MediaCollections\Exceptions\FileIsTooBig;
 
 class TenantService
 {
-    private Builder $query;
     private ?Tenant $tenant = null;
 
+    /**
+     * @param int|null $tenantId
+     */
     public function __construct(
         private readonly ?int $tenantId = null
     )
-    {
-        $this->query = Tenant::query();
-    }
+    {}
 
     /**
      * @param bool $status
@@ -125,22 +122,18 @@ class TenantService
      */
     public function addMediaCollection(Request $request, string $collectionName): static
     {
-        try {
-            $tenant = $this->getTenant();
-            if ($request->hasfile('collections')) {
-                foreach ($request->file('collections') as $key => $media) {
-                    $tenant
-                        ->addMedia($media)
-                        ->withCustomProperties([
-                            'order' => $key,
-                            'url' => 'some url',
-                            'short description' => 'some description',
-                        ])
-                        ->toMediaCollection($collectionName);
-                }
+        $tenant = $this->getTenant();
+        if ($request->hasfile('collections')) {
+            foreach ($request->file('collections') as $key => $media) {
+                $tenant
+                    ->addMedia($media)
+                    ->withCustomProperties([
+                        'order' => $key,
+                        'url' => 'some url',
+                        'short description' => 'some description',
+                    ])
+                    ->toMediaCollection($collectionName);
             }
-        } catch (\Throwable $th) {
-            throw $th;
         }
 
         return $this;
@@ -168,29 +161,10 @@ class TenantService
     }
 
     /**
-     * @return Model|Builder|null
+     * @return Tenant|null
      */
-    public function get(): Model|Builder|null
+    public function getTenant(): ?Tenant
     {
-        return $this->query->first();
-    }
-
-    /**
-     * @return Tenant
-     * @throws Exception
-     */
-    public function getTenant(): Tenant
-    {
-        if ($this->query->count() > 1) {
-            if (isset($this->tenant)) {
-                $tenant = $this->tenant;
-            } else {
-                throw new Exception('Data harus spesifik!.');
-            }
-        } else {
-            $tenant = $this->query->first();
-        }
-
-        return $tenant;
+        return $this->tenant;
     }
 }

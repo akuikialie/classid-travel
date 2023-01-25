@@ -6,15 +6,14 @@ use App\Http\Controllers\Controller;
 use App\Http\Controllers\Web\Admin\Fragment\TenantFragmentController;
 use App\Models\Tenant\Tenant;
 use App\Services\TenantService;
-use App\Services\UserService;
 use App\Traits\FragmentRenderer;
 use Exception;
 use Illuminate\Contracts\View\View;
+use Illuminate\Contracts\Database\Eloquent\Builder;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 use InvalidArgumentException;
 use Psr\Container\ContainerExceptionInterface;
@@ -45,14 +44,42 @@ class TenantController extends Controller
      * @throws \Yajra\DataTables\Exceptions\Exception
      * @throws Exception
      */
-    public function datatable()
+    public function datatable(Request $request)
     {
         if (\request()->ajax()) {
             $tenants = Tenant::query()
-                ->latest('id')
-                ->get();
+                ->latest('id');
+            dump($request->input());
             try {
-                return datatables()->of($tenants)
+                return datatables()->eloquent($tenants)
+                    ->filter(function (Builder $query) use ($request){
+                        /* begin:: apply custom filter */
+                        $customFilters = collect($request->input('filter'));
+                        if ($customFilters->count() > 0){
+                            foreach ($customFilters as $filter){
+                                if ($filter['value'] == 'all') continue;
+
+                                if ($filter['name'] == 'status'){
+                                    $status = $filter['value'] == 'active';
+                                    $query->where('is_active', $status);
+                                    continue;
+                                }
+                                $query->where($filter['name'], $filter['value']);
+                            }
+                        }
+                        /* end:: apply custom filter */
+
+                        /* begin:: filter search */
+                        $query->when($request->input('search')['value'] && $customFilters->count() < 1, function (Builder $subQuery) use ($request){
+                            $subQuery->where('slug', 'like', "%" . $request->input('search')['value'] . "%");
+                            $subQuery->orWhere('app_domain', 'like', "%" . $request->input('search')['value'] . "%");
+                            $subQuery->orWhere('name', 'like', "%" . $request->input('search')['value'] . "%");
+                            $subQuery->orWhere('BCN', 'like', "%" . $request->input('search')['value'] . "%");
+                        });
+                        /* end:: filter search */
+
+
+                    })
                     ->addIndexColumn()
                     ->addColumn('name', function ($row) {
                         return $row->name;
@@ -369,15 +396,13 @@ class TenantController extends Controller
             $tenantService = new TenantService(tenantId: $tenant->id);
             if ($request->has('status')) {
                 $tenantService
-                    ->tenantId($tenant->id)
+                    ->setTenant($tenant)
                     ->setStatus($request->get('status'));
                 notify('Berhasil!', "Status telah berubah", 'success');
                 DB::commit();
             } else {
                 throw new InvalidArgumentException('Tidak ada yang berubah!');
             }
-
-
             return redirect()->back();
         } catch (Throwable $e) {
             logError($e, title: 'Tenant');
