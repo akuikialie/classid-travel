@@ -18,7 +18,7 @@ class NotifSender implements ShouldQueue
 {
     use InteractsWithQueue, Queueable, SerializesModels;
 
-    public array $body = [];
+    private array $body = [];
 
     /**
      * Create a new job instance.
@@ -36,15 +36,13 @@ class NotifSender implements ShouldQueue
         protected array $params,
         protected bool $isGroup = false
     )
-    {
-        //
-    }
+    {}
 
     /**
      * Execute the job.
      *
      * @return void
-     * @throws \Illuminate\Contracts\Container\BindingResolutionException
+     * @throws BindingResolutionException
      */
     public function handle(): void
     {
@@ -134,7 +132,7 @@ class NotifSender implements ShouldQueue
      * @param Exception $exception
      *
      * @return void
-     * @throws \Illuminate\Contracts\Container\BindingResolutionException
+     * @throws BindingResolutionException
      */
     public function failed(Exception $exception): void
     {

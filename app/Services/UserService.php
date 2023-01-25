@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Services;
 
 use App\Exceptions\HandleCatchableException;
-use App\Models\Jamaah\Jamaah;
 use App\Models\Jamaah\JamaahHistory;
 use App\Models\User;
 use Exception;

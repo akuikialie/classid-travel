@@ -13,6 +13,6 @@ class HandleCatchableException extends Exception
      */
     public static function catchable(string $message, int $code = 900): static
     {
-        return new static(message: "$message", code: $code);
+        return new static(message: "{$message}", code: $code);
     }
 }

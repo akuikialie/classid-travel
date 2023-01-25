@@ -17,7 +17,6 @@ class PermissionService
         private readonly ?int $tenantId = null
     )
     {
-//
     }
 
     /**
@@ -88,7 +87,7 @@ class PermissionService
                         'name' => $newRole,
                         'type' => PermissionType::tenant->keyValue(),
                     ])
-                    ->syncPermissions($permissions);
+                        ->syncPermissions($permissions);
                 }
             }
         }

@@ -6,12 +6,12 @@ use Illuminate\Support\Str;
 
 class NotifFactory
 {
-    public string $id = '';
-    public string $channel = '';
-    public string $sender = '';
-    public string $recipient = '';
-    public string $content = '';
-    public array $attachments = [];
+    private string $id = '';
+    private string $channel = '';
+    private string $sender = '';
+    private string $recipient = '';
+    private string $content = '';
+    private array $attachments = [];
 
     protected NotifCollector $collector;
 

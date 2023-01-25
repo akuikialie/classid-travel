@@ -69,7 +69,7 @@ class PackageRoute extends BaseRoute
                  ],
                  resolver: function () {
                      $user = \auth()->user();
-                     return ($user->can('view package') && $user->tenant_id != null);
+                     return $user->can('view package') && $user->tenant_id != null;
                  },
              );
     }

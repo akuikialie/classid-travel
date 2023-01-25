@@ -9,14 +9,14 @@ class NotifyConfig
     /**
      * Session storage.
      */
-    protected $session;
+    protected SessionStore $session;
 
     /**
      * Configuration options.
      *
      * @var array
      */
-    protected $config;
+    protected array $config;
 
     /**
      * Setting up the session
@@ -25,7 +25,6 @@ class NotifyConfig
      */
     public function __construct(SessionStore $session)
     {
-        // $this->setDefaultConfig();
         $this->session = $session;
     }
 
@@ -34,7 +33,7 @@ class NotifyConfig
      *
      * @return void
      */
-    protected function setDefaultConfig()
+    protected function setDefaultConfig(): void
     {
         $this->config = [
             'title' => '',
@@ -67,9 +66,9 @@ class NotifyConfig
     /**
      * The default configuration for middleware alert.
      *
-     * @return $config
+     * @return NotifyConfig $config
      */
-    public function middleware()
+    public function middleware(): static
     {
         unset($this->config['position'], $this->config['heightAuto'], $this->config['width'], $this->config['padding'], $this->config['showCloseButton']);
 
@@ -90,12 +89,12 @@ class NotifyConfig
     /**
      * Flash an alert message.
      *
-     * @param  string $title
-     * @param  string $text
-     * @param  array  $icon
-     * @return void
+     * @param string $title
+     * @param string $text
+     * @param string|null $icon
+     * @return NotifyConfig
      */
-    public function notify($title = '', $text = '', $icon = null)
+    public function notify( string $title = '', string $text = '', string $icon = null): static
     {
         $this->config['title'] = $title;
         $this->config['text'] = $text;
@@ -113,8 +112,9 @@ class NotifyConfig
      *
      * @param string $title
      * @param string $text
+     * @return NotifyConfig
      */
-    public function success($title = '', $text = '')
+    public function success(string $title = '', string $text = ''): static
     {
         $this->notify($title, $text, 'success');
         return $this;
@@ -125,8 +125,9 @@ class NotifyConfig
      *
      * @param string $title
      * @param string $text
+     * @return NotifyConfig
      */
-    public function info($title = '', $text = '')
+    public function info(string $title = '', string $text = ''): static
     {
         $this->notify($title, $text, 'info');
         return $this;
@@ -137,8 +138,9 @@ class NotifyConfig
      *
      * @param string $title
      * @param string $text
+     * @return NotifyConfig
      */
-    public function warning($title = '', $text = '')
+    public function warning(string $title = '',string $text = ''): static
     {
         $this->notify($title, $text, 'warning');
         return $this;
@@ -149,8 +151,9 @@ class NotifyConfig
      *
      * @param string $title
      * @param string $text
+     * @return NotifyConfig
      */
-    public function question($title = '', $text = '')
+    public function question(string $title = '',string $text = ''): static
     {
         $this->notify($title, $text, 'question');
         $this->showCancelButton();
@@ -162,8 +165,9 @@ class NotifyConfig
      *
      * @param string $title
      * @param string $text
+     * @return NotifyConfig
      */
-    public function error($title = '', $text = '')
+    public function error(string $title = '', string $text = ''): static
     {
         $this->notify($title, $text, 'error');
         return $this;
@@ -175,11 +179,12 @@ class NotifyConfig
      * @param string $title
      * @param string $text
      * @param string $imageUrl
-     * @param integer $imageWidth
-     * @param integer $imageHeight
-     * @param string $imageAlt
+     * @param int $imageWidth
+     * @param int $imageHeight
+     * @param string|null $imageAlt
+     * @return NotifyConfig
      */
-    public function image($title, $text, $imageUrl, $imageWidth, $imageHeight, $imageAlt = null)
+    public function image(string $title, string $text, string $imageUrl, int $imageWidth, int $imageHeight, string $imageAlt = null): static
     {
         $this->config['title'] = $title;
         $this->config['text'] = $text;
@@ -203,8 +208,9 @@ class NotifyConfig
      * @param string $title
      * @param string $code
      * @param string $icon
+     * @return NotifyConfig
      */
-    public function html($title = '', $code = '', $icon = '')
+    public function html(string $title = '', string $code = '', string $icon = ''): static
     {
         $this->config['title'] = $title;
         $this->config['html'] = $code;
@@ -221,13 +227,15 @@ class NotifyConfig
      *
      * @param string $title
      * @param string $icon
+     * @param $position
+     * @return NotifyConfig
      */
-    public function toast($title = '', $icon = '', $position)
+    public function toast(string $title, string $icon, $position): static
     {
         $this->config['toast'] = true;
         $this->config['title'] = $title;
         $this->config['icon'] = $icon;
-        $this->config['position'] = ($position ?: config('notify.notify_position'));
+        $this->config['position'] = ($position ?? config('notify.notify_position'));
         $this->config['showCloseButton'] = true;
         $this->config['showConfirmButton'] = false;
 
@@ -239,16 +247,17 @@ class NotifyConfig
     /**
      * Convert any alert modal to Toast
      *
-     * @param string $position
+     * @param string|null $position
+     * @return NotifyConfig
      */
-    public function toToast($position = null)
+    public function toToast(string $position = null): static
     {
         $this->config['toast'] = true;
         $this->config['showCloseButton'] = true;
-        if (!empty($position) && isset($position)) {
+        if (!empty($position)) {
             $this->config['position'] = $position;
         } else {
-            $this->config['position'] = ($position ?: config('notify.notify_position'));
+            $this->config['position'] = ($position ?? config('notify.notify_position'));
         }
         $this->config['showConfirmButton'] = false;
         unset($this->config['width'], $this->config['padding']);
@@ -261,7 +270,7 @@ class NotifyConfig
      * Convert any alert modal to html
      *
      */
-    public function toHtml()
+    public function toHtml(): static
     {
         $this->config['html'] = $this->config['text'];
         unset($this->config['text']);
@@ -274,8 +283,9 @@ class NotifyConfig
      * Add a custom image to alert
      *
      * @param string $imageUrl
+     * @return NotifyConfig
      */
-    public function addImage($imageUrl)
+    public function addImage(string $imageUrl): static
     {
         $this->config['imageUrl'] = $imageUrl;
         $this->config['showCloseButton'] = true;
@@ -289,8 +299,9 @@ class NotifyConfig
      * Add footer section to notify()
      *
      * @param string $code
+     * @return NotifyConfig
      */
-    public function footer($code)
+    public function footer(string $code): static
     {
         $this->config['footer'] = $code;
 
@@ -301,11 +312,12 @@ class NotifyConfig
     /**
      * positioned alert dialog
      *
-     * @param string $position
+     * @param string|null $position
+     * @return NotifyConfig
      */
-    public function position($position = null)
+    public function position(?string $position = null): static
     {
-        $this->config['position'] = ($position ?: config('notify.notify_position'));
+        $this->config['position'] = ($position ?? config('notify.notify_position'));
 
         $this->flash();
         return $this;
@@ -318,8 +330,9 @@ class NotifyConfig
      * Can be in px or %. The default width is 32rem
      *
      * @param string $width
+     * @return NotifyConfig
      */
-    public function width($width = '32rem')
+    public function width(string $width = '32rem'): static
     {
         $this->config['width'] = $width;
 
@@ -332,8 +345,9 @@ class NotifyConfig
      * The default padding is 1.25rem.
      *
      * @param string $padding
+     * @return NotifyConfig
      */
-    public function padding($padding = '1.25rem')
+    public function padding(string $padding = '1.25rem'): static
     {
         $this->config['padding'] = $padding;
 
@@ -347,8 +361,9 @@ class NotifyConfig
      * The default background is '#fff'.
      *
      * @param string $background
+     * @return NotifyConfig
      */
-    public function background($background = '#fff')
+    public function background(string $background = '#fff'): static
     {
         $this->config['background'] = $background;
 
@@ -361,9 +376,10 @@ class NotifyConfig
      * focus the first element in tab
      * order instead of "Confirm"-button by default.
      *
-     * @param boolean $focus
+     * @param bool $focus
+     * @return NotifyConfig
      */
-    public function focusConfirm($focus = true)
+    public function focusConfirm(bool $focus = true): static
     {
         $this->config['focusConfirm'] = $focus;
         unset($this->config['focusCancel']);
@@ -376,9 +392,10 @@ class NotifyConfig
      * Set to true if you want to focus the
      * "Cancel"-button by default.
      *
-     * @param boolean $focus
+     * @param bool $focus
+     * @return NotifyConfig
      */
-    public function focusCancel($focus = false)
+    public function focusCancel(bool $focus = false): static
     {
         $this->config['focusCancel'] = $focus;
         unset($this->config['focusConfirm']);
@@ -394,8 +411,9 @@ class NotifyConfig
      *
      * @param string $showAnimation
      * @param string $hideAnimation
+     * @return NotifyConfig
      */
-    public function animation($showAnimation, $hideAnimation)
+    public function animation(string $showAnimation, string $hideAnimation): static
     {
         if (!config('notify.animation.enable')) {
             config(['notify.animation.enable' => true]);
@@ -410,10 +428,11 @@ class NotifyConfig
     /**
      * Persistent the alert modal
      *
-     * @param boolean $showConfirmBtn
-     * @param boolean $showCloseBtn
+     * @param bool $showConfirmBtn
+     * @param bool $showCloseBtn
+     * @return NotifyConfig
      */
-    public function persistent($showConfirmBtn = true, $showCloseBtn = false)
+    public function persistent(bool $showConfirmBtn = true,bool $showCloseBtn = false): static
     {
         $this->config['allowEscapeKey'] = false;
         $this->config['allowOutsideClick'] = false;
@@ -433,9 +452,10 @@ class NotifyConfig
      * auto close alert modal after
      * specifid time
      *
-     * @param integer $milliseconds
+     * @param int $milliseconds
+     * @return NotifyConfig
      */
-    public function autoClose($milliseconds = 5000)
+    public function autoClose(int $milliseconds = 5000): static
     {
         $this->config['timer'] = ($milliseconds ?? config('notify.duration'));
 
@@ -448,8 +468,9 @@ class NotifyConfig
      *
      * @param string $btnText
      * @param string $btnColor
+     * @return NotifyConfig
      */
-    public function showConfirmButton(string $btnText = 'Ok', string $btnColor = '#3085d6')
+    public function showConfirmButton(string $btnText = 'Ok', string $btnColor = '#3085d6'): static
     {
         $this->config['showConfirmButton'] = true;
         $this->config['confirmButtonText'] = $btnText;
@@ -466,8 +487,9 @@ class NotifyConfig
      *
      * @param string $btnText
      * @param string $btnColor
+     * @return NotifyConfig
      */
-    public function showCancelButton($btnText = 'Cancel', $btnColor = '#aaa')
+    public function showCancelButton(string $btnText = 'Cancel', string $btnColor = '#aaa'): static
     {
         $this->config['showCancelButton'] = true;
         $this->config['cancelButtonText'] = $btnText;
@@ -482,8 +504,9 @@ class NotifyConfig
      * Display close button
      *
      * @param string $closeButtonAriaLabel
+     * @return NotifyConfig
      */
-    public function showCloseButton($closeButtonAriaLabel = 'aria-label')
+    public function showCloseButton(string $closeButtonAriaLabel = 'aria-label'): static
     {
         $this->config['showCloseButton'] = true;
         $this->config['closeButtonAriaLabel'] = $closeButtonAriaLabel;
@@ -496,7 +519,7 @@ class NotifyConfig
      * Hide close button from alert or toast
      *
      */
-    public function hideCloseButton()
+    public function hideCloseButton(): static
     {
         $this->config['showCloseButton'] = false;
 
@@ -509,9 +532,10 @@ class NotifyConfig
      * If you want to use your own classes (e.g. Bootstrap classes)
      * set this parameter to false.
      *
-     * @param boolean $buttonsStyling
+     * @param bool $buttonsStyling
+     * @return NotifyConfig
      */
-    public function buttonsStyling($buttonsStyling)
+    public function buttonsStyling(bool $buttonsStyling): static
     {
         $this->config['buttonsStyling'] = $buttonsStyling;
 
@@ -524,7 +548,7 @@ class NotifyConfig
      *
      * @param string $iconHtml
      */
-    public function iconHtml($iconHtml)
+    public function iconHtml(string $iconHtml): static
     {
         $this->config['iconHtml'] = $iconHtml;
 
@@ -537,7 +561,7 @@ class NotifyConfig
      * Mostly, this feature is useful with toasts.
      *
      */
-    public function timerProgressBar()
+    public function timerProgressBar(): static
     {
         $this->config['timerProgressBar'] = true;
 
@@ -550,7 +574,7 @@ class NotifyConfig
      *
      * @author Faber44 <https://github.com/Faber44>
      */
-    public function reverseButtons()
+    public function reverseButtons(): static
     {
         $this->config['reverseButtons'] = true;
 
@@ -562,7 +586,7 @@ class NotifyConfig
      * Remove the timer from config option.
      *
      */
-    protected function removeTimer()
+    protected function removeTimer(): void
     {
         if (array_key_exists('timer', $this->config)) {
             unset($this->config['timer']);
@@ -573,7 +597,7 @@ class NotifyConfig
      * Flash the config options for alert.
      *
      */
-    public function flash()
+    public function flash(): void
     {
         foreach ($this->config as $key => $value) {
             $this->session->flash("notify.config.{$key}", $value);
@@ -585,7 +609,7 @@ class NotifyConfig
      * Build Flash config options for flashing.
      *
      */
-    public function buildConfig()
+    public function buildConfig(): string
     {
         $config = $this->config;
         return json_encode($config);

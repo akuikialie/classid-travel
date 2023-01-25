@@ -14,7 +14,6 @@ class OldPasswordRule implements Rule
      */
     public function __construct()
     {
-        //
     }
 
     /**

@@ -144,7 +144,7 @@ class Controller extends BaseController
     protected function setData(string $name, $value): self
     {
         if (in_array($name, $this->reservedVariables)) {
-            throw new Exception("Variable [$name] is reserved by this controller");
+            throw new Exception("Variable [{$name}] is reserved by this controller");
         }
         $this->controllerData[$name] = $value;
 
@@ -206,7 +206,7 @@ class Controller extends BaseController
         if (is_string($breadcrumb)) {
             $bc->add($this->breadCrumbFormat(['title' => $breadcrumb, 'url' => '#']));
         } else {
-            foreach ((array) $breadcrumb as $k => $v) {
+            foreach ($breadcrumb as $v) {
                 if (is_string($v)) {
                     $bc->add($this->breadCrumbFormat($breadcrumb));
                     break;
@@ -229,7 +229,7 @@ class Controller extends BaseController
         if (is_string($breadcrumb)) {
             $this->breadCrumbs->add($this->breadCrumbFormat(['title' => $breadcrumb, 'url' => '#']));
         } else {
-            foreach ((array) $breadcrumb as $k => $v) {
+            foreach ($breadcrumb as $v) {
                 if (is_string($v)) {
                     $this->breadCrumbs->add($this->breadCrumbFormat($breadcrumb));
                     break;
@@ -258,7 +258,7 @@ class Controller extends BaseController
      * @param $value
      * @return $this
      */
-    public function setGlobalParams(string $parameter, $value): static
+    public function addGlobalParams(string $parameter, $value): static
     {
         $this->shareGlobalParams($parameter, $value);
         return $this;
