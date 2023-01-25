@@ -41,7 +41,7 @@ class SeedPackages extends Seeder
                 \DB::commit();
 
                 $packageService
-                    ->byHash($newPackage->hash)
+                    ->setPackage($newPackage)
                     ->addDestinations([$destinations[rand(0, count($destinations)-1)]])
                     ->addFacilities($facilities);
 

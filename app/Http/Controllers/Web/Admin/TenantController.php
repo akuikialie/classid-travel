@@ -50,7 +50,6 @@ class TenantController extends Controller
             try {
                 $tenants = Tenant::query()
                     ->latest('id');
-                dump($request->input());
                 return datatables()->eloquent($tenants)
                     ->filter(function (Builder $query) use ($request) {
                         /* begin:: apply custom filter */

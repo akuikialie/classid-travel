@@ -20,8 +20,6 @@ use Throwable;
 
 class ScheduleController extends Controller
 {
-
-
     protected string $forPage = 'schedule';
 
     /**
