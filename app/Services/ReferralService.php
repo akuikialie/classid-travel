@@ -17,7 +17,6 @@ class ReferralService
         private readonly int $tenantId
     )
     {
-        //
     }
 
     /**

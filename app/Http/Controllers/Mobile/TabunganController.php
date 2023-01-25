@@ -126,7 +126,6 @@ class TabunganController extends Controller
             ->where('user_id', '=', $authUser->id)
             ->first();
 
-        $planingSavings = [];
         foreach ($jamaah->tabunganPackages as $tabungan) {
 
             $namaTabungan = 'tabungan ' . $tabungan?->myPackage->name;

@@ -69,7 +69,7 @@ trait WalletBase
     {
         $pageName = 'page';
         $currentPage = empty($body['meta']['current_page']) ? 1 : $body['meta']['current_page'];
-        $page = $currentPage ?: Paginator::resolveCurrentPage($pageName);
+        $page = $currentPage ?? Paginator::resolveCurrentPage($pageName);
         $perPage = empty($body['meta']['per_page']) ? 15 : $body['meta']['per_page'];
         $data = $body['data'] ?? [];
         $total = empty($body['meta']['total']) ? count((array) $data) : $body['meta']['total'];

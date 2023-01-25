@@ -6,6 +6,7 @@
  * @author      yusron arif <yusron.arif4@gmail.com>
  */
 
+use App\Core\Whatsapp\Messages\WhatsappMessage;
 use App\Models\Tenant\Tenant;
 use App\Services\Notification\NotifManager;
 use Carbon\Carbon;
@@ -13,8 +14,8 @@ use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\ViewErrorBag;
-use Psr\Container\NotFoundExceptionInterface;
 use Psr\Container\ContainerExceptionInterface;
+use Psr\Container\NotFoundExceptionInterface;
 
 if (!function_exists('activeTenant')) {
     /**
@@ -117,16 +118,14 @@ if (!function_exists('moneyFormat')) {
             $decimals = explode(".", $integer);
             if (count($decimals) == 2) {
                 return number_format($decimals[0], 0, ',', '.') . "," . $decimals[1];
-            } else {
-                return number_format($integer, 0, ',', '.');
             }
+            return number_format($integer, 0, ',', '.');
         } else {
             $decimals = explode(",", $integer);
             if (count($decimals) == 2) {
                 return number_format($decimals[0], 0, '.', ',') . "." . $decimals[1];
-            } else {
-                return number_format($integer, 0, '.', ',');
             }
+            return number_format($integer, 0, '.', ',');
         }
     }
 }
@@ -140,26 +139,22 @@ if (!function_exists('trimAll')) {
      * @return string
      * @throws Exception
      */
-    function trimAll(?String $string, String $type = 'smart', String $pattern = '\W+'): String
+    function trimAll(?string $string, string $type = 'smart', string $pattern = '\W+'): string
     {
-        if (!$string || trim($string)=='') return '';
-        if (! in_array($type, ['smart', 'both', 'left', 'right', 'all']))
+        if (!$string || trim($string) === '') return '';
+        if (!in_array($type, ['smart', 'both', 'left', 'right', 'all']))
             throw new Exception("type of trim not valid, use smart|left|right|all instead.", 401);
 
         try {
-            switch ($type) {
-                case 'both':
-                    return preg_replace('/^'. $pattern .'|'. $pattern .'$/i', '', $string);
-                case 'left':
-                    return preg_replace('/^'. $pattern .'/i', '', $string);
-                case 'right':
-                    return preg_replace('/'. $pattern .'$/i', '', $string);
-                case 'all':
-                    return preg_replace('/'. $pattern .'/i', '', $string);
-                default:
-                    return preg_replace('/'. $pattern .'/i', ' ', preg_replace('/^'. $pattern .'|'. $pattern .'$/i', '', $string));
-            }
-        } catch (Exception $e) {}
+            return match ($type) {
+                'both' => preg_replace('/^' . $pattern . '|' . $pattern . '$/i', '', $string),
+                'left' => preg_replace('/^' . $pattern . '/i', '', $string),
+                'right' => preg_replace('/' . $pattern . '$/i', '', $string),
+                'all' => preg_replace('/' . $pattern . '/i', '', $string),
+                default => preg_replace('/' . $pattern . '/i', ' ', preg_replace('/^' . $pattern . '|' . $pattern . '$/i', '', $string)),
+            };
+        } catch (Exception) {
+        }
 
         return '';
     }
@@ -167,9 +162,9 @@ if (!function_exists('trimAll')) {
 
 if (!function_exists('carbon')) {
     /**
-     * @param string|\DateTimeInterface|null $datetime
-     * @param \DateTimeZone|string|null      $timezone
-     * @param string|null                    $locale
+     * @param string|DateTimeInterface|null $datetime
+     * @param DateTimeZone|string|null $timezone
+     * @param string|null $locale
      *
      * @return Carbon
      */
@@ -194,10 +189,10 @@ if (!function_exists('carbon')) {
 
 if (!function_exists('msnotif')) {
     /**
-     * @param string   $channel
+     * @param string $channel
      * @param int|null $schoolId
      *
-     * @return \App\Services\Notification\NotifManager
+     * @return NotifManager
      */
     function msnotif(string $channel, ?int $schoolId = null): NotifManager
     {
@@ -208,12 +203,12 @@ if (!function_exists('msnotif')) {
 if (!function_exists('whatsappMessage')) {
     /**
      * @param string|null $key
-     * @return \App\Core\Whatsapp\Messages\WhatsappMessage
+     * @return WhatsappMessage
      * @throws Exception
      */
-    function whatsappMessage(?string $key = null): \App\Core\Whatsapp\Messages\WhatsappMessage
+    function whatsappMessage(?string $key = null): WhatsappMessage
     {
-        return (new \App\Core\Whatsapp\Messages\WhatsappMessage($key));
+        return new WhatsappMessage($key);
     }
 }
 
@@ -256,26 +251,25 @@ if (!function_exists('romanicNumber')) {
 if (!function_exists('romanicToInt')) {
     /**
      * @param $romanic
-     *
      * @return int|null
      * @throws Exception
      */
     function romanicToInt($romanic): ?int
     {
         $romans = [
-            'M'   => 1000,
-            'CM'  => 900,
-            'D'   => 500,
-            'CD'  => 400,
-            'C'   => 100,
-            'XC'  => 90,
-            'L'   => 50,
-            'XL'  => 40,
-            'X'   => 10,
-            'IX'  => 9,
-            'V'   => 5,
-            'IV'  => 4,
-            'I'   => 1
+            'M' => 1000,
+            'CM' => 900,
+            'D' => 500,
+            'CD' => 400,
+            'C' => 100,
+            'XC' => 90,
+            'L' => 50,
+            'XL' => 40,
+            'X' => 10,
+            'IX' => 9,
+            'V' => 5,
+            'IV' => 4,
+            'I' => 1
         ];
 
         $roman = strtoupper(trimAll($romanic, 'all'));
@@ -294,7 +288,6 @@ if (!function_exists('romanicToInt')) {
 if (!function_exists('numberSpell')) {
     /**
      * Spell number to words.
-     *
      * @param $value
      * @return string
      */
@@ -306,13 +299,13 @@ if (!function_exists('numberSpell')) {
     }
 }
 
-if (! function_exists('setDefaultRequest')) {
+if (!function_exists('setDefaultRequest')) {
     /**
      * Set Default Value for Request Input.
      *
      * @param string|array $name
-     * @param null         $value
-     * @param bool         $force
+     * @param null $value
+     * @param bool $force
      */
     function setDefaultRequest(string|array $name, mixed $value = null, bool $force = true): void
     {
@@ -331,17 +324,16 @@ if (! function_exists('setDefaultRequest')) {
                 $request->mergeIfMissing($data);
             }
             $request->session()->flashInput($data);
-        } catch (Exception $e) {
-            // throw $e;
+        } catch (Exception) {
         }
     }
 }
 
-if (! function_exists('hasRoute')) {
+if (!function_exists('hasRoute')) {
     /**
      * Existing Route by Name.
      *
-     * @param  string  $name
+     * @param string $name
      * @return bool
      */
     function hasRoute(string $name): bool
@@ -350,14 +342,14 @@ if (! function_exists('hasRoute')) {
     }
 }
 
-if (! function_exists('routed')) {
+if (!function_exists('routed')) {
     /**
      * Existing Route by Name
      * with '#' fallback.
      *
-     * @param  string  $name
-     * @param  array  $parameters
-     * @param  bool  $absolute
+     * @param string $name
+     * @param array $parameters
+     * @param bool $absolute
      * @return string
      */
     function routed(string $name, array $parameters = [], bool $absolute = true): string
@@ -370,7 +362,7 @@ if (! function_exists('routed')) {
     }
 }
 
-if (! function_exists('activeRoute')) {
+if (!function_exists('activeRoute')) {
     function activeRoute(string $route = '', array $params = [], string $cssClass = 'active current'): string
     {
         if (empty($route = trim($route))) {
@@ -386,13 +378,13 @@ if (! function_exists('activeRoute')) {
 
             foreach ($params as $key => $value) {
                 if (
-                    $requestRoute->parameter($key) instanceof \Illuminate\Database\Eloquent\Model
-                    && $value instanceof \Illuminate\Database\Eloquent\Model
-                    && $requestRoute->parameter($key)->id != $value->id
+                    $requestRoute->parameter($key) instanceof Model
+                    && $value instanceof Model
+                    && $requestRoute->parameter($key)->id !== $value->id
                 ) {
                     return '';
                 }
-                if ($requestRoute->parameter($key) != $value) {
+                if ($requestRoute->parameter($key) !== $value) {
                     return '';
                 }
             }
@@ -404,16 +396,15 @@ if (! function_exists('activeRoute')) {
     }
 }
 
-if (! function_exists('inputFeedbackComponent'))
-{
+if (!function_exists('inputFeedbackComponent')) {
     /**
      * Input feedback component
      *
      * @param string|array $message
-     * @param string       $mode valid|invalid
-     * @param string       $type feedback|tooltip
-     * @param string       $glue
-     * @param string|null  $id
+     * @param string $mode valid|invalid
+     * @param string $type feedback|tooltip
+     * @param string $glue
+     * @param string|null $id
      *
      * @return string
      */
@@ -425,12 +416,11 @@ if (! function_exists('inputFeedbackComponent'))
         if (!in_array($type, ['feedback', 'tooltip'])) {
             $type = 'feedback';
         }
-        return '<div class="'. $mode .'-' . $type . '"'.($id ? " id=\"{$id}\"" : '').'>'.(is_array($message) ? implode($glue, $message) : $message).'</div>';
+        return '<div class="' . $mode . '-' . $type . '"' . ($id ? " id=\"{$id}\"" : '') . '>' . (is_array($message) ? implode($glue, $message) : $message) . '</div>';
     }
 }
 
-if (! function_exists('getErrors'))
-{
+if (!function_exists('getErrors')) {
     /**
      * Feedback CSS Class
      *
@@ -452,8 +442,7 @@ if (! function_exists('getErrors'))
     }
 }
 
-if (! function_exists('hasError'))
-{
+if (!function_exists('hasError')) {
     /**
      * Feedback CSS Class
      *
@@ -469,15 +458,14 @@ if (! function_exists('hasError'))
     }
 }
 
-if (! function_exists('errorCss'))
-{
+if (!function_exists('errorCss')) {
     /**
      * Feedback CSS Class
      *
      * @param string|array|null $key
-     * @param string|null       $bag
-     * @param bool              $isGroup
-     * @param string|null       $class
+     * @param string|null $bag
+     * @param bool $isGroup
+     * @param string|null $class
      *
      * @return string
      */
@@ -490,14 +478,13 @@ if (! function_exists('errorCss'))
     }
 }
 
-if (! function_exists('inputFeedback'))
-{
+if (!function_exists('inputFeedback')) {
     /**
      * InValid input feedback
      *
      * @param string|array|null $key
-     * @param ?string           $bag
-     * @param string            $type feedback|tooltip
+     * @param ?string $bag
+     * @param string $type feedback|tooltip
      *
      * @return string
      */
@@ -520,8 +507,7 @@ if (! function_exists('inputFeedback'))
     }
 }
 
-if (! function_exists('errorAll'))
-{
+if (!function_exists('errorAll')) {
     /**
      * InValid input feedback
      *
@@ -541,7 +527,7 @@ if (! function_exists('errorAll'))
 
         return '<div class="alert alert-danger rounded-0" style="border-width: 2px; border-left: none; border-right: none;">' .
             '<h4 class="alert-heading">Eror!! <small>Periksa Lagi Inputan Anda</small></h4>' .
-        '</div>';
+            '</div>';
     }
 }
 
@@ -550,7 +536,6 @@ if (!function_exists('paginateStyleReset')) {
      * Style reset paginate
      *
      * @param $datas
-     *
      * @return string
      */
     function paginateStyleReset($datas): string
@@ -559,14 +544,15 @@ if (!function_exists('paginateStyleReset')) {
             if (method_exists($datas, 'perPage') && method_exists($datas, 'currentPage')) {
                 return 'counter-reset: _rownum ' . ($datas->perPage() * ($datas->currentPage() - 1)) . ';';
             }
-        } catch (Exception $e) {}
+        } catch (Exception $e) {
+        }
         return '';
     }
 }
 
 if (!function_exists('logError')) {
     /**
-     * @param string|\Exception $exception
+     * @param string|Exception $exception
      * @param string|null $title
      * @param string|array|null $data
      *

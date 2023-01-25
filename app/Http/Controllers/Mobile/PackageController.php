@@ -30,7 +30,8 @@ class PackageController extends Controller
     {
         $with = ['myPlan:id,value', 'myFacilities', 'myDestinations', 'myItineraries' => function ($subQuery) {
             $subQuery->orderBy('day', 'asc');
-        }, 'myItineraries.activities', 'media'];
+        }, 'myItineraries.activities', 'media'
+        ];
         $withCount = ['myFacilities', 'myDestinations', 'myItineraries'];
 
         $user = auth()->user();
@@ -133,8 +134,8 @@ class PackageController extends Controller
     {
         $with = ['myFacilities', 'myDestinations', 'myItineraries' => function ($subQuery) {
             $subQuery->orderBy('day', 'asc');
-        },
-            'myItineraries.activities', 'media'];
+        }, 'myItineraries.activities', 'media'
+        ];
 
         $withCount = ['myFacilities', 'myDestinations', 'myItineraries'];
         $package = PlanPackage::query()

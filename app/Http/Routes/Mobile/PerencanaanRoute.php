@@ -4,15 +4,17 @@ namespace App\Http\Routes\Mobile;
 
 use App\Enums\RoleEnum;
 use App\Http\Controllers\Mobile\PerencanaanController;
+use Dentro\Yalr\BaseRoute;
 
-class PerencanaanRoute extends \Dentro\Yalr\BaseRoute
+class PerencanaanRoute extends BaseRoute
 {
 
     protected string $prefix = 'perencanaan';
 
     protected string $name = 'perencanaan';
+
     /**
-     * @inheritDoc
+     * @return void
      */
     public function register(): void
     {

@@ -82,7 +82,7 @@ class TenantRoute extends BaseRoute
                  ],
                  resolver: function () {
                      $user = \auth()->user();
-                     return ($user->can('view travel') && $user->hasRole('super-administrator'));
+                     return $user->can('view travel') && $user->hasRole('super-administrator');
                  },
              )
              ->route(
@@ -93,7 +93,7 @@ class TenantRoute extends BaseRoute
                  ],
                  resolver: function () {
                      $user = \auth()->user();
-                     return ($user->can('view travel') && $user->tenant_id != null);
+                     return $user->can('view travel') && $user->tenant_id != null;
                  },
              );
     }

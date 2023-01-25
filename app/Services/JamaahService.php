@@ -7,7 +7,6 @@ use App\Exceptions\HandleCatchableException;
 use App\Models\Jamaah\Jamaah;
 use App\Models\Jamaah\JamaahHistory;
 use App\Models\Plan\PlanPackage;
-use App\Models\Tenant\Tenant;
 use App\Models\User;
 use Throwable;
 
@@ -26,7 +25,8 @@ class JamaahService
 
     /**
      * @param string $key
-     * @return void
+     * @return JamaahService
+     * @throws HandleCatchableException
      * @throws Throwable
      */
     public function addPackage(string $key = 'perencanaan'): static
@@ -55,6 +55,9 @@ class JamaahService
         return $this;
     }
 
+    /**
+     * @throws HandleCatchableException
+     */
     public function addDeparture(string $detail = null): static
     {
         $jamaah = $this->getJamaah();
