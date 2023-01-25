@@ -45,9 +45,9 @@ class ScheduleController extends Controller
                 $schedules = Schedule::query()
                     ->withCount(['jamaah'])
                     ->tenantId($user->tenant_id)
-                    ->get();
+                    ->latest();
 
-                $datatable = datatables()->of($schedules)
+                $datatable = datatables()->eloquent($schedules)
                     ->addIndexColumn()
                     ->addColumn('departure_date', function ($model) {
                         return Carbon::parse($model->departure_date)->format('d M, Y');

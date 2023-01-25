@@ -71,9 +71,9 @@ class RoleController extends Controller
                         })
                     ->with(['permissions', 'users', 'tenant'])
                     ->withCount(['users'])
-                    ->oldest('id')->get();
+                    ->oldest('id');
 
-                $datatable = datatables()->of($roles)
+                $datatable = datatables()->eloquent($roles)
                     ->addIndexColumn()
                     ->addColumn('name', function ($role) {
                         return $role->name;

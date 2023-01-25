@@ -45,9 +45,9 @@ class FacilityController extends Controller
                 $facilities = PlanFacility::query()
                     ->withCount(['media', 'packages'])
                     ->tenantId($user->tenant_id)
-                    ->get();
+                    ->latest();
 
-                $datatable = datatables()->of($facilities)
+                $datatable = datatables()->eloquent($facilities)
                     ->addIndexColumn()
                     ->addColumn('name', function ($model) {
                         return $model->name;

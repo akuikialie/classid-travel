@@ -64,10 +64,9 @@ class UserController extends Controller
                         });
                     })
                     ->where('is_super', false)
-                    ->latest('id')
-                    ->get();
+                    ->latest('id');
 
-                $datatable = datatables()->of($users)
+                $datatable = datatables()->eloquent($users)
                     ->addIndexColumn()
                     ->addColumn('role', function ($user) {
                         return $user->roles->pluck('name')->first();
