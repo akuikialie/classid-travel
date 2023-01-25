@@ -44,9 +44,9 @@ class DestinationController extends Controller
                     ->with(['myAddress'])
                     ->withCount(['media', 'packages'])
                     ->tenantId($user->tenant_id)
-                    ->get();
+                    ->latest();
 
-                $datatable = datatables()->of($destinations)
+                $datatable = datatables()->eloquent($destinations)
                     ->addIndexColumn()
                     ->addColumn('name', function ($destination) {
                         return $destination->name;

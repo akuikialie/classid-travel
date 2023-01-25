@@ -53,10 +53,9 @@ class PackageController extends Controller
                     ->with(['myPlan', 'myDestinations'])
                     ->withCount(['jamaah'])
                     ->tenantId($user->tenant_id)
-                    ->latest()
-                    ->get();
+                    ->latest();
 
-                $datatable = datatables()->of($packages)
+                $datatable = datatables()->eloquent($packages)
                     ->addIndexColumn()
                     ->addColumn('name', function ($package) {
                         return $package->name;

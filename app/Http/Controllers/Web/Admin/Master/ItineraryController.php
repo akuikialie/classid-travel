@@ -42,9 +42,9 @@ class ItineraryController extends Controller
                 $user = auth()->user();
                 $itineraries = ItineraryActivity::query()
                     ->tenantId($user->tenant_id)
-                    ->get();
+                    ->latest();
 
-                $datatable = datatables()->of($itineraries)
+                $datatable = datatables()->eloquent($itineraries)
                     ->addIndexColumn()
                     ->addColumn('name', function ($model) {
                         return $model->activity;

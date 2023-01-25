@@ -47,19 +47,19 @@ class TenantController extends Controller
     public function datatable(Request $request)
     {
         if (\request()->ajax()) {
-            $tenants = Tenant::query()
-                ->latest('id');
-            dump($request->input());
             try {
+                $tenants = Tenant::query()
+                    ->latest('id');
+                dump($request->input());
                 return datatables()->eloquent($tenants)
-                    ->filter(function (Builder $query) use ($request){
+                    ->filter(function (Builder $query) use ($request) {
                         /* begin:: apply custom filter */
                         $customFilters = collect($request->input('filter'));
-                        if ($customFilters->count() > 0){
-                            foreach ($customFilters as $filter){
+                        if ($customFilters->count() > 0) {
+                            foreach ($customFilters as $filter) {
                                 if ($filter['value'] == 'all') continue;
 
-                                if ($filter['name'] == 'status'){
+                                if ($filter['name'] == 'status') {
                                     $status = $filter['value'] == 'active';
                                     $query->where('is_active', $status);
                                     continue;
@@ -70,15 +70,13 @@ class TenantController extends Controller
                         /* end:: apply custom filter */
 
                         /* begin:: filter search */
-                        $query->when($request->input('search')['value'] && $customFilters->count() < 1, function (Builder $subQuery) use ($request){
+                        $query->when($request->input('search')['value'] && $customFilters->count() < 1, function (Builder $subQuery) use ($request) {
                             $subQuery->where('slug', 'like', "%" . $request->input('search')['value'] . "%");
                             $subQuery->orWhere('app_domain', 'like', "%" . $request->input('search')['value'] . "%");
                             $subQuery->orWhere('name', 'like', "%" . $request->input('search')['value'] . "%");
                             $subQuery->orWhere('BCN', 'like', "%" . $request->input('search')['value'] . "%");
                         });
                         /* end:: filter search */
-
-
                     })
                     ->addIndexColumn()
                     ->addColumn('name', function ($row) {
@@ -311,7 +309,6 @@ class TenantController extends Controller
 
             notify('Berhasil', 'Data travel berhasil diperbarui!', 'success')->autoClose();
             return redirect()->back();
-
         } catch (Throwable $e) {
             DB::rollBack();
             logError($e, title: 'Tenant');
@@ -322,7 +319,6 @@ class TenantController extends Controller
             }
             return redirect()->back();
         }
-
     }
 
     /**
