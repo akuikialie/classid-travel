@@ -2,15 +2,12 @@
 
 namespace App\Services;
 
-use App\Actions\Jamaah\AddJamaahHistory;
-use App\Enums\VirtualAccount;
 use App\Exceptions\HandleCatchableException;
 use App\Models\Jamaah\Jamaah;
 use App\Models\Plan\PlanPackage;
 use App\Models\Tenant\Tenant;
 use App\Traits\HasTenant;
 use Illuminate\Http\Request;
-use InvalidArgumentException;
 use Spatie\MediaLibrary\MediaCollections\Exceptions\FileDoesNotExist;
 use Spatie\MediaLibrary\MediaCollections\Exceptions\FileIsTooBig;
 use Throwable;
@@ -67,25 +64,11 @@ class PackageService
      */
     public function addPackageToJamaah(PlanPackage $planPackage, Jamaah $jamaah, string $key = 'perencanaan'): void
     {
-        /* check package on jamaah */
-        $existingPackageInJamaah = collect($jamaah->planPackages)->where('id', $planPackage->id)->first();
-        if ($existingPackageInJamaah) {
-            throw new InvalidArgumentException('Kamu sudah mengambil paket ini!.');
-        }
+        (new JamaahService($this->tenantId))
+            ->setPackage(package: $planPackage)
+            ->setJamaah(jamaah: $jamaah)
+            ->addPackage(key: $key);
 
-        /* add package to jamaah */
-        $jamaah->planPackages()->attach($planPackage->id);
-
-        /* add jamaah history */
-        $jamaahHistory = new AddJamaahHistory();
-        $jamaahHistory->handle($jamaah, $planPackage, null);
-
-        /* creating va */
-        $VAService = new VirtualAccountService($this->tenantId);
-        $VAService->vaType(VirtualAccount::tryFrom($key)->keyValue())
-            ->addToPlan($planPackage)
-            ->createFor($jamaah)
-            ->createVA();
     }
 
     /**

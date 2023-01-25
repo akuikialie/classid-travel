@@ -54,6 +54,7 @@ class UserService
      * @param array $input
      * @param bool $isJamaah
      * @return $this
+     * @throws HandleCatchableException
      */
     public function createNewUser(array $input, bool $isJamaah = true): static
     {
@@ -62,14 +63,17 @@ class UserService
         }
 
         $input = array_merge($input, ['password' => Hash::make($input['password'])]);
-        $this->user = User::query()->create($input);
 
+        /* begin:: create new user */
+        $this->user = User::query()->create($input);
+        /* end:: create new user */
+
+        /* begin:: add jamaah */
         if ($isJamaah) {
-            $newJamaah = new Jamaah([
-                'tenant_id' => $this->tenantId,
-            ]);
-            $this->user->jamaah()->save($newJamaah);
+            (new JamaahService(tenantId: $this->tenantId))
+                ->createJamaah();
         }
+        /* end:: add jamaah */
 
         return $this;
     }
