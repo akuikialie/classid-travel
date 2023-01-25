@@ -9,7 +9,8 @@ use Exception;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
-use LaravelIdea\Helper\App\Models\Destination\_IH_Destination_QB;
+use Spatie\MediaLibrary\MediaCollections\Exceptions\FileDoesNotExist;
+use Spatie\MediaLibrary\MediaCollections\Exceptions\FileIsTooBig;
 use Throwable;
 
 class DestinationService
@@ -38,18 +39,20 @@ class DestinationService
         return $this;
     }
 
+    /**
+     * @param Request $request
+     * @return $this
+     * @throws FileDoesNotExist
+     * @throws FileIsTooBig
+     * @throws Exception
+     */
     public function addGallery(Request $request): static
     {
-        try {
-            if ($request->hasfile('photo_collection')) {
-                $destination = $this->getDestination();
-                $destination->addMultipleMediaFromRequest(['photo_collection'])
-                    ->each(fn($media) => $media->toMediaCollection('photo_collections'));
-            }
-        } catch (Throwable $th) {
-            throw $th;
+        if ($request->hasfile('photo_collection')) {
+            $destination = $this->getDestination();
+            $destination->addMultipleMediaFromRequest(['photo_collection'])
+                ->each(fn($media) => $media->toMediaCollection('photo_collections'));
         }
-
         return $this;
     }
 
@@ -72,20 +75,16 @@ class DestinationService
      */
     public function addAddress(array $input): static
     {
-        try {
-            if (isset($input['address'])){
-                $newAddress = new Address([
-                    'address' => $input['address']
-                ]);
+        if (isset($input['address'])){
+            $newAddress = new Address([
+                'address' => $input['address']
+            ]);
 
-                $destination = $this->getDestination();
+            $destination = $this->getDestination();
 
-                $destination->myAddress()->save($newAddress);
-            }
-            return $this;
-        } catch (Throwable $th) {
-            throw $th;
+            $destination->myAddress()->save($newAddress);
         }
+        return $this;
     }
 
     public function get(): Model|Builder|Destination|null
@@ -114,13 +113,9 @@ class DestinationService
      */
     public function setStatus(bool $status): static
     {
-        try {
-            $destination = $this->getDestination();
-            $destination->is_active = $status;
-            $destination->save();
-        } catch (Exception $e) {
-            throw $e;
-        }
+        $destination = $this->getDestination();
+        $destination->is_active = $status;
+        $destination->save();
 
         return $this;
     }
@@ -171,17 +166,20 @@ class DestinationService
         }
     }
 
+    /**
+     * @param Destination $destination
+     * @param Request $request
+     * @return void
+     * @throws FileDoesNotExist
+     * @throws FileIsTooBig
+     */
     public function addImageToDestination(Destination $destination, Request $request)
     {
-        try {
-            if ($request->hasfile('photo_collection')) {
-                $destination->addMultipleMediaFromRequest(['photo_collection'])
-                    ->each(function ($media) {
-                        $media->toMediaCollection('photo_collections');
-                    });
-            }
-        } catch (Throwable $th) {
-            throw $th;
+        if ($request->hasfile('photo_collection')) {
+            $destination->addMultipleMediaFromRequest(['photo_collection'])
+                ->each(function ($media) {
+                    $media->toMediaCollection('photo_collections');
+                });
         }
     }
 

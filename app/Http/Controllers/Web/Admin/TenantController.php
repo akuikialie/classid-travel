@@ -49,15 +49,36 @@ class TenantController extends Controller
         if (\request()->ajax()) {
             $tenants = Tenant::query()
                 ->latest('id');
+            dump($request->input());
             try {
                 return datatables()->eloquent($tenants)
                     ->filter(function (Builder $query) use ($request){
-                        $query->when($request->input('search')['value'], function (Builder $subQuery) use ($request){
+                        /* begin:: apply custom filter */
+                        $customFilters = collect($request->input('filter'));
+                        if ($customFilters->count() > 0){
+                            foreach ($customFilters as $filter){
+                                if ($filter['value'] == 'all') continue;
+
+                                if ($filter['name'] == 'status'){
+                                    $status = $filter['value'] == 'active';
+                                    $query->where('is_active', $status);
+                                    continue;
+                                }
+                                $query->where($filter['name'], $filter['value']);
+                            }
+                        }
+                        /* end:: apply custom filter */
+
+                        /* begin:: filter search */
+                        $query->when($request->input('search')['value'] && $customFilters->count() < 1, function (Builder $subQuery) use ($request){
                             $subQuery->where('slug', 'like', "%" . $request->input('search')['value'] . "%");
                             $subQuery->orWhere('app_domain', 'like', "%" . $request->input('search')['value'] . "%");
                             $subQuery->orWhere('name', 'like', "%" . $request->input('search')['value'] . "%");
                             $subQuery->orWhere('BCN', 'like', "%" . $request->input('search')['value'] . "%");
                         });
+                        /* end:: filter search */
+
+
                     })
                     ->addIndexColumn()
                     ->addColumn('name', function ($row) {
@@ -375,15 +396,13 @@ class TenantController extends Controller
             $tenantService = new TenantService(tenantId: $tenant->id);
             if ($request->has('status')) {
                 $tenantService
-                    ->tenantId($tenant->id)
+                    ->setTenant($tenant)
                     ->setStatus($request->get('status'));
                 notify('Berhasil!', "Status telah berubah", 'success');
                 DB::commit();
             } else {
                 throw new InvalidArgumentException('Tidak ada yang berubah!');
             }
-
-
             return redirect()->back();
         } catch (Throwable $e) {
             logError($e, title: 'Tenant');

@@ -42,7 +42,7 @@ class SeedPackages extends Seeder
 
                 $packageService
                     ->byHash($newPackage->hash)
-                    ->addDestinations($destinations[rand(0, count($destinations)-1)])
+                    ->addDestinations([$destinations[rand(0, count($destinations)-1)]])
                     ->addFacilities($facilities);
 
                 /* end:: start package service */

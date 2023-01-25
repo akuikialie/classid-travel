@@ -68,53 +68,59 @@
                 <div class="separator border-gray-200"></div>
                 <!--end::Separator-->
                 <!--begin::Content-->
-                <div class="px-7 py-5">
-                  <!--begin::Input group-->
-                  <div class="mb-10">
-                    <!--begin::Label-->
-                    <label class="form-label fs-5 fw-semibold mb-3">Status:</label>
-                    <!--end::Label-->
-                    <!--begin::Options-->
-                    <div class="d-flex flex-column flex-wrap fw-semibold" data-kt-docs-table-filter="status">
-                      <!--begin::Option-->
-                      <label class="form-check form-check-sm form-check-custom form-check-solid mb-3 me-5">
-                        <input class="form-check-input" type="radio" name="status" value="all" checked="checked"/>
-                        <span class="form-check-label text-gray-600">All</span>
-                      </label>
-                      <!--end::Option-->
-                      <!--begin::Option-->
-                      <label class="form-check form-check-sm form-check-custom form-check-solid mb-3 me-5">
-                        <input class="form-check-input" type="radio" name="status" value="active"/>
-                        <span class="form-check-label text-gray-600">Active</span>
-                      </label>
-                      <!--end::Option-->
-                      <!--begin::Option-->
-                      <label class="form-check form-check-sm form-check-custom form-check-solid mb-3">
-                        <input class="form-check-input" type="radio" name="status" value="inactive"/>
-                        <span class="form-check-label text-gray-600">Inactive</span>
-                      </label>
-                      <!--end::Option-->
+                <form id="form-filter">
+                  <div class="px-7 py-5">
+                    <!--begin::Input group-->
+
+                    <div class="mb-10">
+                      <!--begin::Label-->
+                      <label class="form-label fs-5 fw-semibold mb-3">Status:</label>
+                      <!--end::Label-->
+                      <!--begin::Options-->
+                      <div class="d-flex flex-column flex-wrap fw-semibold" data-kt-docs-table-filter="status">
+                        <!--begin::Option-->
+                        <label class="form-check form-check-sm form-check-custom form-check-solid mb-3 me-5">
+                          <input class="form-check-input" type="radio" name="status" value="all" checked="checked"/>
+                          <span class="form-check-label text-gray-600">All</span>
+                        </label>
+                        <!--end::Option-->
+                        <!--begin::Option-->
+                        <label class="form-check form-check-sm form-check-custom form-check-solid mb-3 me-5">
+                          <input class="form-check-input" type="radio" name="status" value="active"/>
+                          <span class="form-check-label text-gray-600">Active</span>
+                        </label>
+                        <!--end::Option-->
+                        <!--begin::Option-->
+                        <label class="form-check form-check-sm form-check-custom form-check-solid mb-3">
+                          <input class="form-check-input" type="radio" name="status" value="inactive"/>
+                          <span class="form-check-label text-gray-600">Inactive</span>
+                        </label>
+                        <!--end::Option-->
+                      </div>
+                      <!--end::Options-->
                     </div>
-                    <!--end::Options-->
+                    <!--end::Input group-->
+                    <!--begin::Actions-->
+                    <div class="d-flex justify-content-end">
+                      <button type="reset" class="btn btn-light btn-active-light-primary me-2"
+                              data-kt-menu-dismiss="true"
+                              data-kt-docs-table-filter="reset">Reset
+                      </button>
+                      <button type="button" class="btn btn-primary" data-kt-menu-dismiss="true"
+                              data-kt-docs-table-filter="filter" id="apply-filter">Apply
+                      </button>
+                    </div>
+                    <!--end::Actions-->
                   </div>
-                  <!--end::Input group-->
-                  <!--begin::Actions-->
-                  <div class="d-flex justify-content-end">
-                    <button type="reset" class="btn btn-light btn-active-light-primary me-2" data-kt-menu-dismiss="true"
-                            data-kt-docs-table-filter="reset">Reset
-                    </button>
-                    <button type="submit" class="btn btn-primary" data-kt-menu-dismiss="true"
-                            data-kt-docs-table-filter="filter">Apply
-                    </button>
-                  </div>
-                  <!--end::Actions-->
-                </div>
+                </form>
+
                 <!--end::Content-->
               </div>
               <!--end::Menu 1-->
               <!--end::Filter-->
 
-              <button type="button" class="btn btn-primary" id="create-new" data-bs-toggle="tooltip" title="Buat Akun Travel Baru">
+              <button type="button" class="btn btn-primary" id="create-new" data-bs-toggle="tooltip"
+                      title="Buat Akun Travel Baru">
                 <!--begin::Svg Icon | path: icons/duotune/arrows/arr075.svg-->
                 <span class="svg-icon svg-icon-2">
                   <i class="fa-solid fa-plus"></i>
