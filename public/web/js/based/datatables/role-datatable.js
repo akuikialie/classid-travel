@@ -221,6 +221,7 @@ let roleIndex = function () {
     });
   }
 
+
 // Filter Datatable
   let handleFilterDatatable = () => {
     // Select filter options
