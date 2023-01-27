@@ -43,7 +43,7 @@ class UserController extends Controller
      * @throws Exception
      * @throws NotFoundExceptionInterface
      */
-    public function datatable(?string $type = null)
+    public function datatable(?string $type = null, Request $request)
     {
         if (\request()->ajax()) {
             try {
@@ -67,6 +67,31 @@ class UserController extends Controller
                     ->latest('id');
 
                 $datatable = datatables()->eloquent($users)
+                ->filter(function (Builder $query) use ($request) {
+                    /* begin:: apply custom filter */
+                    dump($request->input());
+                    $customFilters = collect($request->input('filter'));
+                    if ($customFilters->count() > 0) {
+                        foreach ($customFilters as $filter) {
+                            if ($filter['name'] == 'role') {
+                                $role = $filter['value'] == 'role';
+                                $query->where('role', $role);
+                                continue;
+                            }
+                            
+                            $query->where($filter['name'], $filter['value']);
+                        }
+                    }
+                    /* end:: apply custom filter */
+
+                    /* begin:: filter search */
+                    $query->when($request->input('search')['value'] && $customFilters->count() < 1, function (Builder $subQuery) use ($request) {
+                        $subQuery->where('name', 'like', "%" . $request->input('search')['value'] . "%");
+                        $subQuery->orWhere('role', 'like', "%" . $request->input('search')['value'] . "%");
+                        $subQuery->orWhere('status', 'like', "%" . $request->input('search')['value'] . "%");
+                    });
+                    /* end:: filter search */
+                })
                     ->addIndexColumn()
                     ->addColumn('role', function ($user) {
                         return $user->roles->pluck('name')->first();
@@ -96,7 +121,7 @@ class UserController extends Controller
                 }
 
                 return $datatable->make(true);
-            } catch (Exception|NotFoundExceptionInterface|ContainerExceptionInterface $e) {
+            } catch (Exception | NotFoundExceptionInterface | ContainerExceptionInterface $e) {
                 logError($e, title: 'User');
                 if (isDevelopmentMode()) {
                     throw $e;
@@ -123,10 +148,12 @@ class UserController extends Controller
 
         $user = auth()->user();
         $roles = Role::query()
-            ->when(!$user->hasRole('super-administrator') && isset($user->tenant_id),
+            ->when(
+                !$user->hasRole('super-administrator') && isset($user->tenant_id),
                 function (Builder $subQuery) use ($user) {
                     $subQuery->where('tenant_id', $user->tenant_id ?? null);
-                })
+                }
+            )
             ->get()->unique('name');
 
         $this->setData('type', $type);
@@ -160,7 +187,6 @@ class UserController extends Controller
             return \response()->json([
                 'view' => $this->view('pages.web.user.modals.modal-add-admin')->render(),
             ]);
-
         }
         abort(404);
     }
@@ -244,7 +270,6 @@ class UserController extends Controller
     public function update(Request $request, ?string $type = null, User $user)
     {
         abort(404);
-
     }
 
     /**
@@ -262,7 +287,8 @@ class UserController extends Controller
             if ($authUser->is_super !== true) {
                 if (
                     $user->is_super === true &&
-                    $authUser->is_super === false) {
+                    $authUser->is_super === false
+                ) {
                     throw UnauthorizedException::forPermissions($user->roles->toArray());
                 }
             }
