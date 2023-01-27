@@ -44,23 +44,26 @@ class TenantService
     public function createNewTenant(array $input): static
     {
         /* begin: check app domain is existed */
+        $appDomain = Str::lower($input['app_domain']);
         if (str_contains($input['app_domain'], ' ')) {
-            $input = array_merge($input, [
-                'app_domain' => Str::lower(str_replace(' ', '.', $input['app_domain'])),
-                'wallet_login' => json_encode([
-                    'WALLET_URL' => "https://demo.biznet.class.id",
-                    'WALLET_BCN' => "857400",
-                    'WALLET_ADMIN_USER' => "fahrudinsidik88@gmail.com",
-                    'WALLET_ADMIN_PASS' => "password",
-                ])
-            ]);
+            $appDomain = Str::lower(str_replace(' ', '.', $input['app_domain']));
         }
-        /* end: check app domain is existed */
 
+        $input = array_merge($input, [
+            'is_active' => false,
+            'app_domain' => $appDomain,
+            'wallet_login' => json_encode([
+                'WALLET_URL' => "https://demo.biznet.class.id",
+                'WALLET_BCN' => "857400",
+                'WALLET_ADMIN_USER' => "fahrudinsidik88@gmail.com",
+                'WALLET_ADMIN_PASS' => "password",
+            ])
+        ]);
         $validAppDomain = dns_get_record($input['app_domain']);
         if (!is_array($validAppDomain) || count($validAppDomain) < 1) {
             throw HandleCatchableException::catchable(message: 'App domain tidak tersedia!');
         }
+        /* end: check app domain is existed */
 
         /* begin:: create new tenant */
         $this->tenant = Tenant::query()->create($input);

@@ -16,10 +16,10 @@ use Spatie\MediaLibrary\InteractsWithMedia;
 
 class Tenant extends Model implements HasMedia
 {
-    use HasFactory, SoftDeletes, HashableId, InteractsWithMedia, HasTenant;
+    use SoftDeletes, HashableId, InteractsWithMedia, HasTenant;
 
     protected $fillable = [
-        'name', 'slug', 'app_domain', 'BCN'
+        'name', 'slug', 'app_domain', 'BCN', 'wallet_login', 'is_active'
     ];
 
     public function addresses(): MorphMany

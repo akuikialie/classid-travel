@@ -326,7 +326,15 @@ class TenantController extends Controller
      */
     public function destroy(Tenant $tenant)
     {
-        return redirect()->back();
+        try {
+            $tenant->delete();
+
+            notify('Berhasil', 'Travel berhasil di hapus', 'success')->autoClose();
+            return redirect()->back();
+
+        }catch (Throwable $e){
+            return redirect()->back();
+        }
     }
 
     /**
