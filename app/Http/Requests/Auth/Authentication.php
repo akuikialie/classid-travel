@@ -90,6 +90,7 @@ class Authentication extends FormRequest
             if (request()->get('travel_code')) {
                 $tenant = Tenant::query()
                     ->select('id')
+                    ->where('is_active', true)
                     ->firstWhere('BCN', request()->get('travel_code'));
 
                 if (!$tenant){
