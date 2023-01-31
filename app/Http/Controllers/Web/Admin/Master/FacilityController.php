@@ -49,29 +49,27 @@ class FacilityController extends Controller
                     ->latest();
 
                 $datatable = datatables()->eloquent($facilities)
-                    ->filter(function (Builder $query) use ($request) {
+                    ->filter(function (Builder $query) use ($request, $user) {
                         /* begin:: apply custom filter */
-                        dump($request->input());
                         $customFilters = collect($request->input('filter'));
                         if ($customFilters->count() > 0) {
                             foreach ($customFilters as $filter) {
-                                if ($filter['name'] == 'type') {
-                                    $type = $filter['value'] == 'active';
-                                    if ($type) {
-                                        $query->where('type', $type);
-                                    }
-                                    continue;
-                                }
-
-                                $query->where($filter['name'], $filter['value']);
+                                $query
+                                    ->when($filter['value'], function (Builder $subQuery) use ($filter) {
+                                        $subQuery->where($filter['name'], $filter['value']);
+                                    });
                             }
                         }
                         /* end:: apply custom filter */
 
                         /* begin:: filter search */
-                        $query->when($request->input('search')['value'] && $customFilters->count() < 1, function (Builder $subQuery) use ($request) {
-                            $subQuery->where('name', 'like', "%" . $request->input('search')['value'] . "%");
-                            $subQuery->orWhere('type', 'like', "%" . $request->input('search')['value'] . "%");
+
+                        $query->when($request->input('search')['value'] , function (Builder $subQuery) use ($request, $user) {
+                            $subQuery->where('tenant_id', $user->tenant_id)
+                                ->where(function ($subQuery) use ($request){
+                                    $subQuery->where('name', 'like', "%" . $request->input('search')['value'] . "%");
+                                    $subQuery->orWhere('type', 'like', "%" . $request->input('search')['value'] . "%");
+                                });
                         });
                         /* end:: filter search */
                     })

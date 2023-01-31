@@ -16,6 +16,7 @@ use Exception;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -44,7 +45,7 @@ class PackageController extends Controller
      * @throws Throwable
      * @throws \Yajra\DataTables\Exceptions\Exception
      */
-    public function datatable()
+    public function datatable(Request $request)
     {
         if (\request()->ajax()) {
             try {
@@ -56,6 +57,16 @@ class PackageController extends Controller
                     ->latest();
 
                 $datatable = datatables()->eloquent($packages)
+                    ->filter(function (Builder $query) use ($request, $user) {
+                        /* begin:: filter search */
+                        $query->when($request->input('search')['value'] , function (Builder $subQuery) use ($request, $user) {
+                            $subQuery->where('tenant_id', $user->tenant_id)
+                                ->where(function ($subQuery) use ($request){
+                                    $subQuery->where('name', 'like', "%" . $request->input('search')['value'] . "%");
+                                });
+                        });
+                        /* end:: filter search */
+                    })
                     ->addIndexColumn()
                     ->addColumn('name', function ($package) {
                         return $package->name;

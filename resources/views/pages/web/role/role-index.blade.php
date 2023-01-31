@@ -171,7 +171,7 @@
               <th>Nama</th>
               <th>type</th>
               @if(auth()->user()->hasRole('super-administrator'))
-                <th >tenant</th>
+                <th>Travel</th>
               @endif
               <th class="text-center">Usages</th>
               <th class="text-end min-w-100px">Actions</th>

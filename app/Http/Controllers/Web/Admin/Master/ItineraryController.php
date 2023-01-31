@@ -7,6 +7,7 @@ use App\Models\Itinerary\ItineraryActivity;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -35,7 +36,7 @@ class ItineraryController extends Controller
      * @throws Exception
      * @throws Throwable
      */
-    public function datatable()
+    public function datatable(Request $request)
     {
         if (\request()->ajax()) {
             try {
@@ -45,6 +46,16 @@ class ItineraryController extends Controller
                     ->latest();
 
                 $datatable = datatables()->eloquent($itineraries)
+                    ->filter(function (Builder $query) use ($request, $user) {
+                        /* begin:: filter search */
+                        $query->when($request->input('search')['value'] , function (Builder $subQuery) use ($request, $user) {
+                            $subQuery->where('tenant_id', $user->tenant_id)
+                                ->where(function ($subQuery) use ($request){
+                                    $subQuery->where('activity', 'like', "%" . $request->input('search')['value'] . "%");
+                                });
+                        });
+                        /* end:: filter search */
+                    })
                     ->addIndexColumn()
                     ->addColumn('name', function ($model) {
                         return $model->activity;

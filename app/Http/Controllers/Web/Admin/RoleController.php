@@ -78,9 +78,8 @@ class RoleController extends Controller
                     ->oldest('id');
 
                 $datatable = datatables()->eloquent($roles)
-                    ->filter(function (Builder $query) use ($request) {
+                    ->filter(function (Builder $query) use ($request, $user) {
                         /* begin:: apply custom filter */
-                        dump($request->input());
                         $customFilters = collect($request->input('filter'));
                         if ($customFilters->count() > 0) {
                             foreach ($customFilters as $filter) {
@@ -111,9 +110,12 @@ class RoleController extends Controller
 
                         /* begin:: filter search */
 
-                            $query->when($request->input('search')['value'] && $customFilters->count() < 1, function (Builder $subQuery) use ($request) {
-                                $subQuery->where('name', 'like', "%" . $request->input('search')['value'] . "%");
-                                $subQuery->orWhere('type', 'like', "%" . $request->input('search')['value'] . "%");
+                            $query->when($request->input('search')['value'], function (Builder $subQuery) use ($request, $user) {
+                                $subQuery->where('tenant_id', $user->tenant_id)
+                                    ->where(function ($subQuery) use ($request){
+                                        $subQuery->orWhere('name', 'like', "%" . $request->input('search')['value'] . "%");
+                                        $subQuery->orWhere('type', 'like', "%" . $request->input('search')['value'] . "%");
+                                    });
                             });
 
                         /* end:: filter search */
@@ -138,7 +140,7 @@ class RoleController extends Controller
                     })
                     ->rawColumns(['actions', 'status', 'usages']);
 
-                if ($user->hasRole('super-administrator')) {
+                if (is_null($user->tenant_id)) {
                     $datatable->addColumn('tenant', function ($role) {
                         if (is_null($role->tenant)) {
                             return '-';
@@ -218,7 +220,7 @@ class RoleController extends Controller
              return redirect()->back();
          }*/
 
-        if (!$user->hasRole('super-administrator')) {
+        if (isset($user->tenant_id)) {
             unset($this->columns);
             $this->columns = [
                 ['data' => 'id'],
@@ -330,7 +332,7 @@ class RoleController extends Controller
     /**
      * @throws Exception
      */
-    public function datatableRoleUsers(Role $role)
+    public function datatableRoleUsers(Role $role, Request $request)
     {
         if (\request()->ajax()) {
             try {
@@ -347,10 +349,21 @@ class RoleController extends Controller
                     })
                     ->role([$role->name])
                     ->where('is_super', false)
-                    ->latest('id')
-                    ->get();
+                    ->latest('id');
 
-                $datatable = datatables()->of($users)
+                $datatable = datatables()->eloquent($users)
+                    ->filter(function (Builder $query) use ($request, $user) {
+                        /* begin:: filter search */
+
+                        $query->when($request->input('search')['value'], function (Builder $subQuery) use ($request, $user) {
+                            $subQuery->where('tenant_id', $user->tenant_id)
+                                ->where(function ($subQuery) use ($request){
+                                    $subQuery->orWhere('name', 'like', "%" . $request->input('search')['value'] . "%");
+                                });
+                        });
+
+                        /* end:: filter search */
+                    })
                     ->addIndexColumn()
                     ->addColumn('status', function ($user) {
                         $status = UserStatus::tryFrom($user->status);

@@ -9,15 +9,11 @@ use App\Models\Spatie\Role;
 use App\Models\User;
 use App\Services\UserService;
 use DB;
-use Illuminate\Contracts\Foundation\Application;
-use Illuminate\Contracts\View\Factory;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
-use Illuminate\Routing\Redirector;
-use Illuminate\View\View;
 use Psr\Container\ContainerExceptionInterface;
 use Psr\Container\NotFoundExceptionInterface;
 use Spatie\Permission\Exceptions\UnauthorizedException;
@@ -29,11 +25,22 @@ class UserController extends Controller
 
     protected string $forPage = 'user';
 
+    private array $columns = [
+        ['data' => 'id'],
+        ['data' => 'name'],
+        ['data' => 'role'],
+        ['data' => 'tenant'],
+        ['data' => 'status'],
+        ['data' => 'last_login'],
+        ['data' => 'actions'],
+    ];
+
     /**
      * @throws \Exception
      */
     public function __construct()
     {
+        parent::__construct();
         $this->setData('current_page', $this->forPage);
     }
 
@@ -43,18 +50,20 @@ class UserController extends Controller
      * @throws Exception
      * @throws NotFoundExceptionInterface
      */
-    public function datatable(?string $type = null, Request $request)
+    public function datatable(Request $request, ?string $type = null)
     {
         if (\request()->ajax()) {
             try {
                 $user = auth()->user();
                 $users = User::query()
                     ->with(['roles'])
-                    ->when($user->hasRole('super-administrator'), function (Builder $subQuery) use ($user) {
+                    ->when(is_null($user->tenant_id), function (Builder $subQuery) use ($user) {
                         $subQuery->with(['tenant']);
                     }, function (Builder $subQuery) use ($user) {
-                        $subQuery->where('tenant_id', $user->tenant_id);
-                        $subQuery->where('id', '!=', $user->id);
+                        if (!is_null($user->tenant_id)){
+                            $subQuery->where('tenant_id', $user->tenant_id);
+                            $subQuery->where('id', '!=', $user->id);
+                        }
                     })
                     ->when($type == 'calon-jamaah', function (Builder $subQuery) {
                         $subQuery->role(['jamaah']);
@@ -74,23 +83,21 @@ class UserController extends Controller
                         foreach ($customFilters as $filter) {
                             if ($filter['name'] == 'role') {
                                 $role = $filter['value'] ?? null;
-                                $query->when($role, function (Builder $query) use ($role){
-                                    $query->role([$role]);
-                                });
+                                if ($role) {
+                                    $query->whereHas('roles', function (Builder $subQuery) use($role){
+                                       $subQuery->where('name', $role);
+                                    });
+                                }
                                 continue;
-
                             }
-                            
                             $query->where($filter['name'], $filter['value']);
                         }
                     }
                     /* end:: apply custom filter */
 
                     /* begin:: filter search */
-                    $query->when($request->input('search')['value'] && $customFilters->count() < 1, function (Builder $subQuery) use ($request) {
+                    $query->when($request->input('search')['value'], function (Builder $subQuery) use ($request) {
                         $subQuery->where('name', 'like', "%" . $request->input('search')['value'] . "%");
-                        $subQuery->orWhere('role', 'like', "%" . $request->input('search')['value'] . "%");
-                        $subQuery->orWhere('status', 'like', "%" . $request->input('search')['value'] . "%");
                     });
                     /* end:: filter search */
                 })
@@ -113,7 +120,7 @@ class UserController extends Controller
                     })
                     ->rawColumns(['actions', 'status']);
 
-                if ($user->hasRole('super-administrator')) {
+                if (is_null($user->tenant_id)) {
                     $datatable->addColumn('tenant', function ($user) {
                         if (is_null($user->tenant)) {
                             return '-';
@@ -150,13 +157,28 @@ class UserController extends Controller
 
         $user = auth()->user();
         $roles = Role::query()
-            ->when(
-                !$user->hasRole('super-administrator') && isset($user->tenant_id),
+            ->when(!$user->hasRole('super-administrator') && isset($user->tenant_id),
                 function (Builder $subQuery) use ($user) {
                     $subQuery->where('tenant_id', $user->tenant_id ?? null);
-                }
-            )
+                })
+            ->when($user->tenant_id, function (Builder $query) use ($user) {
+                $query->where('tenant_id', $user->tenant_id);
+            })
             ->get()->unique('name');
+
+        if (isset($user->tenant_id)) {
+            unset($this->columns);
+            $this->columns = [
+                ['data' => 'id'],
+                ['data' => 'name'],
+                ['data' => 'role'],
+                ['data' => 'status'],
+                ['data' => 'last_login'],
+                ['data' => 'actions'],
+            ];
+        }
+
+        $this->setData('columns', $this->columns);
 
         $this->setData('type', $type);
         $this->setData('roles', $roles);

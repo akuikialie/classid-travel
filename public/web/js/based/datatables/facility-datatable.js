@@ -28,7 +28,7 @@ let KTDatatablesServerSide = function () {
         type: 'post',
         dataType: "json",
         data: {
-          _token: csrf_token, 
+          _token: csrf_token,
           filter: $('#form-filter').serializeArray(),
         },
 
@@ -202,27 +202,6 @@ let KTDatatablesServerSide = function () {
         // Trigger the button element with a click
         dt.search(e.target.value).draw();
       }
-    });
-  }
-
-  // Filter Datatable
-  let handleFilterDatatable = () => {
-    // Select filter options
-    $('[data-kt-user-table-filter="role"]').select2({
-      templateSelection: function (data, container) {
-        // Add custom attributes to the <option> tag for the selected option
-        $(data.element).attr('data-custom-attribute', data.customValue);
-        return data.text;
-      }
-    });
-    const filterButton = document.querySelector('[data-kt-user-table-filter="filter"]');
-
-    // Filter datatable on submit
-    filterButton.addEventListener('click', function () {
-      // Get filter values
-      filterStatus = $('[data-kt-user-table-filter="role"] :selected').text();
-      // Filter datatable --- official docs reference: https://datatables.net/reference/api/search()
-      dt.search(filterStatus).draw();
     });
   }
 
