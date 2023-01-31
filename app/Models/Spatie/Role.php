@@ -3,8 +3,8 @@
 namespace App\Models\Spatie;
 
 use App\Models\HashableId;
+use App\Models\Tenant\Tenant;
 use App\Traits\HasTenant;
-use App\Models\Spatie\Tenant\Tenant;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -22,5 +22,8 @@ class Role extends \Spatie\Permission\Models\Role
         'type',
     ];
 
-
+    public function tenant(): BelongsTo
+    {
+        return $this->belongsTo(Tenant::class, 'tenant_id');
+    }
 }

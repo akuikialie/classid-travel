@@ -84,19 +84,23 @@ class RoleController extends Controller
                         $customFilters = collect($request->input('filter'));
                         if ($customFilters->count() > 0) {
                             foreach ($customFilters as $filter) {
-                                
+
                                 if ($filter['name'] == 'role') {
                                     $role = $filter['value'] ?? null;
-                                    $query->where($role, function (Builder $query) use ($role) {
-                                        $query->where([$role]);
-                                    });
+                                    if ($role){
+                                        $query->where('name' , $role);
+
+                                    }
                                     continue;
                                 }
                                 if ($filter['name'] == 'tenant') {
                                     $tenant = $filter['value'] ?? null;
-                                    $query->whereHas($tenant, function (Builder $query) use ($tenant) {
-                                        $query->tenant([$tenant]);
-                                    });
+                                    if ($tenant){
+                                        $query->whereHas('tenant', function (Builder $query) use ($tenant) {
+                                            $query->where('name', $tenant);
+                                        });
+                                    }
+
                                     continue;
                                 }
 
@@ -105,13 +109,13 @@ class RoleController extends Controller
                         }
                         /* end:: apply custom filter */
 
-                        /* begin:: filter search */ 
-                        
+                        /* begin:: filter search */
+
                             $query->when($request->input('search')['value'] && $customFilters->count() < 1, function (Builder $subQuery) use ($request) {
                                 $subQuery->where('name', 'like', "%" . $request->input('search')['value'] . "%");
                                 $subQuery->orWhere('type', 'like', "%" . $request->input('search')['value'] . "%");
                             });
-                        
+
                         /* end:: filter search */
                     })
                     ->addIndexColumn()

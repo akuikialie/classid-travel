@@ -113,9 +113,9 @@ let roleIndex = function () {
     table = dt.$;
     // Re-init functions on every table re-draw -- more info: https://datatables.net/reference/event/draw
     dt.on('draw', function () {
-      initToggleToolbar();
+      // initToggleToolbar();
       // toggleToolbars();
-      handleDeleteRows();
+      // handleDeleteRows();
       KTMenu.createInstances();
     });
   };
