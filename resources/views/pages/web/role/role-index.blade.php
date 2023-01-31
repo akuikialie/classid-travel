@@ -74,7 +74,7 @@
                     <!--end::Label-->
                     <!--begin::Input-->
                     <div>
-                      <select class="form-select form-select-solid" data-kt-select2="true"
+                      <select name="role" class="form-select form-select-solid" data-kt-select2="true"
                               data-placeholder="Select option" data-allow-clear="true"
                               data-kt-user-table-filter="travel_name"
                               data-hide-search="true" name="role_name">
@@ -98,7 +98,7 @@
                     <!--end::Label-->
                     <!--begin::Input-->
                     <div>
-                      <select class="form-select form-select-solid" data-kt-select2="true"
+                      <select name="tenant" class="form-select form-select-solid" data-kt-select2="true"
                               data-placeholder="Select option" data-allow-clear="true"
                               data-kt-user-table-filter="travel_name"
                               data-hide-search="true" name="travel_name">

@@ -4,7 +4,9 @@ namespace App\Models\Spatie;
 
 use App\Models\HashableId;
 use App\Traits\HasTenant;
+use App\Models\Spatie\Tenant\Tenant;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Role extends \Spatie\Permission\Models\Role
@@ -19,5 +21,6 @@ class Role extends \Spatie\Permission\Models\Role
         'guard_name',
         'type',
     ];
+
 
 }

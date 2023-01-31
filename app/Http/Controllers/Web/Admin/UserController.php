@@ -69,14 +69,16 @@ class UserController extends Controller
                 $datatable = datatables()->eloquent($users)
                 ->filter(function (Builder $query) use ($request) {
                     /* begin:: apply custom filter */
-                    dump($request->input());
                     $customFilters = collect($request->input('filter'));
                     if ($customFilters->count() > 0) {
                         foreach ($customFilters as $filter) {
                             if ($filter['name'] == 'role') {
-                                $role = $filter['value'] == 'role';
-                                $query->where('role', $role);
+                                $role = $filter['value'] ?? null;
+                                $query->when($role, function (Builder $query) use ($role){
+                                    $query->role([$role]);
+                                });
                                 continue;
+
                             }
                             
                             $query->where($filter['name'], $filter['value']);
