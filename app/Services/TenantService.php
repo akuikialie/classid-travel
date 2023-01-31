@@ -30,11 +30,9 @@ class TenantService
      */
     public function setStatus(bool $status): static
     {
-        if (!$this->tenant instanceof Tenant){
-            throw HandleCatchableException::catchable('Travel tidak di ditemukan!');
-        }
-        $this->tenant->is_active = $status;
-        $this->tenant->save();
+        $tenant = $this->getTenant();
+        $tenant->is_active = $status;
+        $tenant->save();
 
         return $this;
     }
@@ -46,23 +44,26 @@ class TenantService
     public function createNewTenant(array $input): static
     {
         /* begin: check app domain is existed */
+        $appDomain = Str::lower($input['app_domain']);
         if (str_contains($input['app_domain'], ' ')) {
-            $input = array_merge($input, [
-                'app_domain' => Str::lower(str_replace(' ', '.', $input['app_domain'])),
-                'wallet_login' => json_encode([
-                    'WALLET_URL' => "https://demo.biznet.class.id",
-                    'WALLET_BCN' => "857400",
-                    'WALLET_ADMIN_USER' => "fahrudinsidik88@gmail.com",
-                    'WALLET_ADMIN_PASS' => "password",
-                ])
-            ]);
+            $appDomain = Str::lower(str_replace(' ', '.', $input['app_domain']));
         }
-        /* end: check app domain is existed */
 
+        $input = array_merge($input, [
+            'is_active' => false,
+            'app_domain' => $appDomain,
+            'wallet_login' => json_encode([
+                'WALLET_URL' => "https://demo.biznet.class.id",
+                'WALLET_BCN' => "857400",
+                'WALLET_ADMIN_USER' => "fahrudinsidik88@gmail.com",
+                'WALLET_ADMIN_PASS' => "password",
+            ])
+        ]);
         $validAppDomain = dns_get_record($input['app_domain']);
         if (!is_array($validAppDomain) || count($validAppDomain) < 1) {
             throw HandleCatchableException::catchable(message: 'App domain tidak tersedia!');
         }
+        /* end: check app domain is existed */
 
         /* begin:: create new tenant */
         $this->tenant = Tenant::query()->create($input);
@@ -73,6 +74,7 @@ class TenantService
             ->createNewUser([
                 'name' => $input['name'],
                 'phone' => $input['phone'],
+                'username' => 'admin',
                 'password' => 'admin',
             ], false)
             ->setRole('administrator')
@@ -162,9 +164,13 @@ class TenantService
 
     /**
      * @return Tenant|null
+     * @throws HandleCatchableException
      */
     public function getTenant(): ?Tenant
     {
+        if (!$this->tenant instanceof Tenant){
+            throw HandleCatchableException::catchable('Travel tidak di ditemukan!');
+        }
         return $this->tenant;
     }
 }

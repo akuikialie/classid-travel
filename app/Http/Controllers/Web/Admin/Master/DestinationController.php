@@ -139,8 +139,7 @@ class DestinationController extends Controller
             $destinationService
                 ->createDestination($validator)
                 ->addAddress($validator)
-                ->addGallery($request)
-                ->get();
+                ->addGallery($request);
 
             DB::commit();
             notify('Berhasil', 'Data destinasi berhasil dibuat!', 'success')->autoClose();

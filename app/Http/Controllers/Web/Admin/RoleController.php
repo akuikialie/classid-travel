@@ -339,7 +339,7 @@ class RoleController extends Controller
                 $user = auth()->user();
                 $users = User::query()
                     ->with(['roles', 'tenant'])
-                    ->when($user->hasRole('super-administrator'), function (Builder $subQuery) use ($user) {
+                    ->when($user->hasRole('super-administrator'), function (Builder $subQuery){
                         $subQuery->with(['tenant']);
                     })
                     ->when($role->name == RoleEnum::Jamaah->keyValue(), function (Builder $subQuery) use ($user) {

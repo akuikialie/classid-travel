@@ -168,33 +168,27 @@ class PackageController extends Controller
      */
     public function store(Request $request)
     {
-        $validator = $this->getArr($request);
+        $input = $this->getArr($request);
         DB::beginTransaction();
         try {
 
             $user = auth()->user();
-            $packageService = new PackageService($user->tenant_id);
-
-            $newPackage = $packageService->createNewPackage($validator['type'], $validator);
 
             $facilityIds = [];
-            if (isset($validator['facilities']) && is_array($validator['facilities'])) {
-                $facilityIds = array_keys($validator['facilities']);
+            if (isset($input['facilities']) && is_array($input['facilities'])) {
+                $facilityIds = array_keys($input['facilities']);
             }
 
             $destinationIds = [];
-            if (isset($validator['destinations']) && is_array($validator['destinations'])) {
-                $destinationIds = array_keys($validator['destinations']);
+            if (isset($input['destinations']) && is_array($input['destinations'])) {
+                $destinationIds = array_keys($input['destinations']);
             }
 
-            $packageService
-                ->byHash($newPackage->hash)
+            (new PackageService($user->tenant_id))
+                ->createNewPackage($input['type'], $input)
                 ->addDestinations($destinationIds)
-                ->addFacilities($facilityIds);
-
-            if ($request->hasfile('thumbnail')) {
-                $packageService->addThumbnailPackage($newPackage, $request);
-            }
+                ->addFacilities($facilityIds)
+                ->addThumbnailPackage($request);
 
             DB::commit();
             notify('Berhasil', 'Data paket berhasil dibuat!', 'success')->autoClose();
@@ -250,7 +244,6 @@ class PackageController extends Controller
                 ->get();
 
             setDefaultRequest([
-                'test' => 'whatever',
                 'long_days' => $package?->long_days ?? 0,
             ]);
 
@@ -276,7 +269,7 @@ class PackageController extends Controller
      */
     public function update(Request $request, PlanPackage $package): RedirectResponse
     {
-        $validator = $this->getArr($request);
+        $input = $this->getArr($request);
 
         DB::beginTransaction();
         try {
@@ -284,29 +277,25 @@ class PackageController extends Controller
             $packageService = new PackageService($user->tenant_id);
 
             $facilityIds = [];
-            if (isset($validator['facilities']) && is_array($validator['facilities'])) {
-                $facilityIds = array_keys($validator['facilities']);
+            if (isset($input['facilities']) && is_array($input['facilities'])) {
+                $facilityIds = array_keys($input['facilities']);
             }
 
             $destinationIds = [];
-            if (isset($validator['destinations']) && is_array($validator['destinations'])) {
-                $destinationIds = array_keys($validator['destinations']);
+            if (isset($input['destinations']) && is_array($input['destinations'])) {
+                $destinationIds = array_keys($input['destinations']);
             }
+
+            $input = collect($input)
+                ->forget('destinations')
+                ->forget('facilities')->toArray();
 
             $packageService
-                ->byHash($package->hash)
+                ->setPackage($package)
                 ->addDestinations($destinationIds)
-                ->addFacilities($facilityIds);
-
-            if ($request->hasfile('thumbnail')) {
-                $packageService->addThumbnailPackage($package, $request);
-            }
-
-            $package->long_days = $validator['long_days'];
-            $package->name = $validator['name'];
-            $package->description = $validator['description'];
-            $package->amount = $validator['amount'];
-            $package->push();
+                ->addFacilities($facilityIds)
+                ->addThumbnailPackage($request)
+                ->updateExistingPackage($input);
 
             DB::commit();
             notify('Berhasil', 'Data paket berhasil diperbarui!', 'success')->autoClose();
@@ -358,7 +347,7 @@ class PackageController extends Controller
     public function getArr(Request $request): array
     {
         return $request->validate([
-            'type' => ['required', 'string'],
+            'type' => ['nullable', 'string'],
             'departure_year' => ['nullable', 'string'],
             'kuartal' => ['nullable', 'string'],
             'long_days' => ['required', 'integer'],

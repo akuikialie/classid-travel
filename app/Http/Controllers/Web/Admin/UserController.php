@@ -49,6 +49,7 @@ class UserController extends Controller
      * @throws ContainerExceptionInterface
      * @throws Exception
      * @throws NotFoundExceptionInterface
+     * @throws \Exception
      */
     public function datatable(Request $request, ?string $type = null)
     {
@@ -134,9 +135,9 @@ class UserController extends Controller
                 logError($e, title: 'User');
                 if (isDevelopmentMode()) {
                     throw $e;
-                } else {
-                    throw new \Exception('Terjadi kesalahan!');
                 }
+                throw new \Exception('Terjadi kesalahan!');
+
             }
         }
         abort(404);
@@ -236,7 +237,7 @@ class UserController extends Controller
             $user = auth()->user();
             $userService = new UserService(tenantId: $user->tenant_id ?? null);
             $userService->createNewUser([
-                'name' => "{$input['role']} - $user->id",
+                'name' => "{$input['role']} - {$user->id}",
                 'phone' => $input['phone'],
                 'password' => 'admin',
             ], false)
@@ -264,9 +265,9 @@ class UserController extends Controller
      *
      * @param string|null $type
      * @param User $user
-     * @return Response
+     * @return void
      */
-    public function show(?string $type = null, User $user)
+    public function show(User $user, ?string $type = null )
     {
         abort(404);
     }
@@ -276,9 +277,9 @@ class UserController extends Controller
      *
      * @param string|null $type
      * @param User $user
-     * @return Response
+     * @return void
      */
-    public function edit(?string $type = null, User $user)
+    public function edit( User $user, ?string $type = null)
     {
         abort(404);
     }
@@ -291,7 +292,7 @@ class UserController extends Controller
      * @param User $user
      * @return Response
      */
-    public function update(Request $request, ?string $type = null, User $user)
+    public function update(Request $request, User $user, ?string $type = null)
     {
         abort(404);
     }
@@ -304,7 +305,7 @@ class UserController extends Controller
      * @return RedirectResponse
      * @throws Throwable
      */
-    public function destroy(?string $type = null, User $user)
+    public function destroy(User $user, ?string $type = null)
     {
         try {
             $authUser = auth()->user();
@@ -335,7 +336,7 @@ class UserController extends Controller
      * @throws NotFoundExceptionInterface
      * @throws Throwable
      */
-    public function changeStatus(Request $request, ?string $type = null, User $user)
+    public function changeStatus(Request $request, User $user, ?string $type = null)
     {
         $request->validate([
             'status' => ['required'],

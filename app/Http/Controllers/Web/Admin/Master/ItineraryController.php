@@ -4,15 +4,11 @@ namespace App\Http\Controllers\Web\Admin\Master;
 
 use App\Http\Controllers\Controller;
 use App\Models\Itinerary\ItineraryActivity;
-use Illuminate\Contracts\Foundation\Application;
-use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Http\Response;
-use Illuminate\Routing\Redirector;
 use InvalidArgumentException;
 use Throwable;
 use Yajra\DataTables\Exceptions\Exception;
@@ -66,7 +62,7 @@ class ItineraryController extends Controller
                         $this->setData('itinerary', $model);
                         return $this->view('pages.web.master.itinerary.action.action-datatable');
                     })
-                    ->rawColumns(['actions', 'status' ]);
+                    ->rawColumns(['actions', 'status']);
 
                 return $datatable->make(true);
             } catch (Throwable $e) {
@@ -118,8 +114,8 @@ class ItineraryController extends Controller
     public function store(Request $request)
     {
         $input = $request->validate([
-           'activity' => ['required', 'string'],
-           'detail' => ['required', 'string'],
+            'activity' => ['required', 'string'],
+            'detail' => ['required', 'string'],
         ]);
 
         try {
@@ -133,7 +129,7 @@ class ItineraryController extends Controller
 
             notify('Berhasil', 'Berhasil membuat kegiatan baru!.', 'success');
             return redirect()->back();
-        }catch (\Throwable $e){
+        } catch (Throwable $e) {
             logError($e, title: 'Itinerary');
             if (isDevelopmentMode()) {
                 throw $e;
@@ -198,7 +194,7 @@ class ItineraryController extends Controller
 
             notify('Berhasil', 'Berhasil memperbarui data kegiatan!.', 'success');
             return redirect()->back();
-        }catch (\Throwable $e){
+        } catch (Throwable $e) {
             logError($e, title: 'Itinerary');
             if (isDevelopmentMode()) {
                 throw $e;
@@ -226,7 +222,7 @@ class ItineraryController extends Controller
 
             notify('Berhasil', 'Data Aktifitas berhasil dihapus!', 'success')->autoClose();
             return redirect()->back();
-        } catch (\Throwable $e) {
+        } catch (Throwable $e) {
             logError($e, title: 'Itinerary');
             if (isDevelopmentMode()) {
                 throw $e;

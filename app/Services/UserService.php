@@ -4,26 +4,20 @@ declare(strict_types=1);
 
 namespace App\Services;
 
-use App\Models\Jamaah\Jamaah;
+use App\Exceptions\HandleCatchableException;
 use App\Models\Jamaah\JamaahHistory;
 use App\Models\User;
 use Exception;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Hash;
 use Throwable;
 
 class UserService
 {
-    private Builder $query;
-
-    private User $user;
+    private ?User $user = null;
     public function __construct(
         private readonly ?int $tenantId = null
     )
-    {
-        $this->query = User::query();
-    }
+    {}
 
     /**
      * @throws Throwable
@@ -59,6 +53,7 @@ class UserService
      * @param array $input
      * @param bool $isJamaah
      * @return $this
+     * @throws HandleCatchableException
      */
     public function createNewUser(array $input, bool $isJamaah = true): static
     {
@@ -67,14 +62,17 @@ class UserService
         }
 
         $input = array_merge($input, ['password' => Hash::make($input['password'])]);
-        $this->user = $this->query->create($input);
 
+        /* begin:: create new user */
+        $this->user = User::query()->create($input);
+        /* end:: create new user */
+
+        /* begin:: add jamaah */
         if ($isJamaah) {
-            $newJamaah = new Jamaah([
-                'tenant_id' => $this->tenantId,
-            ]);
-            $this->user->jamaah()->save($newJamaah);
+            (new JamaahService(tenantId: $this->tenantId))
+                ->createJamaah();
         }
+        /* end:: add jamaah */
 
         return $this;
     }
@@ -87,31 +85,27 @@ class UserService
      */
     public function setDepartureStatus(string $status = null, string $detail = null): static
     {
-        try {
-            $user = $this->getUser()->fresh(['jamaah']);
+        $user = $this->getUser()->fresh(['jamaah']);
 
-            $input = [
-                'tenant_id' => $this->tenantId,
-                'jamaah_id' => $user->jamaah->id,
-            ];
+        $input = [
+            'tenant_id' => $this->tenantId,
+            'jamaah_id' => $user->jamaah->id,
+        ];
 
-            if (!is_null($status)) {
-                $input = array_merge($input, [
-                    'departure_status' => $status,
-                ]);
-            }
-            if (!is_null($detail)) {
-                $input = array_merge($input, [
-                    'detail' => $detail,
-                ]);
-            }
-
-            JamaahHistory::query()->create($input);
-
-            return $this;
-        } catch (Exception $e) {
-            throw $e;
+        if (!is_null($status)) {
+            $input = array_merge($input, [
+                'departure_status' => $status,
+            ]);
         }
+        if (!is_null($detail)) {
+            $input = array_merge($input, [
+                'detail' => $detail,
+            ]);
+        }
+
+        JamaahHistory::query()->create($input);
+
+        return $this;
     }
 
     /**
@@ -123,8 +117,8 @@ class UserService
     {
         /* begin:: permissions Service */
         $user = $this->getUser();
-        $permissionService = new PermissionService(tenantId: $this->tenantId);
-        $permissionService->syncRole($user, $roles);
+        (new PermissionService(tenantId: $this->tenantId))
+            ->syncRole($roles, $user);
         /* end:: permissions Service */
         return $this;
     }
@@ -136,45 +130,10 @@ class UserService
      */
     public function setIsSuper(bool $isSuper = false): static
     {
-        try {
-            $user = $this->getUser();
-            $user->is_super = $isSuper;
-            $user->save();
-            return $this;
-        } catch (Exception $e) {
-            throw $e;
-        }
-    }
-
-    /**
-     * @param array|null $withRelation
-     * @return Model|Builder|User|null
-     */
-    public function get(?array $withRelation = []): Model|Builder|User|null
-    {
-        return $this->query
-            ->when(count($withRelation) > 0, function (Builder $subQuery) use ($withRelation){
-                $subQuery->with($withRelation);
-            })
-            ->first();
-    }
-
-    /**
-     * @throws Exception
-     */
-    public function getUser(): User
-    {
-        if ($this->query->count() > 1) {
-            if (isset($this->user)) {
-                $user = $this->user;
-            } else {
-                throw new Exception('Data harus spesifik!.');
-            }
-        } else {
-            $user = $this->query->first();
-        }
-
-        return $user;
+        $user = $this->getUser();
+        $user->is_super = $isSuper;
+        $user->save();
+        return $this;
     }
 
     /**
@@ -185,5 +144,17 @@ class UserService
     {
         $this->user = $user;
         return $this;
+    }
+
+    /**
+     * @return User
+     * @throws HandleCatchableException
+     */
+    public function getUser(): User
+    {
+        if (!$this->user instanceof User){
+            throw HandleCatchableException::catchable('User tidak di ditemukan!');
+        }
+        return $this->user;
     }
 }

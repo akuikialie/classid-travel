@@ -91,9 +91,8 @@ class TenantController extends Controller
                     })->addColumn('status', function ($row) {
                         if ($row->is_active) {
                             return '<span class="badge badge-success text-uppercase">active</span>';
-                        } else {
-                            return '<span class="badge badge-danger text-uppercase">inactive</span>';
                         }
+                        return '<span class="badge badge-danger text-uppercase">inactive</span>';
                     })->addColumn('created_date', function ($row) {
                         return carbon($row->created_at)->format('d M, Y');
                     })->addColumn('actions', function ($row) {
@@ -106,9 +105,8 @@ class TenantController extends Controller
                 logError($e, title: 'Tenant');
                 if (isDevelopmentMode()) {
                     throw $e;
-                } else {
-                    throw new Exception('Terjadi kesalahan!.');
                 }
+                throw new Exception('Terjadi kesalahan!.');
             }
         }
     }
@@ -214,7 +212,7 @@ class TenantController extends Controller
             if (\request()->has('fragment')) {
                 $fragmentName = \request()->get('fragment');
                 $fragmentParameter = \request()->get('parameter');
-                $this->setGlobalParams('fragment_active', $fragmentName);
+                $this->addGlobalParams('fragment_active', $fragmentName);
                 $this->fragment(new TenantFragmentController())
                     ->render($fragmentName ?? 'target', [
                         'tenant' => $tenant,
@@ -328,7 +326,15 @@ class TenantController extends Controller
      */
     public function destroy(Tenant $tenant)
     {
-        return redirect()->back();
+        try {
+            $tenant->delete();
+
+            notify('Berhasil', 'Travel berhasil di hapus', 'success')->autoClose();
+            return redirect()->back();
+
+        }catch (Throwable $e){
+            return redirect()->back();
+        }
     }
 
     /**

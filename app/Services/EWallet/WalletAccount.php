@@ -28,7 +28,7 @@ trait WalletAccount
             return $this->_doLogin($username, $password);
         }
 
-        $userLogin = Cache::remember("walletUser.$username", now()->addMonths(6), function () use ($username, $password) {
+        $userLogin = Cache::remember("walletUser.{$username}", now()->addMonths(6), function () use ($username, $password) {
             if ($this->_doLogin($username, $password)) {
                 return $this->user;
             }
@@ -36,7 +36,7 @@ trait WalletAccount
         });
 
         if (!$userLogin) {
-            Cache::forget("walletUser.$username");
+            Cache::forget("walletUser.{$username}");
         }
 
         return $userLogin instanceof WalletUser;

@@ -97,7 +97,6 @@ class NotifManager
 
             $notifLog = NotificationLog::create($logData);
         } catch (Exception $e) {
-            //
             throw_if(debugNonProduction(), $e);
             app('notifLog')->error("prepare notif");
             app('notifLog')->error("code : " . $e->getCode());

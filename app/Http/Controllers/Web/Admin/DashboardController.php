@@ -34,9 +34,13 @@ class DashboardController extends Controller
 
         if ($user->hasRole('administrator')){
             return $this->dashboardAdmin();
-        }else if ($user->hasRole('super-administrator')){
+        }
+
+        if ($user->hasRole('super-administrator')){
             return $this->dashboardSuperAdmin();
         }
+
+        abort(404);
     }
 
     public function dashboardSuperAdmin()

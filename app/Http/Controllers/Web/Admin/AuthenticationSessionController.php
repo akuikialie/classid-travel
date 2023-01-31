@@ -21,6 +21,10 @@ class AuthenticationSessionController extends Controller
         return view('pages.web.auth.sign-in');
     }
 
+    /**
+     * @param Authentication $request
+     * @return RedirectResponse|void
+     */
     public function store(Authentication $request)
     {
         $request->authenticate();
@@ -31,10 +35,11 @@ class AuthenticationSessionController extends Controller
 
         if ($user->hasRole('administrator')){
             return redirect()->intended(route('admin.dashboard'));
-        }else if ($user->hasRole('super-administrator')){
+        }
+        if ($user->hasRole('super-administrator')){
             return redirect()->intended(route('admin.tenant.index'));
         }
-
+        abort(404);
     }
 
     public function destroy(Request $request): Redirector|Application|RedirectResponse

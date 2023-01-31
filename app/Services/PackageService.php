@@ -2,79 +2,26 @@
 
 namespace App\Services;
 
-use App\Actions\Jamaah\AddJamaahHistory;
-use App\Enums\Statuses;
-use App\Enums\VirtualAccount;
+use App\Exceptions\HandleCatchableException;
 use App\Models\Jamaah\Jamaah;
-use App\Models\Plan\Plan;
 use App\Models\Plan\PlanPackage;
+use App\Models\Tenant\Tenant;
 use App\Traits\HasTenant;
-use Exception;
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
-use InvalidArgumentException;
-use LaravelIdea\Helper\App\Models\Plan\_IH_PlanPackage_QB;
+use Spatie\MediaLibrary\MediaCollections\Exceptions\FileDoesNotExist;
+use Spatie\MediaLibrary\MediaCollections\Exceptions\FileIsTooBig;
 use Throwable;
 
 class PackageService
 {
     use HasTenant;
-    protected Builder $query;
 
-    private PlanPackage $package;
+    private ?PlanPackage $package = null;
 
     public function __construct(
         private readonly int $tenantId
     )
-    {
-        $this->query = PlanPackage::query();
-    }
-
-    /**
-     * @param array $with
-     * @return $this
-     */
-    public function with(array $with): static
-    {
-        $this->query->with($with);
-        return $this;
-    }
-
-    /**
-     * @param array $withCount
-     * @return $this
-     */
-    public function withCount(array $withCount): static
-    {
-        $this->query->withCount($withCount);
-        return $this;
-    }
-
-    /**
-     * @param string $hash
-     * @return $this
-     */
-    public function byHash(string $hash): static
-    {
-        $this->query->byHashOrFail($hash);
-        return $this;
-    }
-
-    /**
-     * @param bool $status
-     * @return $this
-     * @throws Exception
-     */
-    public function setStatus(bool $status): static
-    {
-        $package = $this->getPackage();
-        if ($package instanceof PlanPackage){
-            $package->is_active = $status;
-            $package->save();
-        }
-
-        return $this;
-    }
+    {}
 
     /**
      * @param array $destinationIds
@@ -83,12 +30,11 @@ class PackageService
      */
     public function addDestinations(array $destinationIds): static
     {
-        if (count($destinationIds) != count($destinationIds, COUNT_RECURSIVE))
-        {
+        if (count($destinationIds) != count($destinationIds, COUNT_RECURSIVE)) {
             $destinationIds = collect($destinationIds)->first();
         }
 
-        if (collect($destinationIds)->count() > 0){
+        if (collect($destinationIds)->count() > 0) {
             $addDestinations = $this->getPackage();
             $addDestinations->myDestinations()->sync($destinationIds);
         }
@@ -102,11 +48,10 @@ class PackageService
      */
     public function addFacilities(array $facilityIds): static
     {
-        if (count($facilityIds) != count($facilityIds, COUNT_RECURSIVE))
-        {
+        if (count($facilityIds) != count($facilityIds, COUNT_RECURSIVE)) {
             $facilityIds = collect($facilityIds)->first();
         }
-        if (collect($facilityIds)->count() > 0){
+        if (collect($facilityIds)->count() > 0) {
             $facility = $this->getPackage();
             $facility->myFacilities()->sync($facilityIds);
         }
@@ -119,49 +64,59 @@ class PackageService
      */
     public function addPackageToJamaah(PlanPackage $planPackage, Jamaah $jamaah, string $key = 'perencanaan'): void
     {
-        /* check package on jamaah */
-        $existingPackageInJamaah = collect($jamaah->planPackages)->where('id', $planPackage->id)->first();
-        if ($existingPackageInJamaah) {
-            throw new InvalidArgumentException('Kamu sudah mengambil paket ini!.');
-        }
+        (new JamaahService($this->tenantId))
+            ->setPackage(package: $planPackage)
+            ->setJamaah(jamaah: $jamaah)
+            ->addPackage(key: $key);
 
-        /* add package to jamaah */
-        $jamaah->planPackages()->attach($planPackage->id);
-
-        /* add jamaah history */
-        $jamaahHistory = new AddJamaahHistory();
-        $jamaahHistory->handle($jamaah, $planPackage, null);
-
-        /* creating va */
-        $VAService = new VirtualAccountService($this->tenantId);
-        $VAService->vaType(VirtualAccount::tryFrom($key)->keyValue())
-            ->addToPlan($planPackage)
-            ->createFor($jamaah)
-            ->createVA();
     }
 
     /**
-     * @throws Throwable
+     * @param int $planId
+     * @param array $input
+     * @return $this
      */
-    public function createNewPackage(int $planId, array $input): PlanPackage
+    public function createNewPackage(int $planId, array $input): static
     {
-        $input = array_merge(['tenant_id' => $this->tenantId], $input);
+        $input = array_merge([
+            'tenant_id' => $this->tenantId,
+            'plan_id' => $planId,
+        ], $input);
 
-        $plan = Plan::query()->find($planId);
+        $this->package = PlanPackage::query()->create($input);
 
-        $newPackage = new PlanPackage($input);
-
-        $newPackage->myPlan()->associate($plan);
-        $newPackage->save();
-
-        return $newPackage->fresh();
+        return $this;
     }
 
-    public function addThumbnailPackage(PlanPackage $planPackage, Request $request): void
-    {if ($request->hasfile('thumbnail')) {
-        $planPackage->addMediaFromRequest('thumbnail')->toMediaCollection('thumbnail');
+    /**
+     * @param array $input
+     * @return void
+     * @throws HandleCatchableException
+     */
+    public function updateExistingPackage(array $input): void
+    {
+        $package = $this->getPackage();
+        foreach ($input as $key => $value){
+            $package->$key = $value;
+        }
+        $package->push();
     }
 
+    /**
+     * @param Request $request
+     * @return PackageService
+     * @throws FileDoesNotExist
+     * @throws FileIsTooBig
+     * @throws HandleCatchableException
+     */
+    public function addThumbnailPackage(Request $request): static
+    {
+        if ($request->hasfile('thumbnail')) {
+            $package = $this->getPackage();
+            $package->addMediaFromRequest('thumbnail')->toMediaCollection('thumbnail');
+        }
+
+        return $this;
     }
 
     /**
@@ -176,21 +131,15 @@ class PackageService
     }
 
     /**
-     * @throws Exception
+     * @return PlanPackage|null
+     * @throws HandleCatchableException
      */
-    public function getPackage(): PlanPackage
+    public function getPackage(): ?PlanPackage
     {
-        if ($this->query->count() > 1) {
-            if (isset($this->package)) {
-                $package = $this->package;
-            } else {
-                throw new Exception('Data harus spesifik!.');
-            }
-        } else {
-            $package = $this->query->first();
+        if (!$this->package instanceof PlanPackage) {
+            throw HandleCatchableException::catchable('Paket tidak di ditemukan!');
         }
-
-        return $package;
+        return $this->package;
     }
 
 }
