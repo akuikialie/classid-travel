@@ -56,10 +56,10 @@ class FacilityController extends Controller
                         if ($customFilters->count() > 0) {
                             foreach ($customFilters as $filter) {
                                 if ($filter['name'] == 'type') {
-                                    $type = $filter['value'] ?? null;
-                                    $query->when($type, function (Builder $query) use ($type) {
-                                        $query->type([$type]);
-                                    });
+                                    $type = $filter['value'] == 'active';
+                                    if ($type) {
+                                        $query->where('type', $type);
+                                    }
                                     continue;
                                 }
 

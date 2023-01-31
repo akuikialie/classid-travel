@@ -449,7 +449,7 @@ let KTDatatablesServerSide = function () {
       handleFilterDatatable();
       handleDeleteRows();
       handleResetForm();
-      handleItinerary();
+      // handleItinerary();
     }
   }
 }();
