@@ -46,14 +46,7 @@ let KTDatatablesServerSide = function () {
           });
         }
       },
-      columns: [
-        {data: 'id'},
-        {data: 'name'},
-        {data: 'role'},
-        {data: 'status'},
-        {data: 'last_login'},
-        {data: 'actions'},
-      ],
+      columns: column,
       columnDefs: [
         {
           targets: 0,

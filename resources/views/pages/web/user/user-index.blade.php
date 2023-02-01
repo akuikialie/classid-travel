@@ -9,6 +9,7 @@
         let csrf_token = "{{ csrf_token() }}";
         let urlTable = "{{ route('admin.user.datatable', $type) }}";
         let createUrl = "{{ route('admin.user.create', $type) }}";
+        let column = @json($columns)
         {{-- let editUrl = "{{ route('admin.user.edit', ':id') }}"; --}}
     </script>
 @endsection
@@ -70,9 +71,10 @@
 
                                         <div class="mb-10">
                                             <label class="form-label fs-6 fw-semibold">Role:</label>
-                                            <select class="form-select form-select-solid fw-bold" data-kt-select2="true"
-                                                data-placeholder="Select option" data-allow-clear="true"
-                                                data-kt-user-table-filter="role" data-hide-search="true">
+                                            <select name="role" class="form-select form-select-solid fw-bold"
+                                                data-kt-select2="true" data-placeholder="Select option"
+                                                data-allow-clear="true" data-kt-user-table-filter="role"
+                                                data-hide-search="true">
                                                 <option></option>
                                                 @foreach ($roles as $role)
                                                     <option value="{{ $role->name }}">
@@ -139,6 +141,9 @@
                                 </th>
                                 <th>Nama</th>
                                 <th>Role</th>
+                                @if (is_null(auth()->user()->tenant_id))
+                                    <th>Travel</th>
+                                @endif
                                 <th>Status</th>
                                 <th>Terakhir Login</th>
                                 <th class="text-end min-w-100px">Actions</th>
