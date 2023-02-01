@@ -51,8 +51,11 @@ class TenantRoute extends BaseRoute
             });
 
             $this->router->middleware([ 'quick_access:role'])->group(function (){
-                $this->router->get($this->prefix('profile/{tenant_hash?}'),[TenantController::class, 'show'])
-                    ->name($this->name('show'));
+//                $this->router->get($this->prefix('profile/{tenant_hash?}'),[TenantController::class, 'show'])
+//                    ->name($this->name('show'));
+
+                $this->router->get($this->prefix('profile/{slug}'),[TenantController::class, 'showProfile'])
+                    ->name($this->name('showProfile'));
 
                 $this->router->put($this->prefix('profile/{tenant_hash?}'),[TenantController::class, 'update'])
                     ->name($this->name('update.as-profile'));
@@ -86,11 +89,12 @@ class TenantRoute extends BaseRoute
                  },
              )
              ->route(
-                 name: 'admin.tenant.show',
+                 name: 'admin.tenant.showProfile',
                  title: 'Profil Travel',
                  attribute: [
                      'icon' => 'fa-solid fa-globe',
                  ],
+                 param: ['slug' => 'overview'],
                  resolver: function () {
                      $user = \auth()->user();
                      return $user->can('view travel') && $user->tenant_id != null;

@@ -8,6 +8,7 @@ use App\Models\Tenant\Tenant;
 use App\Services\TenantService;
 use App\Traits\FragmentRenderer;
 use Exception;
+use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
 use Illuminate\Contracts\Database\Eloquent\Builder;
 use Illuminate\Http\JsonResponse;
@@ -186,12 +187,13 @@ class TenantController extends Controller
      * Display the specified resource.
      *
      * @param Tenant|null $tenant
+     * @param string|null $slug
      * @return View
      * @throws ContainerExceptionInterface
      * @throws NotFoundExceptionInterface
      * @throws ReflectionException
      */
-    public function show(?Tenant $tenant = null): View
+    public function show(?Tenant $tenant = null, ?string $slug = null): View
     {
         $this->setPageTitle('Profil Travel');
         $this->setBreadCrumb('Profil Travel');
@@ -219,6 +221,48 @@ class TenantController extends Controller
                         'parameter' => $fragmentParameter ?? null,
                     ]);
             }
+
+            $this->setData('tenant', $tenant);
+        } catch (Exception $e) {
+            logError($e, title: 'Tenant');
+            if (isDevelopmentMode()) {
+                throw $e;
+            } else {
+                notify('Oops!', 'Terjadi kesalahan!', 'error');
+            }
+        }
+
+        return $this->view('pages.web.tenant.tenant-show');
+    }
+
+    /**
+     * @param string $slug
+     * @return Factory|View
+     * @throws ReflectionException
+     */
+    public function showProfile(string $slug)
+    {
+        $this->setPageTitle('Profil Travel');
+        $this->setBreadCrumb('Profil Travel');
+
+        try {
+            $user = auth()->user();
+            if (!($user->tenant_id ?? null)) {
+                abort(404);
+            }
+
+            $tenant = Tenant::query()
+                ->with(['media'])
+                ->whereId($user->tenant_id)
+                ->first();
+
+            $this->addGlobalParams('fragment_active', $slug);
+
+            $this->fragment(new TenantFragmentController())
+                ->render($slug ?? 'overview', [
+                    'tenant' => $tenant,
+                    'parameter' => $fragmentParameter ?? null,
+                ]);
 
             $this->setData('tenant', $tenant);
         } catch (Exception $e) {
