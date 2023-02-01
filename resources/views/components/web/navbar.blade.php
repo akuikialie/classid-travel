@@ -1,3 +1,11 @@
+@php
+  $user = $user ?? auth()->user();
+  $avatars = $user->getMedia('avatars');
+  $avatar = null;
+  if ($avatars->count() > 0) {
+      $avatar = collect($avatars)->last()->getUrl();
+  }
+@endphp
 <div class="app-navbar flex-shrink-0">
 
     <!--begin::User menu-->
@@ -6,7 +14,7 @@
         <div class="cursor-pointer symbol symbol-35px symbol-md-40px"
             data-kt-menu-trigger="{default: 'click', lg: 'hover'}" data-kt-menu-attach="parent"
             data-kt-menu-placement="bottom-end">
-            <img src="{{ asset('web/media/avatars/300-1.jpg') }}" alt="user" />
+            <img src="{{ $avatar?? asset('web/media/svg/avatars/blank.svg') }}" alt="user" />
         </div>
         <!--begin::User account menu-->
         <div class="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-800 menu-state-bg menu-state-color fw-semibold py-4 fs-6 w-275px"
@@ -16,7 +24,7 @@
                 <div class="menu-content d-flex align-items-center px-3">
                     <!--begin::Avatar-->
                     <div class="symbol symbol-50px me-5">
-                        <img alt="Logo" src="{{ asset('web/media/avatars/300-1.jpg') }}" />
+                        <img alt="Logo" src="{{ $avatar?? asset('web/media/svg/avatars/blank.svg') }}" />
                     </div>
                     <!--end::Avatar-->
                     <!--begin::Username-->
@@ -35,9 +43,9 @@
             <div class="separator my-2"></div>
             <!--end::Menu separator-->
             <!--begin::Menu item-->
-{{--            <div class="menu-item px-5">--}}
-{{--                <a href="/metronic8/demo1/../demo1/account/overview.html" class="menu-link px-5">My Profile</a>--}}
-{{--            </div>--}}
+            <div class="menu-item px-5">
+                <a href="{{ route('admin.user.show', ['user_hash' => auth()->user()->hash, 'slug' => 'overview']) }}" class="menu-link px-5">My Profile</a>
+            </div>
             <!--end::Menu item-->
 
             <!--begin::Menu item-->

@@ -8,7 +8,6 @@ use Illuminate\Http\Request;
 
 class TenantFragmentController extends Controller
 {
-    use ViewSupport;
     public function overview()
     {
 

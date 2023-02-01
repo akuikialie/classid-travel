@@ -5,10 +5,14 @@ namespace App\Http\Controllers\Web\Admin;
 use App\Enums\PermissionType;
 use App\Enums\UserStatus;
 use App\Http\Controllers\Controller;
+use App\Http\Controllers\Web\Admin\Fragment\UserFragmentController;
 use App\Models\Spatie\Role;
 use App\Models\User;
 use App\Services\UserService;
+use App\Traits\FragmentRenderer;
 use DB;
+use Illuminate\Contracts\View\Factory;
+use Illuminate\Contracts\View\View;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
@@ -16,12 +20,14 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Psr\Container\ContainerExceptionInterface;
 use Psr\Container\NotFoundExceptionInterface;
+use ReflectionException;
 use Spatie\Permission\Exceptions\UnauthorizedException;
 use Throwable;
 use Yajra\DataTables\Exceptions\Exception;
 
 class UserController extends Controller
 {
+    use FragmentRenderer;
 
     protected string $forPage = 'user';
 
@@ -263,13 +269,34 @@ class UserController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param string|null $type
      * @param User $user
-     * @return void
+     * @param string $slug
+     * @return Factory|View
+     * @throws ReflectionException
      */
-    public function show(User $user, ?string $type = null )
+    public function show(User $user, string $slug)
     {
-        abort(404);
+        $this->setPageTitle('Profil Travel');
+        $this->setBreadCrumb('Profil Travel');
+
+        try {
+
+            $this->addGlobalParams('fragment_active', $slug);
+
+            $this->fragment(new UserFragmentController())
+                ->render($slug ?? 'overview', []);
+
+            $this->setData('user', $user);
+        } catch (\Exception $e) {
+            logError($e, title: 'Tenant');
+            if (isDevelopmentMode()) {
+                throw $e;
+            } else {
+                notify('Oops!', 'Terjadi kesalahan!', 'error');
+            }
+        }
+
+        return $this->view('pages.web.user.user-show');
     }
 
     /**
@@ -279,7 +306,7 @@ class UserController extends Controller
      * @param User $user
      * @return void
      */
-    public function edit( User $user, ?string $type = null)
+    public function edit(User $user)
     {
         abort(404);
     }
@@ -290,9 +317,9 @@ class UserController extends Controller
      * @param Request $request
      * @param string|null $type
      * @param User $user
-     * @return Response
+     * @return void
      */
-    public function update(Request $request, User $user, ?string $type = null)
+    public function update(Request $request, User $user)
     {
         abort(404);
     }
