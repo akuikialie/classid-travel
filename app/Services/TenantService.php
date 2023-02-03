@@ -114,15 +114,14 @@ class TenantService
         return $this;
     }
 
-    public function unsetAvatar()
+    /**
+     * @throws HandleCatchableException
+     */
+    public function unsetAvatar(): static
     {
         $avatar = $this->getTenant();
-        // $tenant = media::where('id')->first();
-
-        if ($avatar != null) {
-            $avatar->clearMediaCollection('avatars');
-            // return $avatar->fresh();
-        }
+        $avatar->clearMediaCollection('avatars');
+        return $this;
     }
 
     /**

@@ -206,10 +206,6 @@ class TenantController extends Controller
                     ->with(['media'])
                     ->whereId($user->tenant_id)
                     ->first();
-                // ketika tenant == null, artinya data media sudah dihapus, maka ambil data tenant tanpa media
-                if($tenant == null){
-                    $tenant = Tenant::query()->whereId($user->tenant_id)->withTrashed()->first();
-                }
             }
 
             if (\request()->has('fragment')) {
@@ -286,7 +282,6 @@ class TenantController extends Controller
             /* begin:: tenant service */
 
             if (is_null($tenant)) {
-                Tenant::withTrashed()->find($user->tenant_id)->restore();
                 $tenant = Tenant::query()
                     ->with(['media'])
                     ->whereId($user->tenant_id)
@@ -299,11 +294,10 @@ class TenantController extends Controller
 
             if (isset($input['avatar_remove'])) {
                 $tenantService->unsetAvatar();
-            } else {
-                $tenantService
-                    ->setAvatar($request);
             }
-            $tenantService->update($input, $user);
+            $tenantService
+                ->setAvatar($request)
+                ->update($input, $user);
             /* end:: tenant service */
 
             DB::commit();
