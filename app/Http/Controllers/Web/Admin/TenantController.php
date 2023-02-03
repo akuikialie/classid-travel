@@ -197,7 +197,6 @@ class TenantController extends Controller
     {
         $this->setPageTitle('Profil Travel');
         $this->setBreadCrumb('Profil Travel');
-
         try {
             $user = auth()->user();
             if (!($user->tenant_id ?? null)) {
@@ -219,7 +218,7 @@ class TenantController extends Controller
                     ->render($fragmentName ?? 'target', [
                         'tenant' => $tenant,
                         'parameter' => $fragmentParameter ?? null,
-                    ]);
+                  ]);
             }
 
             $this->setData('tenant', $tenant);
@@ -339,11 +338,10 @@ class TenantController extends Controller
 
             if (isset($input['avatar_remove'])) {
                 $tenantService->unsetAvatar();
-            } else {
-                $tenantService
-                    ->setAvatar($request);
             }
-            $tenantService->update($input, $user);
+            $tenantService
+                ->setAvatar($request)
+                ->update($input, $user);
             /* end:: tenant service */
 
             DB::commit();
