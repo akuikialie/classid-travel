@@ -195,7 +195,6 @@ class TenantController extends Controller
     {
         $this->setPageTitle('Profil Travel');
         $this->setBreadCrumb('Profil Travel');
-
         try {
             $user = auth()->user();
             if (!($user->tenant_id ?? null)) {
@@ -207,6 +206,10 @@ class TenantController extends Controller
                     ->with(['media'])
                     ->whereId($user->tenant_id)
                     ->first();
+                // ketika tenant == null, artinya data media sudah dihapus, maka ambil data tenant tanpa media
+                if($tenant == null){
+                    $tenant = Tenant::query()->whereId($user->tenant_id)->withTrashed()->first();
+                }
             }
 
             if (\request()->has('fragment')) {
@@ -217,7 +220,7 @@ class TenantController extends Controller
                     ->render($fragmentName ?? 'target', [
                         'tenant' => $tenant,
                         'parameter' => $fragmentParameter ?? null,
-                    ]);
+                  ]);
             }
 
             $this->setData('tenant', $tenant);
@@ -283,6 +286,7 @@ class TenantController extends Controller
             /* begin:: tenant service */
 
             if (is_null($tenant)) {
+                Tenant::withTrashed()->find($user->tenant_id)->restore();
                 $tenant = Tenant::query()
                     ->with(['media'])
                     ->whereId($user->tenant_id)

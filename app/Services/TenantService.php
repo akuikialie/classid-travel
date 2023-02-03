@@ -5,8 +5,10 @@ namespace App\Services;
 use App\Exceptions\HandleCatchableException;
 use App\Models\Tenant\Tenant;
 use App\Models\User;
+use App\Models\Base\Media;
 use Exception;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
 use Spatie\MediaLibrary\MediaCollections\Exceptions\FileDoesNotExist;
 use Spatie\MediaLibrary\MediaCollections\Exceptions\FileIsTooBig;
@@ -20,8 +22,8 @@ class TenantService
      */
     public function __construct(
         private readonly ?int $tenantId = null
-    )
-    {}
+    ) {
+    }
 
     /**
      * @param bool $status
@@ -114,7 +116,16 @@ class TenantService
 
     public function unsetAvatar()
     {
+        $avatar = $this->getTenant();
+        // $tenant = media::where('id')->first();
 
+        if ($avatar != null) {
+            // dd($avatar);
+            $avatar->deletePreservingMedia();
+            // return $avatar->fresh();
+        } else {
+            dd('hello world');
+        }
     }
 
     /**
@@ -168,7 +179,7 @@ class TenantService
      */
     public function getTenant(): ?Tenant
     {
-        if (!$this->tenant instanceof Tenant){
+        if (!$this->tenant instanceof Tenant) {
             throw HandleCatchableException::catchable('Travel tidak di ditemukan!');
         }
         return $this->tenant;
