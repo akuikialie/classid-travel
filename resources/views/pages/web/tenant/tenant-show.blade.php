@@ -2,16 +2,13 @@
 
 @section('page-content')
 
-@php
-$avatar = null;
-if ($tenant->deleted_at == null) {
-  $avatars = $tenant->getMedia('avatars');
-  $avatar = null;
-  if ($avatars->count() > 0) {
-    $avatar = collect($avatars)->last()->getUrl();
-  }
-}
-@endphp
+  @php
+    $avatars = $tenant->getMedia('avatars');
+    $avatar = null;
+    if ($avatars->count() > 0) {
+        $avatar = collect($avatars)->last()->getUrl();
+    }
+  @endphp
 
   <div id="kt_app_content_container" class="app-container container-xxl">
     <!--begin::Navbar-->

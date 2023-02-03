@@ -43,7 +43,7 @@
 															</span>
             <!--end::Cancel-->
             <!--begin::Remove-->
-            <span class="btn btn-icon btn-circle btn-active-color-primary w-25px h-25px bg-white shadow" data-kt-image-input-action="remove" data-bs-toggle="tooltip" title="Remove avatar">
+            <span class="btn btn-icon btn-circle btn-active-color-primary w-25px h-25px bg-white shadow" data-kt-image-input-action="remove" data-bs-toggle="tooltip" title="Remove avatar" style="<?php if($avatar == null) echo("display: none")?>">
 																<i class="bi bi-x fs-2"></i>
 															</span>
             <!--end::Remove-->

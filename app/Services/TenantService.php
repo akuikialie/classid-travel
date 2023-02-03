@@ -120,11 +120,8 @@ class TenantService
         // $tenant = media::where('id')->first();
 
         if ($avatar != null) {
-            // dd($avatar);
-            $avatar->deletePreservingMedia();
+            $avatar->clearMediaCollection('avatars');
             // return $avatar->fresh();
-        } else {
-            dd('hello world');
         }
     }
 
