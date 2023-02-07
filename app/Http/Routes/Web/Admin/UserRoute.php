@@ -35,7 +35,7 @@ class UserRoute extends BaseRoute
 
                 $this->router->get($this->prefix('{user_hash}/edit'), [UserController::class, 'edit'])
                     ->name($this->name('edit'));
-                $this->router->put($this->prefix('{user_hash}'), [UserController::class, 'update'])
+                $this->router->put($this->prefix('{user_hash}/update'), [UserController::class, 'update'])
                     ->name($this->name('update'));
 
                 $this->router->delete($this->prefix('{user_hash}'), [UserController::class, 'destroy'])

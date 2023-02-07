@@ -10,7 +10,7 @@ class TenantFragmentController extends Controller
 {
     public function overview()
     {
-
+        $this->addGlobalParams('fragment_view', 'pages.web.tenant.fragment.fragment-overview');
     }
 
     public function metadata()

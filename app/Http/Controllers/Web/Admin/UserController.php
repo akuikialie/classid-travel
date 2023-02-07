@@ -11,6 +11,7 @@ use App\Models\User;
 use App\Services\UserService;
 use App\Traits\FragmentRenderer;
 use DB;
+use Illuminate\Validation\Rule;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
 use Illuminate\Database\Eloquent\Builder;
@@ -67,7 +68,7 @@ class UserController extends Controller
                     ->when(is_null($user->tenant_id), function (Builder $subQuery) use ($user) {
                         $subQuery->with(['tenant']);
                     }, function (Builder $subQuery) use ($user) {
-                        if (!is_null($user->tenant_id)){
+                        if (!is_null($user->tenant_id)) {
                             $subQuery->where('tenant_id', $user->tenant_id);
                             $subQuery->where('id', '!=', $user->id);
                         }
@@ -83,31 +84,31 @@ class UserController extends Controller
                     ->latest('id');
 
                 $datatable = datatables()->eloquent($users)
-                ->filter(function (Builder $query) use ($request) {
-                    /* begin:: apply custom filter */
-                    $customFilters = collect($request->input('filter'));
-                    if ($customFilters->count() > 0) {
-                        foreach ($customFilters as $filter) {
-                            if ($filter['name'] == 'role') {
-                                $role = $filter['value'] ?? null;
-                                if ($role) {
-                                    $query->whereHas('roles', function (Builder $subQuery) use($role){
-                                       $subQuery->where('name', $role);
-                                    });
+                    ->filter(function (Builder $query) use ($request) {
+                        /* begin:: apply custom filter */
+                        $customFilters = collect($request->input('filter'));
+                        if ($customFilters->count() > 0) {
+                            foreach ($customFilters as $filter) {
+                                if ($filter['name'] == 'role') {
+                                    $role = $filter['value'] ?? null;
+                                    if ($role) {
+                                        $query->whereHas('roles', function (Builder $subQuery) use ($role) {
+                                            $subQuery->where('name', $role);
+                                        });
+                                    }
+                                    continue;
                                 }
-                                continue;
+                                $query->where($filter['name'], $filter['value']);
                             }
-                            $query->where($filter['name'], $filter['value']);
                         }
-                    }
-                    /* end:: apply custom filter */
+                        /* end:: apply custom filter */
 
-                    /* begin:: filter search */
-                    $query->when($request->input('search')['value'], function (Builder $subQuery) use ($request) {
-                        $subQuery->where('name', 'like', "%" . $request->input('search')['value'] . "%");
-                    });
-                    /* end:: filter search */
-                })
+                        /* begin:: filter search */
+                        $query->when($request->input('search')['value'], function (Builder $subQuery) use ($request) {
+                            $subQuery->where('name', 'like', "%" . $request->input('search')['value'] . "%");
+                        });
+                        /* end:: filter search */
+                    })
                     ->addIndexColumn()
                     ->addColumn('role', function ($user) {
                         return $user->roles->pluck('name')->first();
@@ -143,7 +144,6 @@ class UserController extends Controller
                     throw $e;
                 }
                 throw new \Exception('Terjadi kesalahan!');
-
             }
         }
         abort(404);
@@ -164,10 +164,12 @@ class UserController extends Controller
 
         $user = auth()->user();
         $roles = Role::query()
-            ->when(!$user->hasRole('super-administrator') && isset($user->tenant_id),
+            ->when(
+                !$user->hasRole('super-administrator') && isset($user->tenant_id),
                 function (Builder $subQuery) use ($user) {
                     $subQuery->where('tenant_id', $user->tenant_id ?? null);
-                })
+                }
+            )
             ->when($user->tenant_id, function (Builder $query) use ($user) {
                 $query->where('tenant_id', $user->tenant_id);
             })
@@ -321,7 +323,35 @@ class UserController extends Controller
      */
     public function update(Request $request, User $user)
     {
-        abort(404);
+        $user = auth()->user();
+
+        $input = $request->validate([
+            'avatar_remove' => ['nullable', 'string'],
+            'name' => [Rule::requiredIf($user->id !== null), 'string'],
+            'username' => [Rule::requiredIf($user->id !== null), 'string'],
+            'phone' => [Rule::requiredIf($user->id === null), 'numeric'],
+        ]);
+
+        // DB::beginTransaction();
+        try {
+            $user->name = $request->input('name');
+            $user->username = $request->input('username');
+            $user->phone = $request->input('phone');
+            // $user->password = Hash::make('new-password');
+            $user->save();
+
+            notify('Berhasil', 'Data travel berhasil diperbarui!', 'success')->autoClose();
+            return redirect()->back();
+        } catch (Throwable $e) {
+            DB::rollBack();
+            logError($e, title: 'Tenant');
+            if (isDevelopmentMode()) {
+                throw $e;
+            } else {
+                notify('Oops!', 'Terjadi kesalahan!', 'error');
+            }
+            return redirect()->back();
+        }
     }
 
     /**
