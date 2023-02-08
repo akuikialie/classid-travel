@@ -79,10 +79,10 @@ class JamaahService
     public function createJamaah(array $input = []): static
     {
         $user = $this->getUser();
-        $input = array_merge([
+        $input = array_merge($input,[
             'tenant_id' => $this->tenantId,
             'user_id' => $user->id,
-        ], $input);
+        ]);
         $this->jamaah = Jamaah::query()->create($input);
         return $this;
     }

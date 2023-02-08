@@ -84,7 +84,7 @@ class VirtualAccountService
             ->latest('id')
             ->first('va_number');
 
-        $VANumber = createNewVA($this->vaType, $VA->va_number);
+        $VANumber = createNewVA($this->vaType, $VA->va_number ?? null);
 
         $setEmail = "{$VANumber}@prohajj.app";
 

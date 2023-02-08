@@ -25,6 +25,7 @@ class Jamaah extends Model
     protected $table = 'jamaah';
 
     protected $fillable = [
+        'user_id',
         'tenant_id',
     ];
 

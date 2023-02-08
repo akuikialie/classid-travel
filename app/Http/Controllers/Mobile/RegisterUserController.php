@@ -37,17 +37,20 @@ class RegisterUserController extends Controller
             /* begin:: user service */
             $tenant = activeTenant();
             $userService = new UserService(tenantId: $tenant->id);
-            $userService
+            $user = $userService
                 ->createNewUser($validator)
                 ->setRole(RoleEnum::Jamaah->keyValue())
                 ->createVa('tabungan')
-                ->setDepartureStatus();
+                ->setDepartureStatus()
+                ->getUser();
             /* end:: user service */
 
             DB::commit();
 
+            \Auth::login($user);
+
             notify('Berhasil!!', 'Anda berhasil membuat akun, silahkan login menggunakan akun anda', 'success');
-            return redirect(route('login'));
+            return redirect()->intended(route('login'));
         }catch (Throwable $e){
             DB::rollBack();
             logError($e, title: 'Mobile Register');

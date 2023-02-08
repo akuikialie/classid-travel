@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Mobile;
 
 use App\Http\Requests\Auth\Authentication;
+use App\Http\Requests\Auth\MobileAuthentication;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -19,7 +20,7 @@ class AuthenticationSessionController extends Controller
         return view('pages.mobile.auth.login-index');
     }
 
-    public function store(Authentication $request)
+    public function store(MobileAuthentication $request)
     {
         $request->authenticate();
 
