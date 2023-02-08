@@ -23,8 +23,8 @@ class AppServiceProvider extends ServiceProvider
 
         app()->singleton('activeTenant', function(): ?Tenant {
             try {
-                if (auth()->user()?->tenant_id){
-                    return Tenant::find(auth()->user()?->tenant_id);
+                if (auth()->user()?->tenant_id ?? null){
+                    return Tenant::find(auth()->user()->tenant_id);
                 }
 
                 $domain = request()->getHost();
@@ -33,8 +33,9 @@ class AppServiceProvider extends ServiceProvider
                     'is_active' => true,
                 ])->first();
             } catch (Exception $e) {
-                return null;
+                //
             }
+            return null;
         });
     }
 

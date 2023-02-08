@@ -1,5 +1,4 @@
 <?php
-
 declare(strict_types=1);
 
 namespace App\Services\EWallet;
@@ -9,19 +8,15 @@ use Exception;
 
 class WalletService implements Contract\WalletService
 {
-    private array $tenantCredentials;
-
     use WalletBase;
     use WalletAccount;
 
-    private string $baseUrl;
+    private ?array $tenantCredentials = null;
     private ?WalletUser $user = null;
 
     public function __construct(private readonly ?string $token = null)
     {
-        $this->tenantCredentials = collect(json_decode(activeTenant()->wallet_login, true))->toArray();
-        $url = $this->tenantCredentials['WALLET_URL'] ?? config('wallet.url');
-        $this->baseUrl = $url;
+        $this->tenantCredentials = activeTenant()?->wallet_login ?? [];
     }
 
     /**

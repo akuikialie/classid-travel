@@ -1,12 +1,10 @@
 <?php
-
 declare(strict_types=1);
 
 namespace App\Services\EWallet;
 
 use App\Services\EWallet\Entity\WalletUser;
 use Exception;
-use Illuminate\Support\Facades\Cache;
 
 trait WalletAccount
 {
@@ -19,16 +17,14 @@ trait WalletAccount
      */
     public function login(string $username, string $password): bool
     {
-        $walletUser = config('wallet.admin.username');
+        $walletBCN = $this->getWalletBCN();
+        $walletUser = $this->getWalletAdminUser();
 
-        if ($this->tenantCredentials){
-            $walletUser = $this->tenantCredentials['WALLET_ADMIN_USER'];
-        }
         if ($username == $walletUser) {
             return $this->_doLogin($username, $password);
         }
 
-        $userLogin = Cache::remember("walletUser.{$username}", now()->addMonths(6), function () use ($username, $password) {
+        $userLogin = app('cache')->remember("walletUser:$walletBCN:$username", now()->addMonths(6), function () use ($username, $password) {
             if ($this->_doLogin($username, $password)) {
                 return $this->user;
             }
@@ -36,7 +32,7 @@ trait WalletAccount
         });
 
         if (!$userLogin) {
-            Cache::forget("walletUser.{$username}");
+            app('cache')->forget("walletUser:$walletBCN:$username");
         }
 
         return $userLogin instanceof WalletUser;
@@ -44,18 +40,15 @@ trait WalletAccount
 
     /**
      * @return WalletUser|null
+     * @throws \Exception
      */
     public function admin(): ?WalletUser
     {
-        $username = config('wallet.admin.username');
-        $password = config('wallet.admin.password');
+        $walletBCN = $this->getWalletBCN();
+        $username = $this->getWalletAdminUser();
+        $password = $this->getWalletAdminPwd();
 
-        if ($this->tenantCredentials){
-            $username = $this->tenantCredentials['WALLET_ADMIN_USER'];
-            $password = $this->tenantCredentials['WALLET_ADMIN_PASS'];
-        }
-
-        $adminUser = Cache::rememberForever('walletAdmin', function () use ($username, $password) {
+        $adminUser = app('cache')->rememberForever("walletAdmin:$walletBCN", function () use ($username, $password) {
             if ($this->login(username: $username, password: $password)) {
                 return $this->user;
             }
@@ -63,7 +56,7 @@ trait WalletAccount
         });
 
         if (is_null($adminUser)) {
-            Cache::forget("walletAdmin");
+            app('cache')->forget("walletAdmin:$walletBCN");
         }
 
         if (is_null($this->user)){
@@ -89,8 +82,8 @@ trait WalletAccount
         $username = $va;
         $password = "{$id}@{$va}";
 
-        $getBcn = $this->tenantCredentials['WALLET_BCN'] ?? config('wallet.bcn');
-        $vaCode = (int) preg_replace('/^('. $getBcn .')(\d+)/', '$2', $va);
+        $walletBCN = $this->getWalletBCN();
+        $vaCode = (int) preg_replace('/^('. $walletBCN .')(\d+)/', '$2', $va);
 
         $post = $this->client()->post('api/user/create', [
             // 'username' => config('wallet.bcn'),
@@ -115,6 +108,7 @@ trait WalletAccount
             if ($user) {
                 return new WalletUser(
                     id: $user?->id ?? null,
+                    bcn: $walletBCN,
                     va: $user?->virtual_account ?? '',
                     name: $user?->name ?? '',
                 );
@@ -125,9 +119,11 @@ trait WalletAccount
 
     private function _doLogin(string $username, string $password): bool
     {
-        $credentials = $this->tenantCredentials;
+        $walletBCN = $this->getWalletBCN();
+        $walletAdmin = $this->getWalletAdminUser();
+
         $post = $this->client()->post('auth/oauth/login', [
-            'school_key' => $credentials['WALLET_BCN'] ?? config('wallet.bcn'),
+            'school_key' => $walletBCN,
             'username' => $username,
             'password' => $password,
         ]);
@@ -137,10 +133,11 @@ trait WalletAccount
             if ($body->user && $body->access_token) {
                 $this->user = new WalletUser(
                     id: $body->user?->id ?? null,
-                    va: config('wallet.bcn') . str_pad($body->user?->virtual_account ?? '', 10, '0', STR_PAD_LEFT),
+                    bcn: $walletBCN,
+                    va: $walletBCN . str_pad($body->user?->virtual_account ?? '', 10, '0', STR_PAD_LEFT),
                     name: $body->user?->name ?? '',
                     token: $body->access_token,
-                    isAdmin: config('wallet.admin.username')!='' && $username == config('wallet.admin.username'),
+                    isAdmin: $walletAdmin == $username,
                 );
 
                 return true;

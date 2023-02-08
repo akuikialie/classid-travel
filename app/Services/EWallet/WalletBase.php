@@ -1,5 +1,4 @@
 <?php
-
 declare(strict_types=1);
 
 namespace App\Services\EWallet;
@@ -16,11 +15,57 @@ use Psr\Http\Message\RequestInterface;
 
 trait WalletBase
 {
+    /**
+     * @return string
+     */
     public function getBaseUrl(): string
     {
-        return $this->baseUrl;
+        return $this->getWalletUrl();
     }
 
+    /**
+     * @return string
+     */
+    public function getWalletBCN(): string
+    {
+        return !empty($this->tenantCredentials['WALLET_BCN'])
+            ? $this->tenantCredentials['WALLET_BCN']
+            : config('wallet.bcn', '000000');
+    }
+
+    /**
+     * @return string
+     */
+    public function getWalletUrl(): string
+    {
+        return !empty($this->tenantCredentials['WALLET_URL'])
+            ? $this->tenantCredentials['WALLET_URL']
+            : config('wallet.url');
+    }
+
+    /**
+     * @return string
+     */
+    public function getWalletAdminUser(): string
+    {
+        return !empty($this->tenantCredentials['WALLET_ADMIN_USER'])
+            ? $this->tenantCredentials['WALLET_ADMIN_USER']
+            : config('wallet.admin.username', '');
+    }
+
+    /**
+     * @return string
+     */
+    public function getWalletAdminPwd(): string
+    {
+        return !empty($this->tenantCredentials['WALLET_ADMIN_PASS'])
+            ? $this->tenantCredentials['WALLET_ADMIN_PASS']
+            : config('wallet.admin.password', '');
+    }
+
+    /**
+     * @return bool
+     */
     public function ping(): bool
     {
         $get = $this->client()->get('api');
@@ -34,6 +79,9 @@ trait WalletBase
         return Arr::hasAny($body, ['error', 'data']);
     }
 
+    /**
+     * @return \Illuminate\Http\Client\PendingRequest
+     */
     private function client(): PendingRequest
     {
         $stack = HandlerStack::create();
@@ -42,7 +90,7 @@ trait WalletBase
             return $request;
         }));
 
-        $http = Http::init($this->baseUrl)
+        $http = Http::init($this->getBaseUrl())
             ->acceptJson()
             ->timeout(180)
             ->withoutVerifying()

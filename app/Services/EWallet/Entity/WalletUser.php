@@ -6,6 +6,7 @@ class WalletUser
 {
     public function __construct(
         public readonly ?int $id = null,
+        public readonly ?string $bcn = null,
         public readonly ?string $va = null,
         public readonly ?string $name = null,
         public readonly ?string $token = null,
