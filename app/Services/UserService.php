@@ -6,18 +6,22 @@ namespace App\Services;
 
 use App\Exceptions\HandleCatchableException;
 use App\Models\Jamaah\JamaahHistory;
+use Illuminate\Http\Request;
 use App\Models\User;
 use Exception;
 use Illuminate\Support\Facades\Hash;
 use Throwable;
+use Illuminate\Support\Str;
+use Spatie\MediaLibrary\MediaCollections\Exceptions\FileDoesNotExist;
+use Spatie\MediaLibrary\MediaCollections\Exceptions\FileIsTooBig;
 
 class UserService
 {
     private ?User $user = null;
     public function __construct(
         private readonly ?int $tenantId = null
-    )
-    {}
+    ) {
+    }
 
     /**
      * @throws Throwable
@@ -152,9 +156,54 @@ class UserService
      */
     public function getUser(): User
     {
-        if (!$this->user instanceof User){
+        if (!$this->user instanceof User) {
             throw HandleCatchableException::catchable('User tidak di ditemukan!');
         }
         return $this->user;
+    }
+
+    /**
+     * @throws HandleCatchableException
+     */
+    public function unsetAvatar(): static
+    {
+        $avatar = $this->getUser();
+        $avatar->clearMediaCollection('avatars');
+        return $this;
+    }
+
+    /**
+     * @return $this
+     * @throws FileDoesNotExist
+     * @throws FileIsTooBig
+     * @throws Exception
+     */
+    public function setAvatar(Request $request): static
+    {
+        $user = $this->getuser();
+
+        if ($request->hasFile('avatar')) {
+            $user->addMediaFromRequest('avatar')
+                ->toMediaCollection('avatars');
+        }
+        return $this;
+    }
+
+    /**
+     * @param array $input
+     * @param User|null $user
+     * @return Tenant|null
+     * @throws Exception
+     */
+    public function update(Request $request): ?user
+    {
+        $user = $this->getuser();
+        $user->name = $request->input('name');
+        $user->username = $request->input('username');
+        $user->phone = $request->input('phone');
+        auth()->user()->update(['password' => Hash::make($request->password)]);
+        $user->save();
+
+        return $user->fresh();
     }
 }
