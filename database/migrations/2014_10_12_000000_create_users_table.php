@@ -31,6 +31,8 @@ return new class extends Migration
             $table->string('timezone')->default('Asia/Jakarta');
             $table->timestamps(precision: 6);
             $table->softDeletes(precision: 6);
+
+
         });
     }
 

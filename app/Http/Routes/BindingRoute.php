@@ -23,12 +23,7 @@ class BindingRoute implements Bindable
 
     public function bind(): void
     {
-        $this->router->bind('tenant_hash', function ($value) {
-            dd($value);
-            if ($value){
-                Tenant::byHashOrFail($value);
-            }
-        });
+        $this->router->bind('tenant_hash', fn ($value) => Tenant::byHashOrFail($value));
         $this->router->bind('user_hash', fn ($value) => User::byHashOrFail($value));
         $this->router->bind('itinerary_hash', fn ($value) => ItineraryActivity::query()
             ->withCount(['hasItineraries'])

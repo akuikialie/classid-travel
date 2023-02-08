@@ -55,78 +55,83 @@
                 <!--end::Svg Icon-->Filter
               </button>
               <!--begin::Menu 1-->
+
               <div class="menu menu-sub menu-sub-dropdown w-300px w-md-325px" data-kt-menu="true">
-                <!--begin::Header-->
-                <div class="px-7 py-5">
-                  <div class="fs-5 text-dark fw-bold">Filter Options</div>
-                </div>
-                <!--end::Header-->
-                <!--begin::Separator-->
-                <div class="separator border-gray-200"></div>
-                <!--end::Separator-->
-                <!--begin::Content-->
-                <div class="px-7 py-5" data-kt-user-table-filter="form">
+                <form id="form-filter">
+                  <!--begin::Header-->
+                  <div class="px-7 py-5">
+                    <div class="fs-5 text-dark fw-bold">Filter Options</div>
+                  </div>
+                  <!--end::Header-->
+                  <!--begin::Separator-->
+                  <div class="separator border-gray-200"></div>
+                  <!--end::Separator-->
+                  <!--begin::Content-->
+                  <div class="px-7 py-5" data-kt-user-table-filter="form">
 
-                  <!--begin::Input group-->
-                  <div class="mb-10">
-                    <!--begin::Label-->
-                    <label class="form-label fw-semibold">Filter By Role:</label>
-                    <!--end::Label-->
-                    <!--begin::Input-->
-                    <div>
-                      <select class="form-select form-select-solid" data-kt-select2="true"
-                              data-placeholder="Select option" data-allow-clear="true"
-                              data-kt-user-table-filter="travel_name"
-                              data-hide-search="true" name="role_name">
-                        <option></option>
-                        @foreach($role_filters AS $_role)
-                          <option value="{{ $_role->name }}"
-                            {{ request()->get('role_name') == $_role->name ? 'selected' : '' }}
-                          >{{ $_role->name }}</option>
+                    <!--begin::Input group-->
+                    <div class="mb-10">
+                      <!--begin::Label-->
+                      <label class="form-label fw-semibold">Filter By Role:</label>
+                      <!--end::Label-->
+                      <!--begin::Input-->
+                      <div>
+                        <select name="role" class="form-select form-select-solid" data-kt-select2="true"
+                                data-placeholder="Select option" data-allow-clear="true"
+                                data-kt-user-table-filter="travel_name"
+                                data-hide-search="true" name="role_name">
+                          <option></option>
+                          @foreach($role_filters AS $_role)
+                            <option value="{{ $_role->name }}"
+                              {{ request()->get('role_name') == $_role->name ? 'selected' : '' }}
+                            >{{ $_role->name }}</option>
 
-                        @endforeach
-                      </select>
+                          @endforeach
+                        </select>
+                      </div>
+                      <!--end::Input-->
                     </div>
-                    <!--end::Input-->
-                  </div>
-                  <!--end::Input group-->
+                    <!--end::Input group-->
 
-                  <!--begin::Input group-->
-                  <div class="mb-10">
-                    <!--begin::Label-->
-                    <label class="form-label fw-semibold">Filter Travel:</label>
-                    <!--end::Label-->
-                    <!--begin::Input-->
-                    <div>
-                      <select class="form-select form-select-solid" data-kt-select2="true"
-                              data-placeholder="Select option" data-allow-clear="true"
-                              data-kt-user-table-filter="travel_name"
-                              data-hide-search="true" name="travel_name">
-                        <option></option>
-                        @foreach($tenant_filters AS $tenant)
-                          <option value="{{ $tenant->hash }}"
-                            {{ request()->get('travel_name') == $tenant->hash ? 'selected' : '' }}
-                          >{{ $tenant->name }}</option>
-                        @endforeach
-                      </select>
+                    <!--begin::Input group-->
+                    <div class="mb-10">
+                      <!--begin::Label-->
+                      <label class="form-label fw-semibold">Filter Travel:</label>
+                      <!--end::Label-->
+                      <!--begin::Input-->
+                      <div>
+                        <select name="tenant" class="form-select form-select-solid" data-kt-select2="true"
+                                data-placeholder="Select option" data-allow-clear="true"
+                                data-kt-user-table-filter="travel_name"
+                                data-hide-search="true" name="travel_name">
+                          <option></option>
+                          @foreach($tenant_filters AS $tenant)
+                            <option value="{{ $tenant->name }}"
+                              {{ request()->get('travel_name') == $tenant->hash ? 'selected' : '' }}
+                            >{{ $tenant->name }}</option>
+                          @endforeach
+                        </select>
+                      </div>
+                      <!--end::Input-->
                     </div>
-                    <!--end::Input-->
-                  </div>
-                  <!--end::Input group-->
+                    <!--end::Input group-->
 
-                  <!--begin::Actions-->
-                  <div class="d-flex justify-content-end">
-                    <button type="reset" class="btn btn-light btn-active-light-primary fw-semibold me-2 px-6"
-                            data-kt-menu-dismiss="true" data-kt-user-table-filter="reset">Reset
-                    </button>
-                    <button type="submit" class="btn btn-primary fw-semibold px-6" data-kt-menu-dismiss="true"
-                            data-kt-user-table-filter="filter">Apply
-                    </button>
+                    <!--begin::Actions-->
+                    <div class="d-flex justify-content-end">
+                      <button type="reset" class="btn btn-light btn-active-light-primary fw-semibold me-2 px-6"
+                              data-kt-menu-dismiss="true" data-kt-user-table-filter="reset">Reset
+                      </button>
+                      <button type="button" class="btn btn-primary fw-semibold px-6" id="apply-filter" data-kt-menu-dismiss="true"
+                              data-kt-user-table-filter="filter">Apply
+                      </button>
+                    </div>
+                    <!--end::Actions-->
                   </div>
-                  <!--end::Actions-->
-                </div>
-                <!--end::Content-->
+                  <!--end::Content-->
+                </form>
+
               </div>
+
               <!--end::Menu 1-->
               <!--end::Filter-->
               @can("create {$current_page}")
@@ -166,7 +171,7 @@
               <th>Nama</th>
               <th>type</th>
               @if(auth()->user()->hasRole('super-administrator'))
-                <th >tenant</th>
+                <th>Travel</th>
               @endif
               <th class="text-center">Usages</th>
               <th class="text-end min-w-100px">Actions</th>

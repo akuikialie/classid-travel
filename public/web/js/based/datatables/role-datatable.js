@@ -8,6 +8,10 @@ let roleIndex = function () {
   let dt;
   let filterStatus;
 
+  $('#apply-filter').click(function () {
+    initDatatable();
+  });
+
   // Private functions
   let initDatatable = function () {
     dt = $("#kt_datatable_example_1").DataTable({
@@ -26,6 +30,7 @@ let roleIndex = function () {
         dataType: "json",
         data: {
           _token: csrf_token,
+          filter: $('#form-filter').serializeArray(),
         },
         error: function(error){
           Swal.fire({
@@ -108,9 +113,9 @@ let roleIndex = function () {
     table = dt.$;
     // Re-init functions on every table re-draw -- more info: https://datatables.net/reference/event/draw
     dt.on('draw', function () {
-      initToggleToolbar();
+      // initToggleToolbar();
       // toggleToolbars();
-      handleDeleteRows();
+      // handleDeleteRows();
       KTMenu.createInstances();
     });
   };
@@ -210,10 +215,17 @@ let roleIndex = function () {
   // Search Datatable --- official docs reference: https://datatables.net/reference/api/search()
   let handleSearchDatatable = function () {
     const filterSearch = document.querySelector('[data-kt-user-table-filter="search"]');
-    filterSearch.addEventListener('keyup', function (e) {
-      dt.search(e.target.value).draw();
+    filterSearch.addEventListener('keypress', function (e) {
+      // If the user presses the "Enter" key on the keyboard
+      if (e.key === "Enter") {
+        // Cancel the default action, if needed
+        e.preventDefault();
+        // Trigger the button element with a click
+        dt.search(e.target.value).draw();
+      }
     });
   }
+
 
 // Filter Datatable
   let handleFilterDatatable = () => {

@@ -6,15 +6,15 @@ use App\Http\Controllers\Controller;
 use App\Http\Controllers\Web\Admin\Fragment\TenantFragmentController;
 use App\Models\Tenant\Tenant;
 use App\Services\TenantService;
-use App\Services\UserService;
 use App\Traits\FragmentRenderer;
 use Exception;
+use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
+use Illuminate\Contracts\Database\Eloquent\Builder;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 use InvalidArgumentException;
 use Psr\Container\ContainerExceptionInterface;
@@ -45,14 +45,39 @@ class TenantController extends Controller
      * @throws \Yajra\DataTables\Exceptions\Exception
      * @throws Exception
      */
-    public function datatable()
+    public function datatable(Request $request)
     {
         if (\request()->ajax()) {
-            $tenants = Tenant::query()
-                ->latest('id')
-                ->get();
             try {
-                return datatables()->of($tenants)
+                $tenants = Tenant::query()
+                    ->latest('id');
+                return datatables()->eloquent($tenants)
+                    ->filter(function (Builder $query) use ($request) {
+                        /* begin:: apply custom filter */
+                        $customFilters = collect($request->input('filter'));
+                        if ($customFilters->count() > 0) {
+                            foreach ($customFilters as $filter) {
+                                if ($filter['value'] == 'all') continue;
+
+                                if ($filter['name'] == 'status') {
+                                    $status = $filter['value'] == 'active';
+                                    $query->where('is_active', $status);
+                                    continue;
+                                }
+                                $query->where($filter['name'], $filter['value']);
+                            }
+                        }
+                        /* end:: apply custom filter */
+
+                        /* begin:: filter search */
+                        $query->when($request->input('search')['value'] && $customFilters->count() < 1, function (Builder $subQuery) use ($request) {
+                            $subQuery->where('slug', 'like', "%" . $request->input('search')['value'] . "%");
+                            $subQuery->orWhere('app_domain', 'like', "%" . $request->input('search')['value'] . "%");
+                            $subQuery->orWhere('name', 'like', "%" . $request->input('search')['value'] . "%");
+                            $subQuery->orWhere('BCN', 'like', "%" . $request->input('search')['value'] . "%");
+                        });
+                        /* end:: filter search */
+                    })
                     ->addIndexColumn()
                     ->addColumn('name', function ($row) {
                         return $row->name;
@@ -67,9 +92,8 @@ class TenantController extends Controller
                     })->addColumn('status', function ($row) {
                         if ($row->is_active) {
                             return '<span class="badge badge-success text-uppercase">active</span>';
-                        } else {
-                            return '<span class="badge badge-danger text-uppercase">inactive</span>';
                         }
+                        return '<span class="badge badge-danger text-uppercase">inactive</span>';
                     })->addColumn('created_date', function ($row) {
                         return carbon($row->created_at)->format('d M, Y');
                     })->addColumn('actions', function ($row) {
@@ -82,9 +106,8 @@ class TenantController extends Controller
                 logError($e, title: 'Tenant');
                 if (isDevelopmentMode()) {
                     throw $e;
-                } else {
-                    throw new Exception('Terjadi kesalahan!.');
                 }
+                throw new Exception('Terjadi kesalahan!.');
             }
         }
     }
@@ -138,41 +161,12 @@ class TenantController extends Controller
 
         DB::beginTransaction();
         try {
-            /* begin:: create new tenant */
             $input = array_merge($input, [
                 'slug' => $input['name'],
             ]);
 
-            if (str_contains($input['app_domain'], ' ')) {
-                $input = array_merge($input, [
-                    'app_domain' => Str::lower(str_replace(' ', '.', $input['app_domain'])),
-                    'wallet_login' => json_encode([
-                        'WALLET_URL' => "https://demo.biznet.class.id",
-                        'WALLET_BCN' => "857400",
-                        'WALLET_ADMIN_USER' => "fahrudinsidik88@gmail.com",
-                        'WALLET_ADMIN_PASS' => "password",
-                    ])
-                ]);
-            }
-
-            $validAppDomain = dns_get_record($input['app_domain']);
-            if (!is_array($validAppDomain) || count($validAppDomain) < 1) {
-                throw new Exception('App domain tidak tersedia');
-            }
-            $newTenant = Tenant::query()->create($input);
-            /* end:: create new tenant */
-
-            /* begin:: user service -- create admin account + set is super == true (fix) */
-            $userService = new UserService(tenantId: $newTenant->id);
-            $userService->createNewUser([
-                'name' => $input['name'],
-                'phone' => $input['phone'],
-                'password' => 'admin',
-            ], false)
-                ->setRole('administrator')
-                ->setIsSuper(true);
-            /* end:: user service -- create admin account + set is super == true (fix) */
-
+            (new TenantService())
+                ->createNewtenant($input);
             DB::commit();
 
             notify('Berhasil', 'Berhasil membuat akun travel baru', 'success');
@@ -193,16 +187,16 @@ class TenantController extends Controller
      * Display the specified resource.
      *
      * @param Tenant|null $tenant
+     * @param string|null $slug
      * @return View
      * @throws ContainerExceptionInterface
      * @throws NotFoundExceptionInterface
      * @throws ReflectionException
      */
-    public function show(?Tenant $tenant = null): View
+    public function show(?Tenant $tenant = null, ?string $slug = null): View
     {
         $this->setPageTitle('Profil Travel');
         $this->setBreadCrumb('Profil Travel');
-
         try {
             $user = auth()->user();
             if (!($user->tenant_id ?? null)) {
@@ -219,13 +213,55 @@ class TenantController extends Controller
             if (\request()->has('fragment')) {
                 $fragmentName = \request()->get('fragment');
                 $fragmentParameter = \request()->get('parameter');
-                $this->setGlobalParams('fragment_active', $fragmentName);
+                $this->addGlobalParams('fragment_active', $fragmentName);
                 $this->fragment(new TenantFragmentController())
                     ->render($fragmentName ?? 'target', [
                         'tenant' => $tenant,
                         'parameter' => $fragmentParameter ?? null,
-                    ]);
+                  ]);
             }
+
+            $this->setData('tenant', $tenant);
+        } catch (Exception $e) {
+            logError($e, title: 'Tenant');
+            if (isDevelopmentMode()) {
+                throw $e;
+            } else {
+                notify('Oops!', 'Terjadi kesalahan!', 'error');
+            }
+        }
+
+        return $this->view('pages.web.tenant.tenant-show');
+    }
+
+    /**
+     * @param string $slug
+     * @return Factory|View
+     * @throws ReflectionException
+     */
+    public function showProfile(string $slug)
+    {
+        $this->setPageTitle('Profil Travel');
+        $this->setBreadCrumb('Profil Travel');
+
+        try {
+            $user = auth()->user();
+            if (!($user->tenant_id ?? null)) {
+                abort(404);
+            }
+
+            $tenant = Tenant::query()
+                ->with(['media'])
+                ->whereId($user->tenant_id)
+                ->first();
+
+            $this->addGlobalParams('fragment_active', $slug);
+
+            $this->fragment(new TenantFragmentController())
+                ->render($slug ?? 'overview', [
+                    'tenant' => $tenant,
+                    'parameter' => $fragmentParameter ?? null,
+                ]);
 
             $this->setData('tenant', $tenant);
         } catch (Exception $e) {
@@ -302,18 +338,16 @@ class TenantController extends Controller
 
             if (isset($input['avatar_remove'])) {
                 $tenantService->unsetAvatar();
-            } else {
-                $tenantService
-                    ->setAvatar($request);
             }
-            $tenantService->update($input, $user);
+            $tenantService
+                ->setAvatar($request)
+                ->update($input, $user);
             /* end:: tenant service */
 
             DB::commit();
 
             notify('Berhasil', 'Data travel berhasil diperbarui!', 'success')->autoClose();
             return redirect()->back();
-
         } catch (Throwable $e) {
             DB::rollBack();
             logError($e, title: 'Tenant');
@@ -324,7 +358,6 @@ class TenantController extends Controller
             }
             return redirect()->back();
         }
-
     }
 
     /**
@@ -335,7 +368,15 @@ class TenantController extends Controller
      */
     public function destroy(Tenant $tenant)
     {
-        return redirect()->back();
+        try {
+            $tenant->delete();
+
+            notify('Berhasil', 'Travel berhasil di hapus', 'success')->autoClose();
+            return redirect()->back();
+
+        }catch (Throwable $e){
+            return redirect()->back();
+        }
     }
 
     /**
@@ -398,15 +439,13 @@ class TenantController extends Controller
             $tenantService = new TenantService(tenantId: $tenant->id);
             if ($request->has('status')) {
                 $tenantService
-                    ->tenantId($tenant->id)
+                    ->setTenant($tenant)
                     ->setStatus($request->get('status'));
                 notify('Berhasil!', "Status telah berubah", 'success');
                 DB::commit();
             } else {
                 throw new InvalidArgumentException('Tidak ada yang berubah!');
             }
-
-
             return redirect()->back();
         } catch (Throwable $e) {
             logError($e, title: 'Tenant');

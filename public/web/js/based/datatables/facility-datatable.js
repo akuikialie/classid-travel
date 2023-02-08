@@ -7,6 +7,10 @@ let KTDatatablesServerSide = function () {
   let dt;
   let filterStatus;
 
+  $('#apply-filter').click(function () {
+    initDatatable();
+  });
+
   // Private functions
   let initDatatable = function () {
     dt = $("#kt_datatable_example_1").DataTable({
@@ -25,9 +29,10 @@ let KTDatatablesServerSide = function () {
         dataType: "json",
         data: {
           _token: csrf_token,
+          filter: $('#form-filter').serializeArray(),
         },
 
-        error: function(error){
+        error: function (error) {
           Swal.fire({
             icon: error.responseJSON.icon,
             title: error.responseJSON.title,
@@ -42,11 +47,11 @@ let KTDatatablesServerSide = function () {
         }
       },
       columns: [
-        {data: 'id'},
-        {data: 'name'},
-        {data: 'type'},
-        {data: 'status'},
-        {data: 'actions'},
+        { data: 'id' },
+        { data: 'name' },
+        { data: 'type' },
+        { data: 'status' },
+        { data: 'actions' },
       ],
       columnDefs: [
         {
@@ -90,7 +95,7 @@ let KTDatatablesServerSide = function () {
               modal.show();
 
               /* begin:: dismiss modal helper*/
-              $("[data-bs-dismiss=modal]").click(function(){
+              $("[data-bs-dismiss=modal]").click(function () {
                 if ($("#kt_modal_create_app").is(":visible")) {
                   modal.hide();
                 }
@@ -121,15 +126,15 @@ let KTDatatablesServerSide = function () {
         e.preventDefault();
         let status = $(this).attr("data-status");
         let hash = $(this).attr("data-id");
-        const form = $('form[data-kt-form-id="change-status-'+hash+'"]');
-        form.append('<input type="hidden" name="status" value="'+status+'" />')
+        const form = $('form[data-kt-form-id="change-status-' + hash + '"]');
+        form.append('<input type="hidden" name="status" value="' + status + '" />')
         form.submit();
       }),
 
       $("#kt_datatable_example_1 tbody").on("click", ".btn-delete", function (e) {
         e.preventDefault();
         let hash = $(this).attr("data-id");
-        const form = $('form[data-kt-form-id="delete-'+hash+'"]');
+        const form = $('form[data-kt-form-id="delete-' + hash + '"]');
         form.submit();
       });
 
@@ -158,7 +163,7 @@ let KTDatatablesServerSide = function () {
             modal.show();
 
             /* begin:: dismiss modal helper*/
-            $("[data-bs-dismiss=modal]").click(function(){
+            $("[data-bs-dismiss=modal]").click(function () {
               if ($("#kt_modal_create_app").is(":visible")) {
                 modal.hide();
               }
@@ -189,29 +194,14 @@ let KTDatatablesServerSide = function () {
   // Search Datatable --- official docs reference: https://datatables.net/reference/api/search()
   let handleSearchDatatable = function () {
     const filterSearch = document.querySelector('[data-kt-user-table-filter="search"]');
-    filterSearch.addEventListener('keyup', function (e) {
-      dt.search(e.target.value).draw();
-    });
-  }
-
-  // Filter Datatable
-  let handleFilterDatatable = () => {
-    // Select filter options
-    $('[data-kt-user-table-filter="role"]').select2({
-      templateSelection: function (data, container) {
-        // Add custom attributes to the <option> tag for the selected option
-        $(data.element).attr('data-custom-attribute', data.customValue);
-        return data.text;
+    filterSearch.addEventListener('keypress', function (e) {
+      // If the user presses the "Enter" key on the keyboard
+      if (e.key === "Enter") {
+        // Cancel the default action, if needed
+        e.preventDefault();
+        // Trigger the button element with a click
+        dt.search(e.target.value).draw();
       }
-    });
-    const filterButton = document.querySelector('[data-kt-user-table-filter="filter"]');
-
-    // Filter datatable on submit
-    filterButton.addEventListener('click', function () {
-      // Get filter values
-      filterStatus = $('[data-kt-user-table-filter="role"] :selected').text();
-      // Filter datatable --- official docs reference: https://datatables.net/reference/api/search()
-      dt.search(filterStatus).draw();
     });
   }
 
@@ -438,7 +428,7 @@ let KTDatatablesServerSide = function () {
       handleFilterDatatable();
       handleDeleteRows();
       handleResetForm();
-      handleItinerary();
+      // handleItinerary();
     }
   }
 }();

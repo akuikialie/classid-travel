@@ -11,6 +11,7 @@ use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Redirector;
 use Illuminate\Support\Facades\DB;
@@ -37,7 +38,7 @@ class FacilityController extends Controller
      * @throws Exception
      * @throws Throwable
      */
-    public function datatable()
+    public function datatable(Request $request)
     {
         if (\request()->ajax()) {
             try {
@@ -45,9 +46,33 @@ class FacilityController extends Controller
                 $facilities = PlanFacility::query()
                     ->withCount(['media', 'packages'])
                     ->tenantId($user->tenant_id)
-                    ->get();
+                    ->latest();
 
-                $datatable = datatables()->of($facilities)
+                $datatable = datatables()->eloquent($facilities)
+                    ->filter(function (Builder $query) use ($request, $user) {
+                        /* begin:: apply custom filter */
+                        $customFilters = collect($request->input('filter'));
+                        if ($customFilters->count() > 0) {
+                            foreach ($customFilters as $filter) {
+                                $query
+                                    ->when($filter['value'], function (Builder $subQuery) use ($filter) {
+                                        $subQuery->where($filter['name'], $filter['value']);
+                                    });
+                            }
+                        }
+                        /* end:: apply custom filter */
+
+                        /* begin:: filter search */
+
+                        $query->when($request->input('search')['value'] , function (Builder $subQuery) use ($request, $user) {
+                            $subQuery->where('tenant_id', $user->tenant_id)
+                                ->where(function ($subQuery) use ($request){
+                                    $subQuery->where('name', 'like', "%" . $request->input('search')['value'] . "%");
+                                    $subQuery->orWhere('type', 'like', "%" . $request->input('search')['value'] . "%");
+                                });
+                        });
+                        /* end:: filter search */
+                    })
                     ->addIndexColumn()
                     ->addColumn('name', function ($model) {
                         return $model->name;
@@ -64,7 +89,7 @@ class FacilityController extends Controller
                         $this->setData('facility', $model);
                         return $this->view('pages.web.master.facility.action.action-datatable');
                     })
-                    ->rawColumns(['actions', 'status' ]);
+                    ->rawColumns(['actions', 'status']);
 
                 return $datatable->make(true);
             } catch (Throwable $e) {
@@ -129,8 +154,7 @@ class FacilityController extends Controller
             $user = auth()->user();
             $facilityService = new FacilityService($user->tenant_id);
             $facilityService->createFacility($validator)
-                ->addGallery($request)
-                ->get();
+                ->addGallery($request);
 
             DB::commit();
             notify('Berhasil', 'Data fasilitas berhasil dibuat!', 'success')->autoClose();
@@ -195,7 +219,7 @@ class FacilityController extends Controller
     public function update(Request $request, PlanFacility $facility): RedirectResponse
     {
         $validator = $request->validate([
-            'name' => ['required', 'unique:facilities,name,'.$facility->id, 'string'],
+            'name' => ['required', 'unique:facilities,name,' . $facility->id, 'string'],
             'type' => ['required', 'string'],
             'photo_collection' => ['nullable', 'array'],
         ]);
@@ -274,11 +298,11 @@ class FacilityController extends Controller
                     ->setPlanFacility($facility)
                     ->setStatus($request->get('status'));
                 notify('Berhasil!', "Status telah berubah", 'success');
-            }else{
+            } else {
                 throw new InvalidArgumentException('Tidak ada yang berubah!');
             }
             return redirect()->back();
-        }catch (Throwable $e){
+        } catch (Throwable $e) {
             logError($e, title: 'Facility');
             if (isDevelopmentMode()) {
                 throw $e;

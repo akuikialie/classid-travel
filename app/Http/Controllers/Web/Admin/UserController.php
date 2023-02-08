@@ -5,35 +5,48 @@ namespace App\Http\Controllers\Web\Admin;
 use App\Enums\PermissionType;
 use App\Enums\UserStatus;
 use App\Http\Controllers\Controller;
+use App\Http\Controllers\Web\Admin\Fragment\UserFragmentController;
 use App\Models\Spatie\Role;
 use App\Models\User;
 use App\Services\UserService;
+use App\Traits\FragmentRenderer;
 use DB;
-use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\View\Factory;
+use Illuminate\Contracts\View\View;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
-use Illuminate\Routing\Redirector;
-use Illuminate\View\View;
 use Psr\Container\ContainerExceptionInterface;
 use Psr\Container\NotFoundExceptionInterface;
+use ReflectionException;
 use Spatie\Permission\Exceptions\UnauthorizedException;
 use Throwable;
 use Yajra\DataTables\Exceptions\Exception;
 
 class UserController extends Controller
 {
+    use FragmentRenderer;
 
     protected string $forPage = 'user';
+
+    private array $columns = [
+        ['data' => 'id'],
+        ['data' => 'name'],
+        ['data' => 'role'],
+        ['data' => 'tenant'],
+        ['data' => 'status'],
+        ['data' => 'last_login'],
+        ['data' => 'actions'],
+    ];
 
     /**
      * @throws \Exception
      */
     public function __construct()
     {
+        parent::__construct();
         $this->setData('current_page', $this->forPage);
     }
 
@@ -42,19 +55,22 @@ class UserController extends Controller
      * @throws ContainerExceptionInterface
      * @throws Exception
      * @throws NotFoundExceptionInterface
+     * @throws \Exception
      */
-    public function datatable(?string $type = null)
+    public function datatable(Request $request, ?string $type = null)
     {
         if (\request()->ajax()) {
             try {
                 $user = auth()->user();
                 $users = User::query()
                     ->with(['roles'])
-                    ->when($user->hasRole('super-administrator'), function (Builder $subQuery) use ($user) {
+                    ->when(is_null($user->tenant_id), function (Builder $subQuery) use ($user) {
                         $subQuery->with(['tenant']);
                     }, function (Builder $subQuery) use ($user) {
-                        $subQuery->where('tenant_id', $user->tenant_id);
-                        $subQuery->where('id', '!=', $user->id);
+                        if (!is_null($user->tenant_id)){
+                            $subQuery->where('tenant_id', $user->tenant_id);
+                            $subQuery->where('id', '!=', $user->id);
+                        }
                     })
                     ->when($type == 'calon-jamaah', function (Builder $subQuery) {
                         $subQuery->role(['jamaah']);
@@ -64,10 +80,34 @@ class UserController extends Controller
                         });
                     })
                     ->where('is_super', false)
-                    ->latest('id')
-                    ->get();
+                    ->latest('id');
 
-                $datatable = datatables()->of($users)
+                $datatable = datatables()->eloquent($users)
+                ->filter(function (Builder $query) use ($request) {
+                    /* begin:: apply custom filter */
+                    $customFilters = collect($request->input('filter'));
+                    if ($customFilters->count() > 0) {
+                        foreach ($customFilters as $filter) {
+                            if ($filter['name'] == 'role') {
+                                $role = $filter['value'] ?? null;
+                                if ($role) {
+                                    $query->whereHas('roles', function (Builder $subQuery) use($role){
+                                       $subQuery->where('name', $role);
+                                    });
+                                }
+                                continue;
+                            }
+                            $query->where($filter['name'], $filter['value']);
+                        }
+                    }
+                    /* end:: apply custom filter */
+
+                    /* begin:: filter search */
+                    $query->when($request->input('search')['value'], function (Builder $subQuery) use ($request) {
+                        $subQuery->where('name', 'like', "%" . $request->input('search')['value'] . "%");
+                    });
+                    /* end:: filter search */
+                })
                     ->addIndexColumn()
                     ->addColumn('role', function ($user) {
                         return $user->roles->pluck('name')->first();
@@ -87,7 +127,7 @@ class UserController extends Controller
                     })
                     ->rawColumns(['actions', 'status']);
 
-                if ($user->hasRole('super-administrator')) {
+                if (is_null($user->tenant_id)) {
                     $datatable->addColumn('tenant', function ($user) {
                         if (is_null($user->tenant)) {
                             return '-';
@@ -97,13 +137,13 @@ class UserController extends Controller
                 }
 
                 return $datatable->make(true);
-            } catch (Exception|NotFoundExceptionInterface|ContainerExceptionInterface $e) {
+            } catch (Exception | NotFoundExceptionInterface | ContainerExceptionInterface $e) {
                 logError($e, title: 'User');
                 if (isDevelopmentMode()) {
                     throw $e;
-                } else {
-                    throw new \Exception('Terjadi kesalahan!');
                 }
+                throw new \Exception('Terjadi kesalahan!');
+
             }
         }
         abort(404);
@@ -128,7 +168,24 @@ class UserController extends Controller
                 function (Builder $subQuery) use ($user) {
                     $subQuery->where('tenant_id', $user->tenant_id ?? null);
                 })
+            ->when($user->tenant_id, function (Builder $query) use ($user) {
+                $query->where('tenant_id', $user->tenant_id);
+            })
             ->get()->unique('name');
+
+        if (isset($user->tenant_id)) {
+            unset($this->columns);
+            $this->columns = [
+                ['data' => 'id'],
+                ['data' => 'name'],
+                ['data' => 'role'],
+                ['data' => 'status'],
+                ['data' => 'last_login'],
+                ['data' => 'actions'],
+            ];
+        }
+
+        $this->setData('columns', $this->columns);
 
         $this->setData('type', $type);
         $this->setData('roles', $roles);
@@ -161,7 +218,6 @@ class UserController extends Controller
             return \response()->json([
                 'view' => $this->view('pages.web.user.modals.modal-add-admin')->render(),
             ]);
-
         }
         abort(404);
     }
@@ -187,7 +243,7 @@ class UserController extends Controller
             $user = auth()->user();
             $userService = new UserService(tenantId: $user->tenant_id ?? null);
             $userService->createNewUser([
-                'name' => "{$input['role']} - $user->id",
+                'name' => "{$input['role']} - {$user->id}",
                 'phone' => $input['phone'],
                 'password' => 'admin',
             ], false)
@@ -213,13 +269,34 @@ class UserController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param string|null $type
      * @param User $user
-     * @return Response
+     * @param string $slug
+     * @return Factory|View
+     * @throws ReflectionException
      */
-    public function show(?string $type = null, User $user)
+    public function show(User $user, string $slug)
     {
-        abort(404);
+        $this->setPageTitle('Profil Travel');
+        $this->setBreadCrumb('Profil Travel');
+
+        try {
+
+            $this->addGlobalParams('fragment_active', $slug);
+
+            $this->fragment(new UserFragmentController())
+                ->render($slug ?? 'overview', []);
+
+            $this->setData('user', $user);
+        } catch (\Exception $e) {
+            logError($e, title: 'Tenant');
+            if (isDevelopmentMode()) {
+                throw $e;
+            } else {
+                notify('Oops!', 'Terjadi kesalahan!', 'error');
+            }
+        }
+
+        return $this->view('pages.web.user.user-show');
     }
 
     /**
@@ -227,9 +304,9 @@ class UserController extends Controller
      *
      * @param string|null $type
      * @param User $user
-     * @return Response
+     * @return void
      */
-    public function edit(?string $type = null, User $user)
+    public function edit(User $user)
     {
         abort(404);
     }
@@ -240,12 +317,11 @@ class UserController extends Controller
      * @param Request $request
      * @param string|null $type
      * @param User $user
-     * @return Response
+     * @return void
      */
-    public function update(Request $request, ?string $type = null, User $user)
+    public function update(Request $request, User $user)
     {
         abort(404);
-
     }
 
     /**
@@ -256,14 +332,15 @@ class UserController extends Controller
      * @return RedirectResponse
      * @throws Throwable
      */
-    public function destroy(?string $type = null, User $user)
+    public function destroy(User $user, ?string $type = null)
     {
         try {
             $authUser = auth()->user();
             if ($authUser->is_super !== true) {
                 if (
                     $user->is_super === true &&
-                    $authUser->is_super === false) {
+                    $authUser->is_super === false
+                ) {
                     throw UnauthorizedException::forPermissions($user->roles->toArray());
                 }
             }
@@ -286,7 +363,7 @@ class UserController extends Controller
      * @throws NotFoundExceptionInterface
      * @throws Throwable
      */
-    public function changeStatus(Request $request, ?string $type = null, User $user)
+    public function changeStatus(Request $request, User $user, ?string $type = null)
     {
         $request->validate([
             'status' => ['required'],

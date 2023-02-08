@@ -2,26 +2,27 @@
 
 namespace App\Services;
 
-use App\Enums\RoleEnum;
+use App\Exceptions\HandleCatchableException;
 use App\Models\Tenant\Tenant;
 use App\Models\User;
+use App\Models\Base\Media;
 use Exception;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Str;
 use Spatie\MediaLibrary\MediaCollections\Exceptions\FileDoesNotExist;
 use Spatie\MediaLibrary\MediaCollections\Exceptions\FileIsTooBig;
 
 class TenantService
 {
-    private Builder $query;
-    private Tenant $tenant;
+    private ?Tenant $tenant = null;
 
+    /**
+     * @param int|null $tenantId
+     */
     public function __construct(
-        private readonly int $tenantId
-    )
-    {
-        $this->query = Tenant::query();
+        private readonly ?int $tenantId = null
+    ) {
     }
 
     /**
@@ -34,6 +35,53 @@ class TenantService
         $tenant = $this->getTenant();
         $tenant->is_active = $status;
         $tenant->save();
+
+        return $this;
+    }
+
+    /**
+     * @throws HandleCatchableException
+     * @throws Exception
+     */
+    public function createNewTenant(array $input): static
+    {
+        /* begin: check app domain is existed */
+        $appDomain = Str::lower($input['app_domain']);
+        if (str_contains($input['app_domain'], ' ')) {
+            $appDomain = Str::lower(str_replace(' ', '.', $input['app_domain']));
+        }
+
+        $input = array_merge($input, [
+            'is_active' => false,
+            'app_domain' => $appDomain,
+            'wallet_login' => json_encode([
+                'WALLET_URL' => "https://demo.biznet.class.id",
+                'WALLET_BCN' => "857400",
+                'WALLET_ADMIN_USER' => "fahrudinsidik88@gmail.com",
+                'WALLET_ADMIN_PASS' => "password",
+            ])
+        ]);
+        $validAppDomain = dns_get_record($input['app_domain']);
+        if (!is_array($validAppDomain) || count($validAppDomain) < 1) {
+            throw HandleCatchableException::catchable(message: 'App domain tidak tersedia!');
+        }
+        /* end: check app domain is existed */
+
+        /* begin:: create new tenant */
+        $this->tenant = Tenant::query()->create($input);
+        /* end:: create new tenant */
+
+        /* begin:: user service -- create admin account + set is super == true (fix) */
+        (new UserService(tenantId: $this->tenant->id))
+            ->createNewUser([
+                'name' => $input['name'],
+                'phone' => $input['phone'],
+                'username' => 'admin',
+                'password' => 'admin',
+            ], false)
+            ->setRole('administrator')
+            ->setIsSuper(true);
+        /* end:: user service -- create admin account + set is super == true (fix) */
 
         return $this;
     }
@@ -66,9 +114,14 @@ class TenantService
         return $this;
     }
 
-    public function unsetAvatar()
+    /**
+     * @throws HandleCatchableException
+     */
+    public function unsetAvatar(): static
     {
-
+        $avatar = $this->getTenant();
+        $avatar->clearMediaCollection('avatars');
+        return $this;
     }
 
     /**
@@ -78,22 +131,18 @@ class TenantService
      */
     public function addMediaCollection(Request $request, string $collectionName): static
     {
-        try {
-            $tenant = $this->getTenant();
-            if ($request->hasfile('collections')) {
-                foreach ($request->file('collections') as $key => $media){
-                    $tenant
-                        ->addMedia($media)
-                        ->withCustomProperties([
-                            'order' => $key,
-                            'url' => 'some url',
-                            'short description' => 'some description',
-                        ])
-                        ->toMediaCollection($collectionName);
-                }
+        $tenant = $this->getTenant();
+        if ($request->hasfile('collections')) {
+            foreach ($request->file('collections') as $key => $media) {
+                $tenant
+                    ->addMedia($media)
+                    ->withCustomProperties([
+                        'order' => $key,
+                        'url' => 'some url',
+                        'short description' => 'some description',
+                    ])
+                    ->toMediaCollection($collectionName);
             }
-        } catch (\Throwable $th) {
-            throw $th;
         }
 
         return $this;
@@ -105,13 +154,13 @@ class TenantService
      * @return Tenant|null
      * @throws Exception
      */
-    public function update(array $input,User $user = null): ?Tenant
+    public function update(array $input, User $user = null): ?Tenant
     {
         $tenant = $this->getTenant();
-        if (isset($user) and $user->tenant_id === null){
+        if (isset($user) and $user->tenant_id === null) {
             $tenant->BCN = $input['BCN'];
             $tenant->app_domain = $input['app_domain'];
-        }else if (isset($user) and $user->tenant_id !== null){
+        } else if (isset($user) and $user->tenant_id !== null) {
             $tenant->name = $input['name'];
             $tenant->slug = $input['slug'];
         }
@@ -121,29 +170,14 @@ class TenantService
     }
 
     /**
-     * @return Model|Builder|null
+     * @return Tenant|null
+     * @throws HandleCatchableException
      */
-    public function get(): Model|Builder|null
+    public function getTenant(): ?Tenant
     {
-        return $this->query->first();
-    }
-
-    /**
-     * @return Tenant
-     * @throws Exception
-     */
-    public function getTenant(): Tenant
-    {
-        if ($this->query->count() > 1) {
-            if (isset($this->tenant)) {
-                $tenant = $this->tenant;
-            } else {
-                throw new Exception('Data harus spesifik!.');
-            }
-        } else {
-            $tenant = $this->query->first();
+        if (!$this->tenant instanceof Tenant) {
+            throw HandleCatchableException::catchable('Travel tidak di ditemukan!');
         }
-
-        return $tenant;
+        return $this->tenant;
     }
 }

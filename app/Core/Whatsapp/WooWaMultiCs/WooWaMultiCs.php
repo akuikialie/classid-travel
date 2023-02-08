@@ -38,7 +38,7 @@ class WooWaMultiCs
         $headers = [];
         if (!empty($key)) {
             $headers = ["device-key: {$key}"];
-        };
+        }
         return $this->send('groups', 'GET', $headers, [CURLOPT_TIMEOUT => 360]);
     }
 

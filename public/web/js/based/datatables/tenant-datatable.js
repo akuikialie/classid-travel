@@ -7,6 +7,10 @@ let KTDatatablesServerSide = function () {
   let dt;
   let filterStatus;
 
+  $('#apply-filter').click(function () {
+    initDatatable();
+  });
+
   // Private functions
   let initDatatable = function () {
     dt = $("#kt_datatable_example_1").DataTable({
@@ -26,6 +30,7 @@ let KTDatatablesServerSide = function () {
         dataType: "json",
         data: {
           _token: csrf_token,
+          filter: $('#form-filter').serializeArray(),
         },
         error: function(error){
           Swal.fire({
@@ -167,8 +172,14 @@ let KTDatatablesServerSide = function () {
   // Search Datatable --- official docs reference: https://datatables.net/reference/api/search()
   let handleSearchDatatable = function () {
     const filterSearch = document.querySelector('[data-kt-docs-table-filter="search"]');
-    filterSearch.addEventListener('keyup', function (e) {
-      dt.search(e.target.value).draw();
+    filterSearch.addEventListener('keypress', function (e) {
+      // If the user presses the "Enter" key on the keyboard
+      if (e.key === "Enter") {
+        // Cancel the default action, if needed
+        e.preventDefault();
+        // Trigger the button element with a click
+        dt.search(e.target.value).draw();
+      }
     });
   }
 

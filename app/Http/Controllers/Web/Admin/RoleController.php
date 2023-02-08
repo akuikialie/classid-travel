@@ -1,5 +1,7 @@
 <?php
 
+/** @noinspection ALL */
+
 namespace App\Http\Controllers\Web\Admin;
 
 use App\Enums\PermissionType;
@@ -11,17 +13,17 @@ use App\Models\Spatie\Role;
 use App\Models\Tenant\Tenant;
 use App\Models\User;
 use App\Services\PermissionService;
-use DB;
-use Hashids;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Psr\Container\ContainerExceptionInterface;
 use Psr\Container\NotFoundExceptionInterface;
 use Throwable;
+use Vinkla\Hashids\Facades\Hashids;
 use Yajra\DataTables\Exceptions\Exception;
 use function response;
 
@@ -53,7 +55,7 @@ class RoleController extends Controller
      * @throws Exception
      * @throws NotFoundExceptionInterface
      */
-    public function datatable()
+    public function datatable(Request $request)
     {
         if (\request()->ajax()) {
             try {
@@ -65,15 +67,59 @@ class RoleController extends Controller
                     ->when(\request()->get('travel_name'), function (Builder $subQuery) {
                         $subQuery->where('tenant_id', Hashids::decode(\request()->get('travel_name')));
                     })
-                    ->when(!$user->hasRole('super-administrator') && isset($user->tenant_id),
+                    ->when(
+                        !$user->hasRole('super-administrator') && isset($user->tenant_id),
                         function (Builder $subQuery) use ($user) {
                             $subQuery->where('tenant_id', $user->tenant_id);
-                        })
+                        }
+                    )
                     ->with(['permissions', 'users', 'tenant'])
                     ->withCount(['users'])
-                    ->oldest('id')->get();
+                    ->oldest('id');
 
-                $datatable = datatables()->of($roles)
+                $datatable = datatables()->eloquent($roles)
+                    ->filter(function (Builder $query) use ($request, $user) {
+                        /* begin:: apply custom filter */
+                        $customFilters = collect($request->input('filter'));
+                        if ($customFilters->count() > 0) {
+                            foreach ($customFilters as $filter) {
+
+                                if ($filter['name'] == 'role') {
+                                    $role = $filter['value'] ?? null;
+                                    if ($role){
+                                        $query->where('name' , $role);
+
+                                    }
+                                    continue;
+                                }
+                                if ($filter['name'] == 'tenant') {
+                                    $tenant = $filter['value'] ?? null;
+                                    if ($tenant){
+                                        $query->whereHas('tenant', function (Builder $query) use ($tenant) {
+                                            $query->where('name', $tenant);
+                                        });
+                                    }
+
+                                    continue;
+                                }
+
+                                $query->where($filter['name'], $filter['value']);
+                            }
+                        }
+                        /* end:: apply custom filter */
+
+                        /* begin:: filter search */
+
+                            $query->when($request->input('search')['value'], function (Builder $subQuery) use ($request, $user) {
+                                $subQuery->where('tenant_id', $user->tenant_id)
+                                    ->where(function ($subQuery) use ($request){
+                                        $subQuery->orWhere('name', 'like', "%" . $request->input('search')['value'] . "%");
+                                        $subQuery->orWhere('type', 'like', "%" . $request->input('search')['value'] . "%");
+                                    });
+                            });
+
+                        /* end:: filter search */
+                    })
                     ->addIndexColumn()
                     ->addColumn('name', function ($role) {
                         return $role->name;
@@ -94,7 +140,7 @@ class RoleController extends Controller
                     })
                     ->rawColumns(['actions', 'status', 'usages']);
 
-                if ($user->hasRole('super-administrator')) {
+                if (is_null($user->tenant_id)) {
                     $datatable->addColumn('tenant', function ($role) {
                         if (is_null($role->tenant)) {
                             return '-';
@@ -104,7 +150,7 @@ class RoleController extends Controller
                 }
 
                 return $datatable->make(true);
-            } catch (Exception|\Exception $e) {
+            } catch (Exception | \Exception $e) {
                 logError($e, title: 'Role');
                 if (isDevelopmentMode()) {
                     throw $e;
@@ -134,16 +180,20 @@ class RoleController extends Controller
         $roles = Role::query();
 
         $roleFilters = collect($roles
-            ->when(!$user->hasRole('super-administrator') && isset($user->tenant_id),
+            ->when(
+                !$user->hasRole('super-administrator') && isset($user->tenant_id),
                 function (Builder $subQuery) use ($user) {
                     $subQuery->where('tenant_id', $user->tenant_id ?? null);
-                })
+                }
+            )
             ->get())->unique('name');
         $tenantFilters = Tenant::query()
-            ->when(!$user->hasRole('super-administrator') && isset($user->tenant_id),
+            ->when(
+                !$user->hasRole('super-administrator') && isset($user->tenant_id),
                 function (Builder $subQuery) use ($user) {
                     $subQuery->where('id', $user->tenant_id ?? null);
-                })
+                }
+            )
             ->select('id', 'name')
             ->get();
 
@@ -170,7 +220,7 @@ class RoleController extends Controller
              return redirect()->back();
          }*/
 
-        if (!$user->hasRole('super-administrator')) {
+        if (isset($user->tenant_id)) {
             unset($this->columns);
             $this->columns = [
                 ['data' => 'id'],
@@ -183,10 +233,10 @@ class RoleController extends Controller
         $this->setData('columns', $this->columns);
 
 
-//        $this->setData('roles', $roles->paginate());
+        //        $this->setData('roles', $roles->paginate());
         $this->setData('role_filters', $roleFilters);
         $this->setData('tenant_filters', $tenantFilters);
-//        $this->setData('columns', $this->columns);
+        //        $this->setData('columns', $this->columns);
         return $this->view('pages.web.role.role-index');
     }
 
@@ -282,14 +332,14 @@ class RoleController extends Controller
     /**
      * @throws Exception
      */
-    public function datatableRoleUsers(Role $role)
+    public function datatableRoleUsers(Role $role, Request $request)
     {
         if (\request()->ajax()) {
             try {
                 $user = auth()->user();
                 $users = User::query()
                     ->with(['roles', 'tenant'])
-                    ->when($user->hasRole('super-administrator'), function (Builder $subQuery) use ($user) {
+                    ->when($user->hasRole('super-administrator'), function (Builder $subQuery){
                         $subQuery->with(['tenant']);
                     })
                     ->when($role->name == RoleEnum::Jamaah->keyValue(), function (Builder $subQuery) use ($user) {
@@ -299,10 +349,21 @@ class RoleController extends Controller
                     })
                     ->role([$role->name])
                     ->where('is_super', false)
-                    ->latest('id')
-                    ->get();
+                    ->latest('id');
 
-                $datatable = datatables()->of($users)
+                $datatable = datatables()->eloquent($users)
+                    ->filter(function (Builder $query) use ($request, $user) {
+                        /* begin:: filter search */
+
+                        $query->when($request->input('search')['value'], function (Builder $subQuery) use ($request, $user) {
+                            $subQuery->where('tenant_id', $user->tenant_id)
+                                ->where(function ($subQuery) use ($request){
+                                    $subQuery->orWhere('name', 'like', "%" . $request->input('search')['value'] . "%");
+                                });
+                        });
+
+                        /* end:: filter search */
+                    })
                     ->addIndexColumn()
                     ->addColumn('status', function ($user) {
                         $status = UserStatus::tryFrom($user->status);
@@ -315,6 +376,7 @@ class RoleController extends Controller
                     })
                     ->addColumn('actions', function ($user) {
                         $this->setData('user', $user);
+                        $this->setData('type', 'staff');
                         return $this->view('pages.web.user.action.action-datatable');
                     })
                     ->rawColumns(['actions', 'status']);
@@ -336,7 +398,7 @@ class RoleController extends Controller
                 });
 
                 return $datatable->make(true);
-            } catch (Exception|NotFoundExceptionInterface|ContainerExceptionInterface $e) {
+            } catch (Exception | NotFoundExceptionInterface | ContainerExceptionInterface $e) {
                 logError($e, title: 'Role');
 
                 if (isDevelopmentMode()) {
@@ -384,6 +446,7 @@ class RoleController extends Controller
         $this->setData('columns', $columns);
 
         $this->setData('roles', $roles);
+        $this->setData('type', 'staff');
 
         $this->setData('role', $role);
         return $this->view('pages.web.role.role-show');
@@ -500,9 +563,13 @@ class RoleController extends Controller
             logError($e, title: 'Role');
             if (isDevelopmentMode()) {
                 throw $e;
-            } else {
-                notify('Oops!', 'Terjadi kesalahan!', 'error');
             }
+            $message = 'Terjadi kesalahan!';
+            if ($e->getCode() > 900) {
+                $message = $e->getMessage();
+            }
+            notify('Oops!', $message, 'error');
+
             return redirect()->back();
         }
     }

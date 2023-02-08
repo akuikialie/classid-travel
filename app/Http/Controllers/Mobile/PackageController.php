@@ -3,11 +3,12 @@
 namespace App\Http\Controllers\Mobile;
 
 use App\Enums\Statuses;
+use App\Exceptions\HandleCatchableException;
 use App\Models\Geo\City;
 use App\Models\Jamaah\Jamaah;
 use App\Models\Plan\PlanPackage;
 use App\Models\Schedule\Schedule;
-use App\Services\PackageService;
+use App\Services\JamaahService;
 use Carbon\Carbon;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\View\Factory;
@@ -27,10 +28,10 @@ class PackageController extends Controller
      */
     public function index()
     {
-
         $with = ['myPlan:id,value', 'myFacilities', 'myDestinations', 'myItineraries' => function ($subQuery) {
             $subQuery->orderBy('day', 'asc');
-        }, 'myItineraries.activities', 'media'];
+        }, 'myItineraries.activities', 'media'
+        ];
         $withCount = ['myFacilities', 'myDestinations', 'myItineraries'];
 
         $user = auth()->user();
@@ -47,13 +48,16 @@ class PackageController extends Controller
         return view('pages.mobile.package.package-index', ['packages' => $packages]);
     }
 
+    /**
+     * @throws Throwable
+     * @throws HandleCatchableException
+     */
     public function addPackageToJamaah(Request $request, $package_id)
     {
         $validator = $request->validate([
             'departure_city_id' => ['required', 'integer'],
             'schedule_id' => ['required', 'string'],
         ]);
-
 
         DB::beginTransaction();
 
@@ -65,17 +69,24 @@ class PackageController extends Controller
                 ->with(['planPackages'])
                 ->where('user_id', $user->id)->first();
 
-            /* add package to jamaah */
-            $packageService = new PackageService($user->tenant_id);
-            $packageService->addPackageToJamaah($package, $jamaah);
+            /* begin:: validation */
+            // check package on jamaah
+            $existingPackageInJamaah = collect($jamaah->planPackages)->where('id', $package->id)->first();
+            if ($existingPackageInJamaah) {
+                throw HandleCatchableException::catchable('Kamu sudah mengambil paket ini!.');
+            }
+            /* end:: validation */
 
-            /* link tempat keberangkatan */
-            $city = City::query()->find($validator['departure_city_id']);
-            $jamaah->departureCity()->associate($city);
-            /* link tanggal keberangkatan */
-            $schedule = Schedule::query()->find($validator['schedule_id']);
-            $jamaah->departureSchedule()->associate($schedule);
-            $jamaah->push();
+            /* begin:: add package to jamaah */
+            (new JamaahService($user->tenant_id))
+                ->setPackage(package: $package)
+                ->setJamaah(jamaah: $jamaah)
+                ->addPackage()
+                ->linkDeparture([
+                    'departure_city_id' => $validator['departure_city_id'],
+                    'schedule_id' => $validator['schedule_id'],
+                ]);
+            /* end:: add package to jamaah */
 
             DB::commit();
             notify('Berhasil', "Paket  {$package->name} berhasil ditambahkan!.", 'success');
@@ -99,7 +110,7 @@ class PackageController extends Controller
      */
     public function create()
     {
-        //
+        abort(404);
     }
 
     /**
@@ -110,7 +121,7 @@ class PackageController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        abort(404);
     }
 
     /**
@@ -123,8 +134,8 @@ class PackageController extends Controller
     {
         $with = ['myFacilities', 'myDestinations', 'myItineraries' => function ($subQuery) {
             $subQuery->orderBy('day', 'asc');
-        },
-            'myItineraries.activities', 'media'];
+        }, 'myItineraries.activities', 'media'
+        ];
 
         $withCount = ['myFacilities', 'myDestinations', 'myItineraries'];
         $package = PlanPackage::query()
@@ -156,7 +167,7 @@ class PackageController extends Controller
      */
     public function edit($id)
     {
-        //
+        abort(404);
     }
 
     /**
@@ -168,7 +179,7 @@ class PackageController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        abort(404);
     }
 
     /**
@@ -179,6 +190,6 @@ class PackageController extends Controller
      */
     public function destroy($id)
     {
-        //
+        abort(404);
     }
 }

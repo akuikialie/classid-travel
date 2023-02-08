@@ -226,8 +226,14 @@ let roleIndex = function () {
   // Search Datatable --- official docs reference: https://datatables.net/reference/api/search()
   let handleSearchDatatable = function () {
     const filterSearch = document.querySelector('[data-kt-user-table-filter="search"]');
-    filterSearch.addEventListener('keyup', function (e) {
-      dt.search(e.target.value).draw();
+    filterSearch.addEventListener('keypress', function (e) {
+      // If the user presses the "Enter" key on the keyboard
+      if (e.key === "Enter") {
+        // Cancel the default action, if needed
+        e.preventDefault();
+        // Trigger the button element with a click
+        dt.search(e.target.value).draw();
+      }
     });
   }
 

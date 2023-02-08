@@ -10,9 +10,7 @@ use App\Services\EWallet\Entity\WalletUser;
 use App\Services\EWallet\WalletService;
 use Carbon\Carbon;
 use Exception;
-use http\Exception\InvalidArgumentException;
 use Illuminate\Database\Eloquent\Builder;
-use Laravel\Octane\Exceptions\DdException;
 
 class VirtualAccountService
 {
@@ -129,48 +127,4 @@ class VirtualAccountService
         return $newVA;
         /* end:: create new VA */
     }
-
-//    public function createVirtualAccount($va_type, Jamaah $jamaah = null, PlanPackage $planPackage = null): void
-//    {
-//        try {
-//            /* create new VA */
-//            $VA = VirtualAccount::query()
-//                ->where(function ($subQuery) use($va_type) {
-//                    $subQuery->where('va_label', $va_type)
-//                        ->whereMonth('created_at', Carbon::now());
-//                })->max('va_number');
-//
-//            $newVANumber = createNewVA($va_type, $VA);
-//
-//            switch ($va_type) {
-//                case 'tabungan':
-//                    $user = User::query()->find(auth()->user()->id);
-//                    $newVA = new VirtualAccount([
-//                        'tenant_id' => 1,
-//                        'va_number' => $newVANumber,
-//                        'va_label' => $va_type,
-//                    ]);
-//                    $user->tabungan()->save($newVA);
-//                    $user->save();
-//                    break;
-//
-//                case 'perencanaan':
-//                    $newVA = new VirtualAccount([
-//                        'tenant_id' => 1,
-//                        'va_number' => $newVANumber,
-//                        'va_label' => $va_type,
-//                    ]);
-//                    $jamaah->tabunganPackages()->save($newVA);
-//
-//                    $newVA->myPackage()->associate($planPackage);
-//                    $newVA->save();
-//                    break;
-//
-//                default:
-//                    break;
-//            }
-//        } catch (\Throwable $th) {
-//            throw $th;
-//        }
-//    }
 }

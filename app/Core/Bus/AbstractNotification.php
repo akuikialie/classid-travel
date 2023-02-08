@@ -17,7 +17,7 @@ abstract class AbstractNotification
     use Dispatchable, Queueable, InteractsWithQueue;
 
     /**
-     * @var Users
+     * @var User
      */
     protected User $user;
 

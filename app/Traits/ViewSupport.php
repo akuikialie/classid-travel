@@ -11,7 +11,7 @@ trait ViewSupport
      * @param $value
      * @return $this
      */
-    public function setGlobalParams(string $parameter, $value): static
+    public function addGlobalParams(string $parameter, $value): static
     {
         $this->shareGlobalParams($parameter, $value);
         return $this;
@@ -29,7 +29,7 @@ trait ViewSupport
 
     public function registerBreadcrumbs(string $title): void
     {
-        $this->bind(ucwords(($title)));
+        $this->bind(ucwords($title));
     }
 
     public function bind(string $title): void

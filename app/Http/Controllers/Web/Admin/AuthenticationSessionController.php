@@ -18,13 +18,15 @@ class AuthenticationSessionController extends Controller
 {
     public function create(): Factory|View|Application
     {
-
         return view('pages.web.auth.sign-in');
     }
 
+    /**
+     * @param Authentication $request
+     * @return RedirectResponse|void
+     */
     public function store(Authentication $request)
     {
-
         $request->authenticate();
 
         $request->session()->regenerate();
@@ -32,31 +34,12 @@ class AuthenticationSessionController extends Controller
         $user = \auth()->user();
 
         if ($user->hasRole('administrator')){
-            $tenant = Tenant::query()
-                ->where('BCN', request()->input('travel_code'))
-                ->first();
-
-            if (is_null($tenant)){
-                Auth::logout();
-                $request->session()->invalidate();
-                $request->session()->regenerateToken();
-                notify('Gagal!', trans('auth.failed'), 'error');
-                return redirect()->back()->withInput();
-            }
-
-            if ($user->tenant_id == $tenant->id){
-                return redirect()->intended(route('admin.dashboard'));
-            }else{
-                Auth::logout();
-                $request->session()->invalidate();
-                $request->session()->regenerateToken();
-                notify('Gagal!', trans('auth.failed'), 'error');
-                return redirect()->back()->withInput();
-            }
-        }else if ($user->hasRole('super-administrator')){
+            return redirect()->intended(route('admin.dashboard'));
+        }
+        if ($user->hasRole('super-administrator')){
             return redirect()->intended(route('admin.tenant.index'));
         }
-
+        abort(404);
     }
 
     public function destroy(Request $request): Redirector|Application|RedirectResponse

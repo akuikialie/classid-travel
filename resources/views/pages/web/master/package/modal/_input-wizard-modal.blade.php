@@ -9,7 +9,7 @@
           <div class="col">
             <!--begin:Input-->
             <span class="form-check form-check-custom form-check-solid">
-                            <input class="form-check-input" type="radio" name="type" id="{{ $plan->key }}"
+                            <input class="form-check-input" type="radio" {{--name="type"--}} id="{{ $plan->key }}"
                                    value="{{ $plan->id }}" checked/>
 
               <!--begin::Label-->
@@ -86,7 +86,7 @@
       <!--end::Label-->
       <!--begin::Input-->
       <input type="number" class="form-control form-control-lg form-control-solid" name="long_days"
-             placeholder="Lama Perjalanan"
+             placeholder="Lama Perjalanan" {{ old('long_days') ? 'readonly' : null }}
              value="{{ old('long_days') }}"/>
       <!--end::Input-->
     </div>
@@ -118,7 +118,7 @@
       <!--end::Label-->
       <!--begin::Input-->
       <textarea name="description" class="form-control form-control-lg form-control-solid"
-                rows="3">{{ old('descriptio', isset($package) ? $package->description : null) }}</textarea>
+                rows="3">{{ old('description', isset($package) ? $package->description : null) }}</textarea>
       <!--end::Input-->
     </div>
     <!--end::Input group-->
@@ -210,7 +210,7 @@
             <div class="form-check form-check-custom form-check-solid mx-5">
               <input class="form-check-input" type="checkbox" id="facilities-{{ $facility->id }}"
                      name="facilities[{{ $facility->id }}]"
-                {{ in_array($facility->id, (isset($package->myFacilities) ? collect($package->myFacilities)->pluck('id')->toArray() : []) )? 'checked': '' }} />
+                {{ in_array($facility->id, collect($package->myFacilities)->pluck('id')->toArray() ?? [] )? 'checked': '' }} />
             </div>
             <!--end::Checkbox-->
             <!--begin::Description-->

@@ -3,7 +3,7 @@
 @section('page-content')
 
   @php
-    $avatars = $tenant->getMedia('avatars');
+    $avatars = $user->getMedia('avatars');
     $avatar = null;
     if ($avatars->count() > 0) {
         $avatar = collect($avatars)->last()->getUrl();
@@ -19,7 +19,7 @@
           <!--begin::Image-->
           <div
             class="d-flex flex-center flex-shrink-0 bg-light rounded w-100px h-100px w-lg-150px h-lg-150px me-7 mb-4">
-            <img class="mw-50px mw-lg-75px" src="{{ $avatar?? asset('logo/96w/logo-pict@96px.png') }}"
+            <img class="mw-50px mw-lg-75px" src="{{ $avatar?? asset('web/media/svg/avatars/blank.svg') }}"
                  alt="image"/>
           </div>
           <!--end::Image-->
@@ -31,8 +31,8 @@
               <div class="d-flex flex-column">
                 <!--begin::Status-->
                 <div class="d-flex align-items-center mb-1">
-                  <a href="#" class="text-gray-800 text-hover-primary fs-2 fw-bold me-3">{{ $tenant->name }}</a>
-                  <span class="badge badge-light-success me-auto">{{ $tenant->slug }}</span>
+                  <a href="#" class="text-gray-800 text-hover-primary fs-2 fw-bold me-3">{{ $user->name }}</a>
+                  <span class="badge badge-light-success me-auto">{{ $user->email }}</span>
                 </div>
                 <!--end::Status-->
                 <!--begin::Description-->
@@ -273,7 +273,7 @@
           <ul class="nav nav-stretch nav-line-tabs nav-line-tabs-2x border-transparent fs-5 fw-bold">
             <!--begin::Nav item-->
             <li class="nav-item">
-              <a href="{{ route('admin.tenant.showProfile', 'overview') }}" class="nav-link text-active-primary py-5 me-6 {{ ($fragment_active ?? 'overview') == 'overview' ? 'active' : '' }}"
+              <a href="{{ route('admin.user.show', ['user_hash' => auth()->user()->hash, 'slug' => 'overview']) }}" class="nav-link text-active-primary py-5 me-6 {{ ($fragment_active ?? 'overview') == 'overview' ? 'active' : '' }}"
                  type="button" data-fragment="overview">Overview</a>
             </li>
             <!--end::Nav item-->
@@ -285,13 +285,7 @@
             <!--end::Nav item-->--}}
             <!--begin::Nav item-->
             <li class="nav-item">
-              <a href="{{ route('admin.tenant.showProfile', 'media') }}" class="nav-link text-active-primary py-5 me-6 {{ ($fragment_active ?? 'overview') == 'media' ? 'active' : '' }}"
-                 type="button" data-fragment="media">Media</a>
-            </li>
-            <!--end::Nav item-->
-            <!--begin::Nav item-->
-            <li class="nav-item">
-              <a href="{{ route('admin.tenant.showProfile', 'setting') }}" class="nav-link text-active-primary py-5 me-6 fragment {{ ($fragment_active ?? 'overview') == 'setting' ? 'active' : '' }}"
+              <a href="{{ route('admin.user.show', ['user_hash' => auth()->user()->hash, 'slug' => 'setting']) }}" class="nav-link text-active-primary py-5 me-6 fragment {{ ($fragment_active ?? 'overview') == 'setting' ? 'active' : '' }}"
                  type="button" data-fragment="setting">Setting</a>
             </li>
             <!--end::Nav item-->

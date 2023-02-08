@@ -60,7 +60,7 @@ class ItineraryRoute extends BaseRoute
                  ],
                  resolver: function () {
                      $user = \auth()->user();
-                     return ($user->can('view itinerary') && $user->tenant_id != null);
+                     return $user->can('view itinerary') && $user->tenant_id != null;
                  },
              );
     }

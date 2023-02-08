@@ -7,7 +7,7 @@ use App\Core\Bus\AbstractNotification;
 use App\Models\User;
 use Illuminate\Contracts\Queue\ShouldQueue;
 
-class WaTestNotif extends AbstractNotification implements ShouldQueue
+class RegisterUsingReferralCode extends AbstractNotification implements ShouldQueue
 {
     /**
      * @var array|string[]

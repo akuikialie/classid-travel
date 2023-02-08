@@ -30,15 +30,18 @@ class UserRoute extends BaseRoute
                 $this->router->post($this->prefix(), [UserController::class, 'store'])
                     ->name($this->name('store'));
 
-                $this->router->get($this->prefix('{type}/{user_hash}/edit'), [UserController::class, 'edit'])
+                $this->router->get($this->prefix('{user_hash}/{slug}'), [UserController::class, 'show'])
+                    ->name($this->name('show'));
+
+                $this->router->get($this->prefix('{user_hash}/edit'), [UserController::class, 'edit'])
                     ->name($this->name('edit'));
-                $this->router->put($this->prefix('{type}/{user_hash}'), [UserController::class, 'update'])
+                $this->router->put($this->prefix('{user_hash}'), [UserController::class, 'update'])
                     ->name($this->name('update'));
 
-                $this->router->delete($this->prefix('{type}/{user_hash}'), [UserController::class, 'destroy'])
+                $this->router->delete($this->prefix('{user_hash}'), [UserController::class, 'destroy'])
                     ->name($this->name('destroy'));
 
-                $this->router->post($this->prefix('{type}/{user_hash}/change-status'),[UserController::class, 'changeStatus'])
+                $this->router->post($this->prefix('{user_hash}/change-status'),[UserController::class, 'changeStatus'])
                     ->name($this->name('change-status'));
             });
 
