@@ -22,6 +22,10 @@ class Tenant extends Model implements HasMedia
         'name', 'slug', 'app_domain', 'BCN', 'wallet_login', 'is_active'
     ];
 
+    protected $casts = [
+        'wallet_login' => 'array'
+    ];
+
     public function addresses(): MorphMany
     {
         return $this->morphMany(Address::class, 'addressable', 'model_type','modal_id');

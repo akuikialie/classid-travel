@@ -143,9 +143,11 @@ class ReferralController extends Controller
             $referralService->saveInvitedPerson($referralLink, $newUser);
             DB::commit();
 
+            \Auth::login($newUser);
+
             notify('Selamat!', "Kamu telah berhasil membuat akun dan mengikuti program `{$referralLink->package->name}` bersama {$referralLink->createdBy->name}", 'success');
 
-            return redirect(route('login'));
+            return redirect()->intended(route('login'));
         }catch (Throwable $e){
             DB::rollBack();
             logError($e, title: 'Mobile referral');

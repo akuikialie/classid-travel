@@ -74,6 +74,7 @@ class UserService
         /* begin:: add jamaah */
         if ($isJamaah) {
             (new JamaahService(tenantId: $this->tenantId))
+                ->setUser($this->user)
                 ->createJamaah();
         }
         /* end:: add jamaah */
