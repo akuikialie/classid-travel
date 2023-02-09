@@ -323,7 +323,7 @@ class UserController extends Controller
      * @param User $user
      * @return void
      */
-    public function update(Request $request, ?user $user = null)
+    public function update(Request $request, user $user)
     {
         $user = auth()->user();
 
@@ -332,23 +332,11 @@ class UserController extends Controller
             'name' => [Rule::requiredIf($user->id !== null), 'string'],
             'username' => [Rule::requiredIf($user->id !== null), 'string'],
             'phone' => [Rule::requiredIf($user->id === null), 'numeric'],
-            'old_password' => ['required', 'string', new OldPasswordRule()],
-            'password' => ['required', 'string'],
-            'confirm_password' => ['required_with:password', 'same:password'],
         ]);
 
-        // DB::beginTransaction();
         try {
             /* begin:: user service */
-
-            if (is_null($user)) {
-                $user = user::query()
-                    ->with(['media'])
-                    // ->whereId($user->id)
-                    ->first();
-            }
-
-            $userService = new userService($user->id ?? $user->id);
+            $userService = new userService($user->tenant_id);
             $userService
                 ->setuser($user);
 
@@ -357,12 +345,43 @@ class UserController extends Controller
             }
             $userService
                 ->setAvatar($request)
-                ->update($request);
+                ->update($request->only('name', 'username','phone'));
             /* end:: user service */
+            
 
             DB::commit();
 
             notify('Berhasil', 'Data User berhasil diperbarui!', 'success')->autoClose();
+            return redirect()->back();
+        } catch (Throwable $e) {
+            DB::rollBack();
+            logError($e, title: 'user');
+            if (isDevelopmentMode()) {
+                throw $e;
+            } else {
+                notify('Oops!', 'Terjadi kesalahan!', 'error');
+            }
+            return redirect()->back();
+        }
+    }
+
+    public function updatePassword(Request $request)
+    {
+        $user = auth()->user();
+        try {
+            $input = $request->validate([
+                'old_password' => ['required', 'string', new OldPasswordRule()],
+                'password' => ['required', 'string'],
+                'confirm_password' => ['required_with:password', 'same:password'],
+            ]);
+
+            (new UserService())
+                ->setUser($user)
+                ->update(['password' => Hash::make($input['password'])]);
+            // $user->password = Hash::make($request->input('password'));
+            // $user->save();
+
+            notify('Berhasil', 'Password berhasil diperbarui!', 'success')->autoClose();
             return redirect()->back();
         } catch (Throwable $e) {
             DB::rollBack();

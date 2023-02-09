@@ -11,9 +11,6 @@ use App\Models\User;
 use Exception;
 use Illuminate\Support\Facades\Hash;
 use Throwable;
-use Illuminate\Support\Str;
-use Spatie\MediaLibrary\MediaCollections\Exceptions\FileDoesNotExist;
-use Spatie\MediaLibrary\MediaCollections\Exceptions\FileIsTooBig;
 
 class UserService
 {
@@ -192,19 +189,26 @@ class UserService
 
     /**
      * @param array $input
-     * @param User|null $user
+     * @param User
      * @return Tenant|null
      * @throws Exception
      */
-    public function update(Request $request): ?user
+    public function update(array $input)
     {
         $user = $this->getuser();
-        $user->name = $request->input('name');
-        $user->username = $request->input('username');
-        $user->phone = $request->input('phone');
-        auth()->user()->update(['password' => Hash::make($request->password)]);
+        // if (isset($user) and $user->id != null) {
+        //     $user->name = $input['name'];
+        //     $user->username = $input['username'];
+        //     $user->phone = $input['phone'];
+        // }
+
+        foreach ($input as $key => $value) {
+            $user->$key = $value;
+        }
+        // $request = request()->only(['name', 'username','phone']);
+
         $user->save();
 
-        return $user->fresh();
+        return $this;
     }
 }
