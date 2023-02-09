@@ -347,7 +347,7 @@ class UserController extends Controller
                 ->setAvatar($request)
                 ->update($request->only('name', 'username','phone'));
             /* end:: user service */
-            
+
 
             DB::commit();
 
@@ -378,13 +378,10 @@ class UserController extends Controller
             (new UserService())
                 ->setUser($user)
                 ->update(['password' => Hash::make($input['password'])]);
-            // $user->password = Hash::make($request->input('password'));
-            // $user->save();
 
             notify('Berhasil', 'Password berhasil diperbarui!', 'success')->autoClose();
             return redirect()->back();
         } catch (Throwable $e) {
-            DB::rollBack();
             logError($e, title: 'user');
             if (isDevelopmentMode()) {
                 throw $e;
