@@ -6,6 +6,7 @@ namespace App\Services;
 
 use App\Exceptions\HandleCatchableException;
 use App\Models\Jamaah\JamaahHistory;
+use Illuminate\Http\Request;
 use App\Models\User;
 use Exception;
 use Illuminate\Support\Facades\Hash;
@@ -16,8 +17,8 @@ class UserService
     private ?User $user = null;
     public function __construct(
         private readonly ?int $tenantId = null
-    )
-    {}
+    ) {
+    }
 
     /**
      * @throws Throwable
@@ -153,9 +154,55 @@ class UserService
      */
     public function getUser(): User
     {
-        if (!$this->user instanceof User){
+        if (!$this->user instanceof User) {
             throw HandleCatchableException::catchable('User tidak di ditemukan!');
         }
         return $this->user;
+    }
+
+    /**
+     * @throws HandleCatchableException
+     */
+    public function unsetAvatar(): static
+    {
+        $avatar = $this->getUser();
+        $avatar->clearMediaCollection('avatars');
+        return $this;
+    }
+
+    /**
+     * @return $this
+     * @throws FileDoesNotExist
+     * @throws FileIsTooBig
+     * @throws Exception
+     */
+    public function setAvatar(Request $request): static
+    {
+        $user = $this->getuser();
+
+        if ($request->hasFile('avatar')) {
+            $user->addMediaFromRequest('avatar')
+                ->toMediaCollection('avatars');
+        }
+        return $this;
+    }
+
+    /**
+     * @param array $input
+     * @param User
+     * @return Tenant|null
+     * @throws Exception
+     */
+    public function update(array $input)
+    {
+        $user = $this->getuser();
+
+        foreach ($input as $key => $value) {
+            $user->$key = $value;
+        }
+
+        $user->save();
+
+        return $this;
     }
 }

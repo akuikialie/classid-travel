@@ -21,7 +21,7 @@ class UserRoute extends BaseRoute
             $this->router->post($this->prefix('{type}/datatable'), [UserController::class, 'datatable'])
                 ->name($this->name('datatable'))->middleware(["permission:view {$this->page}"]);
 
-            $this->router->middleware([ 'quick_access:user'])->group(function (){
+            $this->router->middleware(['quick_access:user'])->group(function () {
                 $this->router->get($this->prefix('{type?}'), [UserController::class, 'index'])
                     ->name($this->name('index'));
 
@@ -35,16 +35,16 @@ class UserRoute extends BaseRoute
 
                 $this->router->get($this->prefix('{user_hash}/edit'), [UserController::class, 'edit'])
                     ->name($this->name('edit'));
-                $this->router->put($this->prefix('{user_hash}'), [UserController::class, 'update'])
+                $this->router->put($this->prefix('{user_hash}/update'), [UserController::class, 'update'])
                     ->name($this->name('update'));
-
+                $this->router->put($this->prefix('{user_hash}/updatePassword'), [UserController::class, 'updatePassword'])
+                    ->name($this->name('updatePassword'));
                 $this->router->delete($this->prefix('{user_hash}'), [UserController::class, 'destroy'])
                     ->name($this->name('destroy'));
 
-                $this->router->post($this->prefix('{user_hash}/change-status'),[UserController::class, 'changeStatus'])
+                $this->router->post($this->prefix('{user_hash}/change-status'), [UserController::class, 'changeStatus'])
                     ->name($this->name('change-status'));
             });
-
         });
     }
 
@@ -55,33 +55,33 @@ class UserRoute extends BaseRoute
      */
     public function afterRegister(): void
     {
-         menus(group: 'setting')
-             ->route(
-                 name: 'admin.user.index',
-                 title: 'Management Users',
-                 // param: [Auth::user()?->tenant_id ?? 0],
-                 attribute: [
-                     'icon' => 'fa-solid fa-users',
-                 ],
-                 param: ['type' => 'staff'],
-                 resolver: function () {
-                     $user = \auth()->user();
-                     return $user->hasAnyRole(['super-administrator', 'administrator']);
-                 },
-             );
+        menus(group: 'setting')
+            ->route(
+                name: 'admin.user.index',
+                title: 'Management Users',
+                // param: [Auth::user()?->tenant_id ?? 0],
+                attribute: [
+                    'icon' => 'fa-solid fa-users',
+                ],
+                param: ['type' => 'staff'],
+                resolver: function () {
+                    $user = \auth()->user();
+                    return $user->hasAnyRole(['super-administrator', 'administrator']);
+                },
+            );
 
-         menus(group: 'Travel')
-             ->route(
-                 name: 'admin.user.index',
-                 title: 'Calon Jamaah',
-                 attribute: [
-                     'icon' => 'fa-solid fa-users',
-                 ],
-                 param: ['type' => 'calon-jamaah'],
-                 resolver: function () {
-                     $user = \auth()->user();
-                     return $user->hasAnyRole(['super-administrator', 'administrator']);
-                 },
-             );
+        menus(group: 'Travel')
+            ->route(
+                name: 'admin.user.index',
+                title: 'Calon Jamaah',
+                attribute: [
+                    'icon' => 'fa-solid fa-users',
+                ],
+                param: ['type' => 'calon-jamaah'],
+                resolver: function () {
+                    $user = \auth()->user();
+                    return $user->hasAnyRole(['super-administrator', 'administrator']);
+                },
+            );
     }
 }
