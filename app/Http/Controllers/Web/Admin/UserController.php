@@ -325,8 +325,6 @@ class UserController extends Controller
      */
     public function update(Request $request, user $user)
     {
-        $user = auth()->user();
-
         $input = $request->validate([
             'avatar_remove' => ['nullable', 'string'],
             'name' => [Rule::requiredIf($user->id !== null), 'string'],
