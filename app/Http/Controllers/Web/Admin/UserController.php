@@ -346,7 +346,6 @@ class UserController extends Controller
                 ->update($request->only('name', 'username','phone'));
             /* end:: user service */
 
-
             DB::commit();
 
             notify('Berhasil', 'Data User berhasil diperbarui!', 'success')->autoClose();
@@ -363,9 +362,8 @@ class UserController extends Controller
         }
     }
 
-    public function updatePassword(Request $request)
+    public function updatePassword(Request $request, User $user)
     {
-        $user = auth()->user();
         try {
             $input = $request->validate([
                 'old_password' => ['required', 'string', new OldPasswordRule()],
