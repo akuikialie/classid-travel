@@ -367,7 +367,7 @@ class UserController extends Controller
         try {
             $input = $request->validate([
                 'old_password' => ['required', 'string', new OldPasswordRule()],
-                'password' => ['required', 'string'],
+                'password' => ['required_with:old_password'],
                 'confirm_password' => ['required_with:password', 'same:password'],
             ]);
 
