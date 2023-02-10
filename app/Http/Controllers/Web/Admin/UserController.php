@@ -325,8 +325,6 @@ class UserController extends Controller
      */
     public function update(Request $request, user $user)
     {
-        $user = auth()->user();
-
         $input = $request->validate([
             'avatar_remove' => ['nullable', 'string'],
             'name' => [Rule::requiredIf($user->id !== null), 'string'],
@@ -365,9 +363,8 @@ class UserController extends Controller
         }
     }
 
-    public function updatePassword(Request $request)
+    public function updatePassword(Request $request, $user)
     {
-        $user = auth()->user();
         try {
             $input = $request->validate([
                 'old_password' => ['required', 'string', new OldPasswordRule()],
@@ -378,8 +375,6 @@ class UserController extends Controller
             (new UserService())
                 ->setUser($user)
                 ->update(['password' => Hash::make($input['password'])]);
-            // $user->password = Hash::make($request->input('password'));
-            // $user->save();
 
             notify('Berhasil', 'Password berhasil diperbarui!', 'success')->autoClose();
             return redirect()->back();
