@@ -196,16 +196,10 @@ class UserService
     public function update(array $input)
     {
         $user = $this->getuser();
-        // if (isset($user) and $user->id != null) {
-        //     $user->name = $input['name'];
-        //     $user->username = $input['username'];
-        //     $user->phone = $input['phone'];
-        // }
 
         foreach ($input as $key => $value) {
             $user->$key = $value;
         }
-        // $request = request()->only(['name', 'username','phone']);
 
         $user->save();
 

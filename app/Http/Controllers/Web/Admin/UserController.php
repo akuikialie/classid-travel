@@ -345,7 +345,6 @@ class UserController extends Controller
                 ->setAvatar($request)
                 ->update($request->only('name', 'username','phone'));
             /* end:: user service */
-            
 
             DB::commit();
 
@@ -363,12 +362,12 @@ class UserController extends Controller
         }
     }
 
-    public function updatePassword(Request $request, $user)
+    public function updatePassword(Request $request, User $user)
     {
         try {
             $input = $request->validate([
                 'old_password' => ['required', 'string', new OldPasswordRule()],
-                'password' => ['required', 'string'],
+                'password' => ['required_with:old_password'],
                 'confirm_password' => ['required_with:password', 'same:password'],
             ]);
 
@@ -379,7 +378,6 @@ class UserController extends Controller
             notify('Berhasil', 'Password berhasil diperbarui!', 'success')->autoClose();
             return redirect()->back();
         } catch (Throwable $e) {
-            DB::rollBack();
             logError($e, title: 'user');
             if (isDevelopmentMode()) {
                 throw $e;
