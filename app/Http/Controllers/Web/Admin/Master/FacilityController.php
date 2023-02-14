@@ -93,12 +93,11 @@ class FacilityController extends Controller
 
                 return $datatable->make(true);
             } catch (Throwable $e) {
-                logError($e, title: 'Facility');
+                logError($e, title: 'facility - datatable');
                 if (isDevelopmentMode()) {
                     throw $e;
-                } else {
-                    throw new \Exception('Terjadi kesalahan!');
                 }
+                throw new \Exception('Terjadi kesalahan!');
             }
         }
     }
@@ -161,12 +160,15 @@ class FacilityController extends Controller
             return redirect()->back();
         } catch (\Throwable $e) {
             DB::rollBack();
-            logError($e, title: 'Facility');
+            logError($e, title: 'facility - store');
             if (isDevelopmentMode()) {
                 throw $e;
-            } else {
-                notify('Oops!', 'Terjadi kesalahan!', 'error');
             }
+            $message = 'Terjadi kesalahan!';
+            if ($e->getCode() >= 900){
+                $message = $e->getMessage();
+            }
+            notify('Oops!', $message, 'error');
             return redirect()->back();
         }
     }
@@ -239,12 +241,15 @@ class FacilityController extends Controller
             return redirect()->back();
         } catch (\Throwable $e) {
             DB::rollBack();
-            logError($e, title: 'Facility');
+            logError($e, title: 'facility - update');
             if (isDevelopmentMode()) {
                 throw $e;
-            } else {
-                notify('Oops!', 'Terjadi kesalahan!', 'error');
             }
+            $message = 'Terjadi kesalahan!';
+            if ($e->getCode() >= 900){
+                $message = $e->getMessage();
+            }
+            notify('Oops!', $message, 'error');
             return redirect()->back();
         }
     }
@@ -267,12 +272,15 @@ class FacilityController extends Controller
             notify('Berhasil', 'Data fasilitas berhasil dihapus!', 'success')->autoClose();
             return redirect()->back();
         } catch (\Throwable $e) {
-            logError($e, title: 'Facility');
+            logError($e, title: 'facility - delete');
             if (isDevelopmentMode()) {
                 throw $e;
-            } else {
-                notify('Oops!', 'Terjadi kesalahan!', 'error');
             }
+            $message = 'Terjadi kesalahan!';
+            if ($e->getCode() >= 900){
+                $message = $e->getMessage();
+            }
+            notify('Oops!', $message, 'error');
             return redirect()->back();
         }
     }
@@ -303,12 +311,15 @@ class FacilityController extends Controller
             }
             return redirect()->back();
         } catch (Throwable $e) {
-            logError($e, title: 'Facility');
+            logError($e, title: 'facility - change status');
             if (isDevelopmentMode()) {
                 throw $e;
-            } else {
-                notify('Oops!', 'Terjadi kesalahan!', 'error');
             }
+            $message = 'Terjadi kesalahan!';
+            if ($e->getCode() >= 900){
+                $message = $e->getMessage();
+            }
+            notify('Oops!', $message, 'error');
             return redirect()->back();
         }
         /* end:: start tenant service */

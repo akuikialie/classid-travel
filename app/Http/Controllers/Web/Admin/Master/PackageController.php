@@ -102,12 +102,11 @@ class PackageController extends Controller
 
                 return $datatable->make(true);
             } catch (Throwable $e) {
-                logError($e, title: 'Package');
+                logError($e, title: 'package - datatable');
                 if (isDevelopmentMode()) {
                     throw $e;
-                } else {
-                    throw new Exception('Terjadi kesalahan!');
                 }
+                throw new Exception('Terjadi kesalahan!');
             }
         }
     }
@@ -196,12 +195,15 @@ class PackageController extends Controller
             return redirect()->back();
         } catch (Throwable $e) {
             DB::rollBack();
-            logError($e, title: 'Package');
+            logError($e, title: 'package - store');
             if (isDevelopmentMode()) {
                 throw $e;
-            } else {
-                notify('Oops!', 'Terjadi kesalahan!', 'error');
             }
+            $message = 'Terjadi kesalahan!';
+            if ($e->getCode() >= 900){
+                $message = $e->getMessage();
+            }
+            notify('Oops!', $message, 'error');
             return redirect()->back();
         }
     }
@@ -302,12 +304,15 @@ class PackageController extends Controller
             return redirect()->back();
         } catch (Throwable $e) {
             DB::rollBack();
-            logError($e, title: 'Package');
+            logError($e, title: 'package - update');
             if (isDevelopmentMode()) {
                 throw $e;
-            } else {
-                notify('Oops!', 'Terjadi kesalahan!', 'error');
             }
+            $message = 'Terjadi kesalahan!';
+            if ($e->getCode() >= 900){
+                $message = $e->getMessage();
+            }
+            notify('Oops!', $message, 'error');
             return redirect()->back();
         }
     }
@@ -330,12 +335,15 @@ class PackageController extends Controller
             notify('Berhasil', 'Data paket berhasil dihapus!', 'success')->autoClose();
             return redirect()->back();
         } catch (Throwable $e) {
-            logError($e, title: 'Package');
+            logError($e, title: 'package - delete');
             if (isDevelopmentMode()) {
                 throw $e;
-            } else {
-                notify('Oops!', 'Terjadi kesalahan!', 'error');
             }
+            $message = 'Terjadi kesalahan!';
+            if ($e->getCode() >= 900){
+                $message = $e->getMessage();
+            }
+            notify('Oops!', $message, 'error');
             return redirect()->back();
         }
     }
@@ -451,13 +459,16 @@ class PackageController extends Controller
 
             return redirect()->back()->withInput();
         } catch (Throwable $e) {
-            logError($e, title: 'Package');
+            logError($e, title: 'package - setup itinerary');
             if (isDevelopmentMode()) {
                 throw $e;
-            } else {
-                notify('Oops!', 'Terjadi kesalahan!', 'error');
             }
-            return redirect()->back()->withInput();
+            $message = 'Terjadi kesalahan!';
+            if ($e->getCode() >= 900){
+                $message = $e->getMessage();
+            }
+            notify('Oops!', $message, 'error');
+            return redirect()->back();
         }
     }
 
@@ -488,12 +499,15 @@ class PackageController extends Controller
             }
             return redirect()->back();
         }catch (Throwable $e){
-            logError($e, title: 'Package');
+            logError($e, title: 'package - chnage status');
             if (isDevelopmentMode()) {
                 throw $e;
-            } else {
-                notify('Oops!', 'Terjadi kesalahan!', 'error');
             }
+            $message = 'Terjadi kesalahan!';
+            if ($e->getCode() >= 900){
+                $message = $e->getMessage();
+            }
+            notify('Oops!', $message, 'error');
             return redirect()->back();
         }
         /* end:: start tenant service */

@@ -2,7 +2,10 @@
 
 namespace App\Http\Controllers\Web\Admin;
 
+use App\Exceptions\HandleCatchableException;
 use DB;
+use Spatie\MediaLibrary\MediaCollections\Exceptions\FileDoesNotExist;
+use Spatie\MediaLibrary\MediaCollections\Exceptions\FileIsTooBig;
 use Throwable;
 use App\Models\User;
 use ReflectionException;
@@ -11,7 +14,6 @@ use App\Models\Spatie\Role;
 use Illuminate\Http\Request;
 use App\Enums\PermissionType;
 use App\Services\UserService;
-use Illuminate\Http\Response;
 use App\Rules\OldPasswordRule;
 use Illuminate\Validation\Rule;
 use App\Traits\FragmentRenderer;
@@ -141,7 +143,7 @@ class UserController extends Controller
 
                 return $datatable->make(true);
             } catch (Exception | NotFoundExceptionInterface | ContainerExceptionInterface $e) {
-                logError($e, title: 'User');
+                logError($e, title: 'user - datatable');
                 if (isDevelopmentMode()) {
                     throw $e;
                 }
@@ -260,12 +262,16 @@ class UserController extends Controller
             return redirect()->back();
         } catch (Throwable $e) {
             DB::rollBack();
-            logError($e, title: 'User');
+            logError($e, title: 'user - store');
             if (isDevelopmentMode()) {
                 throw $e;
-            } else {
-                notify('Oops!', 'Terjadi kesalahan!', 'error');
             }
+            $message = 'Terjadi kesalahan!';
+            if ($e->getCode() >= 900){
+                $message = $e->getMessage();
+            }
+            notify('Oops!', $message, 'error');
+
             return redirect()->back();
         }
     }
@@ -292,12 +298,15 @@ class UserController extends Controller
 
             $this->setData('user', $user);
         } catch (\Exception $e) {
-            logError($e, title: 'Tenant');
+            logError($e, title: 'user - show');
             if (isDevelopmentMode()) {
                 throw $e;
-            } else {
-                notify('Oops!', 'Terjadi kesalahan!', 'error');
             }
+            $message = 'Terjadi kesalahan!';
+            if ($e->getCode() >= 900){
+                $message = $e->getMessage();
+            }
+            notify('Oops!', $message, 'error');
         }
 
         return $this->view('pages.web.user.user-show');
@@ -306,7 +315,6 @@ class UserController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param string|null $type
      * @param User $user
      * @return void
      */
@@ -319,9 +327,12 @@ class UserController extends Controller
      * Update the specified resource in storage.
      *
      * @param Request $request
-     * @param string|null $type
      * @param User $user
-     * @return void
+     * @return RedirectResponse
+     * @throws Throwable
+     * @throws HandleCatchableException
+     * @throws FileDoesNotExist
+     * @throws FileIsTooBig
      */
     public function update(Request $request, user $user)
     {
@@ -352,16 +363,27 @@ class UserController extends Controller
             return redirect()->back();
         } catch (Throwable $e) {
             DB::rollBack();
-            logError($e, title: 'user');
+            logError($e, title: 'user - update');
             if (isDevelopmentMode()) {
                 throw $e;
-            } else {
-                notify('Oops!', 'Terjadi kesalahan!', 'error');
             }
+            $message = 'Terjadi kesalahan!';
+            if ($e->getCode() >= 900){
+                $message = $e->getMessage();
+            }
+            notify('Oops!', $message, 'error');
+
             return redirect()->back();
         }
     }
 
+    /**
+     * @param Request $request
+     * @param User $user
+     * @return RedirectResponse
+     * @throws HandleCatchableException
+     * @throws Throwable
+     */
     public function updatePassword(Request $request, User $user)
     {
         try {
@@ -378,12 +400,16 @@ class UserController extends Controller
             notify('Berhasil', 'Password berhasil diperbarui!', 'success')->autoClose();
             return redirect()->back();
         } catch (Throwable $e) {
-            logError($e, title: 'user');
+            logError($e, title: 'user - update password');
             if (isDevelopmentMode()) {
                 throw $e;
-            } else {
-                notify('Oops!', 'Terjadi kesalahan!', 'error');
             }
+            $message = 'Terjadi kesalahan!';
+            if ($e->getCode() >= 900){
+                $message = $e->getMessage();
+            }
+            notify('Oops!', $message, 'error');
+
             return redirect()->back();
         }
     }
@@ -412,12 +438,16 @@ class UserController extends Controller
             notify('Behasil!', 'Berhasil menghapus akun!', 'success');
             return redirect()->back();
         } catch (Throwable $e) {
-            logError($e, title: 'User');
+            logError($e, title: 'user - delete');
             if (isDevelopmentMode()) {
                 throw $e;
-            } else {
-                notify('Oops!', 'Terjadi kesalahan!', 'error');
             }
+            $message = 'Terjadi kesalahan!';
+            if ($e->getCode() >= 900){
+                $message = $e->getMessage();
+            }
+            notify('Oops!', $message, 'error');
+
             return redirect()->back();
         }
     }
@@ -444,12 +474,16 @@ class UserController extends Controller
             notify('Behasil!', 'Berhasil memperbarui status akun!', 'success');
             return redirect()->back();
         } catch (Throwable $e) {
-            logError($e, title: 'User');
+            logError($e, title: 'user - change status');
             if (isDevelopmentMode()) {
                 throw $e;
-            } else {
-                notify('Oops!', 'Terjadi kesalahan!', 'error');
             }
+            $message = 'Terjadi kesalahan!';
+            if ($e->getCode() >= 900){
+                $message = $e->getMessage();
+            }
+            notify('Oops!', $message, 'error');
+
             return redirect()->back();
         }
     }
