@@ -2,6 +2,7 @@
 
 namespace App\Services\Whatsapp;
 
+use App\Exceptions\HandleCatchableException;
 use App\Http\Notifications\WaTestNotif;
 use App\Models\User;
 use Exception;
@@ -74,7 +75,7 @@ class NotificationService
     private function notify(): void
     {
         if (!$this->receiver instanceof User){
-            throw new Exception('Penerima tidak boleh kosong!', 900);
+            throw HandleCatchableException::catchable('Penerima tidak boleh kosong!');
         }
         dispatch_sync(new WaTestNotif($this->receiver, $this->message));
     }

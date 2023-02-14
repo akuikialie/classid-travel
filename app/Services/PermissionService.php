@@ -3,15 +3,17 @@
 namespace App\Services;
 
 use App\Enums\PermissionType;
+use App\Exceptions\HandleCatchableException;
 use App\Models\Spatie\Permission;
 use App\Models\Spatie\Role;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Model;
 use Laravel\Octane\Exceptions\DdException;
 use Spatie\Permission\Exceptions\RoleDoesNotExist;
 
 class PermissionService
 {
-    private $model = null;
+    private ?Model $model = null;
 
     public function __construct(
         private readonly ?int $tenantId = null
@@ -107,5 +109,25 @@ class PermissionService
             return true;
         }
         return false;
+    }
+
+    /**
+     * @return Model|null
+     * @throws HandleCatchableException
+     */
+    public function getModel(): ?Model
+    {
+        if (!$this->model instanceof Model){
+            throw HandleCatchableException::catchable('Model tidak ditemukan!');
+        }
+        return $this->model;
+    }
+
+    /**
+     * @param Model|null $model
+     */
+    public function setModel(?Model $model): void
+    {
+        $this->model = $model;
     }
 }

@@ -2,18 +2,17 @@
 
 namespace App\Services;
 
+use App\Exceptions\HandleCatchableException;
 use App\Models\Itinerary\Itinerary;
-use App\Models\Itinerary\ItineraryActivity;
 use Exception;
-use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Model;
 use Laravel\Octane\Exceptions\DdException;
 
 class ItineraryService
 {
-    private Builder $query;
-    protected Itinerary $itinerary;
+    private ?Itinerary $itinerary = null;
 
-    private $model;
+    private ?Model $model = null;
 
     private array $activities = [];
 
@@ -21,7 +20,6 @@ class ItineraryService
         private readonly int $tenantId
     )
     {
-        $this->query = Itinerary::query();
     }
 
     /* activity for itineraries table */
@@ -29,17 +27,19 @@ class ItineraryService
      * @param array $itineraries
      * @return $this
      * @throws DdException
+     * @throws HandleCatchableException
      */
     public function addItineraries(array $itineraries): static
     {
+        $model = $this->getModel();
         foreach ($itineraries as $key => $_itinerary){
 
             $itinerary = Itinerary::query()
                 ->where([
                     'tenant_id' => $this->tenantId,
                     'day' => $key ?? null,
-                    'model_id' => $this->model->id,
-                    'model_type' => $this->model::class,
+                    'model_id' => $model->id,
+                    'model_type' => $model::class,
                 ])->first();
 
             if (!$itinerary){
@@ -50,7 +50,7 @@ class ItineraryService
                     'day' => $key ?? null,
                 ]);
 
-                $this->model->myItineraries()->save($newItinerary);
+                $model->myItineraries()->save($newItinerary);
                 /* end:: create itinerary */
 
                 $itinerary = $newItinerary;
@@ -88,21 +88,37 @@ class ItineraryService
     }
 
     /**
-     * @return Itinerary
+     * @return Itinerary|null
      * @throws Exception
      */
-    private function getItinerary(): Itinerary
+    public function getItinerary(): ?Itinerary
     {
-        if ($this->query->count() > 1){
-            if (isset($this->itinerary) and $this->itinerary instanceof Itinerary){
-                $itinerary = $this->itinerary;
-            }else{
-                throw new Exception('Data harus spesifik!.');
-            }
-        }else{
-            $itinerary = $this->query->first();
+        if ($this->itinerary instanceof Itinerary){
+            throw HandleCatchableException::catchable('Data tidak ditemukan');
         }
-
-        return $itinerary;
+        return $this->itinerary;
     }
+
+    /**
+     * @param Itinerary|null $itinerary
+     * @return ItineraryService
+     */
+    public function setItinerary(?Itinerary $itinerary): static
+    {
+        $this->itinerary = $itinerary;
+        return $this;
+    }
+
+    /**
+     * @return Model|null
+     * @throws HandleCatchableException
+     */
+    public function getModel(): ?Model
+    {
+        if (!$this->model instanceof Model){
+            throw HandleCatchableException::catchable('Model tidak ditemukan!');
+        }
+        return $this->model;
+    }
+
 }

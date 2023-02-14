@@ -10,6 +10,8 @@ use Illuminate\Http\Request;
 use App\Models\User;
 use Exception;
 use Illuminate\Support\Facades\Hash;
+use Spatie\MediaLibrary\MediaCollections\Exceptions\FileDoesNotExist;
+use Spatie\MediaLibrary\MediaCollections\Exceptions\FileIsTooBig;
 use Throwable;
 
 class UserService
@@ -189,11 +191,10 @@ class UserService
 
     /**
      * @param array $input
-     * @param User
-     * @return Tenant|null
-     * @throws Exception
+     * @return UserService
+     * @throws HandleCatchableException
      */
-    public function update(array $input)
+    public function update(array $input): static
     {
         $user = $this->getuser();
 
