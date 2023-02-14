@@ -199,6 +199,7 @@ class TenantController extends Controller
         $this->setBreadCrumb('Profil Travel');
         try {
             $user = auth()->user();
+            
             if (!($user->tenant_id ?? null)) {
                 abort(404);
             }
@@ -253,6 +254,7 @@ class TenantController extends Controller
             $tenant = Tenant::query()
                 ->with(['media'])
                 ->whereId($user->tenant_id)
+                ->withCount(['jamaah','packages'])
                 ->first();
 
             $this->addGlobalParams('fragment_active', $slug);
@@ -260,7 +262,7 @@ class TenantController extends Controller
             $this->fragment(new TenantFragmentController())
                 ->render($slug ?? 'overview', [
                     'tenant' => $tenant,
-                    'parameter' => $fragmentParameter ?? null,
+                    'parameter' => request()->input('parameter')?? null,
                 ]);
 
             $this->setData('tenant', $tenant);

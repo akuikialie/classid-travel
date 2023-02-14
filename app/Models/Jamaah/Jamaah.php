@@ -9,6 +9,7 @@ use App\Models\Schedule\Schedule;
 use App\Models\User;
 use App\Models\VA\VirtualAccount;
 use App\Traits\HasTenant;
+use App\Models\Tenant\Tenant;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -91,6 +92,11 @@ class Jamaah extends Model
     public function departureHistory(): HasMany
     {
         return $this->hasMany(JamaahHistory::class, 'jamaah_id');
+    }
+
+    public function tenant(): HasMany
+    {
+        return $this->hasMany(tenant::class, 'tenant_id');
     }
 
 }
