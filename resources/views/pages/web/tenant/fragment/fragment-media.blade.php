@@ -74,7 +74,7 @@
             <!--end::Stats-->
             <!--begin::Stats-->
             <div class="border border-gray-300 border-dashed text-center rounded min-w-80px py-3 px-4 mx-2 mb-3">
-              <a type="button" class="btn btn-primary hover-elevate-up fragment"
+              <a href="{{ route('admin.tenant.showProfile', ['slug'=>'media_edit','parameter'=>'banners']) }}" type="button" class="btn btn-primary hover-elevate-up fragment"
                  data-fragment="media_edit"
                  data-fragment-parameter="banners">Detail Media</a>
             </div>

@@ -254,16 +254,22 @@ class RoleController extends Controller
                 'create',
                 'update',
                 'delete',
+                'export',
             ];
 
             $permissions = Permission::query()
-                ->get()
-                ->unique('group');
+                ->get();
 
             $permissionGroupedList = [];
 
-            foreach ($permissions as $group) {
+            foreach ($permissions->unique('group') as $group) {
                 foreach ($default as $permission) {
+                    $isAccessExists = $permissions->where('group', '=', $group->group)
+                        ->where('name', '=' , "{$permission} {$group->group}")
+                        ->first();
+                    if (!$isAccessExists){
+                        continue;
+                    }
                     $permissionGroupedList[$group->group][] = [
                         'name' => "{$permission}",
                         'is_active' => false,
@@ -471,18 +477,25 @@ class RoleController extends Controller
                 'create',
                 'update',
                 'delete',
+                'export',
             ];
 
             $permissions = Permission::query()
-                ->get()
-                ->unique('group');
+                ->get();
 
             $permissionGroupedList = [];
 
             $rolePermissions = collect($role->permissions);
 
-            foreach ($permissions as $group) {
+            foreach ($permissions->unique('group') as $group) {
                 foreach ($default as $permission) {
+                    $isAccessExists = $permissions->where('group', '=', $group->group)
+                        ->where('name', '=' , "{$permission} {$group->group}")
+                        ->first();
+                    if (!$isAccessExists){
+                        continue;
+                    }
+
                     $isHasPermission = $rolePermissions->firstWhere('name', strtolower("{$permission} {$group->group}"));
 
                     $permissionGroupedList[$group->group][] = [
