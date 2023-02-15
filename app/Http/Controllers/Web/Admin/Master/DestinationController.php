@@ -16,6 +16,8 @@ use Illuminate\Http\Request;
 use Illuminate\Routing\Redirector;
 use Illuminate\Support\Facades\DB;
 use InvalidArgumentException;
+use Spatie\MediaLibrary\MediaCollections\Exceptions\FileDoesNotExist;
+use Spatie\MediaLibrary\MediaCollections\Exceptions\FileIsTooBig;
 use Throwable;
 
 class DestinationController extends Controller
@@ -78,12 +80,11 @@ class DestinationController extends Controller
 
                 return $datatable->make(true);
             } catch (Throwable $e) {
-                logError($e, title: 'Destination');
+                logError($e, title: 'destination - datatable');
                 if (isDevelopmentMode()) {
                     throw $e;
-                } else {
-                    throw new Exception('Terjadi kesalahan!.');
                 }
+                throw new Exception('Terjadi kesalahan!.');
             }
         }
     }
@@ -122,6 +123,9 @@ class DestinationController extends Controller
      *
      * @param Request $request
      * @return RedirectResponse
+     * @throws Throwable
+     * @throws FileDoesNotExist
+     * @throws FileIsTooBig
      */
     public function store(Request $request): RedirectResponse
     {
@@ -146,12 +150,15 @@ class DestinationController extends Controller
             return redirect()->back();
         } catch (Throwable $e) {
             DB::rollBack();
-            logError($e, title: 'Destination');
+            logError($e, title: 'destination - store');
             if (isDevelopmentMode()) {
                 throw $e;
-            } else {
-                notify('Oops!', 'Terjadi kesalahan!', 'error');
             }
+            $message = 'Terjadi kesalahan!';
+            if ($e->getCode() >= 900){
+                $message = $e->getMessage();
+            }
+            notify('Oops!', $message, 'error');
             return redirect()->back();
         }
     }
@@ -207,8 +214,6 @@ class DestinationController extends Controller
 
             $user = auth()->user();
 
-//            $destination = Destination::query()->whereId($id)->first();
-
             $destinationService = new DestinationService($user->tenant_id);
             $destinationService
                 ->setDestination($destination)
@@ -222,12 +227,15 @@ class DestinationController extends Controller
             return redirect()->back();
         } catch (Throwable $e) {
             DB::rollBack();
-            logError($e, title: 'Destination');
+            logError($e, title: 'destination - update');
             if (isDevelopmentMode()) {
                 throw $e;
-            } else {
-                notify('Oops!', 'Terjadi kesalahan!', 'error');
             }
+            $message = 'Terjadi kesalahan!';
+            if ($e->getCode() >= 900){
+                $message = $e->getMessage();
+            }
+            notify('Oops!', $message, 'error');
             return redirect()->back();
         }
     }
@@ -253,12 +261,15 @@ class DestinationController extends Controller
             notify('Berhasil', 'Data destinasi berhasil dihapus!', 'success')->autoClose();
             return redirect()->back();
         } catch (Throwable $e) {
-            logError($e, title: 'Destination');
+            logError($e, title: 'destination delete');
             if (isDevelopmentMode()) {
                 throw $e;
-            } else {
-                notify('Oops!', 'Terjadi kesalahan!', 'error');
             }
+            $message = 'Terjadi kesalahan!';
+            if ($e->getCode() >= 900){
+                $message = $e->getMessage();
+            }
+            notify('Oops!', $message, 'error');
             return redirect()->back();
         }
     }
@@ -291,13 +302,15 @@ class DestinationController extends Controller
             }
             return redirect()->back();
         }catch (Throwable $e){
-            notify('Oops!', $e->getMessage(), 'error');
-            logError($e, title: 'Destination');
+            logError($e, title: 'destination - change status');
             if (isDevelopmentMode()) {
                 throw $e;
-            } else {
-                notify('Oops!', 'Terjadi kesalahan!', 'error');
             }
+            $message = 'Terjadi kesalahan!';
+            if ($e->getCode() >= 900){
+                $message = $e->getMessage();
+            }
+            notify('Oops!', $message, 'error');
             return redirect()->back();
         }
         /* end:: start tenant service */

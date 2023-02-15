@@ -103,7 +103,7 @@ class TenantController extends Controller
                     ->rawColumns(['actions', 'status'])
                     ->make(true);
             } catch (\Yajra\DataTables\Exceptions\Exception $e) {
-                logError($e, title: 'Tenant');
+                logError($e, title: 'tenant - datatable');
                 if (isDevelopmentMode()) {
                     throw $e;
                 }
@@ -173,12 +173,16 @@ class TenantController extends Controller
             return redirect()->back();
         } catch (Throwable $e) {
             DB::rollBack();
-            logError($e, title: 'Tenant');
+            logError($e, title: 'tenant - store');
             if (isDevelopmentMode()) {
                 throw $e;
-            } else {
-                notify('Oops!', 'Terjadi kesalahan!', 'error');
             }
+            $message = 'Terjadi kesalahan!';
+            if ($e->getCode() >= 900){
+                $message = $e->getMessage();
+            }
+            notify('Oops!', $message, 'error');
+
             return redirect()->back();
         }
     }
@@ -224,12 +228,16 @@ class TenantController extends Controller
 
             $this->setData('tenant', $tenant);
         } catch (Exception $e) {
-            logError($e, title: 'Tenant');
+            logError($e, title: 'tenant - show');
             if (isDevelopmentMode()) {
                 throw $e;
-            } else {
-                notify('Oops!', 'Terjadi kesalahan!', 'error');
             }
+            $message = 'Terjadi kesalahan!';
+            if ($e->getCode() >= 900){
+                $message = $e->getMessage();
+            }
+            notify('Oops!', $message, 'error');
+
         }
 
         return $this->view('pages.web.tenant.tenant-show');
@@ -267,12 +275,16 @@ class TenantController extends Controller
 
             $this->setData('tenant', $tenant);
         } catch (Exception $e) {
-            logError($e, title: 'Tenant');
+            logError($e, title: 'tenant - show profile');
             if (isDevelopmentMode()) {
                 throw $e;
-            } else {
-                notify('Oops!', 'Terjadi kesalahan!', 'error');
             }
+            $message = 'Terjadi kesalahan!';
+            if ($e->getCode() >= 900){
+                $message = $e->getMessage();
+            }
+            notify('Oops!', $message, 'error');
+
         }
 
         return $this->view('pages.web.tenant.tenant-show');
@@ -352,12 +364,16 @@ class TenantController extends Controller
             return redirect()->back();
         } catch (Throwable $e) {
             DB::rollBack();
-            logError($e, title: 'Tenant');
+            logError($e, title: 'tenant - update');
             if (isDevelopmentMode()) {
                 throw $e;
-            } else {
-                notify('Oops!', 'Terjadi kesalahan!', 'error');
             }
+            $message = 'Terjadi kesalahan!';
+            if ($e->getCode() >= 900){
+                $message = $e->getMessage();
+            }
+            notify('Oops!', $message, 'error');
+
             return redirect()->back();
         }
     }
@@ -367,6 +383,7 @@ class TenantController extends Controller
      *
      * @param Tenant $tenant
      * @return RedirectResponse
+     * @throws Throwable
      */
     public function destroy(Tenant $tenant)
     {
@@ -377,6 +394,15 @@ class TenantController extends Controller
             return redirect()->back();
 
         }catch (Throwable $e){
+            logError($e, title: 'tenant - delete');
+            if (isDevelopmentMode()) {
+                throw $e;
+            }
+            $message = 'Terjadi kesalahan!';
+            if ($e->getCode() >= 900){
+                $message = $e->getMessage();
+            }
+            notify('Oops!', $message, 'error');
             return redirect()->back();
         }
     }
@@ -414,12 +440,15 @@ class TenantController extends Controller
             return redirect()->back();
         } catch (Throwable $e) {
             DB::rollBack();
-            logError($e, title: 'Tenant');
+            logError($e, title: 'tenant - add media');
             if (isDevelopmentMode()) {
                 throw $e;
-            } else {
-                notify('Oops!', 'Terjadi kesalahan!', 'error');
             }
+            $message = 'Terjadi kesalahan!';
+            if ($e->getCode() >= 900){
+                $message = $e->getMessage();
+            }
+            notify('Oops!', $message, 'error');
             return redirect()->back();
         }
     }
@@ -450,12 +479,15 @@ class TenantController extends Controller
             }
             return redirect()->back();
         } catch (Throwable $e) {
-            logError($e, title: 'Tenant');
+            logError($e, title: 'tenant - change status');
             if (isDevelopmentMode()) {
                 throw $e;
-            } else {
-                notify('Oops!', 'Terjadi kesalahan!', 'error');
             }
+            $message = 'Terjadi kesalahan!';
+            if ($e->getCode() >= 900){
+                $message = $e->getMessage();
+            }
+            notify('Oops!', $message, 'error');
             return redirect()->back();
         }
         /* end:: start tenant service */

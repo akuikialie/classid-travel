@@ -151,7 +151,7 @@ class RoleController extends Controller
 
                 return $datatable->make(true);
             } catch (Exception | \Exception $e) {
-                logError($e, title: 'Role');
+                logError($e, title: 'role - datatable');
                 if (isDevelopmentMode()) {
                     throw $e;
                 } else {
@@ -319,12 +319,15 @@ class RoleController extends Controller
             return redirect()->back();
         } catch (Throwable $e) {
             DB::rollBack();
-            logError($e, title: 'Role');
+            logError($e, title: 'role - store');
             if (isDevelopmentMode()) {
                 throw $e;
-            } else {
-                notify('Oops!', 'Terjadi kesalahan!', 'error');
             }
+            $message = 'Terjadi kesalahan!';
+            if ($e->getCode() >= 900){
+                $message = $e->getMessage();
+            }
+            notify('Oops!', $message, 'error');
             return redirect()->back();
         }
     }
@@ -531,12 +534,15 @@ class RoleController extends Controller
             return redirect()->back();
         } catch (Throwable $e) {
             DB::rollBack();
-            logError($e, title: 'Role');
+            logError($e, title: 'role - update');
             if (isDevelopmentMode()) {
                 throw $e;
-            } else {
-                notify('Oops!', 'Terjadi kesalahan!', 'error');
             }
+            $message = 'Terjadi kesalahan!';
+            if ($e->getCode() >= 900){
+                $message = $e->getMessage();
+            }
+            notify('Oops!', $message, 'error');
             return redirect()->back();
         }
     }
@@ -560,7 +566,7 @@ class RoleController extends Controller
             notify('Berhasil!', 'Berhasil menghapus role', 'success');
             return redirect()->intended(route('admin.role.index'));
         } catch (Throwable $e) {
-            logError($e, title: 'Role');
+            logError($e, title: 'role - delete');
             if (isDevelopmentMode()) {
                 throw $e;
             }

@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Exceptions\HandleCatchableException;
 use App\Models\Schedule\Schedule;
 use App\Traits\HasTenant;
 use Exception;
@@ -11,7 +12,7 @@ class ScheduleService
 {
 
     private Builder $query;
-    private Schedule $schedule;
+    private ?Schedule $schedule = null;
 
     public function __construct(
         private readonly int $tenantId
@@ -27,13 +28,9 @@ class ScheduleService
      */
     public function setStatus(bool $status): static
     {
-        try {
-            $model = $this->getSchedule();
-            $model->is_active = $status;
-            $model->save();
-        } catch (Exception $e) {
-            throw $e;
-        }
+        $model = $this->getSchedule();
+        $model->is_active = $status;
+        $model->save();
 
         return $this;
     }
@@ -44,17 +41,11 @@ class ScheduleService
      */
     public function getSchedule(): Schedule
     {
-        if ($this->query->count() > 1){
-            if (isset($this->planFacility)){
-                $facility = $this->planFacility;
-            }else{
-                throw new Exception('Data harus spesifik!');
-            }
-        }else{
-            $facility = $this->query->first();
-        }
+        if (!$this->schedule instanceof Schedule){
+            throw HandleCatchableException::catchable('Jadwal tidak ditemukan!');
 
-        return $facility;
+        }
+       return $this->schedule;
     }
 
     /**

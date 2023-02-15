@@ -2,8 +2,10 @@
 
 namespace App\Services;
 
+use App\Exceptions\HandleCatchableException;
 use App\Models\Jamaah\Jamaah;
 use App\Models\Plan\PlanPackage;
+use App\Models\Schedule\Schedule;
 use App\Models\User;
 use App\Models\VA\VirtualAccount;
 use App\Services\EWallet\Entity\WalletUser;
@@ -11,33 +13,23 @@ use App\Services\EWallet\WalletService;
 use Carbon\Carbon;
 use Exception;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Model;
+use Throwable;
 
 class VirtualAccountService
 {
-    private $query;
     public function __construct(
         private readonly int $tenantId
     )
     {
-        $this->query = VirtualAccount::query();
     }
 
-    /**
-     * @param string $hash
-     * @return $this
-     */
-    public function byHash(string $hash): static
-    {
-        $this->query->byHashOrFail($hash);
-        return $this;
-    }
-
-    protected $model;
+    private ?Model $model = null;
 
     /**
      * @param $model
      * @return $this
-     * @throws \Throwable
+     * @throws Throwable
      */
     public function createFor($model): static
     {
@@ -73,6 +65,7 @@ class VirtualAccountService
      */
     public function createVA(): VirtualAccount
     {
+        $model = $this->getModel();
         /* begin:: generate new VA ID */
         $VA = VirtualAccount::query()
             ->where(function (Builder $subQuery) {
@@ -94,17 +87,17 @@ class VirtualAccountService
             'va_label' => $this->vaType,
             'email' => $setEmail,
         ]);
-        $this->model->tabungan()->save($newVA);
+        $model->tabungan()->save($newVA);
 
         $name = null;
-        if (isset($this->planPackage) and $this->model instanceof Jamaah){
-            $name = $this->model->user->name . ' - '. $this->planPackage->name;
+        if (isset($this->planPackage) and $model instanceof Jamaah){
+            $name = $model->user->name . ' - '. $this->planPackage->name;
             $newVA->myPackage()->associate($this->planPackage);
             $newVA->save();
         }
 
-        if ($this->model instanceof User){
-            $name = $this->model->name . ' - Tabungan';
+        if ($model instanceof User){
+            $name = $model->name . ' - Tabungan';
         }
 
         if (is_null($name)){
@@ -126,5 +119,18 @@ class VirtualAccountService
 
         return $newVA;
         /* end:: create new VA */
+    }
+
+    /**
+     * @return Model|null
+     * @throws HandleCatchableException
+     */
+    public function getModel(): ?Model
+    {
+        if (!$this->model instanceof Schedule){
+            throw HandleCatchableException::catchable('Model tidak ditemukan!');
+
+        }
+        return $this->model;
     }
 }
