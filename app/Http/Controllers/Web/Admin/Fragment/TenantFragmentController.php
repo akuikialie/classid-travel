@@ -32,8 +32,8 @@ class TenantFragmentController extends Controller
     public function media_edit($params)
     {
         $tenant = collect(array_column($params, 'tenant'))->first();
-        $parameter = collect(array_column($params, 'parameter'))->first();
-        $mediaItems = $tenant->getMedia($parameter);
+        $folder = collect(array_column($params, 'folder'))->first();
+        $mediaItems = $tenant->getMedia($folder);
         $mediaCollections = [];
         foreach ($mediaItems as $item){
             $mediaCollections[] = [
@@ -41,8 +41,9 @@ class TenantFragmentController extends Controller
                 'order' => $item->getCustomProperty('order'),
             ];
         }
+        $this->addGlobalParams('param', $folder);
         $this->addGlobalParams('media_items', $mediaCollections);
-        $this->addGlobalParams('fragment_view', 'pages.web.tenant.fragment.fragment-media-edit');
+        $this->addGlobalParams('fragment_view', 'pages.web.tenant.fragment.fragment-media-edit_banners');
     }
 
     /**
@@ -53,5 +54,5 @@ class TenantFragmentController extends Controller
     {
         $this->addGlobalParams('fragment_view', 'pages.web.tenant.fragment.fragment-setting');
     }
-    
+
 }

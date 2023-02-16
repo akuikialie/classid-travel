@@ -203,7 +203,7 @@ class TenantController extends Controller
         $this->setBreadCrumb('Profil Travel');
         try {
             $user = auth()->user();
-            
+
             if (!($user->tenant_id ?? null)) {
                 abort(404);
             }
@@ -217,12 +217,12 @@ class TenantController extends Controller
 
             if (\request()->has('fragment')) {
                 $fragmentName = \request()->get('fragment');
-                $fragmentParameter = \request()->get('parameter');
+                $fragmentParameter = \request()->get('folder');
                 $this->addGlobalParams('fragment_active', $fragmentName);
                 $this->fragment(new TenantFragmentController())
                     ->render($fragmentName ?? 'target', [
                         'tenant' => $tenant,
-                        'parameter' => $fragmentParameter ?? null,
+                        'folder' => $fragmentParameter ?? null,
                   ]);
             }
 
@@ -270,7 +270,7 @@ class TenantController extends Controller
             $this->fragment(new TenantFragmentController())
                 ->render($slug ?? 'overview', [
                     'tenant' => $tenant,
-                    'parameter' => request()->input('parameter')?? null,
+                    'folder' => request()->input('folder')?? null,
                 ]);
 
             $this->setData('tenant', $tenant);

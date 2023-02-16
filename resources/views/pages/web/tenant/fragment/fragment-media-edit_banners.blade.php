@@ -13,10 +13,6 @@
     @csrf
     <!--begin::Card body-->
     <div class="card-body p-9">
-      @php
-        $param = request()->get('parameter');
-      @endphp
-
         <!--begin::Row-->
       <div class="row mb-8">
         <!--begin::Col-->
