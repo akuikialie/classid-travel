@@ -180,4 +180,12 @@ class TenantService
         }
         return $this->tenant;
     }
+
+    /**
+     * @param array $input
+     */
+    public function changeTheme($input)
+    {
+        
+    }
 }

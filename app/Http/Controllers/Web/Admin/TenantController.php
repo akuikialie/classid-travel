@@ -2,10 +2,10 @@
 
 namespace App\Http\Controllers\Web\Admin;
 
-use App\Http\Controllers\Controller;
 use App\Http\Controllers\Web\Admin\Fragment\TenantFragmentController;
 use App\Models\Tenant\Tenant;
 use App\Services\TenantService;
+use App\Models\Tenant\TenantData;
 use App\Traits\FragmentRenderer;
 use Exception;
 use Illuminate\Contracts\View\Factory;
@@ -178,7 +178,7 @@ class TenantController extends Controller
                 throw $e;
             }
             $message = 'Terjadi kesalahan!';
-            if ($e->getCode() >= 900){
+            if ($e->getCode() >= 900) {
                 $message = $e->getMessage();
             }
             notify('Oops!', $message, 'error');
@@ -223,7 +223,7 @@ class TenantController extends Controller
                     ->render($fragmentName ?? 'target', [
                         'tenant' => $tenant,
                         'folder' => $fragmentParameter ?? null,
-                  ]);
+                    ]);
             }
 
             $this->setData('tenant', $tenant);
@@ -233,11 +233,10 @@ class TenantController extends Controller
                 throw $e;
             }
             $message = 'Terjadi kesalahan!';
-            if ($e->getCode() >= 900){
+            if ($e->getCode() >= 900) {
                 $message = $e->getMessage();
             }
             notify('Oops!', $message, 'error');
-
         }
 
         return $this->view('pages.web.tenant.tenant-show');
@@ -262,7 +261,7 @@ class TenantController extends Controller
             $tenant = Tenant::query()
                 ->with(['media'])
                 ->whereId($user->tenant_id)
-                ->withCount(['jamaah','packages'])
+                ->withCount(['jamaah', 'packages'])
                 ->first();
 
             $this->addGlobalParams('fragment_active', $slug);
@@ -270,7 +269,7 @@ class TenantController extends Controller
             $this->fragment(new TenantFragmentController())
                 ->render($slug ?? 'overview', [
                     'tenant' => $tenant,
-                    'folder' => request()->input('folder')?? null,
+                    'folder' => request()->input('folder') ?? null,
                 ]);
 
             $this->setData('tenant', $tenant);
@@ -280,11 +279,10 @@ class TenantController extends Controller
                 throw $e;
             }
             $message = 'Terjadi kesalahan!';
-            if ($e->getCode() >= 900){
+            if ($e->getCode() >= 900) {
                 $message = $e->getMessage();
             }
             notify('Oops!', $message, 'error');
-
         }
 
         return $this->view('pages.web.tenant.tenant-show');
@@ -369,7 +367,7 @@ class TenantController extends Controller
                 throw $e;
             }
             $message = 'Terjadi kesalahan!';
-            if ($e->getCode() >= 900){
+            if ($e->getCode() >= 900) {
                 $message = $e->getMessage();
             }
             notify('Oops!', $message, 'error');
@@ -392,14 +390,13 @@ class TenantController extends Controller
 
             notify('Berhasil', 'Travel berhasil di hapus', 'success')->autoClose();
             return redirect()->back();
-
-        }catch (Throwable $e){
+        } catch (Throwable $e) {
             logError($e, title: 'tenant - delete');
             if (isDevelopmentMode()) {
                 throw $e;
             }
             $message = 'Terjadi kesalahan!';
-            if ($e->getCode() >= 900){
+            if ($e->getCode() >= 900) {
                 $message = $e->getMessage();
             }
             notify('Oops!', $message, 'error');
@@ -445,7 +442,7 @@ class TenantController extends Controller
                 throw $e;
             }
             $message = 'Terjadi kesalahan!';
-            if ($e->getCode() >= 900){
+            if ($e->getCode() >= 900) {
                 $message = $e->getMessage();
             }
             notify('Oops!', $message, 'error');
@@ -484,12 +481,72 @@ class TenantController extends Controller
                 throw $e;
             }
             $message = 'Terjadi kesalahan!';
-            if ($e->getCode() >= 900){
+            if ($e->getCode() >= 900) {
                 $message = $e->getMessage();
             }
             notify('Oops!', $message, 'error');
             return redirect()->back();
         }
         /* end:: start tenant service */
+    }
+
+    public function changeTheme(Request $request)
+    {
+        $tenantId = $request->input('tenant_id');
+        $sidebarColor = $request->input('sidebar_color');
+        $logoColor = $request->input('logo_color');
+        $fontColor = $request->input('font_color');
+
+        try {
+            $sidebarData = TenantData::updateOrCreate(
+                [
+                    'tenant_id' => $tenantId,
+                    'key' => 'sidebar_color'
+                ],
+                [
+                    'value' => $sidebarColor,
+                    'options' => null,
+                    'is_active' => true
+                ]
+            );
+
+            $logoData = TenantData::updateOrCreate(
+                [
+                    'tenant_id' => $tenantId,
+                    'key' => 'logo_color'
+                ],
+                [
+                    'value' => $logoColor,
+                    'options' => null,
+                    'is_active' => true
+                ]
+            );
+
+            $fontData = TenantData::updateOrCreate(
+                [
+                    'tenant_id' => $tenantId,
+                    'key' => 'font_color'
+                ],
+                [
+                    'value' => $fontColor,
+                    'options' => null,
+                    'is_active' => true
+                ]
+            );
+
+            notify('Berhasil', 'Tema berhasil digunakan!', 'success')->autoClose();
+            return redirect()->back();
+        } catch (Throwable $e) {
+            logError($e, title: 'tenant - change status');
+            if (isDevelopmentMode()) {
+                throw $e;
+            }
+            $message = 'Terjadi kesalahan!';
+            if ($e->getCode() >= 900) {
+                $message = $e->getMessage();
+            }
+            notify('Oops!', $message, 'error');
+            return redirect()->back();
+        }
     }
 }

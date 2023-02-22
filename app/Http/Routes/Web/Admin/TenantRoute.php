@@ -65,6 +65,9 @@ class TenantRoute extends BaseRoute
                     [TenantController::class, 'addMedia']
                 )
                     ->name($this->name('add-media'));
+
+                $this->router->post($this->prefix('change_theme'), [TenantController::class, 'changeTheme'])
+                    ->name($this->name('change_theme'));
             });
         });
     }

@@ -55,4 +55,9 @@ class TenantFragmentController extends Controller
         $this->addGlobalParams('fragment_view', 'pages.web.tenant.fragment.fragment-setting');
     }
 
+    public function misc($params)
+    {
+        $this->addGlobalParams('fragment_view', 'pages.web.tenant.fragment.fragment-misc');
+    }
+
 }

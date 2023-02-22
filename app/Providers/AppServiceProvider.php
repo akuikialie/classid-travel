@@ -24,7 +24,10 @@ class AppServiceProvider extends ServiceProvider
         app()->singleton('activeTenant', function(): ?Tenant {
             try {
                 if (auth()->user()?->tenant_id ?? null){
-                    return Tenant::find(auth()->user()->tenant_id);
+                    return Tenant::query()->with('tenantData')->where(
+                        'id', auth()->user()->tenant_id
+                    )
+                    ->first();
                 }
 
                 $domain = request()->getHost();

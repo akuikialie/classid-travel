@@ -10,4 +10,8 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 class TenantData extends Model
 {
     use HasFactory, SoftDeletes, HashableId;
+
+    protected $fillable = [
+        'key', 'value', 'option', 'is_active'
+    ];
 }

@@ -53,4 +53,8 @@ class Tenant extends Model implements HasMedia
     {
         return $this->hasMany(PlanPackage::class, 'tenant_id');
     }
+
+    public function tenantData(): HasMany{
+        return $this->hasMany(tenantData::class, 'tenant_id');
+    }
 }

@@ -393,6 +393,7 @@
                                 type="button" data-fragment="media">Media</a>
                         </li>
                         <!--end::Nav item-->
+
                         <!--begin::Nav item-->
                         <li class="nav-item">
                             <a href="{{ route('admin.tenant.showProfile', 'setting') }}"
@@ -400,6 +401,14 @@
                                 type="button" data-fragment="setting">Setting</a>
                         </li>
                         <!--end::Nav item-->
+
+                        <!--begin::Nav item-->
+                        <li class="nav-item">
+                          <a href="{{ route('admin.tenant.showProfile', 'misc') }}"
+                              class="nav-link text-active-primary py-5 me-6 fragment {{ ($fragment_active ?? 'overview') == 'misc' ? 'active' : '' }}"
+                              type="button" data-fragment="misc">Misc</a>
+                      </li>
+                      <!--end::Nav item-->
                     </ul>
                     <!--end::Nav-->
                 </form>
@@ -411,6 +420,6 @@
         @if (isset($fragment_view))
             @include($fragment_view)
         @endif
-
     </div>
+
 @endsection
