@@ -8,11 +8,11 @@
     </div>
     <!--end::Card header-->
     <!--begin::Form-->
-    <form class="form" action="{{ route('admin.tenant.change_theme') }}" method="post">
+    <form class="form" action="{{ route('admin.tenant.changeTheme', $tenant->hash) }}" method="post">
         @csrf
         <!--begin::Card body-->
         <div class="card-body p-9">
-            <input type="hidden" name="tenant_id" value="{{ auth()->user()->tenant_id }}">
+{{--            <input type="hidden" name="tenant_id" value="{{ auth()->user()->tenant_id }}">--}}
 
             <!--begin::Row-->
             <div class="row mb-8">

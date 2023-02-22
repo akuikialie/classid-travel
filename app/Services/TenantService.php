@@ -183,45 +183,21 @@ class TenantService
     }
 
     /**
+     * @param array $themes
      * @return $this
-     * @throws HandleCatchableException
      */
-    public function changeTheme($tenantId, $sidebarColor, $logoColor, $fontColor)
+    public function changeTheme( array $themes): static
     {
-        $sidebarData = TenantData::updateOrCreate(
-            [
-                'tenant_id' => $tenantId,
-                'key' => 'sidebar_color'
-            ],
-            [
-                'value' => $sidebarColor,
+        foreach ($themes as $key => $theme){
+            TenantData::query()->updateOrCreate([
+                'tenant_id' => $this->tenantId,
+                'key' => $key,
+                ],[
+                'value' => $theme,
                 'options' => null,
                 'is_active' => true
-            ]
-        );
-
-        $logoData = TenantData::updateOrCreate(
-            [
-                'tenant_id' => $tenantId,
-                'key' => 'logo_color'
-            ],
-            [
-                'value' => $logoColor,
-                'options' => null,
-                'is_active' => true
-            ]
-        );
-
-        $fontData = TenantData::updateOrCreate(
-            [
-                'tenant_id' => $tenantId,
-                'key' => 'font_color'
-            ],
-            [
-                'value' => $fontColor,
-                'options' => null,
-                'is_active' => true
-            ]
-        );
+            ]);
+        }
+        return $this;
     }
 }

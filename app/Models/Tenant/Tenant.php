@@ -31,12 +31,12 @@ class Tenant extends Model implements HasMedia
 
     public function addresses(): MorphMany
     {
-        return $this->morphMany(Address::class, 'addressable', 'model_type','modal_id');
+        return $this->morphMany(Address::class, 'addressable', 'model_type', 'modal_id');
     }
 
     public function emails(): MorphMany
     {
-        return $this->morphMany(Email::class, 'addressable', 'model_type','modal_id');
+        return $this->morphMany(Email::class, 'addressable', 'model_type', 'modal_id');
     }
 
     public function phone(): MorphMany
@@ -54,7 +54,8 @@ class Tenant extends Model implements HasMedia
         return $this->hasMany(PlanPackage::class, 'tenant_id');
     }
 
-    public function tenantData(): HasMany{
+    public function tenantData(): HasMany
+    {
         return $this->hasMany(tenantData::class, 'tenant_id');
     }
 }

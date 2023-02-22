@@ -5,7 +5,6 @@ namespace App\Http\Controllers\Web\Admin;
 use App\Http\Controllers\Web\Admin\Fragment\TenantFragmentController;
 use App\Models\Tenant\Tenant;
 use App\Services\TenantService;
-use App\Models\Tenant\TenantData;
 use App\Traits\FragmentRenderer;
 use Exception;
 use Illuminate\Contracts\View\Factory;
@@ -490,23 +489,24 @@ class TenantController extends Controller
         /* end:: start tenant service */
     }
 
-    public function changeTheme(Request $request)
+    /**
+     * @param Request $request
+     * @param Tenant $tenant
+     * @return RedirectResponse
+     * @throws Throwable
+     */
+    public function changeTheme(Request $request, Tenant $tenant)
     {
-        $tenantId = $request->input('tenant_id');
-        $sidebarColor = $request->input('sidebar_color');
-        $logoColor = $request->input('logo_color');
-        $fontColor = $request->input('font_color');
-
+        DB::beginTransaction();
         try {
-            // Create TenantService object
-            $tenantService = new TenantService();
+            (new TenantService($tenant->id))
+                ->changeTheme($request->only('logo_color', 'sidebar_color', 'font_color'));
 
-            // Call TenantService method
-            $tenantService->changeTheme($tenantId, $sidebarColor, $logoColor, $fontColor);
-
+            DB::commit();
             notify('Berhasil', 'Tema berhasil digunakan!', 'success')->autoClose();
             return redirect()->back();
         } catch (Throwable $e) {
+            DB::rollBack();
             logError($e, title: 'tenant - change status');
             if (isDevelopmentMode()) {
                 throw $e;

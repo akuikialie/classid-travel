@@ -7,7 +7,6 @@ namespace App\Http\Controllers\Web\Admin;
 use App\Enums\PermissionType;
 use App\Enums\RoleEnum;
 use App\Enums\UserStatus;
-use App\Http\Controllers\Controller;
 use App\Models\Spatie\Permission;
 use App\Models\Spatie\Role;
 use App\Models\Tenant\Tenant;

@@ -12,6 +12,6 @@ class TenantData extends Model
     use HasFactory, SoftDeletes, HashableId;
 
     protected $fillable = [
-        'key', 'value', 'option', 'is_active'
+        'key', 'value', 'option', 'is_active', 'tenant_id'
     ];
 }
