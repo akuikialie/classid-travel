@@ -118,9 +118,7 @@
           <a class="menu-link {{ activeRoute('dashboard.admin', cssClass: 'active') }}"
              href="{{ route('admin.dashboard') }}">
             <span class="menu-icon">
-              <span class="svg-icon svg-icon-2">
-                <i class="bx bxs-dashboard bx-tada"></i>
-              </span>
+              <i class="bx bxs-dashboard bx-tada"></i>
             </span>
             <span class="menu-title">Dashboard</span>
           </a>
@@ -158,9 +156,7 @@
                 <a class="menu-link {{ $styleClass }}"
                    href="{{ $href }}">
                   <span class="menu-icon">
-                    <span class="svg-icon svg-icon-2">
-                      <i class="{{ $menu->attribute['icon'] ?? 'fa-sharp fad fa-circle-dot' }}"></i>
-                    </span>
+                    <i class="{{ $menu->attribute['icon'] ?? 'fa-sharp fad fa-circle-dot' }}"></i>
                   </span>
                   <span class="menu-title">{{ $menu->title }}</span>
                 </a>

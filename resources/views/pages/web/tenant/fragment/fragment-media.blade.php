@@ -34,7 +34,7 @@
               @foreach($getMediaCollection ?? [] as $media)
                 <!--begin::Item-->
                 <div class="text-center px-5 py-5">
-                  <img src="{{ $media->getFullUrl() }}" class="card-rounded mw-100"/>
+                  <img src="{{ $media->getUrl() }}" class="card-rounded mw-100"/>
                 </div>
                 <!--end::Item-->
               @endforeach

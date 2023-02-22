@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers\Web\Admin;
 
-use App\Http\Controllers\Controller;
 use App\Http\Controllers\Web\Admin\Fragment\TenantFragmentController;
 use App\Models\Tenant\Tenant;
 use App\Services\TenantService;
@@ -178,7 +177,7 @@ class TenantController extends Controller
                 throw $e;
             }
             $message = 'Terjadi kesalahan!';
-            if ($e->getCode() >= 900){
+            if ($e->getCode() >= 900) {
                 $message = $e->getMessage();
             }
             notify('Oops!', $message, 'error');
@@ -223,7 +222,7 @@ class TenantController extends Controller
                     ->render($fragmentName ?? 'target', [
                         'tenant' => $tenant,
                         'folder' => $fragmentParameter ?? null,
-                  ]);
+                    ]);
             }
 
             $this->setData('tenant', $tenant);
@@ -233,11 +232,10 @@ class TenantController extends Controller
                 throw $e;
             }
             $message = 'Terjadi kesalahan!';
-            if ($e->getCode() >= 900){
+            if ($e->getCode() >= 900) {
                 $message = $e->getMessage();
             }
             notify('Oops!', $message, 'error');
-
         }
 
         return $this->view('pages.web.tenant.tenant-show');
@@ -262,7 +260,7 @@ class TenantController extends Controller
             $tenant = Tenant::query()
                 ->with(['media'])
                 ->whereId($user->tenant_id)
-                ->withCount(['jamaah','packages'])
+                ->withCount(['jamaah', 'packages'])
                 ->first();
 
             $this->addGlobalParams('fragment_active', $slug);
@@ -270,7 +268,7 @@ class TenantController extends Controller
             $this->fragment(new TenantFragmentController())
                 ->render($slug ?? 'overview', [
                     'tenant' => $tenant,
-                    'folder' => request()->input('folder')?? null,
+                    'folder' => request()->input('folder') ?? null,
                 ]);
 
             $this->setData('tenant', $tenant);
@@ -280,11 +278,10 @@ class TenantController extends Controller
                 throw $e;
             }
             $message = 'Terjadi kesalahan!';
-            if ($e->getCode() >= 900){
+            if ($e->getCode() >= 900) {
                 $message = $e->getMessage();
             }
             notify('Oops!', $message, 'error');
-
         }
 
         return $this->view('pages.web.tenant.tenant-show');
@@ -369,7 +366,7 @@ class TenantController extends Controller
                 throw $e;
             }
             $message = 'Terjadi kesalahan!';
-            if ($e->getCode() >= 900){
+            if ($e->getCode() >= 900) {
                 $message = $e->getMessage();
             }
             notify('Oops!', $message, 'error');
@@ -392,14 +389,13 @@ class TenantController extends Controller
 
             notify('Berhasil', 'Travel berhasil di hapus', 'success')->autoClose();
             return redirect()->back();
-
-        }catch (Throwable $e){
+        } catch (Throwable $e) {
             logError($e, title: 'tenant - delete');
             if (isDevelopmentMode()) {
                 throw $e;
             }
             $message = 'Terjadi kesalahan!';
-            if ($e->getCode() >= 900){
+            if ($e->getCode() >= 900) {
                 $message = $e->getMessage();
             }
             notify('Oops!', $message, 'error');
@@ -445,7 +441,7 @@ class TenantController extends Controller
                 throw $e;
             }
             $message = 'Terjadi kesalahan!';
-            if ($e->getCode() >= 900){
+            if ($e->getCode() >= 900) {
                 $message = $e->getMessage();
             }
             notify('Oops!', $message, 'error');
@@ -484,12 +480,43 @@ class TenantController extends Controller
                 throw $e;
             }
             $message = 'Terjadi kesalahan!';
-            if ($e->getCode() >= 900){
+            if ($e->getCode() >= 900) {
                 $message = $e->getMessage();
             }
             notify('Oops!', $message, 'error');
             return redirect()->back();
         }
         /* end:: start tenant service */
+    }
+
+    /**
+     * @param Request $request
+     * @param Tenant $tenant
+     * @return RedirectResponse
+     * @throws Throwable
+     */
+    public function changeTheme(Request $request, Tenant $tenant)
+    {
+        DB::beginTransaction();
+        try {
+            (new TenantService($tenant->id))
+                ->changeTheme($request->only('logo_color', 'sidebar_color', 'font_color'));
+
+            DB::commit();
+            notify('Berhasil', 'Tema berhasil digunakan!', 'success')->autoClose();
+            return redirect()->back();
+        } catch (Throwable $e) {
+            DB::rollBack();
+            logError($e, title: 'tenant - change status');
+            if (isDevelopmentMode()) {
+                throw $e;
+            }
+            $message = 'Terjadi kesalahan!';
+            if ($e->getCode() >= 900) {
+                $message = $e->getMessage();
+            }
+            notify('Oops!', $message, 'error');
+            return redirect()->back();
+        }
     }
 }

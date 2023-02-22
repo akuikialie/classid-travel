@@ -19,7 +19,6 @@ use Illuminate\Validation\Rule;
 use App\Traits\FragmentRenderer;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Contracts\View\View;
-use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Contracts\View\Factory;

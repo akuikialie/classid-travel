@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers\Web\Admin\Master;
 
-use App\Http\Controllers\Controller;
+use App\Http\Controllers\Web\Admin\Controller;
 use App\Models\Itinerary\ItineraryActivity;
 use Illuminate\Contracts\View\View;
 use Illuminate\Database\Eloquent\Builder;
@@ -24,6 +24,7 @@ class ItineraryController extends Controller
      */
     public function __construct()
     {
+
         $this->setData('current_page', $this->forPage);
     }
 

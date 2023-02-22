@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Exceptions\HandleCatchableException;
 use App\Models\Tenant\Tenant;
+use App\Models\Tenant\TenantData;
 use App\Models\User;
 use App\Models\Base\Media;
 use Exception;
@@ -179,5 +180,24 @@ class TenantService
             throw HandleCatchableException::catchable('Travel tidak di ditemukan!');
         }
         return $this->tenant;
+    }
+
+    /**
+     * @param array $themes
+     * @return $this
+     */
+    public function changeTheme( array $themes): static
+    {
+        foreach ($themes as $key => $theme){
+            TenantData::query()->updateOrCreate([
+                'tenant_id' => $this->tenantId,
+                'key' => $key,
+                ],[
+                'value' => $theme,
+                'options' => null,
+                'is_active' => true
+            ]);
+        }
+        return $this;
     }
 }

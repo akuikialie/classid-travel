@@ -51701,12 +51701,4 @@ html:not([data-theme="dark"]) {
   }
 }
 
-#kt_app_sidebar_logo {
-  background-color: #611E91;
-}
-#kt_app_sidebar {
-  background-color: #F2E1FE;
-}
-#kt_app_header_container {
-  background-color: #F2E1FE;
-}
+
