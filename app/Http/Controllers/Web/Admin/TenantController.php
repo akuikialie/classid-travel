@@ -498,41 +498,11 @@ class TenantController extends Controller
         $fontColor = $request->input('font_color');
 
         try {
-            $sidebarData = TenantData::updateOrCreate(
-                [
-                    'tenant_id' => $tenantId,
-                    'key' => 'sidebar_color'
-                ],
-                [
-                    'value' => $sidebarColor,
-                    'options' => null,
-                    'is_active' => true
-                ]
-            );
+            // Create TenantService object
+            $tenantService = new TenantService();
 
-            $logoData = TenantData::updateOrCreate(
-                [
-                    'tenant_id' => $tenantId,
-                    'key' => 'logo_color'
-                ],
-                [
-                    'value' => $logoColor,
-                    'options' => null,
-                    'is_active' => true
-                ]
-            );
-
-            $fontData = TenantData::updateOrCreate(
-                [
-                    'tenant_id' => $tenantId,
-                    'key' => 'font_color'
-                ],
-                [
-                    'value' => $fontColor,
-                    'options' => null,
-                    'is_active' => true
-                ]
-            );
+            // Call TenantService method
+            $tenantService->changeTheme($tenantId, $sidebarColor, $logoColor, $fontColor);
 
             notify('Berhasil', 'Tema berhasil digunakan!', 'success')->autoClose();
             return redirect()->back();

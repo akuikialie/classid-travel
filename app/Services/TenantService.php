@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Exceptions\HandleCatchableException;
 use App\Models\Tenant\Tenant;
+use App\Models\Tenant\TenantData;
 use App\Models\User;
 use App\Models\Base\Media;
 use Exception;
@@ -182,10 +183,45 @@ class TenantService
     }
 
     /**
-     * @param array $input
+     * @return $this
+     * @throws HandleCatchableException
      */
-    public function changeTheme($input)
+    public function changeTheme($tenantId, $sidebarColor, $logoColor, $fontColor)
     {
-        
+        $sidebarData = TenantData::updateOrCreate(
+            [
+                'tenant_id' => $tenantId,
+                'key' => 'sidebar_color'
+            ],
+            [
+                'value' => $sidebarColor,
+                'options' => null,
+                'is_active' => true
+            ]
+        );
+
+        $logoData = TenantData::updateOrCreate(
+            [
+                'tenant_id' => $tenantId,
+                'key' => 'logo_color'
+            ],
+            [
+                'value' => $logoColor,
+                'options' => null,
+                'is_active' => true
+            ]
+        );
+
+        $fontData = TenantData::updateOrCreate(
+            [
+                'tenant_id' => $tenantId,
+                'key' => 'font_color'
+            ],
+            [
+                'value' => $fontColor,
+                'options' => null,
+                'is_active' => true
+            ]
+        );
     }
 }

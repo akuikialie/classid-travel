@@ -23,7 +23,7 @@
                 <!--end::Col-->
                 <!--begin::Col-->
                 <div class="col-xl-6 fv-row">
-                    <input type="color" value="{{ $logoColor }}" class="form-control form-control-solid colorpicker" name="sidebar_color" />
+                    <input type="color" value="{{ $logoColor }}" class="form-control form-control-solid colorpicker" name="logo_color" />
                 </div>
             </div>
             <!--end::Row-->
@@ -37,7 +37,7 @@
                 <!--end::Col-->
                 <!--begin::Col-->
                 <div class="col-xl-6 fv-row">
-                    <input type="color" value="{{ $sidebarColor }}" class="form-control form-control-solid colorpicker" name="logo_color" />
+                    <input type="color" value="{{ $sidebarColor }}" class="form-control form-control-solid colorpicker" name="sidebar_color" />
                 </div>
             </div>
             <!--end::Row-->
