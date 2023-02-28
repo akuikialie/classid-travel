@@ -5,18 +5,19 @@ namespace App\Services\EWallet;
 
 use App\Services\EWallet\Entity\WalletUser;
 use Exception;
+use Illuminate\Support\Fluent;
 
 class WalletService implements Contract\WalletService
 {
     use WalletBase;
     use WalletAccount;
 
-    private ?array $tenantCredentials = null;
+    private Fluent $tenantCredentials;
     private ?WalletUser $user = null;
 
     public function __construct(private readonly ?string $token = null)
     {
-        $this->tenantCredentials = activeTenant()?->wallet_login ?? [];
+        $this->tenantCredentials = new Fluent(activeTenant()?->wallet_login ?? []);
     }
 
     /**
