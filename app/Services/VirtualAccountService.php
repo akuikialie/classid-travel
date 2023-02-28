@@ -127,7 +127,7 @@ class VirtualAccountService
      */
     public function getModel(): ?Model
     {
-        if (!$this->model instanceof Schedule){
+        if (!$this->model instanceof Model){
             throw HandleCatchableException::catchable('Model tidak ditemukan!');
 
         }

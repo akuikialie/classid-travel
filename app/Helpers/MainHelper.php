@@ -78,7 +78,7 @@ if (!function_exists('createNewVA')) {
             $getBcn = activeTenant()->BCN;
             $getType = $type == 'tabungan' ? 0 : 1;
             $getMonthYear = substr($lastVA, '7', 4);
-            $increment = substr($lastVA, '11') ?? 0;
+            $increment = (int)substr($lastVA, '11') ?? 0;
 
             if ($time_now->toDateString() == $start_of_month->toDateString()) {
                 // today is a start of month
