@@ -4,7 +4,6 @@ namespace App\Http\Controllers\Web\Admin;
 
 use App\Http\Controllers\Controller as BaseController;
 use Exception;
-use Illuminate\Contracts\View\View;
 
 class Controller extends BaseController
 {
@@ -21,16 +20,16 @@ class Controller extends BaseController
      * Get the evaluated view contents for the given view.
      *
      * @param string $view
-     * @return View|Factory
-     * @throws Exception
+     *
+     * @return \Illuminate\Contracts\View\View|\Illuminate\Contracts\View\Factory
+     * @throws \Exception
      */
-    protected function view(string $view)
+    protected function view(string $view): \Illuminate\Contracts\View\View|\Illuminate\Contracts\View\Factory
     {
-        $tenant = activeTenant();
-        $this->setData('sidebarColor', $tenant?->tenantData?->where('key', 'sidebar_color')->first()?->value ?? '#F2E1FE');
-        $this->setData('logoColor', $tenant?->tenantData?->where('key', 'logo_color')->first()?->value ?? '#611E91');
-        $this->setData('fontColor', $tenant?->tenantData?->where('key', 'font_color')->first()?->value ?? '#000');
-
+        $colors = activeTenant()?->tenantData()->whereIn('key', ['sidebar_color', 'logo_color', 'font_color'])->get() ?? collect();
+        $this->setData('sidebarColor', $colors?->first(fn($it) => $it?->key ?? '' == 'sidebar_color')?->value ?? '#F2E1FE');
+        $this->setData('logoColor', $colors?->first(fn($it) => $it?->key ?? '' == 'logo_color')?->value ?? '#611E91');
+        $this->setData('fontColor', $colors?->first(fn($it) => $it?->key ?? '' == 'font_color')?->value ?? '#000');
 
         return parent::view($view);
     }

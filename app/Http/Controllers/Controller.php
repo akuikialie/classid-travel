@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use Exception;
-use Illuminate\Contracts\View\Factory;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Foundation\Bus\DispatchesJobs;
 use Illuminate\Foundation\Validation\ValidatesRequests;
@@ -95,9 +94,9 @@ class Controller extends BaseController
      * Get the evaluated view contents for the given view.
      *
      * @param string $view
-     * @return \Illuminate\Contracts\View\View|Factory
+     * @return \Illuminate\Contracts\View\View|\Illuminate\Contracts\View\Factory
      */
-    protected function view(string $view)
+    protected function view(string $view): \Illuminate\Contracts\View\View|\Illuminate\Contracts\View\Factory
     {
         if (false === array_key_exists('pageTitle', $this->controllerData)) {
             $this->setPageTitle('Untitled');
