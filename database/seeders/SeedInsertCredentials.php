@@ -18,12 +18,12 @@ class SeedInsertCredentials extends Seeder
         Tenant::query()
             ->where('is_active',true)
             ->update([
-                'wallet_login' => json_encode([
+                'wallet_login' => [
                     'WALLET_URL' => "https://demo.biznet.class.id",
                     'WALLET_BCN' => "857400",
                     'WALLET_ADMIN_USER' => "fahrudinsidik88@gmail.com",
                     'WALLET_ADMIN_PASS' => "password",
-                ])
+                ],
             ]);
         /* end:: insert wallet credentials */
     }

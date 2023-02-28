@@ -1,7 +1,8 @@
 <?php
 
 return [
-    'url' => env('WALLET_URL', 'https://community.class.id'),
+    'url' => env('WALLET_URL'),
+    'fallback_url' => 'https://community.class.id',
     'secure' => env('WALLET_URL_SECURE', false),
     'bcn' => env('WALLET_BCN', ''),
 

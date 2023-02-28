@@ -38,9 +38,10 @@ trait WalletBase
      */
     public function getWalletUrl(): string
     {
-        return !empty($this->tenantCredentials['WALLET_URL'])
-            ? $this->tenantCredentials['WALLET_URL']
-            : config('wallet.url');
+        // return !empty($this->tenantCredentials['WALLET_URL'])
+        //     ? $this->tenantCredentials['WALLET_URL']
+        //     : config('wallet.url');
+        return config('wallet.url') ?? $this->tenantCredentials?->WALLET_URL ?? config('wallet.fallback_url');
     }
 
     /**
@@ -91,11 +92,13 @@ trait WalletBase
         }));
 
         $http = Http::init($this->getBaseUrl())
-            ->acceptJson()
-            ->timeout(180)
-            ->withoutRedirecting()
+            ->withHeaders([
+                'Accept' => 'application/json'
+            ])
             ->withOptions([
                 'verify' => config('wallet.secure'),
+                'allow_redirects' => false,
+                'timeout' => 180,
             ])
             ->setHandler($stack);
 

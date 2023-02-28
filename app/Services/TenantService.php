@@ -55,12 +55,12 @@ class TenantService
         $input = array_merge($input, [
             'is_active' => false,
             'app_domain' => $appDomain,
-            'wallet_login' => json_encode([
+            'wallet_login' => [
                 'WALLET_URL' => "https://demo.biznet.class.id",
                 'WALLET_BCN' => "857400",
                 'WALLET_ADMIN_USER' => "fahrudinsidik88@gmail.com",
                 'WALLET_ADMIN_PASS' => "password",
-            ])
+            ],
         ]);
         $validAppDomain = dns_get_record($input['app_domain']);
         if (!is_array($validAppDomain) || count($validAppDomain) < 1) {
