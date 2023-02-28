@@ -93,8 +93,10 @@ trait WalletBase
         $http = Http::init($this->getBaseUrl())
             ->acceptJson()
             ->timeout(180)
-            ->withoutVerifying()
             ->withoutRedirecting()
+            ->withOptions([
+                'verify' => config('wallet.secure'),
+            ])
             ->setHandler($stack);
 
         $token = $this->user?->token ?? null;
