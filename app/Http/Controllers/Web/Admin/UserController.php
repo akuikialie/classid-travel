@@ -2,28 +2,32 @@
 
 namespace App\Http\Controllers\Web\Admin;
 
-use App\Enums\PermissionType;
-use App\Enums\UserStatus;
-use App\Http\Controllers\Controller;
-use App\Http\Controllers\Web\Admin\Fragment\UserFragmentController;
-use App\Models\Spatie\Role;
-use App\Models\User;
-use App\Services\UserService;
-use App\Traits\FragmentRenderer;
+use App\Exceptions\HandleCatchableException;
 use DB;
-use Illuminate\Contracts\View\Factory;
-use Illuminate\Contracts\View\View;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Http\JsonResponse;
-use Illuminate\Http\RedirectResponse;
-use Illuminate\Http\Request;
-use Illuminate\Http\Response;
-use Psr\Container\ContainerExceptionInterface;
-use Psr\Container\NotFoundExceptionInterface;
-use ReflectionException;
-use Spatie\Permission\Exceptions\UnauthorizedException;
+use Spatie\MediaLibrary\MediaCollections\Exceptions\FileDoesNotExist;
+use Spatie\MediaLibrary\MediaCollections\Exceptions\FileIsTooBig;
 use Throwable;
+use App\Models\User;
+use ReflectionException;
+use App\Enums\UserStatus;
+use App\Models\Spatie\Role;
+use Illuminate\Http\Request;
+use App\Enums\PermissionType;
+use App\Services\UserService;
+use App\Rules\OldPasswordRule;
+use Illuminate\Validation\Rule;
+use App\Traits\FragmentRenderer;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Contracts\View\View;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Contracts\View\Factory;
+use Illuminate\Database\Eloquent\Builder;
 use Yajra\DataTables\Exceptions\Exception;
+use Psr\Container\NotFoundExceptionInterface;
+use Psr\Container\ContainerExceptionInterface;
+use Spatie\Permission\Exceptions\UnauthorizedException;
+use App\Http\Controllers\Web\Admin\Fragment\UserFragmentController;
 
 class UserController extends Controller
 {
@@ -67,7 +71,7 @@ class UserController extends Controller
                     ->when(is_null($user->tenant_id), function (Builder $subQuery) use ($user) {
                         $subQuery->with(['tenant']);
                     }, function (Builder $subQuery) use ($user) {
-                        if (!is_null($user->tenant_id)){
+                        if (!is_null($user->tenant_id)) {
                             $subQuery->where('tenant_id', $user->tenant_id);
                             $subQuery->where('id', '!=', $user->id);
                         }
@@ -83,31 +87,31 @@ class UserController extends Controller
                     ->latest('id');
 
                 $datatable = datatables()->eloquent($users)
-                ->filter(function (Builder $query) use ($request) {
-                    /* begin:: apply custom filter */
-                    $customFilters = collect($request->input('filter'));
-                    if ($customFilters->count() > 0) {
-                        foreach ($customFilters as $filter) {
-                            if ($filter['name'] == 'role') {
-                                $role = $filter['value'] ?? null;
-                                if ($role) {
-                                    $query->whereHas('roles', function (Builder $subQuery) use($role){
-                                       $subQuery->where('name', $role);
-                                    });
+                    ->filter(function (Builder $query) use ($request) {
+                        /* begin:: apply custom filter */
+                        $customFilters = collect($request->input('filter'));
+                        if ($customFilters->count() > 0) {
+                            foreach ($customFilters as $filter) {
+                                if ($filter['name'] == 'role') {
+                                    $role = $filter['value'] ?? null;
+                                    if ($role) {
+                                        $query->whereHas('roles', function (Builder $subQuery) use ($role) {
+                                            $subQuery->where('name', $role);
+                                        });
+                                    }
+                                    continue;
                                 }
-                                continue;
+                                $query->where($filter['name'], $filter['value']);
                             }
-                            $query->where($filter['name'], $filter['value']);
                         }
-                    }
-                    /* end:: apply custom filter */
+                        /* end:: apply custom filter */
 
-                    /* begin:: filter search */
-                    $query->when($request->input('search')['value'], function (Builder $subQuery) use ($request) {
-                        $subQuery->where('name', 'like', "%" . $request->input('search')['value'] . "%");
-                    });
-                    /* end:: filter search */
-                })
+                        /* begin:: filter search */
+                        $query->when($request->input('search')['value'], function (Builder $subQuery) use ($request) {
+                            $subQuery->where('name', 'like', "%" . $request->input('search')['value'] . "%");
+                        });
+                        /* end:: filter search */
+                    })
                     ->addIndexColumn()
                     ->addColumn('role', function ($user) {
                         return $user->roles->pluck('name')->first();
@@ -138,12 +142,11 @@ class UserController extends Controller
 
                 return $datatable->make(true);
             } catch (Exception | NotFoundExceptionInterface | ContainerExceptionInterface $e) {
-                logError($e, title: 'User');
+                logError($e, title: 'user - datatable');
                 if (isDevelopmentMode()) {
                     throw $e;
                 }
                 throw new \Exception('Terjadi kesalahan!');
-
             }
         }
         abort(404);
@@ -164,10 +167,12 @@ class UserController extends Controller
 
         $user = auth()->user();
         $roles = Role::query()
-            ->when(!$user->hasRole('super-administrator') && isset($user->tenant_id),
+            ->when(
+                !$user->hasRole('super-administrator') && isset($user->tenant_id),
                 function (Builder $subQuery) use ($user) {
                     $subQuery->where('tenant_id', $user->tenant_id ?? null);
-                })
+                }
+            )
             ->when($user->tenant_id, function (Builder $query) use ($user) {
                 $query->where('tenant_id', $user->tenant_id);
             })
@@ -256,12 +261,16 @@ class UserController extends Controller
             return redirect()->back();
         } catch (Throwable $e) {
             DB::rollBack();
-            logError($e, title: 'User');
+            logError($e, title: 'user - store');
             if (isDevelopmentMode()) {
                 throw $e;
-            } else {
-                notify('Oops!', 'Terjadi kesalahan!', 'error');
             }
+            $message = 'Terjadi kesalahan!';
+            if ($e->getCode() >= 900){
+                $message = $e->getMessage();
+            }
+            notify('Oops!', $message, 'error');
+
             return redirect()->back();
         }
     }
@@ -288,12 +297,15 @@ class UserController extends Controller
 
             $this->setData('user', $user);
         } catch (\Exception $e) {
-            logError($e, title: 'Tenant');
+            logError($e, title: 'user - show');
             if (isDevelopmentMode()) {
                 throw $e;
-            } else {
-                notify('Oops!', 'Terjadi kesalahan!', 'error');
             }
+            $message = 'Terjadi kesalahan!';
+            if ($e->getCode() >= 900){
+                $message = $e->getMessage();
+            }
+            notify('Oops!', $message, 'error');
         }
 
         return $this->view('pages.web.user.user-show');
@@ -302,7 +314,6 @@ class UserController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param string|null $type
      * @param User $user
      * @return void
      */
@@ -315,13 +326,91 @@ class UserController extends Controller
      * Update the specified resource in storage.
      *
      * @param Request $request
-     * @param string|null $type
      * @param User $user
-     * @return void
+     * @return RedirectResponse
+     * @throws Throwable
+     * @throws HandleCatchableException
+     * @throws FileDoesNotExist
+     * @throws FileIsTooBig
      */
-    public function update(Request $request, User $user)
+    public function update(Request $request, user $user)
     {
-        abort(404);
+        $input = $request->validate([
+            'avatar_remove' => ['nullable', 'string'],
+            'name' => [Rule::requiredIf($user->id !== null), 'string'],
+            'username' => [Rule::requiredIf($user->id !== null), 'string'],
+            'phone' => [Rule::requiredIf($user->id === null), 'numeric'],
+        ]);
+
+        try {
+            /* begin:: user service */
+            $userService = new userService($user->tenant_id);
+            $userService
+                ->setuser($user);
+
+            if (isset($input['avatar_remove'])) {
+                $userService->unsetAvatar();
+            }
+            $userService
+                ->setAvatar($request)
+                ->update($request->only('name', 'username','phone'));
+            /* end:: user service */
+
+            DB::commit();
+
+            notify('Berhasil', 'Data User berhasil diperbarui!', 'success')->autoClose();
+            return redirect()->back();
+        } catch (Throwable $e) {
+            DB::rollBack();
+            logError($e, title: 'user - update');
+            if (isDevelopmentMode()) {
+                throw $e;
+            }
+            $message = 'Terjadi kesalahan!';
+            if ($e->getCode() >= 900){
+                $message = $e->getMessage();
+            }
+            notify('Oops!', $message, 'error');
+
+            return redirect()->back();
+        }
+    }
+
+    /**
+     * @param Request $request
+     * @param User $user
+     * @return RedirectResponse
+     * @throws HandleCatchableException
+     * @throws Throwable
+     */
+    public function updatePassword(Request $request, User $user)
+    {
+        try {
+            $input = $request->validate([
+                'old_password' => ['required', 'string', new OldPasswordRule()],
+                'password' => ['required_with:old_password'],
+                'confirm_password' => ['required_with:password', 'same:password'],
+            ]);
+
+            (new UserService())
+                ->setUser($user)
+                ->update(['password' => Hash::make($input['password'])]);
+
+            notify('Berhasil', 'Password berhasil diperbarui!', 'success')->autoClose();
+            return redirect()->back();
+        } catch (Throwable $e) {
+            logError($e, title: 'user - update password');
+            if (isDevelopmentMode()) {
+                throw $e;
+            }
+            $message = 'Terjadi kesalahan!';
+            if ($e->getCode() >= 900){
+                $message = $e->getMessage();
+            }
+            notify('Oops!', $message, 'error');
+
+            return redirect()->back();
+        }
     }
 
     /**
@@ -348,12 +437,16 @@ class UserController extends Controller
             notify('Behasil!', 'Berhasil menghapus akun!', 'success');
             return redirect()->back();
         } catch (Throwable $e) {
-            logError($e, title: 'User');
+            logError($e, title: 'user - delete');
             if (isDevelopmentMode()) {
                 throw $e;
-            } else {
-                notify('Oops!', 'Terjadi kesalahan!', 'error');
             }
+            $message = 'Terjadi kesalahan!';
+            if ($e->getCode() >= 900){
+                $message = $e->getMessage();
+            }
+            notify('Oops!', $message, 'error');
+
             return redirect()->back();
         }
     }
@@ -380,12 +473,16 @@ class UserController extends Controller
             notify('Behasil!', 'Berhasil memperbarui status akun!', 'success');
             return redirect()->back();
         } catch (Throwable $e) {
-            logError($e, title: 'User');
+            logError($e, title: 'user - change status');
             if (isDevelopmentMode()) {
                 throw $e;
-            } else {
-                notify('Oops!', 'Terjadi kesalahan!', 'error');
             }
+            $message = 'Terjadi kesalahan!';
+            if ($e->getCode() >= 900){
+                $message = $e->getMessage();
+            }
+            notify('Oops!', $message, 'error');
+
             return redirect()->back();
         }
     }

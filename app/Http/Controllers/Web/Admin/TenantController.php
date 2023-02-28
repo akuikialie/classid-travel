@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers\Web\Admin;
 
-use App\Http\Controllers\Controller;
 use App\Http\Controllers\Web\Admin\Fragment\TenantFragmentController;
 use App\Models\Tenant\Tenant;
 use App\Services\TenantService;
@@ -103,7 +102,7 @@ class TenantController extends Controller
                     ->rawColumns(['actions', 'status'])
                     ->make(true);
             } catch (\Yajra\DataTables\Exceptions\Exception $e) {
-                logError($e, title: 'Tenant');
+                logError($e, title: 'tenant - datatable');
                 if (isDevelopmentMode()) {
                     throw $e;
                 }
@@ -173,12 +172,16 @@ class TenantController extends Controller
             return redirect()->back();
         } catch (Throwable $e) {
             DB::rollBack();
-            logError($e, title: 'Tenant');
+            logError($e, title: 'tenant - store');
             if (isDevelopmentMode()) {
                 throw $e;
-            } else {
-                notify('Oops!', 'Terjadi kesalahan!', 'error');
             }
+            $message = 'Terjadi kesalahan!';
+            if ($e->getCode() >= 900) {
+                $message = $e->getMessage();
+            }
+            notify('Oops!', $message, 'error');
+
             return redirect()->back();
         }
     }
@@ -199,6 +202,7 @@ class TenantController extends Controller
         $this->setBreadCrumb('Profil Travel');
         try {
             $user = auth()->user();
+
             if (!($user->tenant_id ?? null)) {
                 abort(404);
             }
@@ -212,23 +216,26 @@ class TenantController extends Controller
 
             if (\request()->has('fragment')) {
                 $fragmentName = \request()->get('fragment');
-                $fragmentParameter = \request()->get('parameter');
+                $fragmentParameter = \request()->get('folder');
                 $this->addGlobalParams('fragment_active', $fragmentName);
                 $this->fragment(new TenantFragmentController())
                     ->render($fragmentName ?? 'target', [
                         'tenant' => $tenant,
-                        'parameter' => $fragmentParameter ?? null,
-                  ]);
+                        'folder' => $fragmentParameter ?? null,
+                    ]);
             }
 
             $this->setData('tenant', $tenant);
         } catch (Exception $e) {
-            logError($e, title: 'Tenant');
+            logError($e, title: 'tenant - show');
             if (isDevelopmentMode()) {
                 throw $e;
-            } else {
-                notify('Oops!', 'Terjadi kesalahan!', 'error');
             }
+            $message = 'Terjadi kesalahan!';
+            if ($e->getCode() >= 900) {
+                $message = $e->getMessage();
+            }
+            notify('Oops!', $message, 'error');
         }
 
         return $this->view('pages.web.tenant.tenant-show');
@@ -253,6 +260,7 @@ class TenantController extends Controller
             $tenant = Tenant::query()
                 ->with(['media'])
                 ->whereId($user->tenant_id)
+                ->withCount(['jamaah', 'packages'])
                 ->first();
 
             $this->addGlobalParams('fragment_active', $slug);
@@ -260,17 +268,20 @@ class TenantController extends Controller
             $this->fragment(new TenantFragmentController())
                 ->render($slug ?? 'overview', [
                     'tenant' => $tenant,
-                    'parameter' => $fragmentParameter ?? null,
+                    'folder' => request()->input('folder') ?? null,
                 ]);
 
             $this->setData('tenant', $tenant);
         } catch (Exception $e) {
-            logError($e, title: 'Tenant');
+            logError($e, title: 'tenant - show profile');
             if (isDevelopmentMode()) {
                 throw $e;
-            } else {
-                notify('Oops!', 'Terjadi kesalahan!', 'error');
             }
+            $message = 'Terjadi kesalahan!';
+            if ($e->getCode() >= 900) {
+                $message = $e->getMessage();
+            }
+            notify('Oops!', $message, 'error');
         }
 
         return $this->view('pages.web.tenant.tenant-show');
@@ -350,12 +361,16 @@ class TenantController extends Controller
             return redirect()->back();
         } catch (Throwable $e) {
             DB::rollBack();
-            logError($e, title: 'Tenant');
+            logError($e, title: 'tenant - update');
             if (isDevelopmentMode()) {
                 throw $e;
-            } else {
-                notify('Oops!', 'Terjadi kesalahan!', 'error');
             }
+            $message = 'Terjadi kesalahan!';
+            if ($e->getCode() >= 900) {
+                $message = $e->getMessage();
+            }
+            notify('Oops!', $message, 'error');
+
             return redirect()->back();
         }
     }
@@ -365,6 +380,7 @@ class TenantController extends Controller
      *
      * @param Tenant $tenant
      * @return RedirectResponse
+     * @throws Throwable
      */
     public function destroy(Tenant $tenant)
     {
@@ -373,8 +389,16 @@ class TenantController extends Controller
 
             notify('Berhasil', 'Travel berhasil di hapus', 'success')->autoClose();
             return redirect()->back();
-
-        }catch (Throwable $e){
+        } catch (Throwable $e) {
+            logError($e, title: 'tenant - delete');
+            if (isDevelopmentMode()) {
+                throw $e;
+            }
+            $message = 'Terjadi kesalahan!';
+            if ($e->getCode() >= 900) {
+                $message = $e->getMessage();
+            }
+            notify('Oops!', $message, 'error');
             return redirect()->back();
         }
     }
@@ -412,12 +436,15 @@ class TenantController extends Controller
             return redirect()->back();
         } catch (Throwable $e) {
             DB::rollBack();
-            logError($e, title: 'Tenant');
+            logError($e, title: 'tenant - add media');
             if (isDevelopmentMode()) {
                 throw $e;
-            } else {
-                notify('Oops!', 'Terjadi kesalahan!', 'error');
             }
+            $message = 'Terjadi kesalahan!';
+            if ($e->getCode() >= 900) {
+                $message = $e->getMessage();
+            }
+            notify('Oops!', $message, 'error');
             return redirect()->back();
         }
     }
@@ -448,14 +475,48 @@ class TenantController extends Controller
             }
             return redirect()->back();
         } catch (Throwable $e) {
-            logError($e, title: 'Tenant');
+            logError($e, title: 'tenant - change status');
             if (isDevelopmentMode()) {
                 throw $e;
-            } else {
-                notify('Oops!', 'Terjadi kesalahan!', 'error');
             }
+            $message = 'Terjadi kesalahan!';
+            if ($e->getCode() >= 900) {
+                $message = $e->getMessage();
+            }
+            notify('Oops!', $message, 'error');
             return redirect()->back();
         }
         /* end:: start tenant service */
+    }
+
+    /**
+     * @param Request $request
+     * @param Tenant $tenant
+     * @return RedirectResponse
+     * @throws Throwable
+     */
+    public function changeTheme(Request $request, Tenant $tenant)
+    {
+        DB::beginTransaction();
+        try {
+            (new TenantService($tenant->id))
+                ->changeTheme($request->only('logo_color', 'sidebar_color', 'font_color'));
+
+            DB::commit();
+            notify('Berhasil', 'Tema berhasil digunakan!', 'success')->autoClose();
+            return redirect()->back();
+        } catch (Throwable $e) {
+            DB::rollBack();
+            logError($e, title: 'tenant - change status');
+            if (isDevelopmentMode()) {
+                throw $e;
+            }
+            $message = 'Terjadi kesalahan!';
+            if ($e->getCode() >= 900) {
+                $message = $e->getMessage();
+            }
+            notify('Oops!', $message, 'error');
+            return redirect()->back();
+        }
     }
 }

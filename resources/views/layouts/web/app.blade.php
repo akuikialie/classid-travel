@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
+
 <head>
     <title>{{ activeTenant()->name ?? 'ProHajj Admin' }} - {{ $pageTitle ?? 'admin' }}</title>
     <meta charset="utf-8" />
@@ -18,9 +19,27 @@
     <link rel="shortcut icon" href="{{ asset('logo/24w/logo-pict@24px.png') }}" />
     <!--begin::Fonts(mandatory for all pages)-->
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Inter:300,400,500,600,700" />
-
-
     @include('customs.web.styles')
+    <style>
+        #kt_app_sidebar_logo {
+            background-color: {{ $logoColor }};
+        }
+
+        #kt_app_sidebar {
+            background-color: {{ $sidebarColor }};
+
+        }
+
+        #kt_app_sidebar .menu-title,
+        #kt_app_sidebar .menu-icon * {
+            color: {{ $fontColor }} !important;
+        }
+
+        #kt_app_header_container {
+            background-color: {{ $sidebarColor }};
+        }
+    </style>
+    @stack('css')
 </head>
 <!--end::Head-->
 <!--begin::Body-->
@@ -88,8 +107,7 @@
                     <!--begin::Mobile logo-->
                     <div class="d-flex align-items-center flex-grow-1 flex-lg-grow-0">
                         <a href="#" class="d-lg-none">
-                            <img alt="Logo" src="{{ asset('logo/24w/logo-pict@24px.png') }}"
-                                class="h-30px" />
+                            <img alt="Logo" src="{{ asset('logo/24w/logo-pict@24px.png') }}" class="h-30px" />
                         </a>
                     </div>
                     <!--end::Mobile logo-->
@@ -163,8 +181,7 @@
     <div id="kt_scrolltop" class="scrolltop" data-kt-scrolltop="true">
         <!--begin::Svg Icon | path: icons/duotune/arrows/arr066.svg-->
         <span class="svg-icon">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none"
-                xmlns="http://www.w3.org/2000/svg">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <rect opacity="0.5" x="13" y="6" width="13" height="2" rx="1"
                     transform="rotate(90 13 6)" fill="currentColor" />
                 <path
@@ -199,6 +216,8 @@
     <!--end::Modal - Invite Friend-->
     <!--end::Modals-->
     @include('customs.web.scripts')
+
+    @stack('js')
 </body>
 <!--end::Body-->
 

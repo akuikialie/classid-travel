@@ -7,7 +7,6 @@ use Exception;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
-use App\Http\Controllers\Controller;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Routing\Redirector;
 
@@ -49,6 +48,9 @@ class DashboardController extends Controller
 //        return view('pages.web.dashboard.dashboard-super-admin-index');
     }
 
+    /**
+     * @throws Exception
+     */
     public function dashboardAdmin(): Application|Factory|View
     {
         $this->setPageTitle('Users');
@@ -80,8 +82,7 @@ class DashboardController extends Controller
             ];
         }
 
-        return view('pages.web.dashboard.dashboard-index', [
-            'data_keberangkatan' => array_to_object($arrayData),
-        ]);
+        $this->setData('data_keberangkatan', array_to_object($arrayData));
+        return $this->view('pages.web.dashboard.dashboard-index');
     }
 }

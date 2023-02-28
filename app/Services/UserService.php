@@ -6,9 +6,12 @@ namespace App\Services;
 
 use App\Exceptions\HandleCatchableException;
 use App\Models\Jamaah\JamaahHistory;
+use Illuminate\Http\Request;
 use App\Models\User;
 use Exception;
 use Illuminate\Support\Facades\Hash;
+use Spatie\MediaLibrary\MediaCollections\Exceptions\FileDoesNotExist;
+use Spatie\MediaLibrary\MediaCollections\Exceptions\FileIsTooBig;
 use Throwable;
 
 class UserService
@@ -16,8 +19,8 @@ class UserService
     private ?User $user = null;
     public function __construct(
         private readonly ?int $tenantId = null
-    )
-    {}
+    ) {
+    }
 
     /**
      * @throws Throwable
@@ -70,6 +73,7 @@ class UserService
         /* begin:: add jamaah */
         if ($isJamaah) {
             (new JamaahService(tenantId: $this->tenantId))
+                ->setUser($this->user)
                 ->createJamaah();
         }
         /* end:: add jamaah */
@@ -152,9 +156,54 @@ class UserService
      */
     public function getUser(): User
     {
-        if (!$this->user instanceof User){
+        if (!$this->user instanceof User) {
             throw HandleCatchableException::catchable('User tidak di ditemukan!');
         }
         return $this->user;
+    }
+
+    /**
+     * @throws HandleCatchableException
+     */
+    public function unsetAvatar(): static
+    {
+        $avatar = $this->getUser();
+        $avatar->clearMediaCollection('avatars');
+        return $this;
+    }
+
+    /**
+     * @return $this
+     * @throws FileDoesNotExist
+     * @throws FileIsTooBig
+     * @throws Exception
+     */
+    public function setAvatar(Request $request): static
+    {
+        $user = $this->getuser();
+
+        if ($request->hasFile('avatar')) {
+            $user->addMediaFromRequest('avatar')
+                ->toMediaCollection('avatars');
+        }
+        return $this;
+    }
+
+    /**
+     * @param array $input
+     * @return UserService
+     * @throws HandleCatchableException
+     */
+    public function update(array $input): static
+    {
+        $user = $this->getuser();
+
+        foreach ($input as $key => $value) {
+            $user->$key = $value;
+        }
+
+        $user->save();
+
+        return $this;
     }
 }

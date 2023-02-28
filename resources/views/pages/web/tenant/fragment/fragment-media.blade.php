@@ -34,7 +34,7 @@
               @foreach($getMediaCollection ?? [] as $media)
                 <!--begin::Item-->
                 <div class="text-center px-5 py-5">
-                  <img src="{{ $media->getFullUrl() }}" class="card-rounded mw-100"/>
+                  <img src="{{ $media->getUrl() }}" class="card-rounded mw-100"/>
                 </div>
                 <!--end::Item-->
               @endforeach
@@ -74,7 +74,7 @@
             <!--end::Stats-->
             <!--begin::Stats-->
             <div class="border border-gray-300 border-dashed text-center rounded min-w-80px py-3 px-4 mx-2 mb-3">
-              <a type="button" class="btn btn-primary hover-elevate-up fragment"
+              <a href="{{ route('admin.tenant.showProfile', ['slug'=>'media_edit','folder'=>'banners']) }}" type="button" class="btn btn-primary hover-elevate-up fragment"
                  data-fragment="media_edit"
                  data-fragment-parameter="banners">Detail Media</a>
             </div>

@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers\Web\Admin\Master;
 
-use App\Http\Controllers\Controller;
+use App\Http\Controllers\Web\Admin\Controller;
 use App\Models\Itinerary\ItineraryActivity;
 use Illuminate\Contracts\View\View;
 use Illuminate\Database\Eloquent\Builder;
@@ -24,6 +24,7 @@ class ItineraryController extends Controller
      */
     public function __construct()
     {
+
         $this->setData('current_page', $this->forPage);
     }
 
@@ -66,12 +67,11 @@ class ItineraryController extends Controller
 
                 return $datatable->make(true);
             } catch (Throwable $e) {
-                logError($e, title: 'Itinerary');
+                logError($e, title: 'itinerary - datatable');
                 if (isDevelopmentMode()) {
                     throw $e;
-                } else {
-                    throw new \Exception('Terjadi kesalahan!.');
                 }
+                throw new \Exception('Terjadi kesalahan!.');
             }
         }
     }
@@ -130,12 +130,15 @@ class ItineraryController extends Controller
             notify('Berhasil', 'Berhasil membuat kegiatan baru!.', 'success');
             return redirect()->back();
         } catch (Throwable $e) {
-            logError($e, title: 'Itinerary');
+            logError($e, title: 'itinerary - store');
             if (isDevelopmentMode()) {
                 throw $e;
-            } else {
-                notify('Oops!', 'Terjadi kesalahan!', 'error');
             }
+            $message = 'Terjadi kesalahan!';
+            if ($e->getCode() >= 900){
+                $message = $e->getMessage();
+            }
+            notify('Oops!', $message, 'error');
             return redirect()->back();
         }
     }
@@ -195,12 +198,15 @@ class ItineraryController extends Controller
             notify('Berhasil', 'Berhasil memperbarui data kegiatan!.', 'success');
             return redirect()->back();
         } catch (Throwable $e) {
-            logError($e, title: 'Itinerary');
+            logError($e, title: 'itinerary - update');
             if (isDevelopmentMode()) {
                 throw $e;
-            } else {
-                notify('Oops!', 'Terjadi kesalahan!', 'error');
             }
+            $message = 'Terjadi kesalahan!';
+            if ($e->getCode() >= 900){
+                $message = $e->getMessage();
+            }
+            notify('Oops!', $message, 'error');
             return redirect()->back();
         }
     }
@@ -223,12 +229,15 @@ class ItineraryController extends Controller
             notify('Berhasil', 'Data Aktifitas berhasil dihapus!', 'success')->autoClose();
             return redirect()->back();
         } catch (Throwable $e) {
-            logError($e, title: 'Itinerary');
+            logError($e, title: 'itinerary - delete');
             if (isDevelopmentMode()) {
                 throw $e;
-            } else {
-                notify('Oops!', 'Terjadi kesalahan!', 'error');
             }
+            $message = 'Terjadi kesalahan!';
+            if ($e->getCode() >= 900){
+                $message = $e->getMessage();
+            }
+            notify('Oops!', $message, 'error');
             return redirect()->back();
         }
     }

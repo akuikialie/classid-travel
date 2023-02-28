@@ -7,7 +7,6 @@ namespace App\Http\Controllers\Web\Admin;
 use App\Enums\PermissionType;
 use App\Enums\RoleEnum;
 use App\Enums\UserStatus;
-use App\Http\Controllers\Controller;
 use App\Models\Spatie\Permission;
 use App\Models\Spatie\Role;
 use App\Models\Tenant\Tenant;
@@ -151,7 +150,7 @@ class RoleController extends Controller
 
                 return $datatable->make(true);
             } catch (Exception | \Exception $e) {
-                logError($e, title: 'Role');
+                logError($e, title: 'role - datatable');
                 if (isDevelopmentMode()) {
                     throw $e;
                 } else {
@@ -254,16 +253,22 @@ class RoleController extends Controller
                 'create',
                 'update',
                 'delete',
+                'export',
             ];
 
             $permissions = Permission::query()
-                ->get()
-                ->unique('group');
+                ->get();
 
             $permissionGroupedList = [];
 
-            foreach ($permissions as $group) {
+            foreach ($permissions->unique('group') as $group) {
                 foreach ($default as $permission) {
+                    $isAccessExists = $permissions->where('group', '=', $group->group)
+                        ->where('name', '=' , "{$permission} {$group->group}")
+                        ->first();
+                    if (!$isAccessExists){
+                        continue;
+                    }
                     $permissionGroupedList[$group->group][] = [
                         'name' => "{$permission}",
                         'is_active' => false,
@@ -319,12 +324,15 @@ class RoleController extends Controller
             return redirect()->back();
         } catch (Throwable $e) {
             DB::rollBack();
-            logError($e, title: 'Role');
+            logError($e, title: 'role - store');
             if (isDevelopmentMode()) {
                 throw $e;
-            } else {
-                notify('Oops!', 'Terjadi kesalahan!', 'error');
             }
+            $message = 'Terjadi kesalahan!';
+            if ($e->getCode() >= 900){
+                $message = $e->getMessage();
+            }
+            notify('Oops!', $message, 'error');
             return redirect()->back();
         }
     }
@@ -468,18 +476,25 @@ class RoleController extends Controller
                 'create',
                 'update',
                 'delete',
+                'export',
             ];
 
             $permissions = Permission::query()
-                ->get()
-                ->unique('group');
+                ->get();
 
             $permissionGroupedList = [];
 
             $rolePermissions = collect($role->permissions);
 
-            foreach ($permissions as $group) {
+            foreach ($permissions->unique('group') as $group) {
                 foreach ($default as $permission) {
+                    $isAccessExists = $permissions->where('group', '=', $group->group)
+                        ->where('name', '=' , "{$permission} {$group->group}")
+                        ->first();
+                    if (!$isAccessExists){
+                        continue;
+                    }
+
                     $isHasPermission = $rolePermissions->firstWhere('name', strtolower("{$permission} {$group->group}"));
 
                     $permissionGroupedList[$group->group][] = [
@@ -531,12 +546,15 @@ class RoleController extends Controller
             return redirect()->back();
         } catch (Throwable $e) {
             DB::rollBack();
-            logError($e, title: 'Role');
+            logError($e, title: 'role - update');
             if (isDevelopmentMode()) {
                 throw $e;
-            } else {
-                notify('Oops!', 'Terjadi kesalahan!', 'error');
             }
+            $message = 'Terjadi kesalahan!';
+            if ($e->getCode() >= 900){
+                $message = $e->getMessage();
+            }
+            notify('Oops!', $message, 'error');
             return redirect()->back();
         }
     }
@@ -560,7 +578,7 @@ class RoleController extends Controller
             notify('Berhasil!', 'Berhasil menghapus role', 'success');
             return redirect()->intended(route('admin.role.index'));
         } catch (Throwable $e) {
-            logError($e, title: 'Role');
+            logError($e, title: 'role - delete');
             if (isDevelopmentMode()) {
                 throw $e;
             }
