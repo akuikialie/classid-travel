@@ -519,4 +519,26 @@ class TenantController extends Controller
             return redirect()->back();
         }
     }
+
+    public function banner( Request $request ){
+        $user = auth()->user();
+
+        try {
+            notify('Berhasil', 'Data travel berhasil diperbarui!', 'success')->autoClose();
+            return redirect()->back();
+        } catch (Throwable $e) {
+            DB::rollBack();
+            logError($e, title: 'tenant - update');
+            if (isDevelopmentMode()) {
+                throw $e;
+            }
+            $message = 'Terjadi kesalahan!';
+            if ($e->getCode() >= 900) {
+                $message = $e->getMessage();
+            }
+            notify('Oops!', $message, 'error');
+
+            return redirect()->back();
+        }
+    }
 }
