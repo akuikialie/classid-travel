@@ -186,13 +186,13 @@ class TenantService
      * @param array $themes
      * @return $this
      */
-    public function changeTheme( array $themes): static
+    public function changeTheme(array $themes): static
     {
-        foreach ($themes as $key => $theme){
+        foreach ($themes as $key => $theme) {
             TenantData::query()->updateOrCreate([
                 'tenant_id' => $this->tenantId,
                 'key' => $key,
-                ],[
+            ], [
                 'value' => $theme,
                 'options' => null,
                 'is_active' => true
@@ -200,4 +200,25 @@ class TenantService
         }
         return $this;
     }
+
+    /**
+     * @param array $banner
+     * @return $this
+     */
+    public function banner(array $banner): static
+    {
+        
+        foreach ($banner as $key => $banner) {
+            tenantData::query()->updateOrCreate([
+                'tenant_id' => $this->tenantId,
+                'key' => $key,
+            ], [
+                'value' => $banner,
+                'options' => null,
+                'is_active' => true
+            ]);
+        }
+        return $this;
+    }
+
 }

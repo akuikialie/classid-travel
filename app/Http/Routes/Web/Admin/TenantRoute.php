@@ -69,7 +69,7 @@ class TenantRoute extends BaseRoute
                 $this->router->post($this->prefix('{tenant_hash?}/change_theme'), [TenantController::class, 'changeTheme'])
                     ->name($this->name('changeTheme'));
 
-                    $this->router->post($this->prefix('profile/{tenant_hash?}'), [TenantController::class, 'banner'])
+                $this->router->post($this->prefix('{tenant_hash?}/banner'), [TenantController::class, 'banner'])
                     ->name($this->name('banner'));
             });
         });
