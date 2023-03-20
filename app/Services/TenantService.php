@@ -94,7 +94,6 @@ class TenantService
     public function setTenant(Tenant $tenant): static
     {
         $this->tenant = $tenant;
-
         return $this;
     }
 
@@ -186,18 +185,36 @@ class TenantService
      * @param array $themes
      * @return $this
      */
-    public function changeTheme( array $themes): static
+    public function changeTheme(array $themes): static
     {
-        foreach ($themes as $key => $theme){
+        foreach ($themes as $key => $theme) {
             TenantData::query()->updateOrCreate([
                 'tenant_id' => $this->tenantId,
                 'key' => $key,
-                ],[
+            ], [
                 'value' => $theme,
                 'options' => null,
                 'is_active' => true
             ]);
         }
+        return $this;
+    }
+
+    /**
+     * @throws \Throwable
+     * @throws FileDoesNotExist
+     * @throws FileIsTooBig
+     */
+    public function authBanner(Request $request, string $collectionName): static
+    {
+        $tenant = $this->getTenant();
+
+        if ($request->hasfile('collections')) {
+            $tenant
+                ->addMediaFromRequest('collections')
+                ->toMediaCollection($collectionName);
+        }
+
         return $this;
     }
 }

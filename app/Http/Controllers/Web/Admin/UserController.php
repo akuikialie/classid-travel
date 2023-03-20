@@ -241,7 +241,6 @@ class UserController extends Controller
             'phone' => ['required', 'numeric'],
             'role' => ['required', 'string'],
         ]);
-
         DB::beginTransaction();
         try {
             /* begin: user service */
