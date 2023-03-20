@@ -94,7 +94,6 @@ class TenantService
     public function setTenant(Tenant $tenant): static
     {
         $this->tenant = $tenant;
-
         return $this;
     }
 
@@ -202,23 +201,20 @@ class TenantService
     }
 
     /**
-     * @param array $banner
-     * @return $this
+     * @throws \Throwable
+     * @throws FileDoesNotExist
+     * @throws FileIsTooBig
      */
-    public function banner(array $banner): static
+    public function authBanner(Request $request, string $collectionName): static
     {
-        
-        foreach ($banner as $key => $banner) {
-            tenantData::query()->updateOrCreate([
-                'tenant_id' => $this->tenantId,
-                'key' => $key,
-            ], [
-                'value' => $banner,
-                'options' => null,
-                'is_active' => true
-            ]);
+        $tenant = $this->getTenant();
+
+        if ($request->hasfile('collections')) {
+            $tenant
+                ->addMediaFromRequest('collections')
+                ->toMediaCollection($collectionName);
         }
+
         return $this;
     }
-
 }

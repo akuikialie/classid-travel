@@ -553,7 +553,7 @@ class TenantController extends Controller
     /**
      * @throws Throwable
      */
-    public function banner(Request $request, ?Tenant $tenant = null)
+    public function authBanner(Request $request, ?Tenant $tenant = null)
     {
         $request->validate([
             'collection' => ['required', 'string'],
@@ -573,7 +573,7 @@ class TenantController extends Controller
             $tenantService = new TenantService($tenant->id);
             $tenantService
                 ->setTenant($tenant)
-                ->addMediaCollection($request, $request->collection);
+                ->authBanner($request, $request->collection);
             /* end:: tenant service */
 
             notify('Berhasil!', "Berhasil memperbarui koleksi {$request->collection}", 'success');
