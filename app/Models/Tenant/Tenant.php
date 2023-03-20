@@ -46,7 +46,7 @@ class Tenant extends Model implements HasMedia
 
     public function jamaah(): HasMany
     {
-        return $this->hasMany(jamaah::class, 'tenant_id');
+        return $this->hasMany(Jamaah::class, 'tenant_id');
     }
 
     public function packages(): HasMany
@@ -56,6 +56,6 @@ class Tenant extends Model implements HasMedia
 
     public function tenantData(): HasMany
     {
-        return $this->hasMany(tenantData::class, 'tenant_id');
+        return $this->hasMany(TenantData::class, 'tenant_id');
     }
 }
