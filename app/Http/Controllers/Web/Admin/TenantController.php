@@ -557,7 +557,7 @@ class TenantController extends Controller
     {
         $request->validate([
             'collection' => ['required', 'string'],
-            'collections' => ['nullable'],
+            'collections' => ['required', 'image'],
         ]);
 
         DB::beginTransaction();
