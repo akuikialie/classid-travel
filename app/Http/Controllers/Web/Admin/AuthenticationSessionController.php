@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Web\Admin;
 
+use App\Models\Base\Media;
 use Illuminate\Http\Request;
 use App\Models\Tenant\TenantData;
 use Illuminate\Routing\Redirector;
@@ -16,9 +17,7 @@ class AuthenticationSessionController extends Controller
 {
     public function create(): Factory|View|Application
     {
-        return view('pages.web.auth.sign-in');
-        // $tenantData = TenantData::where('key', 'banner')->first();
-        // return view('pages.web.auth.sign-in')->setData(['tenantData' => $tenantData]);    
+        return view('pages.web.auth.sign-in');    
     }
 
     /**

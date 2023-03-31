@@ -122,7 +122,7 @@
         <!--end::Body-->
         <!--begin::Aside-->
         <div class="d-flex flex-lg-row-fluid w-lg-50 bgi-size-cover bgi-position-center order-1 order-lg-2"
-            style="background-image: url({{ $tenantData->value ?? asset('web/media/misc/auth-bg.png') }})">
+            style="background-image: url({{ $auth_logo ?? asset('web/media/misc/auth-bg.png') }})">
             <!--begin::Content-->
             {{-- <div class="d-flex flex-column flex-center py-7 py-lg-15 px-5 px-md-15 w-100">
         <!--begin::Logo-->

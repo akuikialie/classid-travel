@@ -112,7 +112,7 @@
                 <!--begin::Col-->
                 <div class="col-xl-9 fv-row">
                     <input type="text" readonly="readonly" class="form-control form-control-solid" name="collection"
-                        value="admin.travel_media.auth_logo" />
+                        value="auth_logo" />
                 </div>
             </div>
             <!--end::Row-->
@@ -129,10 +129,10 @@
                         <div class="col-lg-8">
                             <!--begin::Image input-->
                             <div class="image-input image-input-outline" data-kt-image-input="true"
-                                style="background-image: url({{ $currentBanner ?? asset('logo/96w/logo-pict@96px.png') }})">
+                                style="background-image: url({{ $auth_logo ?? asset('logo/96w/logo-pict@96px.png') }})">
                                 <!--begin::Preview existing avatar-->
                                 <div class="image-input-wrapper w-lg-300px h-lg-175px bgi-position-center"
-                                    style="background-size: 75%; background-image: url({{ $currentBanner ?? asset('web/media/misc/auth-bg.png') }})">
+                                    style="background-size: 75%; background-image: url({{ $auth_logo ?? asset('web/media/misc/auth-bg.png') }})">
                                 </div>
                                 <!--end::Preview existing avatar-->
                                 <!--begin::Label-->

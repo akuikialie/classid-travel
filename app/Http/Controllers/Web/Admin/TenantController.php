@@ -521,36 +521,6 @@ class TenantController extends Controller
     }
 
     /**
-     * @param Request $request
-     * @param Tenant $tenant
-     * @return RedirectResponse
-     * @throws Throwable
-     */
-    // public function banner(Request $request, Tenant $tenant)
-    // {
-    //     DB::beginTransaction();
-    //     try {
-    //         (new TenantService($tenant->id))
-    //             ->banner($request->only('banner'));
-
-    //         DB::commit();
-    //         notify('Berhasil', 'Tema berhasil digunakan!', 'success')->autoClose();
-    //         return redirect()->back();
-    //     } catch (Throwable $e) {
-    //         DB::rollBack();
-    //         logError($e, title: 'tenant - change status');
-    //         if (isDevelopmentMode()) {
-    //             throw $e;
-    //         }
-    //         $message = 'Terjadi kesalahan!';
-    //         if ($e->getCode() >= 900) {
-    //             $message = $e->getMessage();
-    //         }
-    //         notify('Oops!', $message, 'error');
-    //         return redirect()->back();
-    //     }
-    // }
-    /**
      * @throws Throwable
      */
     public function authBanner(Request $request, ?Tenant $tenant = null)
