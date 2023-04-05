@@ -17,7 +17,7 @@ class AuthenticationSessionController extends Controller
 {
     public function create(): Factory|View|Application
     {
-        return view('pages.web.auth.sign-in');    
+        return view('pages.web.auth.sign-in');
     }
 
     /**

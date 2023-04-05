@@ -115,6 +115,7 @@ class TenantController extends Controller
      * Display a listing of the resource.
      *
      * @return \Illuminate\View\View
+     * @throws Exception
      */
     public function index(): View
     {
@@ -497,6 +498,11 @@ class TenantController extends Controller
      */
     public function changeTheme(Request $request, Tenant $tenant)
     {
+        $request->validate([
+            "logo_color" => ['required', 'string'],
+            "sidebar_color" => ['required', 'string'],
+            "font_color" => ['required', 'string'],
+        ]);
         DB::beginTransaction();
         try {
             (new TenantService($tenant->id))
