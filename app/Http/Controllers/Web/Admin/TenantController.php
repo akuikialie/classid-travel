@@ -115,6 +115,7 @@ class TenantController extends Controller
      * Display a listing of the resource.
      *
      * @return \Illuminate\View\View
+     * @throws Exception
      */
     public function index(): View
     {
@@ -497,6 +498,11 @@ class TenantController extends Controller
      */
     public function changeTheme(Request $request, Tenant $tenant)
     {
+        $request->validate([
+            "logo_color" => ['required', 'string'],
+            "sidebar_color" => ['required', 'string'],
+            "font_color" => ['required', 'string'],
+        ]);
         DB::beginTransaction();
         try {
             (new TenantService($tenant->id))
@@ -508,6 +514,51 @@ class TenantController extends Controller
         } catch (Throwable $e) {
             DB::rollBack();
             logError($e, title: 'tenant - change status');
+            if (isDevelopmentMode()) {
+                throw $e;
+            }
+            $message = 'Terjadi kesalahan!';
+            if ($e->getCode() >= 900) {
+                $message = $e->getMessage();
+            }
+            notify('Oops!', $message, 'error');
+            return redirect()->back();
+        }
+    }
+
+    /**
+     * @throws Throwable
+     */
+    public function authBanner(Request $request, ?Tenant $tenant = null)
+    {
+        $request->validate([
+            'collection' => ['required', 'string'],
+            'collections' => ['required', 'image'],
+        ]);
+
+        DB::beginTransaction();
+        try {
+            if (is_null($tenant)) {
+                $user = auth()->user();
+                $tenant = Tenant::query()
+                    ->with(['media'])
+                    ->whereId($user->tenant_id)
+                    ->first();
+            }
+            /* begin:: tenant service */
+            $tenantService = new TenantService($tenant->id);
+            $tenantService
+                ->setTenant($tenant)
+                ->authBanner($request, $request->collection);
+            /* end:: tenant service */
+
+            notify('Berhasil!', "Berhasil memperbarui koleksi {$request->collection}", 'success');
+
+            DB::commit();
+            return redirect()->back();
+        } catch (Throwable $e) {
+            DB::rollBack();
+            logError($e, title: 'tenant - add media');
             if (isDevelopmentMode()) {
                 throw $e;
             }

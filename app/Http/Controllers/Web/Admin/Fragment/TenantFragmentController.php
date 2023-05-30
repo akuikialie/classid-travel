@@ -22,8 +22,11 @@ class TenantFragmentController extends Controller
     {
         $tenant = collect(array_column($params, 'tenant'))->first();
 
+        $this->addGlobalParams('auth_logo', $tenant->getFirstMedia('auth_logo')->getFullUrl());
+
         $mediaCollections = collect($tenant->media)->groupBy('collection_name');
         $this->addGlobalParams('media_collections', $mediaCollections ?? []);
+
 
         $this->addGlobalParams('fragment_view', 'pages.web.tenant.fragment.fragment-media');
     }
