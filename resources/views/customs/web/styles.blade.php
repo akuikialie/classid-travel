@@ -1,3 +1,6 @@
+@php
+  $partnerName = partner()->getName();
+@endphp
 <!--begin::Fonts-->
 <link rel="stylesheet" href="{{ asset('web/vendor/fonts/boxicons/css/boxicons.min.css') }}" />
 {{-- <link rel="stylesheet" href="{{ asset('vendor/fonts/fontawesome.css') }}" />
@@ -9,8 +12,10 @@
 <!--end::Vendor Stylesheets-->
 
 <!--begin::Global Stylesheets Bundle(mandatory for all pages)-->
-<link href="{{ asset('web/plugins/global/plugins.bundle.css') }}" rel="stylesheet" type="text/css" />
-<link href="{{ asset('web/css/style.bundle.css') }}" rel="stylesheet" type="text/css" />
+<link href="{{ cachedAsset('web/plugins/global/plugins.bundle.css') }}" rel="stylesheet" type="text/css" />
+<link href="{{ cachedAsset('web/css/style.bundle.css') }}" rel="stylesheet" type="text/css" />
+<link href="{{ cachedAsset("partner/{$partnerName}/css/app.css") }}" rel="stylesheet" type="text/css" />
+
 <!--end::Global Stylesheets Bundle-->
 
 <!--Begin::Google Tag Manager -->

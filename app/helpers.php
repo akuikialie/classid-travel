@@ -590,3 +590,37 @@ if (!function_exists('logError')) {
         app('log')->error("===== ===== ===== ===== ===== ===== ===== ===== ===== =====\n");
     }
 }
+
+if (!function_exists('partner')) {
+    /**
+     * @param null|string               $key
+     * @param null|array|string         $default
+     * @param string|null               $partnerId
+     *
+     * @return array|string|\Base\App\PartnerManager\PartnerManager
+     */
+    function partner(?string $key = null, $default = null, ?string $partnerId = null)
+    {
+        if (empty($key))
+            return \Base\App\PartnerManager\PartnerManager::init($partnerId);
+
+        return \Base\App\PartnerManager\PartnerManager::init($partnerId)->getData($key, $default);
+    }
+}
+
+if (!function_exists('cachedAsset')) {
+    /**
+     * @param  string  $path
+     * @param  bool|null  $secure
+     *
+     * @return string
+     */
+    function cachedAsset(string $path, bool|null $secure = null): string
+    {
+        $asset = str($path)->is('/^https?:\/\//i')
+            ? $path
+            : asset($path, $secure);
+
+        return $asset . '?v=' . config('cache.version', time());
+    }
+}
