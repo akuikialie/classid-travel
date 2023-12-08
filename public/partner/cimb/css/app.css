@@ -1,0 +1,45 @@
+:root {
+  --ph-primary: #d12d2c;
+  --soft-color: #e4a0a0;
+}
+
+#kt_app_sidebar_logo {
+  background-color: var(--ph-primary) !important;
+}
+
+#kt_app_header_wrapper{
+  background-color: var(--soft-color) !important;
+}
+
+#kt_app_header_container {
+  background-color: var(--soft-color) !important;
+}
+
+#kt_app_sidebar {
+  background-color: var(--soft-color) !important;
+}
+
+.btn.btn-primary{
+  background-color: var(--ph-primary) !important;
+}
+
+[data-kt-app-layout="light-sidebar"]
+  .app-sidebar
+  .menu
+  .menu-item
+  .menu-heading {
+  color: #ffffff !important;
+}
+
+[data-kt-app-layout="dark-sidebar"]
+  .app-sidebar
+  .menu
+  .menu-item
+  .menu-heading {
+  color: #ffffff !important;
+}
+
+
+.bg-highlight{
+  background-color: var(--ph-primary) !important;
+}

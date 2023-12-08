@@ -1,0 +1,15 @@
+:root {
+  --highlight: #d12d2c;
+}
+
+.bg-highlight{
+  background-color: var(--highlight) !important;
+}
+
+.border-highlight {
+  border-color: var(--highlight) !important;
+}
+
+.color-highlight {
+  color: var(--highlight) !important;
+}
