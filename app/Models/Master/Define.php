@@ -2,15 +2,17 @@
 
 namespace App\Models\Master;
 
-use App\Models\HashableId;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Veelasky\LaravelHashId\Eloquent\HashableId;
 
 class Define extends Model
 {
     use HasFactory, SoftDeletes, HashableId;
+
+    protected bool $shouldHashPersist = true;
 
      /**
      * The table associated with the model.

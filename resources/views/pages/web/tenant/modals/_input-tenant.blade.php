@@ -5,7 +5,7 @@
   <!--end::Label-->
   <!--begin::Input-->
   <input type="number" class="form-control form-control-solid" placeholder="BCN" name="BCN"
-         value="{{ old('BCN') }}"/>
+         value="{{ old('bcn') }}"/>
   <!--end::Input-->
 </div>
 <!--end::Input group-->

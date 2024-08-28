@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers\Mobile;
 
-use App\Http\Requests\Auth\Authentication;
 use App\Http\Requests\Auth\MobileAuthentication;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;

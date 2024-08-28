@@ -156,7 +156,7 @@
                 <a class="menu-link {{ $styleClass }}"
                    href="{{ $href }}">
                   <span class="menu-icon">
-                    <i class="{{ $menu->attribute['icon'] ?? 'fa-sharp fad fa-circle-dot' }}"></i>
+                    <i class="{{ $menu->attribute->icon ?? 'fa-sharp fad fa-circle-dot' }}"></i>
                   </span>
                   <span class="menu-title">{{ $menu->title }}</span>
                 </a>

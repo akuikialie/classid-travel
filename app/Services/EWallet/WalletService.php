@@ -15,7 +15,7 @@ class WalletService implements Contract\WalletService
     private Fluent $tenantCredentials;
     private ?WalletUser $user = null;
 
-    public function __construct(private readonly ?string $token = null)
+    public function __construct(private readonly string|null $token = null)
     {
         $this->tenantCredentials = new Fluent(activeTenant()?->wallet_login ?? []);
     }
@@ -68,7 +68,7 @@ class WalletService implements Contract\WalletService
      * @return array
      * @throws Exception
      */
-    public function deposit(int $amount, ?string $description = null): array
+    public function deposit(int $amount, string|null $description = null): array
     {
         $http = $this->client()->post('api/student/finance/deposit', [
             'jurnal_date' => date('Y-m-d'),
@@ -109,7 +109,7 @@ class WalletService implements Contract\WalletService
      * @return array
      * @throws Exception
      */
-    public function withdrawal(int $amount, ?string $description = null): array
+    public function withdrawal(int $amount, string|null $description = null): array
     {
         $http = $this->client()->post('api/student/finance/withdrawal', [
             'jurnal_date' => date('Y-m-d'),
@@ -133,7 +133,7 @@ class WalletService implements Contract\WalletService
      * @return array
      * @throws Exception
      */
-    public function transfer(int $to, int $amount, ?string $description = null): array
+    public function transfer(int $to, int $amount, string|null $description = null): array
     {
         $http = $this->client()->post('api/student/finance/transfer', [
             'user_to' => $to,

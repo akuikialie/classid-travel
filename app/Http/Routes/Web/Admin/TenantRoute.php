@@ -2,10 +2,8 @@
 
 namespace App\Http\Routes\Web\Admin;
 
-use App\Enums\RoleEnum;
 use App\Http\Controllers\Web\Admin\TenantController;
 use Dentro\Yalr\BaseRoute;
-use Illuminate\Support\Facades\Auth;
 
 class TenantRoute extends BaseRoute
 {
@@ -15,7 +13,7 @@ class TenantRoute extends BaseRoute
 
     public function register(): void
     {
-        $this->router->middleware(['auth', 'verified'])->group(function () {
+        $this->router->middleware(['auth:sanctum', 'verified'])->group(function () {
 
             $this->router->middleware(['role:super-administrator'])->group(function () {
 

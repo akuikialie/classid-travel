@@ -36,8 +36,7 @@ let roleIndex = function () {
           Swal.fire({
             icon: error.responseJSON.icon,
             title: error.responseJSON.title,
-            text: error.statusText +
-              "...</a>",
+            text: error.statusText,
           });
         }
       },
@@ -49,8 +48,8 @@ let roleIndex = function () {
           visible: false,
           render: function (data) {
             return `<div class="form-check form-check-sm form-check-custom form-check-solid">
-                                <input class="form-check-input" type="checkbox" value="${data}" />
-                            </div>`;
+                <input class="form-check-input" type="checkbox" value="${data}" />
+            </div>`;
           }
         },
         {

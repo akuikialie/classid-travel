@@ -82,7 +82,7 @@ class DashboardController extends Controller
             ];
         }
 
-        $this->setData('data_keberangkatan', array_to_object($arrayData));
+        $this->setData('data_keberangkatan', fluent($arrayData));
         return $this->view('pages.web.dashboard.dashboard-index');
     }
 }

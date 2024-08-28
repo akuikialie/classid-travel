@@ -21,34 +21,20 @@ class RedirectIfHasAccess
     public function handle(Request $request, Closure $next, $page)
     {
         $user = auth()->user();
-        switch ($request->method()) {
-            case 'GET':
-                if ($user->can("view {$page}")) {
-                    return $next($request);
-                }
-                break;
+        $method = match ($request->method()) {
+            'GET',
+            'HEAD' => 'view',
+            'POST' => 'create',
+            'PATCH',
+            'PUT' => 'update',
+            'DELETE' => 'delete',
+            default => null,
+        };
 
-            case 'POST':
-                if ($user->can("create {$page}")) {
-                    return $next($request);
-                }
-                break;
-
-            case 'PUT':
-                if ($user->can("update {$page}")) {
-                    return $next($request);
-                }
-                break;
-
-            case 'DELETE':
-                if ($user->can("delete {$page}")) {
-                    return $next($request);
-                }
-                break;
-
-            default:
-                break;
+        if ($method && $user->can("{$method} {$page}")) {
+            return $next($request);
         }
+
         throw UnauthorizedException::forPermissions([]);
     }
 }

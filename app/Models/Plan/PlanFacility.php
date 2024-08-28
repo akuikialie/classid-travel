@@ -2,7 +2,6 @@
 
 namespace App\Models\Plan;
 
-use App\Models\HashableId;
 use App\Traits\HasTenant;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -10,10 +9,13 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
+use Veelasky\LaravelHashId\Eloquent\HashableId;
 
 class PlanFacility extends Model implements HasMedia
 {
     use HasFactory, InteractsWithMedia, HasTenant, SoftDeletes, HashableId;
+
+    protected bool $shouldHashPersist = true;
 
     protected $table = 'facilities';
     protected $fillable = [

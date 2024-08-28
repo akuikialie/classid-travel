@@ -15,7 +15,7 @@ class JamaahRoute extends BaseRoute
 
     public function register(): void
     {
-        $this->router->middleware(['auth', 'verified', 'role:' . RoleEnum::Jamaah->keyValue()])->group(function ($route) {
+        $this->router->middleware(['auth:sanctum', 'verified', 'role:' . RoleEnum::Jamaah->keyValue()])->group(function ($route) {
 
             $route->get($this->prefix(''), [JamaahController::class, 'index'])->name('jamaah.index');
 

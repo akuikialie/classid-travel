@@ -2,7 +2,6 @@
 
 namespace App\Models\Tenant;
 
-use App\Models\HashableId;
 use App\Models\Master\Address;
 use App\Models\Master\Email;
 use App\Models\Master\Phone;
@@ -16,13 +15,18 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
+use Veelasky\LaravelHashId\Eloquent\HashableId;
 
 class Tenant extends Model implements HasMedia
 {
     use SoftDeletes, HashableId, InteractsWithMedia, HasTenant;
 
+    protected bool $shouldHashPersist = true;
+
+    protected $table = 'tenants';
+
     protected $fillable = [
-        'name', 'slug', 'app_domain', 'BCN', 'wallet_login', 'is_active'
+        'name', 'slug', 'app_domain', 'bcn', 'wallet_login', 'is_active'
     ];
 
     protected $casts = [

@@ -315,7 +315,7 @@ class NotifyConfig
      * @param string|null $position
      * @return NotifyConfig
      */
-    public function position(?string $position = null): static
+    public function position(string|null $position = null): static
     {
         $this->config['position'] = ($position ?? config('notify.notify_position'));
 

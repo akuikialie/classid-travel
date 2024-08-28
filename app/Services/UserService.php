@@ -18,7 +18,7 @@ class UserService
 {
     private ?User $user = null;
     public function __construct(
-        private readonly ?int $tenantId = null
+        private readonly int|null $tenantId = null
     ) {
     }
 

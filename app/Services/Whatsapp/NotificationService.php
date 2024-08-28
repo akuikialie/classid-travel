@@ -13,7 +13,7 @@ use phpDocumentor\Reflection\Types\Object_;
 
 class NotificationService
 {
-    private ?string $message = null;
+    private string|null $message = null;
 
     public function __construct(
     )

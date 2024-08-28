@@ -10,7 +10,7 @@ use Illuminate\Http\Client\Response;
 
 class Http extends PendingRequest
 {
-    public function __construct(?Factory $factory = null, ?string $baseUrl = null)
+    public function __construct(?Factory $factory = null, string|null $baseUrl = null)
     {
         parent::__construct($factory);
         if ($baseUrl) {
@@ -18,7 +18,7 @@ class Http extends PendingRequest
         }
     }
 
-    public static function init(?string $baseUrl = null): static
+    public static function init(string|null $baseUrl = null): static
     {
         return new static(baseUrl: $baseUrl);
     }
@@ -105,7 +105,7 @@ class Http extends PendingRequest
             ->onError(fn (Response $response) => $this->setLog($response, 'DELETE', $url, data: $data));
     }
 
-    private function setLog(Response $response, string $method, string $url, ?string $query = null, array $data = []): void
+    private function setLog(Response $response, string $method, string $url, string|null $query = null, array $data = []): void
     {
         $exception = $response->toException();
         if ($exception instanceof RequestException) {

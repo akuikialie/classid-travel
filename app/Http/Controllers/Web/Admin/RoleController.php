@@ -72,8 +72,9 @@ class RoleController extends Controller
                             $subQuery->where('tenant_id', $user->tenant_id);
                         }
                     )
-                    ->with(['permissions', 'users', 'tenant'])
-                    ->withCount(['users'])
+                    // ->with(['permissions', 'users', 'tenant'])
+                    ->with(['permissions', 'tenant'])
+                    // ->withCount(['users'])
                     ->oldest('id');
 
                 $datatable = datatables()->eloquent($roles)
@@ -128,10 +129,13 @@ class RoleController extends Controller
                         $permissionGroups = collect($role->permissions)->groupBy('group');
                         $permissionsTotal = $permissionGroups->count();
 
+                        // return '<div class="ms-5 text-center">
+                        //     <a href="#" class="fs-5 fw-bold text-gray-900 text-hover-primary mb-2">' . $role->users_count . ' users</a>
+                        //     <div class="fw-semibold text-muted">' . $permissionsTotal . ' Permmissions</div>
+                        // </div>';
                         return '<div class="ms-5 text-center">
-    <a href="#" class="fs-5 fw-bold text-gray-900 text-hover-primary mb-2">' . $role->users_count . ' users</a>
-    <div class="fw-semibold text-muted">' . $permissionsTotal . ' Permmissions</div>
-</div>';
+                            <div class="fw-semibold text-muted">' . $permissionsTotal . ' Permmissions</div>
+                        </div>';
                     })
                     ->addColumn('actions', function ($role) {
                         $this->setData('role', $role);

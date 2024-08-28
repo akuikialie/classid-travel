@@ -3,11 +3,8 @@
 namespace App\Models\Plan;
 
 use App\Models\Destination\Destination;
-use App\Models\HashableId;
 use App\Models\Itinerary\Itinerary;
-use App\Models\Itinerary\ItineraryActivity;
 use App\Models\Jamaah\Jamaah;
-use App\Models\User;
 use App\Traits\HasTenant;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -17,10 +14,13 @@ use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
+use Veelasky\LaravelHashId\Eloquent\HashableId;
 
 class PlanPackage extends Model implements HasMedia
 {
     use HasFactory, InteractsWithMedia, HashableId, HasTenant, SoftDeletes;
+
+    protected bool $shouldHashPersist = true;
 
     protected $table = 'plan_packages';
 

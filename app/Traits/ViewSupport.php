@@ -51,7 +51,7 @@ trait ViewSupport
             ];
         }
 
-        view()->share('breadcrumbs', array_to_object([
+        view()->share('breadcrumbs', fluent([
             'title' => $title,
             'sections' => $pathSections,
         ]));

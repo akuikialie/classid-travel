@@ -22,7 +22,7 @@ class WhatsappMessage
      * @param string|null $key
      * @throws \Exception
      */
-    public function __construct(?string $key = null)
+    public function __construct(string|null $key = null)
     {
         $this->getKeyBySchool($key);
         $this->collection = collect();
@@ -126,7 +126,7 @@ class WhatsappMessage
      * @return void
      * @throws \Exception
      */
-    private function getKeyBySchool(?string $key = null): void
+    private function getKeyBySchool(string|null $key = null): void
     {
         $key = trimAll($key, 'all');
         if (!empty($key)) {

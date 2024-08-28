@@ -18,7 +18,7 @@ class PerencanaanRoute extends BaseRoute
      */
     public function register(): void
     {
-        $this->router->middleware(['auth', 'verified', 'role:' . RoleEnum::Jamaah->keyValue()])->group(function ($route) {
+        $this->router->middleware(['auth:sanctum', 'verified', 'role:' . RoleEnum::Jamaah->keyValue()])->group(function ($route) {
             $route->get($this->prefix(''), [PerencanaanController::class, 'index'])->name('perencanaan.check-estimasi');
         });
     }

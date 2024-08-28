@@ -8,7 +8,6 @@ use App\Models\Spatie\Permission;
 use App\Models\Spatie\Role;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
-use Laravel\Octane\Exceptions\DdException;
 use Spatie\Permission\Exceptions\RoleDoesNotExist;
 
 class PermissionService
@@ -16,7 +15,7 @@ class PermissionService
     private ?Model $model = null;
 
     public function __construct(
-        private readonly ?int $tenantId = null
+        private readonly int|null $tenantId = null
     )
     {
     }
@@ -26,7 +25,7 @@ class PermissionService
      * @param string|null $guard
      * @return $this
      */
-    public function createNewRole(array $input, ?string $guard = 'web'): static
+    public function createNewRole(array $input, string|null $guard = 'web'): static
     {
         if ($guard) {
             $input = array_merge($input, [
@@ -86,6 +85,7 @@ class PermissionService
 
                 foreach (collect($roles) as $newRole) {
                     $this->createNewRole([
+                        'label' => $newRole,
                         'name' => $newRole,
                         'type' => PermissionType::tenant->keyValue(),
                     ])

@@ -2,17 +2,19 @@
 
 namespace App\Models\Referral;
 
-use App\Models\HashableId;
 use App\Models\Plan\PlanPackage;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Veelasky\LaravelHashId\Eloquent\HashableId;
 
 class ReferralLink extends Model
 {
     use HasFactory, SoftDeletes, HashableId;
+
+    protected bool $shouldHashPersist = true;
 
     protected $table = 'referral_links';
 

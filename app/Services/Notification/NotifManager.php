@@ -12,9 +12,9 @@ use Illuminate\Contracts\Container\BindingResolutionException;
 class NotifManager
 {
     /**
-     * @var ?int
+     * @var int|null
      */
-    private ?int $tenantId = null;
+    private int|null $tenantId = null;
 
     /**
      * @var string
@@ -26,7 +26,7 @@ class NotifManager
      */
     private string $sender = '';
 
-    public function __construct(string $channel, ?int $tenantId = null, ?string $sender = null)
+    public function __construct(string $channel, int|null $tenantId = null, string|null $sender = null)
     {
         $this->channel = $channel;
         $this->tenantId = $tenantId;

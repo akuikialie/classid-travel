@@ -2,11 +2,9 @@
 
 namespace App\Http\Requests\Auth;
 
-use App\Models\Master\Phone;
 use App\Models\Tenant\Tenant;
 use App\Models\User;
 use Carbon\Carbon;
-use http\Exception\InvalidArgumentException;
 use Illuminate\Auth\Events\Lockout;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Auth;
@@ -91,7 +89,7 @@ class Authentication extends FormRequest
                 $tenant = Tenant::query()
                     ->select('id')
                     ->where('is_active', true)
-                    ->firstWhere('BCN', request()->get('travel_code'));
+                    ->firstWhere('bcn', request()->get('travel_code'));
 
                 if (!$tenant){
                     throw ValidationException::withMessages([

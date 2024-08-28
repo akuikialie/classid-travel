@@ -34,7 +34,7 @@ class DefaultRoute extends BaseRoute
             return redirect(route('admin.login'));
         });
 
-        // $this->router->middleware(['auth', 'verified'])->group(function ($route) {
+        // $this->router->middleware(['auth:sanctum', 'verified'])->group(function ($route) {
 
         //     $route->get($this->prefix('home'), function () {
         //         return view('pages.mobile.home.dashboard-index');
@@ -51,6 +51,6 @@ class DefaultRoute extends BaseRoute
             } catch (\Exception $e) {
                 throw $e;
             }
-        })->middleware('auth');
+        })->middleware('auth:sanctum');
     }
 }

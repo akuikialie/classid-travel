@@ -2,14 +2,14 @@
 
 namespace App\Models\Tenant;
 
-use App\Models\HashableId;
+use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class TenantData extends Model
 {
-    use HasFactory, SoftDeletes, HashableId;
+    use HasFactory, SoftDeletes, HasUuids;
 
     protected $fillable = [
         'key', 'value', 'option', 'is_active', 'tenant_id'

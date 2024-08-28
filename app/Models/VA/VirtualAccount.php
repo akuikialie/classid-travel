@@ -2,17 +2,19 @@
 
 namespace App\Models\VA;
 
-use App\Models\HashableId;
 use App\Models\Plan\PlanPackage;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Veelasky\LaravelHashId\Eloquent\HashableId;
 
 class VirtualAccount extends Model
 {
     use HasFactory, HashableId, SoftDeletes;
+
+    protected bool $shouldHashPersist = true;
 
     protected $table = 'virtual_accounts';
     protected $fillable = [

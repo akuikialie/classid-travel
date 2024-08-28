@@ -21,7 +21,7 @@ class Controller extends BaseController
      *
      * @var null|string
      */
-    protected ?string $viewPath = null;
+    protected string|null $viewPath = null;
 
     /**
      * Active User.
@@ -49,7 +49,7 @@ class Controller extends BaseController
      *
      * @var string|null
      */
-    private ?string $pageTitle;
+    private string|null $pageTitle;
 
     /**
      * Page Meta.

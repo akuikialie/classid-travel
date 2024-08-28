@@ -15,7 +15,7 @@ class ProfileRoute extends BaseRoute
 
     public function register(): void
     {
-        $this->router->middleware(['auth', 'verified', 'role:' . RoleEnum::Jamaah->keyValue()])->group(function ($route) {
+        $this->router->middleware(['auth:sanctum', 'verified', 'role:' . RoleEnum::Jamaah->keyValue()])->group(function ($route) {
 
             $route->get($this->prefix(''), [ProfileController::class, 'index'])->name('profile.index');
 

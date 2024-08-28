@@ -94,7 +94,7 @@ class PerencanaanController extends Controller
 
         return view('pages/mobile/perencanaan/check-estimasi-index', [
             'planPackages' => $planPackages,
-            'hasil_simulasi' => array_to_object($hasilSimulasi),
+            'hasil_simulasi' => fluent($hasilSimulasi),
         ]);
     }
 }

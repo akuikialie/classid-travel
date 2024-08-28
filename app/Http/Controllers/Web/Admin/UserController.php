@@ -61,7 +61,7 @@ class UserController extends Controller
      * @throws NotFoundExceptionInterface
      * @throws \Exception
      */
-    public function datatable(Request $request, ?string $type = null)
+    public function datatable(Request $request, string|null $type = null)
     {
         if (\request()->ajax()) {
             try {
@@ -157,7 +157,7 @@ class UserController extends Controller
      *
      * @throws \Exception
      */
-    public function index(?string $type = null)
+    public function index(string|null $type = null)
     {
         if (is_null($type)) {
             return redirect()->route('admin.user.index', 'staff');
@@ -203,7 +203,7 @@ class UserController extends Controller
      * @return JsonResponse
      * @throws Throwable
      */
-    public function create(?string $type = null)
+    public function create(string|null $type = null)
     {
         if (\request()->ajax()) {
             $user = auth()->user();
@@ -235,7 +235,7 @@ class UserController extends Controller
      * @return RedirectResponse
      * @throws Throwable
      */
-    public function store(Request $request, ?string $type = null)
+    public function store(Request $request, string|null $type = null)
     {
         $input = $request->validate([
             'phone' => ['required', 'numeric'],
@@ -420,7 +420,7 @@ class UserController extends Controller
      * @return RedirectResponse
      * @throws Throwable
      */
-    public function destroy(User $user, ?string $type = null)
+    public function destroy(User $user, string|null $type = null)
     {
         try {
             $authUser = auth()->user();
@@ -455,7 +455,7 @@ class UserController extends Controller
      * @throws NotFoundExceptionInterface
      * @throws Throwable
      */
-    public function changeStatus(Request $request, User $user, ?string $type = null)
+    public function changeStatus(Request $request, User $user, string|null $type = null)
     {
         $request->validate([
             'status' => ['required'],

@@ -3,7 +3,6 @@
 namespace App\Models\Jamaah;
 
 use App\Models\Geo\City;
-use App\Models\HashableId;
 use App\Models\Plan\PlanPackage;
 use App\Models\Schedule\Schedule;
 use App\Models\User;
@@ -18,10 +17,13 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\Relations\MorphOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Veelasky\LaravelHashId\Eloquent\HashableId;
 
 class Jamaah extends Model
 {
     use HasFactory, HasTenant, SoftDeletes, HashableId;
+
+    protected bool $shouldHashPersist = true;
 
     protected $table = 'jamaah';
 

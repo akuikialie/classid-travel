@@ -2,8 +2,6 @@
 
 namespace App\Http\Requests\Auth;
 
-use App\Models\Tenant\Tenant;
-use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Auth\Events\Lockout;
 use Illuminate\Foundation\Http\FormRequest;

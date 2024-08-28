@@ -13,7 +13,7 @@ class FacilityRoute extends BaseRoute
 
     public function register(): void
     {
-        $this->router->middleware(['auth', 'verified'])->group(function () {
+        $this->router->middleware(['auth:sanctum', 'verified'])->group(function () {
             $this->router->post($this->prefix('datatable'), [FacilityController::class, 'datatable'])
                 ->name($this->name('datatable'))->middleware(["permission:view {$this->page}"]);
 

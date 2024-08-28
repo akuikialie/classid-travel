@@ -51,7 +51,7 @@ let KTDatatablesServerSide = function () {
         {data: 'name'},
         {data: 'slug'},
         {data: 'app_domain'},
-        {data: 'BCN'},
+        {data: 'bcn'},
         {data: 'status'},
         {data: 'created_date'},
         {data: 'actions'},

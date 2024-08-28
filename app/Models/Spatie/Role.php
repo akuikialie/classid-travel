@@ -2,12 +2,15 @@
 
 namespace App\Models\Spatie;
 
-use App\Models\HashableId;
 use App\Models\Tenant\Tenant;
 use App\Traits\HasTenant;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\MorphToMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Spatie\Permission\PermissionRegistrar;
+use Veelasky\LaravelHashId\Eloquent\HashableId;
 
 class Role extends \Spatie\Permission\Models\Role
 {
@@ -17,10 +20,21 @@ class Role extends \Spatie\Permission\Models\Role
 
     protected $fillable = [
         'tenant_id',
-        'name',
-        'guard_name',
-        'type',
+        'name', 'guard_name',
+        'type', 'label',
     ];
+
+    /** @inheritdoc */
+    // public function users(): MorphToMany
+    // {
+    //     return $this->morphedByMany(
+    //         getModelForGuard($this->attributes['guard_name'] ?? config('auth.defaults.guard')),
+    //         'model',
+    //         config('permission.table_names.model_has_roles'),
+    //         app(PermissionRegistrar::class)->pivotRole,
+    //         config('permission.column_names.model_morph_key')
+    //     );
+    // }
 
     public function tenant(): BelongsTo
     {

@@ -73,7 +73,7 @@ trait WalletAccount
      * @return WalletUser|null
      * @throws Exception
      */
-    public function createUser(string $id, string $va, string $name, ?string $email = null): ?WalletUser
+    public function createUser(string $id, string $va, string $name, string|null $email = null): ?WalletUser
     {
         if (!$this->user->isAdmin()) {
             throw new Exception('not authorized', 403);

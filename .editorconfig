@@ -3,22 +3,28 @@ root = true
 [*]
 charset = utf-8
 end_of_line = lf
-insert_final_newline = true
-indent_style = space
 indent_size = 4
+indent_style = space
+insert_final_newline = true
 trim_trailing_whitespace = true
-
-[*.{blade.php,html}]
-indent_size = 2
 
 [*.md]
 trim_trailing_whitespace = false
 
+[*.{html,vue}]
+indent_size = 2
+
+[*.{js,ts,json}]
+indent_size = 2
+
+[*.{js,ts}]
+spaces_around_brackets = both
+
+[*.xml]
+indent_size = 2
+
 [*.{yml,yaml}]
 indent_size = 2
 
-[*.{js,json}]
-indent_size = 2
-
-[*.{css,sass,scss,less}]
-indent_size = 2
+[docker-compose.yml]
+indent_size = 4

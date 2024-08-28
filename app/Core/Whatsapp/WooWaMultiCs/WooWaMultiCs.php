@@ -16,7 +16,7 @@ class WooWaMultiCs
      * @param string|array|null $options
      * @param string|null $license
      */
-    public function __construct($options = null, ?string $license = null)
+    public function __construct($options = null, string|null $license = null)
     {
         if (is_array($options)) {
             $this->key = !empty($options['key']) ? $options['key'] : '';
@@ -33,7 +33,7 @@ class WooWaMultiCs
      *
      * @return array
      */
-    public function groupList(?string $key = null): array
+    public function groupList(string|null $key = null): array
     {
         $headers = [];
         if (!empty($key)) {
@@ -52,7 +52,7 @@ class WooWaMultiCs
      *
      * @return array
      */
-    public function messageText(array $data, bool $group = false, ?string $key = null): array
+    public function messageText(array $data, bool $group = false, string|null $key = null): array
     {
         $headers = ['Content-Type: application/x-www-form-urlencoded'];
         if (!empty($key)) {
@@ -82,7 +82,7 @@ class WooWaMultiCs
      *
      * @return array
      */
-    public function messageMedia(array $data, bool $group = false, ?string $key = null): array
+    public function messageMedia(array $data, bool $group = false, string|null $key = null): array
     {
         $headers = [];
         if (!empty($key)) {
@@ -124,7 +124,7 @@ class WooWaMultiCs
      *
      * @return array
      */
-    public function messageMediaUrl(array $data, bool $group = false, ?string $key = null): array
+    public function messageMediaUrl(array $data, bool $group = false, string|null $key = null): array
     {
         $headers = ['Content-Type: application/x-www-form-urlencoded'];
         if (!empty($key)) {
@@ -158,7 +158,7 @@ class WooWaMultiCs
      *
      * @return array
      */
-    public function deviceInfo(?string $license = null): array
+    public function deviceInfo(string|null $license = null): array
     {
         if (empty($license)) $license = $this->license;
         $headers = ["license: {$license}"];
@@ -171,7 +171,7 @@ class WooWaMultiCs
      *
      * @return array
      */
-    public function deviceStatus(?string $key = null): array
+    public function deviceStatus(string|null $key = null): array
     {
         $headers = [];
         if (!empty($key)) {
@@ -186,7 +186,7 @@ class WooWaMultiCs
      *
      * @return array
      */
-    public function deviceLogout(?string $license = null): array
+    public function deviceLogout(string|null $license = null): array
     {
         if (empty($license)) $license = $this->license;
         $headers = ["license: {$license}"];
@@ -199,7 +199,7 @@ class WooWaMultiCs
      *
      * @return array
      */
-    public function deviceReLogin(?string $key = null): array   // a.k.a use-here
+    public function deviceReLogin(string|null $key = null): array   // a.k.a use-here
     {
         $headers = [];
         if (!empty($key)) {

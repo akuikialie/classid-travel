@@ -16,13 +16,13 @@ use Spatie\MediaLibrary\MediaCollections\Exceptions\FileIsTooBig;
 
 class TenantService
 {
-    private ?Tenant $tenant = null;
+    private Tenant|null $tenant = null;
 
     /**
      * @param int|null $tenantId
      */
     public function __construct(
-        private readonly ?int $tenantId = null
+        private readonly int|null $tenantId = null
     ) {
     }
 
@@ -154,11 +154,11 @@ class TenantService
      * @return Tenant|null
      * @throws Exception
      */
-    public function update(array $input, User $user = null): ?Tenant
+    public function update(array $input, User $user = null): Tenant|null
     {
         $tenant = $this->getTenant();
         if (isset($user) and $user->tenant_id === null) {
-            $tenant->BCN = $input['BCN'];
+            $tenant->bcn = $input['bcn'];
             $tenant->app_domain = $input['app_domain'];
         } else if (isset($user) and $user->tenant_id !== null) {
             $tenant->name = $input['name'];
@@ -173,7 +173,7 @@ class TenantService
      * @return Tenant|null
      * @throws HandleCatchableException
      */
-    public function getTenant(): ?Tenant
+    public function getTenant(): Tenant|null
     {
         if (!$this->tenant instanceof Tenant) {
             throw HandleCatchableException::catchable('Travel tidak di ditemukan!');

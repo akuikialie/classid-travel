@@ -2,16 +2,18 @@
 
 namespace App\Models\Itinerary;
 
-use App\Models\HashableId;
 use App\Traits\HasTenant;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Veelasky\LaravelHashId\Eloquent\HashableId;
 
 class Itinerary extends Model
 {
     use HasFactory, HasTenant, HashableId, SoftDeletes;
+
+    protected bool $shouldHashPersist = true;
 
     protected $table = 'itineraries';
 

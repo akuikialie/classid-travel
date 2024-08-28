@@ -1,27 +1,91 @@
 <?php
 
-/**
- * List of helpers collection.
- *
- * @author      yusron arif <yusron.arif4@gmail.com>
- */
-
 use App\Core\Whatsapp\Messages\WhatsappMessage;
 use App\Models\Tenant\Tenant;
 use App\Services\Notification\NotifManager;
-use Carbon\Carbon;
 use Illuminate\Contracts\Container\BindingResolutionException;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\ViewErrorBag;
-use Psr\Container\ContainerExceptionInterface;
-use Psr\Container\NotFoundExceptionInterface;
+
+if (!function_exists('tableHashId')) {
+    function tableHashId(
+        \Illuminate\Database\Schema\Blueprint $table,
+        string|null $column = 'hashid',
+        int $length = 50
+    ): void {
+        $table->string($column, $length)->nullable();
+    }
+}
+
+if (!function_exists('tableTenantId')) {
+    function tableTenantId(
+        \Illuminate\Database\Schema\Blueprint $table,
+        string|null $column = 'tenant_id'
+    ): void {
+        $table->foreignId($column)->nullable()
+            ->constrained('tenants')
+            ->onDelete('restrict');
+    }
+}
+
+if (!function_exists('tableUserId')) {
+    function tableUserId(
+        \Illuminate\Database\Schema\Blueprint $table,
+        string|null $column = 'user_id'
+    ): void {
+        $table->foreignId($column)->nullable()
+            ->constrained('users')
+            ->onDelete('restrict');
+    }
+}
+
+if (!function_exists('tableTimestamps')) {
+    function tableTimestamps(
+        \Illuminate\Database\Schema\Blueprint $table,
+        int $precision = 0,
+        bool $constrained = true
+    ): void {
+        $table->timestampsTz(precision: $precision);
+        if ($constrained) {
+            $table->foreignId('created_by')->nullable()
+                ->comment('reference to users_table')
+                ->constrained('users')
+                ->onDelete('restrict');
+            $table->foreignId('updated_by')->nullable()
+                ->comment('reference to users_table')
+                ->constrained('users')
+                ->onDelete('restrict');
+        } else {
+            $table->unsignedBigInteger('created_by')->nullable();
+            $table->unsignedBigInteger('updated_by')->nullable();
+        }
+    }
+}
+
+if (!function_exists('tableSoftDeletes')) {
+    function tableSoftDeletes(
+        \Illuminate\Database\Schema\Blueprint $table,
+        string $column = 'deleted_at',
+        int $precision = 0,
+        bool $constrained = true
+    ): void {
+        $table->softDeletesTz($column, precision: $precision);
+        if ($constrained) {
+            $table->foreignId('deleted_by')->nullable()
+                ->comment('reference to users_table')
+                ->constrained('users')
+                ->onDelete('restrict');
+        } else {
+            $table->unsignedBigInteger('deleted_by')->nullable();
+        }
+    }
+}
 
 if (!function_exists('activeTenant')) {
     /**
-     * @return Tenant|Builder|Model|null
+     * @return \App\Models\Tenant\Tenant|null
      */
-    function activeTenant(): Model|Builder|Tenant|null
+    function activeTenant(): Tenant|null
     {
         return app('activeTenant');
     }
@@ -43,7 +107,7 @@ if (!function_exists('isMobile')) {
      */
     function isMobile(): bool
     {
-        return in_array(request()->header('User-Agent'), ['x-cid-mobile', 'my-class-android-app']);
+        return in_array(request()->header('User-Agent'), ['x-mobile', 'x-cid-mobile', 'x-cid-android', 'x-cid-ios']);
     }
 }
 
@@ -53,7 +117,7 @@ if (!function_exists('isNativeMobile')) {
      *
      * @return bool
      */
-    function isNativeMobile(?string $type = null): bool
+    function isNativeMobile(string|null $type = null): bool
     {
         $head = request()->header('x-mobile');
         return !$type ? in_array($head, ['android', 'ios']) : $head == $type;
@@ -63,11 +127,10 @@ if (!function_exists('isNativeMobile')) {
 if (!function_exists('isProduction')) {
     /**
      * @return bool
-     * @throws BindingResolutionException
      */
     function isProduction(): bool
     {
-        return in_array(app()->environment(), ['prod', 'production']);
+        return app()->isProduction();
     }
 }
 
@@ -95,9 +158,7 @@ if (!function_exists('isDevelopmentMode')) {
 if (!function_exists('debugNonProduction')) {
     /**
      * @return bool
-     * @throws BindingResolutionException
-     * @throws NotFoundExceptionInterface
-     * @throws ContainerExceptionInterface
+     * @throws \Illuminate\Contracts\Container\BindingResolutionException
      */
     function debugNonProduction(): bool
     {
@@ -107,26 +168,22 @@ if (!function_exists('debugNonProduction')) {
 
 if (!function_exists('moneyFormat')) {
     /**
-     * @param      $integer
-     * @param bool $dotNotation
+     * @param  int|float  $amount
+     * @param  bool  $dotThousand
      *
      * @return string
      */
-    function moneyFormat($integer, bool $dotNotation = false): string
+    function moneyFormat(int|float $amount, bool $dotThousand = true): string
     {
-        if ($dotNotation) {
-            $decimals = explode(".", $integer);
-            if (count($decimals) == 2) {
-                return number_format($decimals[0], 0, ',', '.') . "," . $decimals[1];
-            }
-            return number_format($integer, 0, ',', '.');
-        } else {
-            $decimals = explode(",", $integer);
-            if (count($decimals) == 2) {
-                return number_format($decimals[0], 0, '.', ',') . "." . $decimals[1];
-            }
-            return number_format($integer, 0, '.', ',');
+        $separatorThousand = ',';
+        $separatorDecimal = '.';
+        $decimal = is_float($amount) ? 2 : 0;
+        if ($dotThousand) {
+            $separatorThousand = '.';
+            $separatorDecimal = ',';
         }
+
+        return number_format($amount, $decimal, $separatorDecimal, $separatorThousand);
     }
 }
 
@@ -139,7 +196,7 @@ if (!function_exists('trimAll')) {
      * @return string
      * @throws Exception
      */
-    function trimAll(?string $string, string $type = 'smart', string $pattern = '\W+'): string
+    function trimAll(string|null $string, string $type = 'smart', string $pattern = '\W+'): string
     {
         if (!$string || trim($string) === '') return '';
         if (!in_array($type, ['smart', 'both', 'left', 'right', 'all']))
@@ -168,14 +225,15 @@ if (!function_exists('carbon')) {
      *
      * @return Carbon
      */
-    function carbon(string|DateTimeInterface|null $datetime = null, string|DateTimeZone|null $timezone = null, ?string $locale = null): Carbon
+    function carbon(string|DateTimeInterface|null $datetime = null, string|DateTimeZone|null $timezone = null, string|null $locale = null): Carbon
     {
         if (auth()->check()) {
-            if (!$timezone && auth()->user()?->timezone) {
-                $timezone = auth()->user()->timezone;
+            $user = auth()->user();
+            if (!$timezone && $user?->timezone) {
+                $timezone = $user->timezone;
             }
-            if (!$locale && auth()->user()?->locale) {
-                $locale = auth()->user()->locale;
+            if (!$locale && $user?->locale) {
+                $locale = $user->locale;
             }
         }
 
@@ -194,7 +252,7 @@ if (!function_exists('msnotif')) {
      *
      * @return NotifManager
      */
-    function msnotif(string $channel, ?int $schoolId = null): NotifManager
+    function msnotif(string $channel, int|null $schoolId = null): NotifManager
     {
         return new NotifManager($channel, $schoolId);
     }
@@ -206,7 +264,7 @@ if (!function_exists('whatsappMessage')) {
      * @return WhatsappMessage
      * @throws Exception
      */
-    function whatsappMessage(?string $key = null): WhatsappMessage
+    function whatsappMessage(string|null $key = null): WhatsappMessage
     {
         return new WhatsappMessage($key);
     }
@@ -218,27 +276,31 @@ if (!function_exists('numberFormat')) {
      *
      * @return string
      */
-    function numberFormat($integer): string
+    function numberFormat(int|float $integer): string
     {
         return number_format($integer, 0, ',', '.');
     }
 }
 
-if (!function_exists('romanicNumber')) {
+if (!function_exists('intToRoman')) {
     /**
-     * @param $integer
-     * @param $upcase
+     * @param  int  $number
+     * @param  bool  $upper
      *
      * @return string
      */
-    function romanicNumber($integer, $upcase = true): string
+    function intToRoman(int $number, bool $upper = true): string
     {
-        $table = ['M' => 1000, 'CM' => 900, 'D' => 500, 'CD' => 400, 'C' => 100, 'XC' => 90, 'L' => 50, 'XL' => 40, 'X' => 10, 'IX' => 9, 'V' => 5, 'IV' => 4, 'I' => 1];
+        $romans = [
+            'M' => 1000, 'CM' => 900, 'D' => 500, 'CD' => 400, 'C' => 100,
+            'XC' => 90, 'L' => 50, 'XL' => 40, 'X' => 10,
+            'IX' => 9, 'V' => 5, 'IV' => 4, 'I' => 1
+        ];
         $return = '';
-        while ($integer > 0) {
-            foreach ($table as $rom => $arb) {
-                if ($integer >= $arb) {
-                    $integer -= $arb;
+        while ($number > 0) {
+            foreach ($romans as $rom => $arb) {
+                if ($number >= $arb) {
+                    $number -= $arb;
                     $return .= $rom;
                     break;
                 }
@@ -248,35 +310,26 @@ if (!function_exists('romanicNumber')) {
         return $return;
     }
 }
-if (!function_exists('romanicToInt')) {
+if (!function_exists('romanToInt')) {
     /**
-     * @param $romanic
+     * @param  string  $roman
+     *
      * @return int|null
-     * @throws Exception
+     * @throws \Exception
      */
-    function romanicToInt($romanic): ?int
+    function romanToInt(string $roman): int|null
     {
         $romans = [
-            'M' => 1000,
-            'CM' => 900,
-            'D' => 500,
-            'CD' => 400,
-            'C' => 100,
-            'XC' => 90,
-            'L' => 50,
-            'XL' => 40,
-            'X' => 10,
-            'IX' => 9,
-            'V' => 5,
-            'IV' => 4,
-            'I' => 1
+            'M' => 1000, 'CM' => 900, 'D' => 500, 'CD' => 400, 'C' => 100,
+            'XC' => 90, 'L' => 50, 'XL' => 40, 'X' => 10,
+            'IX' => 9, 'V' => 5, 'IV' => 4, 'I' => 1
         ];
 
-        $roman = strtoupper(trimAll($romanic, 'all'));
+        $roman = strtoupper(trimAll($roman, 'all'));
         $result = null;
 
         foreach ($romans as $key => $value) {
-            while (strpos($roman, $key) === 0) {
+            while (str_starts_with($roman, $key)) {
                 $result += $value;
                 $roman = substr($roman, strlen($key));
             }
@@ -408,7 +461,7 @@ if (!function_exists('inputFeedbackComponent')) {
      *
      * @return string
      */
-    function inputFeedbackComponent(string|array $message, string $mode = 'invalid', string $type = 'feedback', string $glue = '<br>', ?string $id = null): string
+    function inputFeedbackComponent(string|array $message, string $mode = 'invalid', string $type = 'feedback', string $glue = '<br>', string|null $id = null): string
     {
         if (!in_array($mode, ['valid', 'invalid'])) {
             $mode = 'invalid';
@@ -427,9 +480,9 @@ if (!function_exists('getErrors')) {
      * @param string|null $key
      * @param string|null $bag
      *
-     * @return ?ViewErrorBag
+     * @return ViewErrorBag|null
      */
-    function getErrors(?string $key = null, ?string $bag = null): ?ViewErrorBag
+    function getErrors(string|null $key = null, string|null $bag = null): ViewErrorBag|null
     {
         $errors = session('errors');
         if (empty($key) || empty($errors)) return null;
@@ -451,7 +504,7 @@ if (!function_exists('hasError')) {
      *
      * @return bool
      */
-    function hasError(string|array|null $key = null, ?string $bag = null): bool
+    function hasError(string|array|null $key = null, string|null $bag = null): bool
     {
         if (($errors = getErrors($key, $bag)) instanceof ViewErrorBag === false) return false;
         return $errors->has($key);
@@ -469,7 +522,7 @@ if (!function_exists('errorCss')) {
      *
      * @return string
      */
-    function errorCss(string|array|null $key = null, ?string $bag = null, bool $isGroup = false, ?string $class = null): string
+    function errorCss(string|array|null $key = null, string|null $bag = null, bool $isGroup = false, string|null $class = null): string
     {
         if (hasError($key, $bag)) {
             return $class ?? ($isGroup ? 'has-error' : 'is-invalid');
@@ -483,12 +536,12 @@ if (!function_exists('inputFeedback')) {
      * InValid input feedback
      *
      * @param string|array|null $key
-     * @param ?string $bag
+     * @param string|null $bag
      * @param string $type feedback|tooltip
      *
      * @return string
      */
-    function inputFeedback(string|array|null $key = null, ?string $bag = null, string $type = 'feedback'): string
+    function inputFeedback(string|array|null $key = null, string|null $bag = null, string $type = 'feedback'): string
     {
         if (empty($errors = getErrors($key, $bag))) return '';
 
@@ -535,10 +588,11 @@ if (!function_exists('paginateStyleReset')) {
     /**
      * Style reset paginate
      *
-     * @param $datas
+     * @param  \Illuminate\Database\Eloquent\Collection  $datas
+     *
      * @return string
      */
-    function paginateStyleReset($datas): string
+    function paginateStyleReset(\Illuminate\Database\Eloquent\Collection $datas): string
     {
         try {
             if (method_exists($datas, 'perPage') && method_exists($datas, 'currentPage')) {
@@ -558,7 +612,7 @@ if (!function_exists('logError')) {
      *
      * @return void
      */
-    function logError(string|Exception $exception, ?string $title = null, string|array|null $data = null): void
+    function logError(string|Exception $exception, string|null $title = null, string|array|null $data = null): void
     {
         if ($title) {
             app('log')->error("=====#   {$title}   #=====");
@@ -599,7 +653,7 @@ if (!function_exists('partner')) {
      *
      * @return array|string|\Base\App\PartnerManager\PartnerManager
      */
-    function partner(?string $key = null, $default = null, ?string $partnerId = null)
+    function partner(string|null $key = null, $default = null, string|null $partnerId = null)
     {
         if (empty($key))
             return \Base\App\PartnerManager\PartnerManager::init($partnerId);

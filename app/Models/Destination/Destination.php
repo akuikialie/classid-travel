@@ -2,7 +2,6 @@
 
 namespace App\Models\Destination;
 
-use App\Models\HashableId;
 use App\Models\Master\Address;
 use App\Models\Plan\PlanPackage;
 use App\Traits\HasTenant;
@@ -13,10 +12,13 @@ use Illuminate\Database\Eloquent\Relations\MorphOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
+use Veelasky\LaravelHashId\Eloquent\HashableId;
 
 class Destination extends Model implements HasMedia
 {
     use HasFactory, InteractsWithMedia, HasTenant, SoftDeletes, HashableId;
+
+    protected bool $shouldHashPersist = true;
 
     protected $table = 'destinations';
 

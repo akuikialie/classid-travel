@@ -2,17 +2,19 @@
 
 namespace App\Models\Schedule;
 
-use App\Models\HashableId;
 use App\Models\Jamaah\Jamaah;
 use App\Traits\HasTenant;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Veelasky\LaravelHashId\Eloquent\HashableId;
 
 class Schedule extends Model
 {
     use HasFactory, HasTenant, SoftDeletes, HashableId;
+
+    protected bool $shouldHashPersist = true;
 
     protected $table = 'schedules';
 

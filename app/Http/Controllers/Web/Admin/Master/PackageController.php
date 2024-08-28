@@ -80,7 +80,7 @@ class PackageController extends Controller
                         }
                         return $desc ;
                     })->addColumn('price', function ($package) {
-                        return rupiahFormat($package->amount);
+                        return moneyFormat($package->amount);
                     })->addColumn('status', function ($package) {
                         $status = Statuses::tryFrom($package->status);
                         $publish = ($package->is_publish ? 'Published' : 'Unpublished');

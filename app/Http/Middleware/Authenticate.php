@@ -13,7 +13,7 @@ class Authenticate extends Middleware
      * @param  Request  $request
      * @return string|null
      */
-    protected function redirectTo($request)
+    protected function redirectTo(Request $request): string|null
     {
         if (! $request->expectsJson()) {
             $prefix = request()->route()->getPrefix();

@@ -68,7 +68,7 @@
 
             <!--begin::Col-->
             <div class="col-lg-8">
-                <a href="#" class="fw-semibold fs-6 text-gray-800 text-hover-primary">{{ $tenant->BCN }}</a>
+                <a href="#" class="fw-semibold fs-6 text-gray-800 text-hover-primary">{{ $tenant->bcn }}</a>
             </div>
             <!--end::Col-->
         </div>

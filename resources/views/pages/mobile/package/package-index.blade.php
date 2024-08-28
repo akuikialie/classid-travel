@@ -28,7 +28,7 @@
           </div>
           <div class="ms-auto align-self-center me-3">
                         <span
-                          class="badge bg-red-dark color-white font-11 font-500 py-1 px-2">{{ rupiahFormat($package->amount) }}</span>
+                          class="badge bg-red-dark color-white font-11 font-500 py-1 px-2">{{ moneyFormat($package->amount) }}</span>
           </div>
         </div>
         <div class="divider mt-3 mb-4"></div>

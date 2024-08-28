@@ -2,11 +2,8 @@
 
 namespace App\Http\Routes\Web\Admin;
 
-use App\Enums\RoleEnum;
-use App\Http\Controllers\Web\Admin\TenantController;
 use App\Http\Controllers\Web\Admin\UserController;
 use Dentro\Yalr\BaseRoute;
-use Illuminate\Support\Facades\Auth;
 
 class UserRoute extends BaseRoute
 {
@@ -16,7 +13,7 @@ class UserRoute extends BaseRoute
 
     public function register(): void
     {
-        $this->router->middleware(['auth', 'verified'])->group(function () {
+        $this->router->middleware(['auth:sanctum', 'verified'])->group(function () {
 
             $this->router->post($this->prefix('{type}/datatable'), [UserController::class, 'datatable'])
                 ->name($this->name('datatable'))->middleware(["permission:view {$this->page}"]);

@@ -73,22 +73,24 @@ class TenantController extends Controller
                             $subQuery->where('slug', 'like', "%" . $request->input('search')['value'] . "%");
                             $subQuery->orWhere('app_domain', 'like', "%" . $request->input('search')['value'] . "%");
                             $subQuery->orWhere('name', 'like', "%" . $request->input('search')['value'] . "%");
-                            $subQuery->orWhere('BCN', 'like', "%" . $request->input('search')['value'] . "%");
+                            $subQuery->orWhere('bcn', 'like', "%" . $request->input('search')['value'] . "%");
                         });
                         /* end:: filter search */
                     })
                     ->addIndexColumn()
                     ->addColumn('name', function ($row) {
                         return $row->name;
-                    })->addColumn('slug', function ($row) {
+                    })
+                    ->addColumn('slug', function ($row) {
                         return $row->slug;
-                    })->addColumn('app_domain', function ($row) {
+                    })
+                    ->addColumn('app_domain', function ($row) {
                         return $row->app_domain;
-                    })->addColumn('BCN', function ($row) {
-                        return $row->BCN;
-                    })->addColumn('BCN', function ($row) {
-                        return $row->BCN;
-                    })->addColumn('status', function ($row) {
+                    })
+                    ->addColumn('bcn', function ($row) {
+                        return $row->bcn;
+                    })
+                    ->addColumn('status', function ($row) {
                         if ($row->is_active) {
                             return '<span class="badge badge-success text-uppercase">active</span>';
                         }
@@ -134,8 +136,8 @@ class TenantController extends Controller
     public function create(): JsonResponse
     {
         if (\request()->ajax()) {
-            $lastBCN = Tenant::query()->max('BCN');
-            setDefaultRequest('BCN', $lastBCN + 1);
+            $lastBCN = Tenant::query()->max('bcn');
+            setDefaultRequest('bcn', $lastBCN + 1);
             return \response()->json([
                 'view' => $this->view('pages.web.tenant.modals.modal-create-tenant')->render(),
             ]);
@@ -153,7 +155,7 @@ class TenantController extends Controller
     public function store(Request $request): RedirectResponse
     {
         $input = $request->validate([
-            'BCN' => ['required', 'integer'],
+            'bcn' => ['required', 'integer'],
             'name' => ['required', 'string'],
             'app_domain' => ['required', 'string', 'unique:tenants,app_domain'],
             'phone' => ['required', 'numeric'],
@@ -197,7 +199,7 @@ class TenantController extends Controller
      * @throws NotFoundExceptionInterface
      * @throws ReflectionException
      */
-    public function show(?Tenant $tenant = null, ?string $slug = null): View
+    public function show(Tenant|null $tenant = null, string|null $slug = null): View
     {
         $this->setPageTitle('Profil Travel');
         $this->setBreadCrumb('Profil Travel');
@@ -300,7 +302,7 @@ class TenantController extends Controller
         if (\request()->ajax()) {
             setDefaultRequest([
                 'name' => $tenant->name,
-                'BCN' => $tenant->BCN,
+                'bcn' => $tenant->bcn,
                 'app_domain' => $tenant->app_domain,
                 'tenant_hash' => $tenant->hash,
             ]);
@@ -321,7 +323,7 @@ class TenantController extends Controller
      * @throws FileDoesNotExist
      * @throws FileIsTooBig
      */
-    public function update(Request $request, ?Tenant $tenant = null)
+    public function update(Request $request, Tenant|null $tenant = null)
     {
         $user = auth()->user();
 
@@ -329,7 +331,7 @@ class TenantController extends Controller
             'avatar_remove' => ['nullable', 'string'],
             'name' => [Rule::requiredIf($user->tenant_id !== null), 'string'],
             'slug' => [Rule::requiredIf($user->tenant_id !== null), 'string'],
-            'BCN' => [Rule::requiredIf($user->tenant_id === null), 'numeric'],
+            'bcn' => [Rule::requiredIf($user->tenant_id === null), 'numeric'],
             'app_domain' => [Rule::requiredIf($user->tenant_id === null), 'string'],
         ]);
 
@@ -407,7 +409,7 @@ class TenantController extends Controller
     /**
      * @throws Throwable
      */
-    public function addMedia(Request $request, ?Tenant $tenant = null)
+    public function addMedia(Request $request, Tenant|null $tenant = null)
     {
         $request->validate([
             'collection' => ['required', 'string'],
@@ -529,7 +531,7 @@ class TenantController extends Controller
     /**
      * @throws Throwable
      */
-    public function authBanner(Request $request, ?Tenant $tenant = null)
+    public function authBanner(Request $request, Tenant|null $tenant = null)
     {
         $request->validate([
             'collection' => ['required', 'string'],

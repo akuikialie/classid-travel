@@ -19,7 +19,7 @@ class RegisterUsingReferralCode extends AbstractNotification implements ShouldQu
      *
      * @return void
      */
-    public function __construct(User $user, private readonly ?string $message = null)
+    public function __construct(User $user, private readonly string|null $message = null)
     {
         parent::__construct($user);
     }

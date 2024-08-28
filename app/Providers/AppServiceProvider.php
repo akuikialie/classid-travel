@@ -2,9 +2,9 @@
 
 namespace App\Providers;
 
-use App\Actions\CreateNewUser;
 use App\Models\Tenant\Tenant;
 use Exception;
+use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Facades\Vite;
 use Illuminate\Support\ServiceProvider;
 
@@ -12,29 +12,27 @@ class AppServiceProvider extends ServiceProvider
 {
     /**
      * Register any application services.
-     *
-     * @return void
      */
-    public function register()
+    public function register(): void
     {
         $this->app->singleton('request_id', fn ($app) => uniqid("REQUEST_"));
 
-        $this->app->singleton('notifLog', fn() => app('log')->channel('msnotif'));
+        $this->app->singleton('notifLog', fn () => app('log')->channel('msnotif'));
 
-        app()->singleton('activeTenant', function(): ?Tenant {
+        app()->singleton('activeTenant', function(): Tenant|null {
             try {
+                $tenant = Tenant::query()
+                    ->with('tenantData')
+                    ->where('is_active', true);
+
                 if (auth()->user()?->tenant_id ?? null){
-                    return Tenant::query()->with('tenantData')->where(
-                        'id', auth()->user()->tenant_id
-                    )
-                    ->first();
+                    $tenant->where('id', auth()->user()->tenant_id);
+                } else {
+                    $domain = request()->getHost();
+                    $tenant->where('app_domain', $domain);
                 }
 
-                $domain = request()->getHost();
-                return Tenant::query()->where([
-                    'app_domain' => $domain,
-                    'is_active' => true,
-                ])->first();
+                return $tenant->first();
             } catch (Exception $e) {
                 //
             }
@@ -44,14 +42,12 @@ class AppServiceProvider extends ServiceProvider
 
     /**
      * Bootstrap any application services.
-     *
-     * @return void
      */
-    public function boot()
+    public function boot(): void
     {
         if (request()->secure() || in_array(app()->environment(), ['demo', 'staging', 'prod', 'production'])) {
             $this->app['request']->server->set('HTTPS', true);
-            \URL::forceScheme('https');
+            URL::forceScheme('https');
         }
 
         Vite::useScriptTagAttributes([
