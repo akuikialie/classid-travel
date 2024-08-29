@@ -80,6 +80,13 @@ class Controller extends BaseController
      */
     public function __construct()
     {
+        // dd([
+        //     'run-in-console' => app()->runningInConsole(),
+        //     'admin-url' => env(key: 'ADMIN_URL'),
+        //     'request-host' => request()->host(),
+        //     'env-equal-host' => env(key: 'ADMIN_URL') === request()->host(),
+        //     'path-start-with-admin' => preg_match('/^admin(\/.*)?/i', request()->path()),
+        // ]);
         if (
             !app()->runningInConsole() &&
             env(key: 'ADMIN_URL') === request()->host() &&

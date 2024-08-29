@@ -113,7 +113,7 @@ if (!function_exists('isMobile')) {
 
 if (!function_exists('isNativeMobile')) {
     /**
-     * @param null|string $type
+     * @param  null|string  $type
      *
      * @return bool
      */
@@ -189,9 +189,9 @@ if (!function_exists('moneyFormat')) {
 
 if (!function_exists('trimAll')) {
     /**
-     * @param null|string $string
-     * @param string $type
-     * @param string $pattern
+     * @param  null|string  $string
+     * @param  string  $type
+     * @param  string  $pattern
      *
      * @return string
      * @throws Exception
@@ -219,9 +219,9 @@ if (!function_exists('trimAll')) {
 
 if (!function_exists('carbon')) {
     /**
-     * @param string|DateTimeInterface|null $datetime
-     * @param DateTimeZone|string|null $timezone
-     * @param string|null $locale
+     * @param  string|DateTimeInterface|null  $datetime
+     * @param  DateTimeZone|string|null  $timezone
+     * @param  string|null  $locale
      *
      * @return Carbon
      */
@@ -247,8 +247,8 @@ if (!function_exists('carbon')) {
 
 if (!function_exists('msnotif')) {
     /**
-     * @param string $channel
-     * @param int|null $schoolId
+     * @param  string  $channel
+     * @param  int|null  $schoolId
      *
      * @return NotifManager
      */
@@ -260,7 +260,8 @@ if (!function_exists('msnotif')) {
 
 if (!function_exists('whatsappMessage')) {
     /**
-     * @param string|null $key
+     * @param  string|null  $key
+     *
      * @return WhatsappMessage
      * @throws Exception
      */
@@ -272,7 +273,7 @@ if (!function_exists('whatsappMessage')) {
 
 if (!function_exists('numberFormat')) {
     /**
-     * @param mixed $integer
+     * @param  mixed  $integer
      *
      * @return string
      */
@@ -341,7 +342,9 @@ if (!function_exists('romanToInt')) {
 if (!function_exists('numberSpell')) {
     /**
      * Spell number to words.
+     *
      * @param $value
+     *
      * @return string
      */
     function numberSpell($value): string
@@ -356,9 +359,9 @@ if (!function_exists('setDefaultRequest')) {
     /**
      * Set Default Value for Request Input.
      *
-     * @param string|array $name
-     * @param null $value
-     * @param bool $force
+     * @param  string|array  $name
+     * @param  null  $value
+     * @param  bool  $force
      */
     function setDefaultRequest(string|array $name, mixed $value = null, bool $force = true): void
     {
@@ -386,7 +389,8 @@ if (!function_exists('hasRoute')) {
     /**
      * Existing Route by Name.
      *
-     * @param string $name
+     * @param  string  $name
+     *
      * @return bool
      */
     function hasRoute(string $name): bool
@@ -400,9 +404,10 @@ if (!function_exists('routed')) {
      * Existing Route by Name
      * with '#' fallback.
      *
-     * @param string $name
-     * @param array $parameters
-     * @param bool $absolute
+     * @param  string  $name
+     * @param  array  $parameters
+     * @param  bool  $absolute
+     *
      * @return string
      */
     function routed(string $name, array $parameters = [], bool $absolute = true): string
@@ -453,11 +458,11 @@ if (!function_exists('inputFeedbackComponent')) {
     /**
      * Input feedback component
      *
-     * @param string|array $message
-     * @param string $mode valid|invalid
-     * @param string $type feedback|tooltip
-     * @param string $glue
-     * @param string|null $id
+     * @param  string|array  $message
+     * @param  string  $mode  valid|invalid
+     * @param  string  $type  feedback|tooltip
+     * @param  string  $glue
+     * @param  string|null  $id
      *
      * @return string
      */
@@ -477,8 +482,8 @@ if (!function_exists('getErrors')) {
     /**
      * Feedback CSS Class
      *
-     * @param string|null $key
-     * @param string|null $bag
+     * @param  string|null  $key
+     * @param  string|null  $bag
      *
      * @return ViewErrorBag|null
      */
@@ -499,8 +504,8 @@ if (!function_exists('hasError')) {
     /**
      * Feedback CSS Class
      *
-     * @param string|array|null $key
-     * @param string|null $bag
+     * @param  string|array|null  $key
+     * @param  string|null  $bag
      *
      * @return bool
      */
@@ -515,10 +520,10 @@ if (!function_exists('errorCss')) {
     /**
      * Feedback CSS Class
      *
-     * @param string|array|null $key
-     * @param string|null $bag
-     * @param bool $isGroup
-     * @param string|null $class
+     * @param  string|array|null  $key
+     * @param  string|null  $bag
+     * @param  bool  $isGroup
+     * @param  string|null  $class
      *
      * @return string
      */
@@ -535,9 +540,9 @@ if (!function_exists('inputFeedback')) {
     /**
      * InValid input feedback
      *
-     * @param string|array|null $key
-     * @param string|null $bag
-     * @param string $type feedback|tooltip
+     * @param  string|array|null  $key
+     * @param  string|null  $bag
+     * @param  string  $type  feedback|tooltip
      *
      * @return string
      */
@@ -564,8 +569,9 @@ if (!function_exists('errorAll')) {
     /**
      * InValid input feedback
      *
-     * @param string|null $bag
-     * @param array|null $excludeKey
+     * @param  string|null  $bag
+     * @param  array|null  $excludeKey
+     *
      * @return string
      */
     function errorAll(string $bag = null, array $excludeKey = null): string
@@ -606,9 +612,9 @@ if (!function_exists('paginateStyleReset')) {
 
 if (!function_exists('logError')) {
     /**
-     * @param string|Exception $exception
-     * @param string|null $title
-     * @param string|array|null $data
+     * @param  string|Exception  $exception
+     * @param  string|null  $title
+     * @param  string|array|null  $data
      *
      * @return void
      */
@@ -647,9 +653,9 @@ if (!function_exists('logError')) {
 
 if (!function_exists('partner')) {
     /**
-     * @param null|string               $key
-     * @param null|array|string         $default
-     * @param string|null               $partnerId
+     * @param  null|string  $key
+     * @param  null|array|string  $default
+     * @param  string|null  $partnerId
      *
      * @return array|string|\Base\App\PartnerManager\PartnerManager
      */
@@ -676,5 +682,51 @@ if (!function_exists('cachedAsset')) {
             : asset($path, $secure);
 
         return $asset . '?v=' . config('cache.version', time());
+    }
+}
+
+if (!function_exists('createNewVA')) {
+    /**
+     * Convert Array into Object in deep
+     *
+     * @param  string  $type
+     * @param  string|null  $lastVA
+     *
+     * @return int
+     */
+    function createNewVA(string $type = 'tabungan', string|null $lastVA = null): int
+    {
+        /*
+            format va00001
+                1. 8576000220900001 : tabungan
+                2. 857600.1.2209.00001 : paket
+        */
+
+        $time_now = Carbon::now();
+        $start_of_month = Carbon::now()->startOfMonth();
+        $monthDate = substr($time_now->format('Ym'), 2);
+        if (isset($lastVA)) {
+            $getBcn = activeTenant()?->bcn ?? '';
+            $getType = $type == 'tabungan' ? 0 : 1;
+            $getMonthYear = substr($lastVA, '7', 4);
+            $increment = (int)substr($lastVA, '11') ?? 0;
+
+            if ($time_now->toDateString() == $start_of_month->toDateString()) {
+                // today is a start of month
+                $count = 1;
+                $month = $monthDate;
+            } else {
+                $count = $increment + 1;
+                $month = $getMonthYear;
+            }
+
+            $getIncrement = str_pad($count, '5', '0', STR_PAD_LEFT);
+            return $getBcn . $getType . $month . $getIncrement;
+        } else {
+            $getBcn = activeTenant()->BCN;
+            $getType = $type == 'tabungan' ? 0 : 1;
+            $getIncrement = str_pad(1, '5', '0', STR_PAD_LEFT);
+            return $getBcn . $getType . $monthDate . $getIncrement;
+        }
     }
 }
