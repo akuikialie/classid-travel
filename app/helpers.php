@@ -723,7 +723,7 @@ if (!function_exists('createNewVA')) {
             $getIncrement = str_pad($count, '5', '0', STR_PAD_LEFT);
             return $getBcn . $getType . $month . $getIncrement;
         } else {
-            $getBcn = activeTenant()->BCN;
+            $getBcn = activeTenant()->bcn;
             $getType = $type == 'tabungan' ? 0 : 1;
             $getIncrement = str_pad(1, '5', '0', STR_PAD_LEFT);
             return $getBcn . $getType . $monthDate . $getIncrement;

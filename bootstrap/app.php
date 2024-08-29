@@ -25,6 +25,9 @@ return Application::configure(basePath: dirname(__DIR__))
             'role_or_permission' => \Spatie\Permission\Middleware\RoleOrPermissionMiddleware::class,
 
             'quick_access' => \App\Http\Middleware\RedirectIfHasAccess::class,
+
+            // app-aliases
+            'Notify' => \App\Core\Notify\Facades\Notify::class,
         ]);
 
         // dd($middleware->getMiddlewareAliases());

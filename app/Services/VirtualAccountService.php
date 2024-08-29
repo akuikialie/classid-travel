@@ -81,6 +81,8 @@ class VirtualAccountService
 
         $setEmail = "{$VANumber}@prohajj.app";
 
+        // dump([$VA->toArray(), $VANumber, $setEmail, $this->vaType, $this->tenantId]);
+
         $newVA = new VirtualAccount([
             'tenant_id' => $this->tenantId,
             'va_number' => $VANumber,

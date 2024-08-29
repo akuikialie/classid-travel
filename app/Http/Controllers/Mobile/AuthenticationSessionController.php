@@ -30,7 +30,7 @@ class AuthenticationSessionController extends Controller
 
     public function destroy(Request $request)
     {
-        Auth::logout();
+        Auth::guard("web")->logout();
 
         $request->session()->invalidate();
 

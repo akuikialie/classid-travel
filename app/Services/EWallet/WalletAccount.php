@@ -111,7 +111,6 @@ trait WalletAccount
         // dump($getBody);
 
         if (isset($getBody['error'])){
-            dump($getBody);
             throw new Exception($getBody['error']);
         }
 

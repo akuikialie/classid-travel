@@ -161,7 +161,7 @@ class ProfileController extends Controller
                 'password' => Hash::make($request->new_password)
             ]);
 
-            Auth::logout();
+            Auth::guard("web")->logout();
 
             $request->session()->invalidate();
 
