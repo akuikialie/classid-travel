@@ -1,0 +1,13 @@
+name: CI Build and Test
+on:
+  push:
+    branches: [ main, release/1.x ]
+  pull_request:
+    branches: [ main, release/1.x ]
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    if: contains(github.ref, '/release/') || github.ref == 'refs/heads/main'
+    steps:
+      - name: Fake test
+        run: echo "ok"
