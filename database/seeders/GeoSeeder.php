@@ -25,9 +25,16 @@ class GeoSeeder extends Seeder
         self::$country = new Fluent();
 
         $this->command->outputComponents()->task('Cleaning geo data', fn () => $this->cleanAllData());
-        $this->command->outputComponents()->task('Seeding temporary geo data', fn () => $this->seedTemporary());
-        $this->command->outputComponents()->task('Seeding Countries', fn () => $this->seedCountry());
-        $this->command->outputComponents()->task('Seeding Provinces until Sub districts (may take long time)', fn () => $this->seedGeo());
+        if (File::exists(database_path("data/geo_sub_districts.sql"))) {
+            $this->seedGeoData();
+        } else {
+            $this->command->outputComponents()
+                ->task('Seeding temporary geo data', fn() => $this->seedTemporary());
+            $this->command->outputComponents()
+                ->task('Seeding Countries', fn() => $this->seedCountry());
+            $this->command->outputComponents()
+                ->task('Seeding Provinces until Sub districts (may take long time)', fn() => $this->seedGeo());
+        }
     }
 
     private function cleanAllData(): void
@@ -50,6 +57,23 @@ class GeoSeeder extends Seeder
         $sql = File::get(database_path("data/geo_temp.sql"));
         DB::unprepared($sql);
         DB::commit();
+    }
+
+    private function seedGeoData(): void
+    {
+        $geos = ['countries', 'provinces', 'cities', 'districts', 'sub_districts'];
+        foreach ($geos as $geo) {
+            $this->command->outputComponents()
+                ->task("Seeding geo {$geo} data", function () use ($geo) {
+                    try {
+                        $sql = File::get(database_path("data/geo_{$geo}.sql"));
+                        DB::unprepared($sql);
+                        DB::commit();
+                    } catch (Exception $e) {
+                        DB::rollBack();
+                    }
+                });
+        }
     }
 
     private function seedCountry(): void
@@ -102,14 +126,16 @@ class GeoSeeder extends Seeder
                 $additional = new Fluent($province->additional ? json_decode($province->additional) : []);
                 $parentIds = [
                     'country_id' => self::$country->get('id'),
+                    'country_name' => self::$country->get('name'),
                 ];
                 $id = DB::table('geo_provinces')->insertGetId(array_merge($parentIds, [
-                    'admin_code' => $province->id,
-                    'wilayah_code' => str($province->id)->replaceMatches('/\D+/', ''),
+                    'code' => $province->id,
+                    'local_code' => str($province->id)->replaceMatches('/\D+/', ''),
                     'name' => $province->name,
                     'postal_code' => $additional->get('postal_code'),
                 ]));
                 $parentIds['province_id'] = $id;
+                $parentIds['province_name'] = $province->name;
 
                 // city
                 $temps
@@ -117,12 +143,13 @@ class GeoSeeder extends Seeder
                     ->each(function ($city) use ($temps, $parentIds) {
                         $additional = new Fluent($city->additional ? json_decode($city->additional) : []);
                         $id = DB::table('geo_cities')->insertGetId(array_merge($parentIds, [
-                            'admin_code' => $city->id,
-                            'wilayah_code' => str($city->id)->replaceMatches('/\D+/', ''),
+                            'code' => $city->id,
+                            'local_code' => str($city->id)->replaceMatches('/\D+/', ''),
                             'name' => $city->name,
                             'postal_code' => $additional->get('postal_code'),
                         ]));
                         $parentIds['city_id'] = $id;
+                        $parentIds['city_name'] = $city->name;
 
                         // district
                         $temps
@@ -130,12 +157,13 @@ class GeoSeeder extends Seeder
                             ->each(function ($district) use ($temps, $parentIds) {
                                 $additional = new Fluent($district->additional ? json_decode($district->additional) : []);
                                 $id = DB::table('geo_districts')->insertGetId(array_merge($parentIds, [
-                                    'admin_code' => $district->id,
-                                    'wilayah_code' => str($district->id)->replaceMatches('/\D+/', ''),
+                                    'code' => $district->id,
+                                    'local_code' => str($district->id)->replaceMatches('/\D+/', ''),
                                     'name' => $district->name,
                                     'postal_code' => $additional->get('postal_code'),
                                 ]));
                                 $parentIds['district_id'] = $id;
+                                $parentIds['district_name'] = $district->name;
 
                                 // sub-district
                                 $temps
@@ -143,8 +171,8 @@ class GeoSeeder extends Seeder
                                     ->each(function ($subDistrict) use ($temps, $parentIds) {
                                         $additional = new Fluent($subDistrict->additional ? json_decode($subDistrict->additional) : []);
                                         DB::table('geo_sub_districts')->insertGetId(array_merge($parentIds, [
-                                            'admin_code' => $subDistrict->id,
-                                            'wilayah_code' => str($subDistrict->id)->replaceMatches('/\D+/', ''),
+                                            'code' => $subDistrict->id,
+                                            'local_code' => str($subDistrict->id)->replaceMatches('/\D+/', ''),
                                             'name' => $subDistrict->name,
                                             'postal_code' => $additional->get('postal_code'),
                                         ]));
