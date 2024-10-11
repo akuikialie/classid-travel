@@ -4,7 +4,7 @@
   <label class="required fs-5 fw-semibold mb-2">BCN</label>
   <!--end::Label-->
   <!--begin::Input-->
-  <input type="number" class="form-control form-control-solid" placeholder="BCN" name="BCN"
+  <input type="number" class="form-control form-control-solid" placeholder="BCN" name="bcn"
          value="{{ old('bcn') }}"/>
   <!--end::Input-->
 </div>
