@@ -17,7 +17,7 @@ class RoleRoute extends BaseRoute
             $this->router->post($this->prefix('datatable'), [RoleController::class, 'datatable'])
                 ->name($this->name('datatable'))->middleware(["permission:view {$this->page}"]);
 
-            $this->router->post($this->prefix('datatable/{role_hash}/users'), [RoleController::class, 'datatableRoleUsers'])
+            $this->router->post($this->prefix('datatable/{role}/users'), [RoleController::class, 'datatableRoleUsers'])
                 ->name($this->name('datatable.role-user'))->middleware(["permission:view {$this->page}"]);
 
             /* begin:: default route collection */
@@ -31,18 +31,18 @@ class RoleRoute extends BaseRoute
                 $this->router->post($this->prefix(), [RoleController::class, 'store'])
                     ->name($this->name('store'));
 
-                $this->router->get($this->prefix('{role_hash}/show'), [RoleController::class, 'show'])
+                $this->router->get($this->prefix('{role}/show'), [RoleController::class, 'show'])
                     ->name($this->name('show'));
 
-                $this->router->get($this->prefix('{role_hash}/edit'), [RoleController::class, 'edit'])
+                $this->router->get($this->prefix('{role}/edit'), [RoleController::class, 'edit'])
                     ->name($this->name('edit'));
-                $this->router->put($this->prefix('{role_hash}'), [RoleController::class, 'update'])
+                $this->router->put($this->prefix('{role}'), [RoleController::class, 'update'])
                     ->name($this->name('update'));
 
-                $this->router->delete($this->prefix('{role_hash}'), [RoleController::class, 'destroy'])
+                $this->router->delete($this->prefix('{role}'), [RoleController::class, 'destroy'])
                     ->name($this->name('destroy'));
 
-                $this->router->post($this->prefix('{role_hash}/change-status'),[RoleController::class, 'changeStatus'])
+                $this->router->post($this->prefix('{role}/change-status'),[RoleController::class, 'changeStatus'])
                     ->name($this->name('change-status'));
             });
 

@@ -44,7 +44,7 @@
             <!--end::Menu separator-->
             <!--begin::Menu item-->
             <div class="menu-item px-5">
-                <a href="{{ route('admin.user.show', ['user_hash' => auth()->user()->hash, 'slug' => 'overview']) }}" class="menu-link px-5">My Profile</a>
+                <a href="{{ route('admin.user.show', ['user' => auth()->user()->hash, 'slug' => 'overview']) }}" class="menu-link px-5">My Profile</a>
             </div>
             <!--end::Menu item-->
 

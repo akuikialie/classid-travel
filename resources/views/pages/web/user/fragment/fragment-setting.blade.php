@@ -8,7 +8,7 @@
     </div>
     <!--end::Card header-->
     <!--begin::Form-->
-    <form class="form" action="{{ route('admin.user.update', ['user_hash' => $user->hash]) }}" method="post"
+    <form class="form" action="{{ route('admin.user.update', ['user' => $user->hash]) }}" method="post"
         enctype="multipart/form-data">
         @csrf
         @method('PUT')
@@ -155,7 +155,7 @@
         <!--begin::Card body-->
         <div class="card-body border-top p-9">
             <!--begin::Form-->
-            <form class="form" action="{{ route('admin.user.updatePassword', ['user_hash' => $user->hash]) }}"
+            <form class="form" action="{{ route('admin.user.updatePassword', ['user' => $user->hash]) }}"
                 method="post" enctype="multipart/form-data">
                 @csrf
                 @method('PUT')

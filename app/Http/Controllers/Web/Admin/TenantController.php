@@ -304,7 +304,7 @@ class TenantController extends Controller
                 'name' => $tenant->name,
                 'bcn' => $tenant->bcn,
                 'app_domain' => $tenant->app_domain,
-                'tenant_hash' => $tenant->hash,
+                'tenant' => $tenant->hash,
             ]);
             return \response()->json([
                 'view' => $this->view('pages.web.tenant.modals.modal-edit-tenant')->render(),

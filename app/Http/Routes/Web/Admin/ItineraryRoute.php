@@ -29,13 +29,13 @@ class ItineraryRoute extends BaseRoute
                 $this->router->post($this->prefix(), [ItineraryController::class, 'store'])
                     ->name($this->name('store'));
 
-                $this->router->get($this->prefix('{itinerary_hash}/edit'), [ItineraryController::class, 'edit'])
+                $this->router->get($this->prefix('{itinerary}/edit'), [ItineraryController::class, 'edit'])
                     ->name($this->name('edit'));
 
-                $this->router->put($this->prefix('{itinerary_hash}'), [ItineraryController::class, 'update'])
+                $this->router->put($this->prefix('{itinerary}'), [ItineraryController::class, 'update'])
                     ->name($this->name('update'));
 
-                $this->router->delete($this->prefix('{itinerary_hash}'), [ItineraryController::class, 'destroy'])
+                $this->router->delete($this->prefix('{itinerary}'), [ItineraryController::class, 'destroy'])
                     ->name($this->name('destroy'));
             });
 

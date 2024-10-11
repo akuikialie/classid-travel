@@ -273,7 +273,7 @@
           <ul class="nav nav-stretch nav-line-tabs nav-line-tabs-2x border-transparent fs-5 fw-bold">
             <!--begin::Nav item-->
             <li class="nav-item">
-              <a href="{{ route('admin.user.show', ['user_hash' => auth()->user()->hash, 'slug' => 'overview']) }}" class="nav-link text-active-primary py-5 me-6 {{ ($fragment_active ?? 'overview') == 'overview' ? 'active' : '' }}"
+              <a href="{{ route('admin.user.show', ['user' => auth()->user()->hash, 'slug' => 'overview']) }}" class="nav-link text-active-primary py-5 me-6 {{ ($fragment_active ?? 'overview') == 'overview' ? 'active' : '' }}"
                  type="button" data-fragment="overview">Overview</a>
             </li>
             <!--end::Nav item-->
@@ -285,7 +285,7 @@
             <!--end::Nav item-->--}}
             <!--begin::Nav item-->
             <li class="nav-item">
-              <a href="{{ route('admin.user.show', ['user_hash' => auth()->user()->hash, 'slug' => 'setting']) }}" class="nav-link text-active-primary py-5 me-6 fragment {{ ($fragment_active ?? 'overview') == 'setting' ? 'active' : '' }}"
+              <a href="{{ route('admin.user.show', ['user' => auth()->user()->hash, 'slug' => 'setting']) }}" class="nav-link text-active-primary py-5 me-6 fragment {{ ($fragment_active ?? 'overview') == 'setting' ? 'active' : '' }}"
                  type="button" data-fragment="setting">Setting</a>
             </li>
             <!--end::Nav item-->

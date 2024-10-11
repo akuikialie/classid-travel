@@ -28,15 +28,15 @@ class DestinationRoute extends BaseRoute
                 $this->router->post($this->prefix(), [DestinationController::class, 'store'])
                     ->name($this->name('store'));
 
-                $this->router->get($this->prefix('{destination_hash}/edit'), [DestinationController::class, 'edit'])
+                $this->router->get($this->prefix('{destination}/edit'), [DestinationController::class, 'edit'])
                     ->name($this->name('edit'));
-                $this->router->put($this->prefix('{destination_hash}'), [DestinationController::class, 'update'])
+                $this->router->put($this->prefix('{destination}'), [DestinationController::class, 'update'])
                     ->name($this->name('update'));
 
-                $this->router->delete($this->prefix('{destination_hash}'), [DestinationController::class, 'destroy'])
+                $this->router->delete($this->prefix('{destination}'), [DestinationController::class, 'destroy'])
                     ->name($this->name('destroy'));
 
-                $this->router->post($this->prefix('{destination_hash}/change-status'),[DestinationController::class, 'changeStatus'])
+                $this->router->post($this->prefix('{destination}/change-status'),[DestinationController::class, 'changeStatus'])
                     ->name($this->name('change-status'));
             });
 

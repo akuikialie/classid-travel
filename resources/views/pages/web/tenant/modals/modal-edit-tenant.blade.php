@@ -19,7 +19,7 @@
       <!--begin::Modal body-->
       <div class="modal-body py-lg-10 px-lg-10">
         <!--begin::Form-->
-        <form class="form" action="{{ route('admin.tenant.update', old('tenant_hash')) }}" method="post">
+        <form class="form" action="{{ route('admin.tenant.update', old('tenant')) }}" method="post">
           @csrf
           @method('PUT')
           <!--begin::Modal body-->

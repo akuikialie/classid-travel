@@ -28,15 +28,15 @@ class PackageRoute extends BaseRoute
                 $this->router->post($this->prefix(), [PackageController::class, 'store'])
                     ->name($this->name('store'));
 
-                $this->router->get($this->prefix('{package_hash}/edit'), [PackageController::class, 'edit'])
+                $this->router->get($this->prefix('{package}/edit'), [PackageController::class, 'edit'])
                     ->name($this->name('edit'));
-                $this->router->put($this->prefix('{package_hash}'), [PackageController::class, 'update'])
+                $this->router->put($this->prefix('{package}'), [PackageController::class, 'update'])
                     ->name($this->name('update'));
 
-                $this->router->delete($this->prefix('{package_hash}'), [PackageController::class, 'destroy'])
+                $this->router->delete($this->prefix('{package}'), [PackageController::class, 'destroy'])
                     ->name($this->name('destroy'));
 
-                $this->router->post($this->prefix('{package_hash}/change-status'),[PackageController::class, 'changeStatus'])
+                $this->router->post($this->prefix('{package}/change-status'),[PackageController::class, 'changeStatus'])
                     ->name($this->name('change-status'));
 
                 $this->router->get($this->prefix('{package}/itinerary-setup'),

@@ -29,16 +29,16 @@ class ScheduleRoute extends BaseRoute
                 $this->router->post($this->prefix(), [ScheduleController::class, 'store'])
                     ->name($this->name('store'));
 
-                $this->router->get($this->prefix('{schedule_hash}/edit'), [ScheduleController::class, 'edit'])
+                $this->router->get($this->prefix('{schedule}/edit'), [ScheduleController::class, 'edit'])
                     ->name($this->name('edit'));
 
-                $this->router->put($this->prefix('{schedule_hash}'), [ScheduleController::class, 'update'])
+                $this->router->put($this->prefix('{schedule}'), [ScheduleController::class, 'update'])
                     ->name($this->name('update'));
 
-                $this->router->delete($this->prefix('{schedule_hash}'), [ScheduleController::class, 'destroy'])
+                $this->router->delete($this->prefix('{schedule}'), [ScheduleController::class, 'destroy'])
                     ->name($this->name('destroy'));
 
-                $this->router->post($this->prefix('{schedule_hash}/change-status'),[ScheduleController::class, 'changeStatus'])
+                $this->router->post($this->prefix('{schedule}/change-status'),[ScheduleController::class, 'changeStatus'])
                     ->name($this->name('change-status'));
             });
 

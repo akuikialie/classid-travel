@@ -27,19 +27,19 @@ class UserRoute extends BaseRoute
                 $this->router->post($this->prefix(), [UserController::class, 'store'])
                     ->name($this->name('store'));
 
-                $this->router->get($this->prefix('{user_hash}/{slug}'), [UserController::class, 'show'])
+                $this->router->get($this->prefix('{user}/{slug}'), [UserController::class, 'show'])
                     ->name($this->name('show'));
 
-                $this->router->get($this->prefix('{user_hash}/edit'), [UserController::class, 'edit'])
+                $this->router->get($this->prefix('{user}/edit'), [UserController::class, 'edit'])
                     ->name($this->name('edit'));
-                $this->router->put($this->prefix('{user_hash}/update'), [UserController::class, 'update'])
+                $this->router->put($this->prefix('{user}/update'), [UserController::class, 'update'])
                     ->name($this->name('update'));
-                $this->router->put($this->prefix('{user_hash}/updatePassword'), [UserController::class, 'updatePassword'])
+                $this->router->put($this->prefix('{user}/updatePassword'), [UserController::class, 'updatePassword'])
                     ->name($this->name('updatePassword'));
-                $this->router->delete($this->prefix('{user_hash}'), [UserController::class, 'destroy'])
+                $this->router->delete($this->prefix('{user}'), [UserController::class, 'destroy'])
                     ->name($this->name('destroy'));
 
-                $this->router->post($this->prefix('{user_hash}/change-status'), [UserController::class, 'changeStatus'])
+                $this->router->post($this->prefix('{user}/change-status'), [UserController::class, 'changeStatus'])
                     ->name($this->name('change-status'));
             });
         });

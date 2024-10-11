@@ -29,16 +29,16 @@ class FacilityRoute extends BaseRoute
                 $this->router->post($this->prefix(), [FacilityController::class, 'store'])
                     ->name($this->name('store'));
 
-                $this->router->get($this->prefix('{facility_hash}/edit'), [FacilityController::class, 'edit'])
+                $this->router->get($this->prefix('{facility}/edit'), [FacilityController::class, 'edit'])
                     ->name($this->name('edit'));
 
-                $this->router->put($this->prefix('{facility_hash}'), [FacilityController::class, 'update'])
+                $this->router->put($this->prefix('{facility}'), [FacilityController::class, 'update'])
                     ->name($this->name('update'));
 
-                $this->router->delete($this->prefix('{facility_hash}'), [FacilityController::class, 'destroy'])
+                $this->router->delete($this->prefix('{facility}'), [FacilityController::class, 'destroy'])
                     ->name($this->name('destroy'));
 
-                $this->router->post($this->prefix('{facility_hash}/change-status'),[FacilityController::class, 'changeStatus'])
+                $this->router->post($this->prefix('{facility}/change-status'),[FacilityController::class, 'changeStatus'])
                     ->name($this->name('change-status'));
             });
 

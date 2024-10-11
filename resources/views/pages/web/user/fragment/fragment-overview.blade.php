@@ -9,7 +9,7 @@
         <!--end::Card title-->
 
         <!--begin::Action-->
-        <a href="{{ route('admin.user.show', ['user_hash' => auth()->user()->hash, 'slug' => 'setting']) }}" class="btn btn-sm btn-primary align-self-center">Edit
+        <a href="{{ route('admin.user.show', ['user' => auth()->user()->hash, 'slug' => 'setting']) }}" class="btn btn-sm btn-primary align-self-center">Edit
             Profile</a>
         <!--end::Action-->
     </div>

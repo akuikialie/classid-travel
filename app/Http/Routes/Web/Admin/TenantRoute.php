@@ -32,16 +32,16 @@ class TenantRoute extends BaseRoute
                     $this->router->post($this->prefix(), [TenantController::class, 'store'])
                         ->name($this->name('store'));
 
-                    $this->router->get($this->prefix('{tenant_hash}/edit'), [TenantController::class, 'edit'])
+                    $this->router->get($this->prefix('{tenant}/edit'), [TenantController::class, 'edit'])
                         ->name($this->name('edit'));
 
-                    $this->router->put($this->prefix('{tenant_hash}/update'), [TenantController::class, 'update'])
+                    $this->router->put($this->prefix('{tenant}/update'), [TenantController::class, 'update'])
                         ->name($this->name('update'));
 
-                    $this->router->delete($this->prefix('{tenant_hash}'), [TenantController::class, 'destroy'])
+                    $this->router->delete($this->prefix('{tenant}'), [TenantController::class, 'destroy'])
                         ->name($this->name('destroy'));
 
-                    $this->router->post($this->prefix('{tenant_hash}/change-status'), [TenantController::class, 'changeStatus'])
+                    $this->router->post($this->prefix('{tenant}/change-status'), [TenantController::class, 'changeStatus'])
                         ->name($this->name('change-status'));
                 });
 
@@ -49,29 +49,29 @@ class TenantRoute extends BaseRoute
             });
 
             $this->router->middleware(['quick_access:role'])->group(function () {
-                //                $this->router->get($this->prefix('profile/{tenant_hash?}'),[TenantController::class, 'show'])
+                //                $this->router->get($this->prefix('profile/{tenant?}'),[TenantController::class, 'show'])
                 //                    ->name($this->name('show'));
 
                 $this->router->get($this->prefix('profile/{slug}'), [TenantController::class, 'showProfile'])
                     ->name($this->name('showProfile'));
 
-                $this->router->put($this->prefix('profile/{tenant_hash?}'), [TenantController::class, 'update'])
+                $this->router->put($this->prefix('profile/{tenant?}'), [TenantController::class, 'update'])
                     ->name($this->name('update.as-profile'));
 
                 $this->router->post(
-                    $this->prefix('add-media-collections/{tenant_hash?}'),
+                    $this->prefix('add-media-collections/{tenant?}'),
                     [TenantController::class, 'addMedia']
                 )
                     ->name($this->name('add-media'));
 
-                $this->router->post($this->prefix('{tenant_hash?}/change_theme'), [TenantController::class, 'changeTheme'])
+                $this->router->post($this->prefix('{tenant?}/change_theme'), [TenantController::class, 'changeTheme'])
                     ->name($this->name('changeTheme'));
 
-                // $this->router->post($this->prefix('{tenant_hash?}/auth_banner'), [TenantController::class, 'authBanner'])
+                // $this->router->post($this->prefix('{tenant?}/auth_banner'), [TenantController::class, 'authBanner'])
                 //     ->name($this->name('auth_banner'));
 
                 $this->router->post(
-                    $this->prefix('auth_banner/{tenant_hash?}'),
+                    $this->prefix('auth_banner/{tenant?}'),
                     [TenantController::class, 'authBanner']
                 )
                     ->name($this->name('auth_banner'));
