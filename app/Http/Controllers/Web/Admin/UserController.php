@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Web\Admin;
 
 use App\Exceptions\HandleCatchableException;
-use DB;
+use Illuminate\Support\Facades\DB;
 use Spatie\MediaLibrary\MediaCollections\Exceptions\FileDoesNotExist;
 use Spatie\MediaLibrary\MediaCollections\Exceptions\FileIsTooBig;
 use Throwable;
@@ -77,8 +77,9 @@ class UserController extends Controller
                         }
                     })
                     ->when($type == 'calon-jamaah', function (Builder $subQuery) {
-                        $subQuery->role(['jamaah']);
+                        $subQuery->role(['jamaah.planPackages']);
                     }, function (Builder $subQuery) {
+                        $subQuery->with(['']);
                         $subQuery->whereHas('roles', function (Builder $subQuery) {
                             $subQuery->where('name', '!=', 'jamaah');
                         });

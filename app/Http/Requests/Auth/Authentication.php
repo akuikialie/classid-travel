@@ -20,6 +20,7 @@ class Authentication extends FormRequest
 
     public function __construct()
     {
+        parent::__construct();
         $this->authType = $this->credentials();
     }
 
