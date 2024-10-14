@@ -10,6 +10,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Redirector;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Validation\ValidationException;
 
 class AuthenticationSessionController extends Controller
 {
@@ -21,6 +22,7 @@ class AuthenticationSessionController extends Controller
     /**
      * @param Authentication $request
      * @return RedirectResponse|void
+     * @throws ValidationException
      */
     public function store(Authentication $request)
     {

@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers\Web\Admin\Master;
 
-use App\Enums\Kuartal;
 use App\Enums\Statuses;
 use App\Http\Controllers\Web\Admin\Controller;
 use App\Models\Destination\Destination;
@@ -20,11 +19,9 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Http\Response;
 use Illuminate\Routing\Redirector;
 use Illuminate\Support\Facades\DB;
 use InvalidArgumentException;
-use Laravel\Octane\Exceptions\DdException;
 use Throwable;
 
 class PackageController extends Controller
@@ -38,6 +35,7 @@ class PackageController extends Controller
     public function __construct()
     {
         $this->setData('current_page', $this->forPage);
+        parent::__construct();
     }
 
     /**
@@ -115,6 +113,7 @@ class PackageController extends Controller
      * Display a listing of the resource.
      *
      * @return Application|Factory|View
+     * @throws Exception
      */
     public function index(): View|Factory|Application
     {
