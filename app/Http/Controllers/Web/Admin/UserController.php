@@ -77,7 +77,7 @@ class UserController extends Controller
                         }
                     })
                     ->when($type == 'calon-jamaah', function (Builder $subQuery) {
-                        $subQuery->role(['jamaah.planPackages']);
+                        $subQuery->role(['jamaah']);
                     }, function (Builder $subQuery) {
                         $subQuery->with(['']);
                         $subQuery->whereHas('roles', function (Builder $subQuery) {
