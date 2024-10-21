@@ -113,11 +113,11 @@ class VirtualAccountService
 
         $wallet = new WalletService();
         $wallet->admin();
-        $createWallet = $wallet->createUser($newVA->id, $VANumber, $name, email: $setEmail);
-
-        if (!$createWallet instanceof WalletUser){
-            throw new Exception('Virtual account gagal di buat!');
-        }
+//        $createWallet = $wallet->createUser($newVA->id, $VANumber, $name, email: $setEmail);
+//
+//        if (!$createWallet instanceof WalletUser){
+//            throw new Exception('Virtual account gagal di buat!');
+//        }
 
         return $newVA;
         /* end:: create new VA */

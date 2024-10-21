@@ -110,8 +110,9 @@ trait WalletAccount
         $getBody = json_decode($post->body(), true);
         // dump($getBody);
 
-        if (isset($getBody['error'])){
-            throw new Exception($getBody['error']);
+        dd($getBody);
+        if ($getBody['status'] != 200){
+            throw new Exception($getBody['message'], $getBody['status']);
         }
 
         if ($post->successful()) {
