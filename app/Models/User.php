@@ -7,6 +7,7 @@ use App\Models\Jamaah\Jamaah;
 use App\Models\Referral\UserInvitation;
 use App\Models\VA\VirtualAccount;
 use App\Traits\HasTenant;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
@@ -20,6 +21,23 @@ use Spatie\MediaLibrary\InteractsWithMedia;
 use Spatie\Permission\Traits\HasRoles;
 use Veelasky\LaravelHashId\Eloquent\HashableId;
 
+
+/**
+ * @property string $id
+ * @property string $tenant_id
+ * @property string $name
+ * @property string $username
+ * @property string $phone
+ * @property string $email
+ * @property string $password
+ * @property string $status
+ * @property bool $is_super
+ * @property string $locale
+ * @property string $timezone
+ * @property Jamaah $jamaah
+ * @property VirtualAccount $tabungan
+ * @property Collection<UserInvitation> $peopleInvites
+ * */
 class User extends Authenticatable implements HasMedia
 {
     use HasFactory, Notifiable, SoftDeletes;
@@ -35,9 +53,13 @@ class User extends Authenticatable implements HasMedia
      */
     protected $fillable = [
         'tenant_id',
-        'name', 'username', 'phone', 'password',
+        'name',
+        'username',
+        'phone',
+        'password',
         'is_super',
-        'locale', 'timezone',
+        'locale',
+        'timezone',
     ];
 
     /**

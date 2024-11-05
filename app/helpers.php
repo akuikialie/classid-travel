@@ -1,11 +1,86 @@
 <?php
 
 use App\Core\Whatsapp\Messages\WhatsappMessage;
+use App\Enums\GenerateNumberType;
 use App\Models\Tenant\Tenant;
+use App\Services\GenerateNumber\GenerateNumberService;
 use App\Services\Notification\NotifManager;
+use Classid\TemplateReplacement\TemplateReplacement;
 use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\ViewErrorBag;
+
+
+function generateVirtualNumber(Tenant $tenant, bool $isLocking = false, int $numberGenerated = 1): array
+{
+    $generateNumber = (new GenerateNumberService())
+        ->getNextGenerateNumber(
+            tenant: $tenant,
+            type: GenerateNumberType::VIRTUAL_NUMBER->value,
+            isTransactional: $isLocking,
+            numberGenerated: $numberGenerated
+        );
+
+    $cardNumbers = collect();
+    foreach ($generateNumber->generated_numbers as $generated_number) {
+        $uniqueReplacement = TemplateReplacement::execute(
+            templatePattern: $generateNumber->number_pattern,
+            priorityReplacementData: [
+                "tenant_bcn" => $tenant->bcn,
+                "month_year" => now()->format('ym'),
+            ]
+        );
+
+        $newNumber = numberSignReplacement($uniqueReplacement, $generated_number);
+        $cardNumbers->push($newNumber);
+    }
+
+    return $cardNumbers->toArray();
+}
+
+function generateInvoiceNumber(Tenant $tenant, bool $isLocking = false, int $numberGenerated = 1): array
+{
+    $generateNumber = (new GenerateNumberService())
+        ->getNextGenerateNumber(
+            tenant: $tenant,
+            type: GenerateNumberType::INVOICE_NUMBER->value,
+            isTransactional: $isLocking,
+            numberGenerated: $numberGenerated
+        );
+
+    $cardNumbers = collect();
+    foreach ($generateNumber->generated_numbers as $generated_number) {
+        $uniqueReplacement = TemplateReplacement::execute(
+            templatePattern: $generateNumber->number_pattern,
+            priorityReplacementData: [
+                "month_year" => now()->format('ym'),
+            ]
+        );
+
+        $newNumber = numberSignReplacement($uniqueReplacement, $generated_number);
+        $cardNumbers->push($newNumber);
+    }
+
+    return $cardNumbers->toArray();
+}
+
+/**
+ * @param string $pattern
+ * @param string $numberToGenerate
+ *
+ * @return string
+ */
+function numberSignReplacement(string $pattern, string $numberToGenerate): string
+{
+    preg_match('/#{3,}\z/', $pattern, $matches);
+    $numberDigit = strlen($matches[0]);
+    $fixedCharacter = str_replace($matches[0], '', $pattern);
+
+    $digitReplacement = str_pad($numberToGenerate, $numberDigit, '0', STR_PAD_LEFT);
+
+    return $fixedCharacter . $digitReplacement;
+}
+
 
 if (!function_exists('tableHashId')) {
     function tableHashId(

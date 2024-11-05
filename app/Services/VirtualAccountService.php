@@ -5,10 +5,9 @@ namespace App\Services;
 use App\Exceptions\HandleCatchableException;
 use App\Models\Jamaah\Jamaah;
 use App\Models\Plan\PlanPackage;
-use App\Models\Schedule\Schedule;
+use App\Models\Tenant\Tenant;
 use App\Models\User;
 use App\Models\VA\VirtualAccount;
-use App\Services\EWallet\Entity\WalletUser;
 use App\Services\EWallet\WalletService;
 use Carbon\Carbon;
 use Exception;
@@ -77,11 +76,10 @@ class VirtualAccountService
             ->latest('id')
             ->first('va_number');
 
-        $VANumber = createNewVA($this->vaType, $VA->va_number ?? null);
+        $tenant = Tenant::query()->findOrFail($this->tenantId);
+        $VANumber = generateVirtualNumber($tenant)[0];
 
         $setEmail = "{$VANumber}@prohajj.app";
-
-        // dump([$VA->toArray(), $VANumber, $setEmail, $this->vaType, $this->tenantId]);
 
         $newVA = new VirtualAccount([
             'tenant_id' => $this->tenantId,
