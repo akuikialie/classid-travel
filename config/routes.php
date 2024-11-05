@@ -46,6 +46,10 @@ return [
             'middleware' => 'api',
             'prefix' => 'api',
         ],
+        'api-ipg' => [
+            'middleware' => 'api',
+            'prefix' => 'api-ipg',
+        ],
     ],
 
     /*
@@ -74,6 +78,7 @@ return [
         /* web */
         \App\Http\Routes\DefaultRoute::class,
     ],
+
     'admin' => [
         /* web */
         \App\Http\Routes\Web\Admin\DefaultRoute::class,
@@ -88,6 +93,10 @@ return [
         \App\Http\Routes\Web\Admin\RoleRoute::class,
     ],
     'api' => [
+        /** @inject api **/
+    ],
+    'api-ipg' => [
+        \App\Http\Controllers\Api\IPGPaymentController::class
         /** @inject api **/
     ],
 ];

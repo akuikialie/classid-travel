@@ -65,30 +65,30 @@ class TabunganController extends Controller
     /**
      * @throws Exception
      */
-    public function billing(VirtualAccount $virtualAccount)
+    public function billing(VirtualAccount $saving)
     {
-        $this->setData('va', $virtualAccount);
+        //call the inquiry
+        $this->setData('va', $saving);
         return $this->view('pages.mobile.tabungan.tabungan-billing');
     }
 
-    public function show(VirtualAccount $virtualAccount)
+    public function show(VirtualAccount $saving)
     {
-
-        switch ($virtualAccount->va_label) {
+        switch ($saving->va_label) {
             case 'tabungan':
-                $saving = [
-                    'id' => $virtualAccount->id,
-                    'va' => $virtualAccount->va_number,
+                $userSaving = [
+                    'id' => $saving->id,
+                    'va' => $saving->va_number,
                 ];
                 break;
 
             case 'perencanaan':
-                $name = 'tabungan ' . $virtualAccount?->myPackage->name;
-                $saving = [
+                $name = 'tabungan ' . $saving?->myPackage->name;
+                $userSaving = [
                     'namaTabungan' => ucwords($name ?? 'NN'),
-                    'id' => $virtualAccount->id,
-                    'va' => $virtualAccount->va_number,
-                    'targetSavings' => 'Rp ' . number_format($virtualAccount->myPackage?->amount ?? 0),
+                    'id' => $saving->id,
+                    'va' => $saving->va_number,
+                    'targetSavings' => 'Rp ' . number_format($saving->myPackage?->amount ?? 0),
                 ];
                 break;
 
@@ -97,7 +97,7 @@ class TabunganController extends Controller
                 break;
         }
         return view('pages.mobile.tabungan.tabungan-show', [
-            'moneybox' => collect($saving),
+            'moneybox' => collect($userSaving),
         ]);
     }
 
