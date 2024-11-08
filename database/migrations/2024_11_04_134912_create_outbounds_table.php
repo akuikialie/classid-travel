@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::create('outbounds', function (Blueprint $table) {
             $table->uuid('id')->primary();
+            $table->jsonb('response');
             $table->timestamps();
         });
     }

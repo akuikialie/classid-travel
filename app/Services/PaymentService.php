@@ -141,6 +141,13 @@ class PaymentService
             ->whereBetween('valid_until', [now()->startOfDay()->toIso8601String(), now()->endOfDay()->toIso8601String()])
             ->first();
 
+        // virtual account
+        $virtualAccount = VirtualAccount::query()
+            ->where('va_number', '=', $validated['virtual_account'])
+            ->firstOrFail();
+        $virtualAccount->amount = $validated['amount'];
+        $virtualAccount->save();
+
         // save to transaction
         $transaction = new Transaction();
         $transaction->fill([

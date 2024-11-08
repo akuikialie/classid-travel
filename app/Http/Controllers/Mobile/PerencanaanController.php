@@ -13,7 +13,7 @@ class PerencanaanController extends Controller
 {
     public function index()
     {
-        $hasilSimulasi = null;
+        $hasilSimulasi = [];
         if (request()->has('type')) {
             try {
                 switch (request()->get('type')) {
