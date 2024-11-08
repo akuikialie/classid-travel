@@ -2,13 +2,14 @@
 
 namespace App\Services;
 
+use App\Concerns\InteractsWithMutation;
 use App\Concerns\ValidationInput;
+use App\Enums\MutationInfo;
 use App\Enums\TransactionMethod;
 use App\Enums\TransactionType;
 use App\Enums\ResponseCode;
 use App\Exceptions\CidException;
 use App\Models\Invoication\Invocation;
-use App\Models\Tenant\Tenant;
 use App\Models\Transaction\Transaction;
 use App\Models\User;
 use App\Models\VA\VirtualAccount;
@@ -19,6 +20,7 @@ use Illuminate\Validation\ValidationException;
 class PaymentService
 {
     use ValidationInput;
+    use InteractsWithMutation;
 
     /**
      * @param User $user
@@ -120,6 +122,7 @@ class PaymentService
      * @param User $user
      * @param array $inputs
      * @return array
+     * @throws CidException
      * @throws ValidationException
      */
     public function payment(User $user, array $inputs): array
@@ -136,6 +139,7 @@ class PaymentService
         ]);
 
         DB::beginTransaction();
+        $amount = $validated['amount'];
         $invocation = Invocation::query()
             ->where('va_number', '=', $validated['virtual_account'])
             ->whereBetween('valid_until', [now()->startOfDay()->toIso8601String(), now()->endOfDay()->toIso8601String()])
@@ -145,7 +149,7 @@ class PaymentService
         $virtualAccount = VirtualAccount::query()
             ->where('va_number', '=', $validated['virtual_account'])
             ->firstOrFail();
-        $virtualAccount->amount = $validated['amount'];
+        $virtualAccount->balance = $amount;
         $virtualAccount->save();
 
         // save to transaction
@@ -160,7 +164,12 @@ class PaymentService
         ]);
         $transaction->save();
 
-        // change invoice active
+        $tenant = $virtualAccount->tenant;
+        $mutation = $this->init(tenant: $tenant, transaction: $transaction);
+
+        $mutation
+            ->setMutable(amount: $amount, mutable: $virtualAccount, mutationInfo: MutationInfo::DEPOSIT);
+
         $data = [
             "hash" => Str::random(8),
             "va_number" => $invocation->virtual_account,

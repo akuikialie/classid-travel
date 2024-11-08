@@ -2,7 +2,7 @@
 
 namespace App\Concerns;
 
-use App\Domains\Finance\Models\Mutation\Mutation;
+use App\Models\Mutation\Mutation;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 
 /**

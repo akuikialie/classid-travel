@@ -21,6 +21,7 @@ use Veelasky\LaravelHashId\Eloquent\HashableId;
  * @property string $name
  * @property string $email
  * @property string $password
+ * @property float $balance
  * @property Tenant $tenant
  * */
 class VirtualAccount extends Model implements MutableInterface
@@ -39,8 +40,12 @@ class VirtualAccount extends Model implements MutableInterface
         'name',
         'email',
         'password',
+        'balance',
     ];
 
+    protected $casts = [
+        'balance' => 'double',
+    ];
 
     public function vaable(): MorphTo
     {
