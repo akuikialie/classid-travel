@@ -5,7 +5,7 @@
 
         <div class="float-start">
             <p class="font-12 opacity-80 mb-n1"><i class="far fa-calendar"></i>
-                {{ isset($lastSavings) ? "Terakhir Menabung: {$lastSavings}" : 'Belum Pernah Menabung' }}</p>
+                {{ (($savings ?? 0) > 0) ? 'Tabungan' : 'Belum Pernah Menabung' }}</p>
             <p class="font-12 opacity-100"> <strong><i class="fa-solid fa-wallet"></i> Rp
                     {{ $savings ?? '0' }}</strong> <small>dari Rp
                     {{ $targetSavings ?? '~' }}</small></p>

@@ -20,13 +20,10 @@ class HomeController extends Controller
      */
     public function index()
     {
+        /** @var User $user */
         $user = auth()->user();
-       /* $walletService = new WalletService();
-        $walletService->login($user->tabungan->va_number, $user->tabungan->password);
-        $walletService->getUser();*/
-        /* begin:: show all savings */
+
         $savings = $this->listSavings($user);
-        /* end:: show all savings */
 
         $tenant = Tenant::query()
             ->with(['media'])
@@ -41,6 +38,8 @@ class HomeController extends Controller
                 'order' => $item->getCustomProperty('order'),
             ];
         }
+
+        $totalSavings = $user->tabungan->getStartingBalance();
 
         return view('pages.mobile.home.dashboard-index', [
             'data' => collect([
@@ -64,9 +63,11 @@ class HomeController extends Controller
             ->where('id', '=', $authUser->id)
             ->first();
 
+        $totalSavings = $user->tabungan->getStartingBalance();
         $mainSaving = [
             'id' => $user->tabungan->hash,
             'va' => $user->tabungan->va_number,
+            'savings' => 'Rp '. number_format($totalSavings ?? 0),
             'showDetails' => true,
         ];
 
@@ -82,10 +83,12 @@ class HomeController extends Controller
         foreach ($jamaah->tabunganPackages as $tabungan) {
 
             $namaTabungan = 'tabungan ' . $tabungan?->myPackage->name;
+            $totalSavings = $tabungan->getStartingBalance();
             $savings->add([
                 'namaTabungan' => ucwords($namaTabungan),
                 'id' => $tabungan->hash,
                 'va' => $tabungan->va_number,
+                'savings' => 'Rp '. number_format($totalSavings ?? 0),
                 'targetSavings' => $tabungan?->myPackage?->amount ?? 0,
                 'showDetails' => true,
             ]);

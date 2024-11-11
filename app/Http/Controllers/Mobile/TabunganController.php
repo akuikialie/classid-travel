@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Mobile;
 
+use App\Models\Invoication\Invocation;
 use App\Models\Jamaah\Jamaah;
 use App\Models\User;
 use App\Models\VA\VirtualAccount;
@@ -79,6 +80,7 @@ class TabunganController extends Controller
                 $userSaving = [
                     'id' => $saving->id,
                     'va' => $saving->va_number,
+                    'savings' => $saving->balance,
                 ];
                 break;
 
@@ -88,6 +90,7 @@ class TabunganController extends Controller
                     'namaTabungan' => ucwords($name ?? 'NN'),
                     'id' => $saving->id,
                     'va' => $saving->va_number,
+                    'savings' => $saving->balance,
                     'targetSavings' => 'Rp ' . number_format($saving->myPackage?->amount ?? 0),
                 ];
                 break;
@@ -96,8 +99,13 @@ class TabunganController extends Controller
                 # code...
                 break;
         }
+
+        $invocations = Invocation::query()
+            ->where('virtual_account', '=', $saving->va_number)
+            ->get();
         return view('pages.mobile.tabungan.tabungan-show', [
             'moneybox' => collect($userSaving),
+            'invocations' => $invocations,
         ]);
     }
 
