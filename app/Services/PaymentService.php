@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Concerns\InteractsWithMutation;
 use App\Concerns\ValidationInput;
+use App\Enums\InvocationStatus;
 use App\Enums\MutationInfo;
 use App\Enums\TransactionMethod;
 use App\Enums\TransactionType;
@@ -23,13 +24,12 @@ class PaymentService
     use InteractsWithMutation;
 
     /**
-     * @param User $user
      * @param array $inputs
      * @return array
      * @throws CidException
      * @throws ValidationException
      */
-    public function inquiry(User $user, array $inputs): array
+    public function inquiry(array $inputs): array
     {
         $validated = $this->validate($inputs, [
             "virtual_account" => ['required', 'string'],
@@ -40,13 +40,17 @@ class PaymentService
             "terminal" => ['required', 'string'],
         ]);
 
-        DB::beginTransaction();
         $account = VirtualAccount::query()
+            ->with('vaable')
             ->where('va_number', $inputs['virtual_account'])
             ->first();
-        if ($account instanceof VirtualAccount) {
+
+        if (!$account instanceof VirtualAccount) {
             throw new CidException(rc: ResponseCode::BILLER_INVALID_VA_NUMBER);
         }
+
+        DB::beginTransaction();
+        $user = $account->vaable;
         $invoiceNumber = generateInvoiceNumber($account->tenant, true)[0];
         $type = 'open';
 
@@ -55,7 +59,6 @@ class PaymentService
             ->where('reference_id', '=', $validated['reference_id'])
             ->whereBetween('valid_until', [now()->startOfDay()->toIso8601String(), now()->endOfDay()->toIso8601String()])
             ->first();
-
 
         if ($invocation instanceof Invocation) {
             throw new CidException(rc: ResponseCode::BILLER_INVALID_TRANSACTION);
@@ -74,6 +77,7 @@ class PaymentService
             'type' => $type,
             'valid_until' => $validUntil,
         ]);
+        $invocation->status = InvocationStatus::WAITING_FOR_PAYMENT->value;
         $invocation->save();
 
         // save outbound
@@ -119,13 +123,12 @@ class PaymentService
     }
 
     /**
-     * @param User $user
      * @param array $inputs
      * @return array
      * @throws CidException
      * @throws ValidationException
      */
-    public function payment(User $user, array $inputs): array
+    public function payment(array $inputs): array
     {
         $validated = $this->validate($inputs, [
             "virtual_account" => ['required', 'string'],
@@ -133,7 +136,7 @@ class PaymentService
             "prefix" => ['required', 'string'],
             "reference_id" => ['required', 'string'],
             "payment_ref" => ['required', 'string'],
-            "amount" => ['required', 'string'],
+            "amount" => ['required', 'numeric'],
             "bill" => ['nullable', 'array'],
             "terminal" => ['required', 'string'],
         ]);
@@ -141,17 +144,26 @@ class PaymentService
         DB::beginTransaction();
         $amount = $validated['amount'];
         $invocation = Invocation::query()
-            ->where('va_number', '=', $validated['virtual_account'])
-            ->whereBetween('valid_until', [now()->startOfDay()->toIso8601String(), now()->endOfDay()->toIso8601String()])
+            ->where('status', '=', InvocationStatus::WAITING_FOR_PAYMENT->value)
+            ->where('virtual_account', '=', $validated['virtual_account'])
+            ->where('valid_until', '>=', now())
             ->first();
+
+        if (!$invocation instanceof Invocation) {
+            throw new CidException(rc: ResponseCode::BILLER_BILL_NOT_FOUND);
+        }
+
+        if ($invocation->status == InvocationStatus::PAID->value) {
+            throw new CidException(rc: ResponseCode::BILLER_BILL_ALREADY_PAID);
+        }
 
         // virtual account
         $virtualAccount = VirtualAccount::query()
+            ->with('vaable')
             ->where('va_number', '=', $validated['virtual_account'])
-            ->firstOrFail();
-        $virtualAccount->balance = $amount;
-        $virtualAccount->save();
+            ->first();
 
+        $user = $virtualAccount->vaable;
         // save to transaction
         $transaction = new Transaction();
         $transaction->fill([
@@ -169,6 +181,9 @@ class PaymentService
 
         $mutation
             ->setMutable(amount: $amount, mutable: $virtualAccount, mutationInfo: MutationInfo::DEPOSIT);
+
+        $invocation->status = InvocationStatus::PAID->value;
+        $invocation->save();
 
         $data = [
             "hash" => Str::random(8),

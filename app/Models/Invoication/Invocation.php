@@ -2,9 +2,11 @@
 
 namespace App\Models\Invoication;
 
+use App\Models\Transaction\Transaction;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 /**
  * @property string $id
@@ -13,8 +15,10 @@ use Illuminate\Database\Eloquent\Model;
  * @property string $reference_id
  * @property string $tenant_id
  * @property string $type
+ * @property string $status
  * @property string $description
  * @property Carbon $valid_until
+ * @property Transaction $transaction
  * */
 class Invocation extends Model
 {
@@ -30,5 +34,14 @@ class Invocation extends Model
         'type',
         'valid_until',
         'description',
+        'status',
     ];
+
+    /**
+     * @return HasOne
+     */
+    public function transaction(): HasOne
+    {
+        return $this->hasOne(Transaction::class, 'invocation_id');
+    }
 }

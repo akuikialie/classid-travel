@@ -19,7 +19,7 @@ class Transaction extends Model
 {
     use HasUuids;
 
-    protected $table = 'invocations';
+    protected $table = 'transactions';
 
     protected $fillable = [
         'tenant_id',

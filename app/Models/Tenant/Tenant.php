@@ -4,9 +4,7 @@ namespace App\Models\Tenant;
 
 use App\Concerns\Numberable;
 use App\Contracts\NumberableInterface;
-use App\Jobs\GenerateDefaultRecordForCreatedInstitution;
 use App\Jobs\GenerateDefaultRecordForCreatedTenant;
-use App\Models\Institution;
 use App\Models\Master\Address;
 use App\Models\Master\Email;
 use App\Models\Master\Phone;

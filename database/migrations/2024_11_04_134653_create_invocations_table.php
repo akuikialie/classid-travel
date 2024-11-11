@@ -21,6 +21,7 @@ return new class extends Migration
             $table->string('reference_id');
             $table->string('type');
             $table->string('description')->nullable();
+            $table->string('status')->default(\App\Enums\InvocationStatus::PENDING->value);
             $table->timestamp('valid_until');
 
             $table->timestamps(6);

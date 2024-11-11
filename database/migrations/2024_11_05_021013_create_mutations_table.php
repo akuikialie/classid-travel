@@ -13,7 +13,7 @@ return new class extends Migration {
     {
         Schema::create('mutations', function (Blueprint $table) {
             $table->uuid('id')->primary();
-            $table->uuidMorphs('mutable');
+            $table->morphs('mutable');
             $table->foreignIdFor(Transaction::class,'transaction_id')
                 ->constrained((new Transaction())->getTable())
                 ->onUpdate('restrict');
