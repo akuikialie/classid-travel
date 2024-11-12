@@ -109,8 +109,8 @@ class VirtualAccountService
 
         $newVA = $newVA->fresh();
 
-        $wallet = new WalletService();
-        $wallet->admin();
+//        $wallet = new WalletService();
+//        $wallet->admin();
 //        $createWallet = $wallet->createUser($newVA->id, $VANumber, $name, email: $setEmail);
 //
 //        if (!$createWallet instanceof WalletUser){
