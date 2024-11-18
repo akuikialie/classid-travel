@@ -58,6 +58,9 @@ class PerencanaanController extends Controller
                             /* proses perhitungan biaya keberangkatan */
                             $today = Carbon::now();
                             $range = $today->diffInMonths($tanggalBerangkat);
+                            if ($range < 1){
+                                $range = 1;
+                            }
 
                             $priceOfPackage = $package->amount;
                             $targetSavings = $priceOfPackage / $range;
