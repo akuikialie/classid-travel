@@ -160,7 +160,7 @@ class PaymentService
         // virtual account
         $virtualAccount = VirtualAccount::query()
             ->with('vaable')
-            ->where('va_number', '=', $validated['virtual_account'])
+            ->where('va_number', '=', $inputs['prefix'] . $inputs['virtual_account'])
             ->first();
 
         $user = $virtualAccount->vaable;
