@@ -42,7 +42,7 @@ class PaymentService
 
         $account = VirtualAccount::query()
             ->with('vaable')
-            ->where('va_number', $inputs['virtual_account'])
+            ->where('va_number', $inputs['prefix'] . $inputs['virtual_account'])
             ->first();
 
         if (!$account instanceof VirtualAccount) {
@@ -145,7 +145,7 @@ class PaymentService
         $amount = $validated['amount'];
         $invocation = Invocation::query()
             ->where('status', '=', InvocationStatus::WAITING_FOR_PAYMENT->value)
-            ->where('virtual_account', '=', $validated['virtual_account'])
+            ->where('virtual_account', '=', $inputs['prefix'] . $inputs['virtual_account'])
             ->where('valid_until', '>=', now())
             ->first();
 
