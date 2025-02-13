@@ -12,7 +12,7 @@ class Controller extends BaseController
         parent::__construct();
 
         if (!app()->runningInConsole() && !(env(key: 'ADMIN_URL') === request()->host())) {
-            abort(404);
+//            abort(404);
         }
     }
 
