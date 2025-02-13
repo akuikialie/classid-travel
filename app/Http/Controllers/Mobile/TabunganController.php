@@ -103,6 +103,7 @@ class TabunganController extends Controller
         $invocations = Invocation::query()
             ->where('virtual_account', '=', $saving->va_number)
             ->get();
+
         return view('pages.mobile.tabungan.tabungan-show', [
             'moneybox' => collect($userSaving),
             'invocations' => $invocations,

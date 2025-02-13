@@ -85,6 +85,7 @@ return [
         \App\Http\Routes\Web\Admin\AuthRoute::class,
         \App\Http\Routes\Web\Admin\TenantRoute::class,
         \App\Http\Routes\Web\Admin\PackageRoute::class,
+        \App\Http\Routes\Web\Admin\TransactionRoute::class,
         \App\Http\Routes\Web\Admin\DestinationRoute::class,
         \App\Http\Routes\Web\Admin\FacilityRoute::class,
         \App\Http\Routes\Web\Admin\ScheduleRoute::class,

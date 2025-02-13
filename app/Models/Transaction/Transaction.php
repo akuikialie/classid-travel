@@ -2,9 +2,11 @@
 
 namespace App\Models\Transaction;
 
-use Carbon\Carbon;
+use App\Models\Invoication\Invocation;
+use App\Models\User;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 /**
  * @property string $id
@@ -22,6 +24,7 @@ class Transaction extends Model
     protected $table = 'transactions';
 
     protected $fillable = [
+        'user_id',
         'tenant_id',
         'invocation_id',
         'amount',
@@ -29,4 +32,20 @@ class Transaction extends Model
         'trx_type',
         'trx_date',
     ];
+
+    /**
+     * @return BelongsTo
+     */
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'user_id');
+    }
+
+    /**
+     * @return BelongsTo
+     */
+    public function invocation(): BelongsTo
+    {
+        return $this->belongsTo(Invocation::class, 'invocation_id');
+    }
 }

@@ -14,7 +14,7 @@
             <a class="float-end font-12 color-highlight mt-n1" href="#">View All</a>
             <div class="clearfix mb-1"></div>
 
-             @foreach($invocations as $invocation)
+            @foreach($invocations as $invocation)
                 <div class="d-flex">
                     <div>
                         <a href="#" class="icon icon-m bg-green-dark rounded-m shadow-xl"><i
@@ -30,7 +30,7 @@
                     </div>
                 </div>
                 <div class="divider mt-3 mb-3"></div>
-             @endforeach
+            @endforeach
         </div>
     </div>
 @endsection
