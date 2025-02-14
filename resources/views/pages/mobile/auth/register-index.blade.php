@@ -26,8 +26,8 @@
                 <div class="input-style no-borders has-icon validate-field mt-2">
                     <i class="fas fa-phone"></i>
                     <input type="phone" class="form-control validate-email" id="phone" name="phone" value="{{ old('phone') }}"
-                        placeholder="Telepon">
-                    <label for="phone" class="color-blue-dark font-10 mt-1">Telepon</label>
+                        placeholder="Telepon / NIK">
+                    <label for="phone" class="color-blue-dark font-10 mt-1">Telepon / NIK</label>
                     <i class="fa fa-times disabled invalid color-red-dark"></i>
                     <i class="fa fa-check disabled valid color-green-dark"></i>
                     <em>(required)</em>
