@@ -69,6 +69,7 @@ class PaymentService
         $validUntil = now()->addDays(1)->toIso8601String();
         $invocation = new Invocation();
         $invocation->fill([
+            'user_id' => $user->id,
             'invoice_number' => $invoiceNumber,
             'virtual_account' => $account->va_number,
             'reference_id' => $validated['reference_id'],
@@ -167,6 +168,7 @@ class PaymentService
         // save to transaction
         $transaction = new Transaction();
         $transaction->fill([
+            'user_id' => $user->id,
             'tenant_id' => $invocation->tenant_id,
             'invocation_id' => $invocation->id,
             'amount' => $validated['amount'],

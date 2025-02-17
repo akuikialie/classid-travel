@@ -71,7 +71,9 @@ class TransactionController extends Controller
                     })
                     ->addIndexColumn()
                     ->addColumn('owner', function ($row) {
-                        return "{$row->user->name} | {$row->user->phone}" ;
+                        $ownerName = $row->user?->name ?? '-';
+                        $ownerPhone = $row->user?->phone ?? '-';
+                        return "{$ownerName} | {$ownerPhone}" ;
                     })->addColumn('virtual_account', function ($row) {
                         return $row->invocation->virtual_account;
                     })
@@ -79,7 +81,7 @@ class TransactionController extends Controller
                         return $row->invocation->invoice_number;
                     })
                     ->addColumn('amount', function ($row) {
-                        return $row->amount;
+                        return 'Rp. '. moneyFormat($row->amount);
                     })
                     ->addColumn('trx_type', function ($row) {
                         return $row->trx_type;

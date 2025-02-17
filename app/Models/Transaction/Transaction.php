@@ -16,6 +16,8 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property string $trx_method
  * @property string $trx_type
  * @property string $trx_date
+ * @property User $user
+ * @property Transaction $transaction
  * */
 class Transaction extends Model
 {
