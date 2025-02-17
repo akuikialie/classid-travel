@@ -81,7 +81,7 @@ class TransactionController extends Controller
                         return $row->invocation->invoice_number;
                     })
                     ->addColumn('amount', function ($row) {
-                        return $row->amount;
+                        return 'Rp. '. moneyFormat($row->amount);
                     })
                     ->addColumn('trx_type', function ($row) {
                         return $row->trx_type;

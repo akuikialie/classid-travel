@@ -12,6 +12,7 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 
 /**
  * @property string $id
+ * @property string $user_id
  * @property string $invoice_number
  * @property string $virtual_account
  * @property string $reference_id
