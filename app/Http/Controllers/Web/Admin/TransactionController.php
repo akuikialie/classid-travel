@@ -71,7 +71,9 @@ class TransactionController extends Controller
                     })
                     ->addIndexColumn()
                     ->addColumn('owner', function ($row) {
-                        return "{$row->user->name} | {$row->user->phone}" ;
+                        $ownerName = $row->user?->name ?? '-';
+                        $ownerPhone = $row->user?->phone ?? '-';
+                        return "{$ownerName} | {$ownerPhone}" ;
                     })->addColumn('virtual_account', function ($row) {
                         return $row->invocation->virtual_account;
                     })
