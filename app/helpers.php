@@ -2,6 +2,7 @@
 
 use App\Core\Whatsapp\Messages\WhatsappMessage;
 use App\Enums\GenerateNumberType;
+use App\Exceptions\ApiDumpException;
 use App\Models\Tenant\Tenant;
 use App\Services\GenerateNumber\GenerateNumberService;
 use App\Services\Notification\NotifManager;
@@ -136,6 +137,17 @@ if (!function_exists('tableTimestamps')) {
         }
     }
 }
+
+/**
+ * @param mixed $data
+ * @return mixed
+ * @throws ApiDumpException
+ */
+function ddapi(mixed $data)
+{
+    throw new ApiDumpException($data);
+}
+
 
 if (!function_exists('tableSoftDeletes')) {
     function tableSoftDeletes(

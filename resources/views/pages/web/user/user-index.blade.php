@@ -146,6 +146,7 @@
                                 @endif
                                 <th>Status</th>
                                 <th>Terakhir Login</th>
+                                <th>Dibuat Pada</th>
                                 <th class="text-end min-w-100px">Actions</th>
                             </tr>
                         </thead>

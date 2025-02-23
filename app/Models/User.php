@@ -5,10 +5,12 @@ namespace App\Models;
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use App\Models\Jamaah\Jamaah;
 use App\Models\Referral\UserInvitation;
+use App\Models\Transaction\Transaction;
 use App\Models\VA\VirtualAccount;
 use App\Traits\HasTenant;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\MorphOne;
@@ -109,5 +111,13 @@ class User extends Authenticatable implements HasMedia
     public function peopleInvites(): HasMany
     {
         return $this->hasMany(UserInvitation::class, 'invited_by');
+    }
+
+    /**
+     * @return HasMany
+     */
+    public function transactions(): HasMany
+    {
+        return $this->hasMany(Transaction::class, 'user_id');
     }
 }

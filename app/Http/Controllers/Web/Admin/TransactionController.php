@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers\Web\Admin;
 
+use App\Enums\TransactionMethod;
+use App\Enums\TransactionType;
 use App\Models\Tenant\Tenant;
 use App\Models\Transaction\Transaction;
 use App\Traits\FragmentRenderer;
@@ -42,6 +44,8 @@ class TransactionController extends Controller
                     ->where('tenant_id', '=', $user->tenant_id)
                     ->with(['invocation', 'user'])
                     ->latest('id');
+
+
                 return datatables()->eloquent($transactions)
                     ->filter(function (Builder $query) use ($request) {
                         /* begin:: apply custom filter */
@@ -50,30 +54,29 @@ class TransactionController extends Controller
                             foreach ($customFilters as $filter) {
                                 if ($filter['value'] == 'all') continue;
 
-                                if ($filter['name'] == 'status') {
-                                    $status = $filter['value'] == 'active';
-                                    $query->where('is_active', $status);
+                                if ($filter['name'] == 'date_from') {
+                                    $query->where('trx_date', '>=', $filter['value']);
                                     continue;
                                 }
-                                $query->where($filter['name'], $filter['value']);
+
+                                if ($filter['name'] == 'date_to') {
+                                    $query->where('trx_date', '<=', $filter['value']);
+                                    continue;
+                                }
+
+                                $query
+                                    ->when(!empty($filter['value']), function ($query) use ($filter) {
+                                        $query->where($filter['name'], $filter['value']);
+                                    });
                             }
                         }
                         /* end:: apply custom filter */
-
-                        /* begin:: filter search */
-                        $query->when($request->input('search')['value'] && $customFilters->count() < 1, function (Builder $subQuery) use ($request) {
-                            $subQuery->where('slug', 'like', "%" . $request->input('search')['value'] . "%");
-                            $subQuery->orWhere('app_domain', 'like', "%" . $request->input('search')['value'] . "%");
-                            $subQuery->orWhere('name', 'like', "%" . $request->input('search')['value'] . "%");
-                            $subQuery->orWhere('bcn', 'like', "%" . $request->input('search')['value'] . "%");
-                        });
-                        /* end:: filter search */
                     })
                     ->addIndexColumn()
                     ->addColumn('owner', function ($row) {
                         $ownerName = $row->user?->name ?? '-';
                         $ownerPhone = $row->user?->phone ?? '-';
-                        return "{$ownerName} | {$ownerPhone}" ;
+                        return "{$ownerName} | {$ownerPhone}";
                     })->addColumn('virtual_account', function ($row) {
                         return $row->invocation->virtual_account;
                     })
@@ -81,14 +84,14 @@ class TransactionController extends Controller
                         return $row->invocation->invoice_number;
                     })
                     ->addColumn('amount', function ($row) {
-                        return 'Rp. '. moneyFormat($row->amount);
+                        return 'Rp. ' . moneyFormat($row->amount);
                     })
                     ->addColumn('trx_type', function ($row) {
                         return $row->trx_type;
                     })
                     ->addColumn('trx_method', function ($row) {
                         return $row->trx_method;
-                    }) ->addColumn('status', function ($row) {
+                    })->addColumn('status', function ($row) {
                         return $row->invocation->status;
                     })
                     ->addColumn('created_date', function ($row) {
@@ -120,6 +123,11 @@ class TransactionController extends Controller
         $this->setPageTitle('Transaksi');
         $this->setBreadCrumb('Transaksi');
 
+        $transactionMethods = TransactionMethod::cases();
+        $transactionTypes = TransactionType::cases();
+
+        $this->setData('transactionMethods', $transactionMethods);
+        $this->setData('transactionTypes', $transactionTypes);
         return $this->view('pages.web.transaction.index');
     }
 

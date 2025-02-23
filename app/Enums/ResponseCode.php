@@ -47,6 +47,8 @@ enum ResponseCode
     case BILLER_SUSPECT_TRANSACTION;
     case BILLER_GATEWAY_INVALID_RESPONSE;
 
+    case ERR_CANNOT_DELETE_USER;
+
     /**
      * Determine httpCode from response code.
      *

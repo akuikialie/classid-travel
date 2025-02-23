@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Mobile;
 
+use App\Models\Jamaah\Jamaah;
 use App\Models\User;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\View\Factory;
@@ -92,6 +93,5 @@ class JamaahController extends Controller
      */
     public function destroy($id)
     {
-        //
     }
 }
