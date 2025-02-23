@@ -4,8 +4,9 @@ namespace App\Http\Controllers\Web\Admin;
 
 use App\Enums\TransactionMethod;
 use App\Enums\TransactionType;
+use App\Exports\TransactionExport;
 use App\Models\Tenant\Tenant;
-use App\Models\Transaction\Transaction;
+use App\Queries\TransactionQuery;
 use App\Traits\FragmentRenderer;
 use Exception;
 use Illuminate\Contracts\View\View;
@@ -40,37 +41,26 @@ class TransactionController extends Controller
         if (\request()->ajax()) {
             $user = auth()->user();
             try {
-                $transactions = Transaction::query()
-                    ->where('tenant_id', '=', $user->tenant_id)
-                    ->with(['invocation', 'user'])
-                    ->latest('id');
 
+                $filter = request()->input('filter');
+
+                if (isset($filter)) {
+                    request()->mergeIfMissing(extract_filters($filter));
+                }
+
+                $custom_filter = request()->input('custom');
+                if (isset($custom_filter)) {
+                    request()->mergeIfMissing($custom_filter);
+                }
+
+                $transactions = TransactionQuery::filterColumn()
+                    ->orderColumn()
+                    ->build()
+                    ->latest('id');
 
                 return datatables()->eloquent($transactions)
                     ->filter(function (Builder $query) use ($request) {
-                        /* begin:: apply custom filter */
-                        $customFilters = collect($request->input('filter'));
-                        if ($customFilters->count() > 0) {
-                            foreach ($customFilters as $filter) {
-                                if ($filter['value'] == 'all') continue;
 
-                                if ($filter['name'] == 'date_from') {
-                                    $query->where('trx_date', '>=', $filter['value']);
-                                    continue;
-                                }
-
-                                if ($filter['name'] == 'date_to') {
-                                    $query->where('trx_date', '<=', $filter['value']);
-                                    continue;
-                                }
-
-                                $query
-                                    ->when(!empty($filter['value']), function ($query) use ($filter) {
-                                        $query->where($filter['name'], $filter['value']);
-                                    });
-                            }
-                        }
-                        /* end:: apply custom filter */
                     })
                     ->addIndexColumn()
                     ->addColumn('owner', function ($row) {
@@ -95,7 +85,7 @@ class TransactionController extends Controller
                         return $row->invocation->status;
                     })
                     ->addColumn('created_date', function ($row) {
-                        return carbon($row->created_at)->format('d M, Y');
+                        return carbon($row->trx_date)->format('d M, Y');
                     })->addColumn('actions', function ($row) {
                         $this->setData('transaction', $row);
                         return $this->view('pages.web.transaction.action.action-datatable');
@@ -129,6 +119,19 @@ class TransactionController extends Controller
         $this->setData('transactionMethods', $transactionMethods);
         $this->setData('transactionTypes', $transactionTypes);
         return $this->view('pages.web.transaction.index');
+    }
+
+    /**
+     * @return \Illuminate\Http\Response|\Symfony\Component\HttpFoundation\BinaryFileResponse
+     * @throws \Throwable
+     */
+    public function download()
+    {
+        $transactions = TransactionQuery::filterColumn()
+            ->orderColumn()
+            ->build()
+            ->latest('id');
+        return (new TransactionExport($transactions))->download();
     }
 
     /**

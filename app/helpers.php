@@ -82,13 +82,31 @@ function numberSignReplacement(string $pattern, string $numberToGenerate): strin
     return $fixedCharacter . $digitReplacement;
 }
 
+if (!function_exists('extract_filters')) {
+    /**
+     * @param array $filters
+     * @return array
+     */
+    function extract_filters(array $filters): array
+    {
+        $newFilters = [];
+        foreach ($filters as $filter) {
+            if ($filter['name'] === '_token') {
+                continue;
+            }
+            $newFilters[$filter['name']] = $filter['value'];
+        }
+        return $newFilters;
+    }
+}
 
 if (!function_exists('tableHashId')) {
     function tableHashId(
         \Illuminate\Database\Schema\Blueprint $table,
-        string|null $column = 'hashid',
-        int $length = 50
-    ): void {
+        string|null                           $column = 'hashid',
+        int                                   $length = 50
+    ): void
+    {
         $table->string($column, $length)->nullable();
     }
 }
@@ -96,8 +114,9 @@ if (!function_exists('tableHashId')) {
 if (!function_exists('tableTenantId')) {
     function tableTenantId(
         \Illuminate\Database\Schema\Blueprint $table,
-        string|null $column = 'tenant_id'
-    ): void {
+        string|null                           $column = 'tenant_id'
+    ): void
+    {
         $table->foreignId($column)->nullable()
             ->constrained('tenants')
             ->onDelete('restrict');
@@ -107,8 +126,9 @@ if (!function_exists('tableTenantId')) {
 if (!function_exists('tableUserId')) {
     function tableUserId(
         \Illuminate\Database\Schema\Blueprint $table,
-        string|null $column = 'user_id'
-    ): void {
+        string|null                           $column = 'user_id'
+    ): void
+    {
         $table->foreignId($column)->nullable()
             ->constrained('users')
             ->onDelete('restrict');
@@ -118,9 +138,10 @@ if (!function_exists('tableUserId')) {
 if (!function_exists('tableTimestamps')) {
     function tableTimestamps(
         \Illuminate\Database\Schema\Blueprint $table,
-        int $precision = 0,
-        bool $constrained = true
-    ): void {
+        int                                   $precision = 0,
+        bool                                  $constrained = true
+    ): void
+    {
         $table->timestampsTz(precision: $precision);
         if ($constrained) {
             $table->foreignId('created_by')->nullable()
@@ -152,10 +173,11 @@ function ddapi(mixed $data)
 if (!function_exists('tableSoftDeletes')) {
     function tableSoftDeletes(
         \Illuminate\Database\Schema\Blueprint $table,
-        string $column = 'deleted_at',
-        int $precision = 0,
-        bool $constrained = true
-    ): void {
+        string                                $column = 'deleted_at',
+        int                                   $precision = 0,
+        bool                                  $constrained = true
+    ): void
+    {
         $table->softDeletesTz($column, precision: $precision);
         if ($constrained) {
             $table->foreignId('deleted_by')->nullable()
@@ -200,7 +222,7 @@ if (!function_exists('isMobile')) {
 
 if (!function_exists('isNativeMobile')) {
     /**
-     * @param  null|string  $type
+     * @param null|string $type
      *
      * @return bool
      */
@@ -255,8 +277,8 @@ if (!function_exists('debugNonProduction')) {
 
 if (!function_exists('moneyFormat')) {
     /**
-     * @param  int|float  $amount
-     * @param  bool  $dotThousand
+     * @param int|float $amount
+     * @param bool $dotThousand
      *
      * @return string
      */
@@ -276,9 +298,9 @@ if (!function_exists('moneyFormat')) {
 
 if (!function_exists('trimAll')) {
     /**
-     * @param  null|string  $string
-     * @param  string  $type
-     * @param  string  $pattern
+     * @param null|string $string
+     * @param string $type
+     * @param string $pattern
      *
      * @return string
      * @throws Exception
@@ -306,9 +328,9 @@ if (!function_exists('trimAll')) {
 
 if (!function_exists('carbon')) {
     /**
-     * @param  string|DateTimeInterface|null  $datetime
-     * @param  DateTimeZone|string|null  $timezone
-     * @param  string|null  $locale
+     * @param string|DateTimeInterface|null $datetime
+     * @param DateTimeZone|string|null $timezone
+     * @param string|null $locale
      *
      * @return Carbon
      */
@@ -334,8 +356,8 @@ if (!function_exists('carbon')) {
 
 if (!function_exists('msnotif')) {
     /**
-     * @param  string  $channel
-     * @param  int|null  $schoolId
+     * @param string $channel
+     * @param int|null $schoolId
      *
      * @return NotifManager
      */
@@ -347,7 +369,7 @@ if (!function_exists('msnotif')) {
 
 if (!function_exists('whatsappMessage')) {
     /**
-     * @param  string|null  $key
+     * @param string|null $key
      *
      * @return WhatsappMessage
      * @throws Exception
@@ -360,7 +382,7 @@ if (!function_exists('whatsappMessage')) {
 
 if (!function_exists('numberFormat')) {
     /**
-     * @param  mixed  $integer
+     * @param mixed $integer
      *
      * @return string
      */
@@ -372,8 +394,8 @@ if (!function_exists('numberFormat')) {
 
 if (!function_exists('intToRoman')) {
     /**
-     * @param  int  $number
-     * @param  bool  $upper
+     * @param int $number
+     * @param bool $upper
      *
      * @return string
      */
@@ -400,7 +422,7 @@ if (!function_exists('intToRoman')) {
 }
 if (!function_exists('romanToInt')) {
     /**
-     * @param  string  $roman
+     * @param string $roman
      *
      * @return int|null
      * @throws \Exception
@@ -446,9 +468,9 @@ if (!function_exists('setDefaultRequest')) {
     /**
      * Set Default Value for Request Input.
      *
-     * @param  string|array  $name
-     * @param  null  $value
-     * @param  bool  $force
+     * @param string|array $name
+     * @param null $value
+     * @param bool $force
      */
     function setDefaultRequest(string|array $name, mixed $value = null, bool $force = true): void
     {
@@ -476,7 +498,7 @@ if (!function_exists('hasRoute')) {
     /**
      * Existing Route by Name.
      *
-     * @param  string  $name
+     * @param string $name
      *
      * @return bool
      */
@@ -491,9 +513,9 @@ if (!function_exists('routed')) {
      * Existing Route by Name
      * with '#' fallback.
      *
-     * @param  string  $name
-     * @param  array  $parameters
-     * @param  bool  $absolute
+     * @param string $name
+     * @param array $parameters
+     * @param bool $absolute
      *
      * @return string
      */
@@ -545,11 +567,11 @@ if (!function_exists('inputFeedbackComponent')) {
     /**
      * Input feedback component
      *
-     * @param  string|array  $message
-     * @param  string  $mode  valid|invalid
-     * @param  string  $type  feedback|tooltip
-     * @param  string  $glue
-     * @param  string|null  $id
+     * @param string|array $message
+     * @param string $mode valid|invalid
+     * @param string $type feedback|tooltip
+     * @param string $glue
+     * @param string|null $id
      *
      * @return string
      */
@@ -569,8 +591,8 @@ if (!function_exists('getErrors')) {
     /**
      * Feedback CSS Class
      *
-     * @param  string|null  $key
-     * @param  string|null  $bag
+     * @param string|null $key
+     * @param string|null $bag
      *
      * @return ViewErrorBag|null
      */
@@ -591,8 +613,8 @@ if (!function_exists('hasError')) {
     /**
      * Feedback CSS Class
      *
-     * @param  string|array|null  $key
-     * @param  string|null  $bag
+     * @param string|array|null $key
+     * @param string|null $bag
      *
      * @return bool
      */
@@ -607,10 +629,10 @@ if (!function_exists('errorCss')) {
     /**
      * Feedback CSS Class
      *
-     * @param  string|array|null  $key
-     * @param  string|null  $bag
-     * @param  bool  $isGroup
-     * @param  string|null  $class
+     * @param string|array|null $key
+     * @param string|null $bag
+     * @param bool $isGroup
+     * @param string|null $class
      *
      * @return string
      */
@@ -627,9 +649,9 @@ if (!function_exists('inputFeedback')) {
     /**
      * InValid input feedback
      *
-     * @param  string|array|null  $key
-     * @param  string|null  $bag
-     * @param  string  $type  feedback|tooltip
+     * @param string|array|null $key
+     * @param string|null $bag
+     * @param string $type feedback|tooltip
      *
      * @return string
      */
@@ -656,8 +678,8 @@ if (!function_exists('errorAll')) {
     /**
      * InValid input feedback
      *
-     * @param  string|null  $bag
-     * @param  array|null  $excludeKey
+     * @param string|null $bag
+     * @param array|null $excludeKey
      *
      * @return string
      */
@@ -681,7 +703,7 @@ if (!function_exists('paginateStyleReset')) {
     /**
      * Style reset paginate
      *
-     * @param  \Illuminate\Database\Eloquent\Collection  $datas
+     * @param \Illuminate\Database\Eloquent\Collection $datas
      *
      * @return string
      */
@@ -699,9 +721,9 @@ if (!function_exists('paginateStyleReset')) {
 
 if (!function_exists('logError')) {
     /**
-     * @param  string|Exception  $exception
-     * @param  string|null  $title
-     * @param  string|array|null  $data
+     * @param string|Exception $exception
+     * @param string|null $title
+     * @param string|array|null $data
      *
      * @return void
      */
@@ -740,9 +762,9 @@ if (!function_exists('logError')) {
 
 if (!function_exists('partner')) {
     /**
-     * @param  null|string  $key
-     * @param  null|array|string  $default
-     * @param  string|null  $partnerId
+     * @param null|string $key
+     * @param null|array|string $default
+     * @param string|null $partnerId
      *
      * @return array|string|\Base\App\PartnerManager\PartnerManager
      */
@@ -757,8 +779,8 @@ if (!function_exists('partner')) {
 
 if (!function_exists('cachedAsset')) {
     /**
-     * @param  string  $path
-     * @param  bool|null  $secure
+     * @param string $path
+     * @param bool|null $secure
      *
      * @return string
      */
@@ -776,8 +798,8 @@ if (!function_exists('createNewVA')) {
     /**
      * Convert Array into Object in deep
      *
-     * @param  string  $type
-     * @param  string|null  $lastVA
+     * @param string $type
+     * @param string|null $lastVA
      *
      * @return int
      */
