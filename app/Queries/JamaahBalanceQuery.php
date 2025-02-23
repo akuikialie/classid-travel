@@ -18,6 +18,16 @@ class JamaahBalanceQuery extends BaseQueryBuilder
 
     public function applyFilterParams(): void
     {
+        $this->builder->when(!empty(request()->input('date_from')), function (Builder $query) {
+            $query->where('created_at', '>=', request()->input('date_from'));
+        });
 
+        $this->builder->when(!empty(request()->input('date_to')), function (Builder $query) {
+            $query->where('created_at', '<=', request()->input('date_to'));
+        });
+
+        $this->builder->when(!empty(request()->input('saving_type')), function (Builder $query) {
+            $query->where('va_label', '<=', request()->input('saving_type'));
+        });
     }
 }

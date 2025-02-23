@@ -86,7 +86,7 @@
 
                                         <div class="fv-row mb-8">
                                             <!--begin::Email-->
-                                            <label class="required" for="date_to">Category</label>
+                                            <label class="required" for="date_to">Metode Pembayaran</label>
                                             <select class="form-select" data-control="select2" name="trx_method"
                                                     data-placeholder="Select an option" data-allow-clear="true">
                                                 <option></option>
@@ -104,7 +104,7 @@
 
                                         <div class="fv-row mb-8">
                                             <!--begin::Email-->
-                                            <label class="required" for="date_to">Transaction Type</label>
+                                            <label class="required" for="date_to">Tipe Transaksi</label>
                                             <select class="form-select" data-control="select2" name="trx_type"
                                                     data-placeholder="Select an option">
                                                 <option></option>

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Web\Admin;
 
+use App\Enums\VirtualAccount;
 use App\Queries\JamaahBalanceQuery;
 use Carbon\Carbon;
 use Exception;
@@ -53,7 +54,7 @@ class JamaahBalanceController extends Controller
                     })
                     ->addIndexColumn()
                     ->addColumn('owner', function ($row) {
-                        if ($row->va_label == 'tabungan') {
+                        if ($row->va_label == VirtualAccount::Tabungan->value) {
                             $name = $row->vaable?->name;
                         } else {
                             $name = $row->vaable?->user?->name;
@@ -61,7 +62,7 @@ class JamaahBalanceController extends Controller
                         return $name;
                     })->addColumn('saving_name', function ($row) {
                         $name = $row->name;
-                        if ($row->va_label == 'tabungan') {
+                        if ($row->va_label == VirtualAccount::Tabungan->value) {
                             $name = 'Tabungan Pribadi';
                         }
                         return $name;
@@ -105,6 +106,8 @@ class JamaahBalanceController extends Controller
     {
         $this->setPageTitle('Saldo Jamaah');
         $this->setBreadCrumb('Saldo Jamaah');
+
+        $this->setData('savingTypes', VirtualAccount::cases());
 
         return $this->view('pages.web.jamaah-balance.index');
     }

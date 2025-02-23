@@ -11,6 +11,5 @@ enum TransactionType: string
     use InvokableCases, Values, Options;
 
     case PAYMENT = "payment"; // pembayaran billing
-    case A = "a"; // pembayaran billing
 
 }

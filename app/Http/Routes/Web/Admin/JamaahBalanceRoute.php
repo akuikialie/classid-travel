@@ -17,7 +17,6 @@ class JamaahBalanceRoute extends BaseRoute
 
             $this->router->post($this->prefix('datatable'), [JamaahBalanceController::class, 'datatable'])
                 ->name($this->name('datatable'))->middleware(/*["permission:view {$this->page}"]*/);
-
             /* begin:: default route collection */
 
             $this->router->middleware([])->group(function () {

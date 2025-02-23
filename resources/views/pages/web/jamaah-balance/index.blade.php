@@ -86,34 +86,16 @@
 
                                         <div class="fv-row mb-8">
                                             <!--begin::Email-->
-                                            <label class="required" for="date_to">Category</label>
-                                            <select class="form-select" data-control="select2" name="trx_method"
+                                            <label class="required" for="date_to">Tipe Tabungan</label>
+                                            <select class="form-select" data-control="select2" name="saving_type"
                                                     data-placeholder="Select an option" data-allow-clear="true">
                                                 <option></option>
-{{--                                                @foreach($transactionMethods as $transactionMethod)--}}
-{{--                                                    <option--}}
-{{--                                                        value="{{ $transactionMethod->value }}" @selected(request()->input('trx_method') == $transactionMethod->value)>{{ $transactionMethod->name }}</option>--}}
-{{--                                                @endforeach--}}
+                                                @foreach($savingTypes as $savingType)
+                                                    <option
+                                                        value="{{ $savingType->value }}" @selected(request()->input('saving_type') == $savingType->value)>{{ $savingType->name }}</option>
+                                                @endforeach
                                             </select>
-                                            @error('trx_method')
-                                            <div
-                                                class="fv-plugins-message-container fv-plugins-message-container--enabled invalid-feedback">{{ $message }}</div>
-                                            @enderror
-
-                                        </div>
-
-                                        <div class="fv-row mb-8">
-                                            <!--begin::Email-->
-                                            <label class="required" for="date_to">Transaction Type</label>
-                                            <select class="form-select" data-control="select2" name="trx_type"
-                                                    data-placeholder="Select an option">
-                                                <option></option>
-{{--                                                @foreach($transactionTypes as $transactionType)--}}
-{{--                                                    <option--}}
-{{--                                                        value="{{ $transactionType->value }}" @selected(old('trx_type') == $transactionType->value)>{{ $transactionType->name }}</option>--}}
-{{--                                                @endforeach--}}
-                                            </select>
-                                            @error('trx_type')
+                                            @error('saving_type')
                                             <div
                                                 class="fv-plugins-message-container fv-plugins-message-container--enabled invalid-feedback">{{ $message }}</div>
                                             @enderror
