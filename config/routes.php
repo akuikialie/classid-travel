@@ -92,6 +92,7 @@ return [
         \App\Http\Routes\Web\Admin\ItineraryRoute::class,
         \App\Http\Routes\Web\Admin\UserRoute::class,
         \App\Http\Routes\Web\Admin\RoleRoute::class,
+        \App\Http\Routes\Web\Admin\JamaahBalanceRoute::class,
     ],
     'api' => [
         /** @inject api **/

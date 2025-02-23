@@ -12,6 +12,7 @@ class TransactionQuery extends BaseQueryBuilder
     public function getBaseQuery(): Builder
     {
         return Transaction::query()
+            ->has('user')
             ->with(['invocation', 'user']);
     }
 

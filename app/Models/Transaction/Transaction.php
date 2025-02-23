@@ -2,6 +2,7 @@
 
 namespace App\Models\Transaction;
 
+use App\Concerns\HasTenant;
 use App\Models\Invoication\Invocation;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
@@ -22,6 +23,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 class Transaction extends Model
 {
     use HasUuids;
+    use HasTenant;
 
     protected $table = 'transactions';
 

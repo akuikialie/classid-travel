@@ -2,6 +2,7 @@
 
 namespace App\Models\VA;
 
+use App\Concerns\HasTenant;
 use App\Concerns\Mutable;
 use App\Contracts\MutableInterface;
 use App\Models\Plan\PlanPackage;
@@ -28,6 +29,7 @@ class VirtualAccount extends Model implements MutableInterface
 {
     use HasFactory, HashableId, SoftDeletes;
     use Mutable;
+    use HasTenant;
 
     const string MORPH_ALIAS = 'virtual_account';
     protected bool $shouldHashPersist = true;

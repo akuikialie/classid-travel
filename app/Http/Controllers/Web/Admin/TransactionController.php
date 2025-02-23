@@ -39,7 +39,6 @@ class TransactionController extends Controller
     public function datatable(Request $request)
     {
         if (\request()->ajax()) {
-            $user = auth()->user();
             try {
 
                 $filter = request()->input('filter');
@@ -53,7 +52,8 @@ class TransactionController extends Controller
                     request()->mergeIfMissing($custom_filter);
                 }
 
-                $transactions = TransactionQuery::filterColumn()
+                $transactions = TransactionQuery::byTenant(activeTenant()->id)
+                    ->filterColumn()
                     ->orderColumn()
                     ->build()
                     ->latest('id');
