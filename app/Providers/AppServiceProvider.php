@@ -51,12 +51,12 @@ class AppServiceProvider extends ServiceProvider
             URL::forceScheme('https');
         }
 
-        if (stripos(request()->path(), 'api') === false) {
-            $this->app->singleton(
-                \Illuminate\Contracts\Debug\ExceptionHandler::class,
-                Handler::class
-            );
-        }
+//        if (stripos(request()->path(), 'api') === false) {
+//            $this->app->singleton(
+//                \Illuminate\Contracts\Debug\ExceptionHandler::class,
+//                Handler::class
+//            );
+//        }
 
         Vite::useScriptTagAttributes([
             'type' => 'text/javascript'

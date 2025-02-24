@@ -23,6 +23,7 @@ use Veelasky\LaravelHashId\Eloquent\HashableId;
  * @property string $email
  * @property string $password
  * @property float $balance
+ * @property float $usd_balance
  * @property Tenant $tenant
  * */
 class VirtualAccount extends Model implements MutableInterface
@@ -43,6 +44,7 @@ class VirtualAccount extends Model implements MutableInterface
         'email',
         'password',
         'balance',
+        'usd_balance',
     ];
 
     protected $casts = [

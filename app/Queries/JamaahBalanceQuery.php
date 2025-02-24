@@ -13,6 +13,7 @@ class JamaahBalanceQuery extends BaseQueryBuilder
     {
         return VirtualAccount::query()
             ->has('vaable')
+            ->orderBy('created_at', 'desc')
             ->with(['vaable']);
     }
 

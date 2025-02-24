@@ -49,9 +49,10 @@ class BindingRoute implements Bindable
         //     ->byHashOrFail($value));
 
         // /* begin:: mobile route binding */
-        // $this->router->bind('saving_hash', fn ($value) => VirtualAccount::query()
-        //     ->with(['myPackage'])
-        //     ->byHashOrFail($value));
+//         $this->router->bind('saving', fn ($value) => VirtualAccount::query()
+//             ->with(['myPackage'])
+//             ->byHashOrFail($value)
+//         );
         // /* end:: mobile route binding */
     }
 }

@@ -3,16 +3,25 @@
 namespace App\Http\Controllers\Web\Admin;
 
 use App\Enums\VirtualAccount;
+use App\Models\Tenant\Tenant;
+use App\Models\User;
 use App\Queries\JamaahBalanceQuery;
+use App\Services\VirtualAccountService;
 use Carbon\Carbon;
 use Exception;
 use Illuminate\Contracts\Database\Eloquent\Builder;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Routing\Redirector;
+use function response;
 
 class JamaahBalanceController extends Controller
 {
+
+    protected string $forPage = 'jamaah-balance';
+
     /**
      * @throws Exception
      */
@@ -20,6 +29,8 @@ class JamaahBalanceController extends Controller
     {
         parent::__construct();
         $this->setBreadCrumb(['title' => 'Saldo Jamaah', 'url' => routed('admin.jamaah-balance.index')]);
+        $this->setData('current_page', $this->forPage);
+
     }
 
     /**
@@ -77,7 +88,7 @@ class JamaahBalanceController extends Controller
                         return 'Rp. ' . moneyFormat($row->balance);
                     })
                     ->addColumn('usd_balance', function ($row) {
-                        return '$' . moneyFormat(0);
+                        return '$' . moneyFormat($row->usd_balance);
                     })
                     ->addColumn('created_at', function ($row) {
                         return Carbon::parse($row->created_at)->format('d M Y');
@@ -110,6 +121,43 @@ class JamaahBalanceController extends Controller
         $this->setData('savingTypes', VirtualAccount::cases());
 
         return $this->view('pages.web.jamaah-balance.index');
+    }
+
+    /**
+     * @param \App\Models\VA\VirtualAccount $virtualAccount
+     * @return JsonResponse
+     * @throws Exception
+     */
+    public function convertBalanceView(\App\Models\VA\VirtualAccount $virtualAccount): JsonResponse
+    {
+        if (\request()->ajax()) {
+            $this->setData('virtualAccount', $virtualAccount);
+            return response()->json([
+                'view' => $this->view('pages.web.jamaah-balance.modal.balance-exchange')->render(),
+            ]);
+        }
+        abort(404);
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function convertBalance(Request $request, \App\Models\VA\VirtualAccount $virtualAccount): RedirectResponse
+    {
+        $request->validate([
+            'amount_to_convert' => ['required', 'numeric', 'gt:0'],
+            'currency_exchange_rate' => ['required', 'numeric', 'gt:0'],
+        ]);
+
+        /** @var User $userActor */
+        $userActor = auth()->user();
+
+        $service = new VirtualAccountService($virtualAccount->tenant_id);
+
+        $service->convertCurrency($userActor, $virtualAccount, $request->input());
+
+        notify('Berhasil', 'Berhasil mengubah saldo ke USD', 'success');
+        return redirect(routed('admin.jamaah-balance.index'));
     }
 
 }

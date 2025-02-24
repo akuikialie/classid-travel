@@ -83,20 +83,20 @@ let KTDatatablesServerSide = function () {
         $(row).find('td:eq(5)').attr('data-filter', data.name);
       }
     }),
-      $("#kt_datatable_example_1 tbody").on("click", ".btn-edit-modal", function (e) {
+      $("#kt_datatable_example_1 tbody").on("click", ".btn-balance-exchange", function (e) {
         e.preventDefault();
 
         let hash = $(this).attr("data-id");
 
-        let urlEdit = editUrl.replace(":id", hash);
+        let urlEdit = balanceExchangeUrl.replace(":id", hash);
 
         $.ajax({
           url: urlEdit,
           type: "GET",
           success: function (data) {
-            if (!$("#modal-create-travel-account").is(":visible")) {
+            if (!$("#modal-balance-exchange").is(":visible")) {
               $("#dynamic_modal").html(data.view);
-              $("#modal-create-travel-account").modal("show");
+              $("#modal-balance-exchange").modal("show");
             }
           },
           error: function (error) {
@@ -114,21 +114,7 @@ let KTDatatablesServerSide = function () {
           },
         });
 
-      }),
-      $("#kt_datatable_example_1 tbody").on("click", ".change-status", function (e) {
-        e.preventDefault();
-        let status = $(this).attr("data-status");
-        let hash = $(this).attr("data-id");
-        const form = $('form[data-kt-form-id="change-status-'+hash+'"]');
-        form.append('<input type="hidden" name="status" value="'+status+'" />')
-        form.submit();
-      }),
-      $("#kt_datatable_example_1 tbody").on("click", ".btn-delete", function (e) {
-        e.preventDefault();
-        let hash = $(this).attr("data-id");
-        const form = $('form[data-kt-form-id="delete-'+hash+'"]');
-        form.submit();
-      });
+      })
 
     table = dt.$;
 
@@ -140,35 +126,6 @@ let KTDatatablesServerSide = function () {
       KTMenu.createInstances();
     });
   };
-
-  // Create new travel account
-  let handleCreateTravelAccount = function () {
-    $('#create-new').click(function () {
-      $.ajax({
-        url: createUrl,
-        type: "GET",
-        success: function (data) {
-          if (!$("#modal-create-travel-account").is(":visible")) {
-            $("#dynamic_modal").html(data.view);
-            $("#modal-create-travel-account").modal("show");
-          }
-        },
-        error: function (error) {
-          Swal.fire({
-            icon: error.responseJSON.icon,
-            title: error.responseJSON.title,
-            text: error.responseJSON.message,
-            footer:
-              '<a href="">Error Code: ' +
-              error.status +
-              ", " +
-              error.statusText +
-              "...</a>",
-          });
-        },
-      });
-    });
-  }
 
   // Search Datatable --- official docs reference: https://datatables.net/reference/api/search()
   let handleSearchDatatable = function () {
@@ -408,7 +365,6 @@ let KTDatatablesServerSide = function () {
   // Public methods
   return {
     init: function () {
-      handleCreateTravelAccount();
       initDatatable();
       handleSearchDatatable();
       initToggleToolbar();

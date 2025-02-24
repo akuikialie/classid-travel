@@ -52,13 +52,13 @@ class TransactionExport extends DefaultValueBinder implements FromCollection, Wi
         return [
             'A' => 5,
             'B' => 40,
-            'C' => 20,
+            'C' => 25,
             'D' => 20,
             'E' => 20,
-            'F' => 10,
+            'F' => 15,
             'G' => 20,
             'H' => 15,
-            'I' => 15,
+            'I' => 20,
         ];
     }
 
@@ -66,8 +66,8 @@ class TransactionExport extends DefaultValueBinder implements FromCollection, Wi
     {
         $header = [
             "A" => "No.",
-            "B" => "Owner",
-            "C" => "Virtual Akun",
+            "B" => "Jamaah",
+            "C" => "Virtual Account",
             "D" => "Nomor Invoice",
             "E" => "Nominal",
             "F" => "Tipe Transaksi",

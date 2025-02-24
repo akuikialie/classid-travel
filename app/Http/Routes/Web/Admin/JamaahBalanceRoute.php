@@ -22,6 +22,12 @@ class JamaahBalanceRoute extends BaseRoute
             $this->router->middleware([])->group(function () {
                 $this->router->get($this->prefix(), [JamaahBalanceController::class, 'index'])
                     ->name($this->name('index'));
+
+                $this->router->get($this->prefix('{virtualAccount}/balance-exchange'), [JamaahBalanceController::class, 'convertBalanceView'])
+                    ->name($this->name('balance-exchange'));
+
+                $this->router->put($this->prefix('{virtualAccount}/balance-exchange'), [JamaahBalanceController::class, 'convertBalance'])
+                    ->name($this->name('balance-exchange'));
             });
             /* end:: default route collection */
 

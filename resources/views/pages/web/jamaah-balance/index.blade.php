@@ -8,6 +8,7 @@
     <script>
         let csrf_token = "{{ csrf_token() }}";
         let urlTable = "{{ route('admin.jamaah-balance.datatable') }}";
+        let balanceExchangeUrl = "{{ route('admin.jamaah-balance.balance-exchange', ':id') }}";
     </script>
 @endsection
 
@@ -168,7 +169,7 @@
                                            value="1"/>
                                 </div>
                             </th>
-                            <th>Owner</th>
+                            <th>Jamaah</th>
                             <th>Nama Tabungan</th>
                             <th>Virtual Account</th>
                             <th>Tipe Tabungan</th>

@@ -3,10 +3,10 @@
 namespace App\Http\Controllers\Mobile;
 
 use App\Models\Invoication\Invocation;
-use App\Models\Jamaah\Jamaah;
 use App\Models\User;
 use App\Models\VA\VirtualAccount;
 use App\Services\EWallet\WalletService;
+use App\Services\Saving\SavingService;
 use Exception;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -15,11 +15,12 @@ use Throwable;
 class TabunganController extends Controller
 {
 
-    public function index()
+    public function index(SavingService $service)
     {
+        /** @var User $user */
         $user = auth()->user();
         /* begin:: show all savings */
-        $savings = $this->listSavings($user);
+        $savings = $service->getListSavings($user);
         /* end:: show all savings */
 
         return view('pages.mobile.tabungan.tabungan-index', [
@@ -108,46 +109,5 @@ class TabunganController extends Controller
             'moneybox' => collect($userSaving),
             'invocations' => $invocations,
         ]);
-    }
-
-
-    private function listSavings(User $authUser)
-    {
-        $savings = collect([]);
-        /* begin:: main savings */
-        $user = User::query()
-            ->with(['tabungan'])
-            ->where('id', '=', $authUser->id)
-            ->first();
-
-        $mainSaving = [
-            'id' => $user->tabungan->hash,
-            'va' => $user->tabungan->va_number,
-            'showDetails' => true,
-        ];
-
-        $savings->add($mainSaving);
-        /* end:: main savings */
-
-        /* begin:: planing savings */
-        $jamaah = Jamaah::query()
-            ->with(['tabunganPackages.myPackage.myPlan'])
-            ->where('user_id', '=', $authUser->id)
-            ->first();
-
-        foreach ($jamaah->tabunganPackages as $tabungan) {
-
-            $namaTabungan = 'tabungan ' . $tabungan?->myPackage->name;
-            $savings->add([
-                'namaTabungan' => ucwords($namaTabungan),
-                'id' => $tabungan->hash,
-                'va' => $tabungan->va_number,
-                'targetSavings' => $tabungan?->myPackage?->amount ?? 0,
-                'showDetails' => true,
-            ]);
-        }
-        /* end:: planing savings */
-
-        return $savings;
     }
 }

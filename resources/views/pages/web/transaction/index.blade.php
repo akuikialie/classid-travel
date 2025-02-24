@@ -187,7 +187,7 @@
                                            value="1"/>
                                 </div>
                             </th>
-                            <th>Owner</th>
+                            <th>Jamaah</th>
                             <th>Virtual Account</th>
                             <th>Invoice Number</th>
                             <th>Nominal</th>
