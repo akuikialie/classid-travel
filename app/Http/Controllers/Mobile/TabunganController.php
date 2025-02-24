@@ -81,7 +81,8 @@ class TabunganController extends Controller
                 $userSaving = [
                     'id' => $saving->id,
                     'va' => $saving->va_number,
-                    'savings' => $saving->balance,
+                    'savings' => 'Rp '. number_format($saving->balance ?? 0),
+                    'usd_savings' => '$ '. number_format($saving->usd_balance ?? 0),
                 ];
                 break;
 
@@ -91,7 +92,8 @@ class TabunganController extends Controller
                     'namaTabungan' => ucwords($name ?? 'NN'),
                     'id' => $saving->id,
                     'va' => $saving->va_number,
-                    'savings' => $saving->balance,
+                    'savings' => 'Rp '. number_format($saving->balance ?? 0),
+                    'usd_savings' => '$ '. number_format($saving->usd_balance ?? 0),
                     'targetSavings' => 'Rp ' . number_format($saving->myPackage?->amount ?? 0),
                 ];
                 break;
@@ -105,9 +107,12 @@ class TabunganController extends Controller
             ->where('virtual_account', '=', $saving->va_number)
             ->get();
 
+        $saving->loadMissing('virtualAccountMutations');
+
         return view('pages.mobile.tabungan.tabungan-show', [
             'moneybox' => collect($userSaving),
             'invocations' => $invocations,
+            'mutations' => $saving->virtualAccountMutations,
         ]);
     }
 }

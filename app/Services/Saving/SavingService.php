@@ -15,7 +15,7 @@ class SavingService
 
         $totalSavings = $user->tabungan->getStartingBalance();
         $mainSaving = [
-            'id' => $user->tabungan->hash,
+            'id' => $user->tabungan->id,
             'va' => $user->tabungan->va_number,
             'savings' => 'Rp '. number_format($totalSavings ?? 0),
             'usd_savings' => '$ '. number_format($user->tabungan->usd_balance ?? 0),

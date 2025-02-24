@@ -10,8 +10,10 @@ use App\Models\Tenant\Tenant;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Collection;
 use Veelasky\LaravelHashId\Eloquent\HashableId;
 
 /**
@@ -25,6 +27,7 @@ use Veelasky\LaravelHashId\Eloquent\HashableId;
  * @property float $balance
  * @property float $usd_balance
  * @property Tenant $tenant
+ * @property Collection<VirtualAccountMutation> $virtualAccountMutations
  * */
 class VirtualAccount extends Model implements MutableInterface
 {
@@ -69,6 +72,16 @@ class VirtualAccount extends Model implements MutableInterface
     public function myPackage(): BelongsTo
     {
         return $this->belongsTo(PlanPackage::class, 'package_id');
+    }
+
+    /**
+     * Get the user that owns the VirtualAccount
+     *
+     * @return HasMany
+     */
+    public function virtualAccountMutations(): HasMany
+    {
+        return $this->hasMany(VirtualAccountMutation::class, 'virtual_account_id');
     }
 
     public function getMutableName(): string
