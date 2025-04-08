@@ -26,4 +26,14 @@ enum RolePermission: string implements InteractsWithPermission
         return PermissionUsage::TENANT->value;
     }
 
+    public function usesFor(): string
+    {
+        return match ($this) {
+            self::ROLE_INDEX, self::ROLE_SHOW => 'view',
+            self::ROLE_CREATE => 'create',
+            self::ROLE_UPDATE => 'update',
+            self::ROLE_DELETE => 'delete',
+        };
+    }
+
 }

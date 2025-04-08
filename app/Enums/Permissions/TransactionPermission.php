@@ -25,4 +25,14 @@ enum TransactionPermission: string implements InteractsWithPermission
     {
         return PermissionUsage::TENANT->value;
     }
+
+    public function usesFor(): string
+    {
+        return match ($this) {
+            self::TRANSACTION_INDEX, self::TRANSACTION_SHOW => 'view',
+            self::TRANSACTION_CREATE => 'create',
+            self::TRANSACTION_UPDATE => 'update',
+            self::TRANSACTION_DELETE => 'delete',
+        };
+    }
 }

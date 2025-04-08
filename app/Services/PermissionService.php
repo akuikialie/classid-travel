@@ -110,7 +110,7 @@ class PermissionService extends BaseService
      * @return Permission
      * @throws \Exception
      */
-    public function createPermission(InteractsWithPermission $permission, string $guardName = 'web', ?string $tenantId = null): Permission
+    public function createPermission(InteractsWithPermission $permission, string $guardName = 'web'): Permission
     {
         $permissionCheck = Permission::query()
             ->where('label', '=', $permission->getPermissionName())
@@ -123,7 +123,7 @@ class PermissionService extends BaseService
 
         $newPermission = new Permission();
         $newPermission->name = $permission->getPermissionName();
-        $newPermission->tenant_id = $tenantId;
+        $newPermission->tenant_id = $this->tenantId;
         $newPermission->type = $permission->usesOn();
         $newPermission->label = $permission->getLabel();
         $newPermission->group = $permission::getGroupName();

@@ -11,5 +11,6 @@ interface InteractsWithPermission
     public function mapReadPermission(): string;
     public function isPermissionRead(): bool;
     public function usesOn(): string;
+    public function usesFor(): string;
     public function getLabel(): string;
 }

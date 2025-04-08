@@ -25,4 +25,14 @@ enum PackagePermission: string implements InteractsWithPermission
     {
         return PermissionUsage::TENANT->value;
     }
+
+    public function usesFor(): string
+    {
+        return match ($this) {
+            self::PACKAGE_INDEX, self::PACKAGE_SHOW => 'view',
+            self::PACKAGE_CREATE => 'create',
+            self::PACKAGE_UPDATE => 'update',
+            self::PACKAGE_DELETE => 'delete',
+        };
+    }
 }

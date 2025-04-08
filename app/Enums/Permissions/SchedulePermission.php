@@ -25,4 +25,14 @@ enum SchedulePermission: string implements InteractsWithPermission
     {
         return PermissionUsage::TENANT->value;
     }
+
+    public function usesFor(): string
+    {
+        return match ($this) {
+            self::SCHEDULE_INDEX, self::SCHEDULE_SHOW => 'view',
+            self::SCHEDULE_CREATE => 'create',
+            self::SCHEDULE_UPDATE => 'update',
+            self::SCHEDULE_DELETE => 'delete',
+        };
+    }
 }

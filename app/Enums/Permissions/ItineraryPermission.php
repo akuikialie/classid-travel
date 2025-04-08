@@ -25,4 +25,14 @@ enum ItineraryPermission: string implements InteractsWithPermission
     {
         return PermissionUsage::TENANT->value;
     }
+
+    public function usesFor(): string
+    {
+        return match ($this) {
+            self::ITINERARY_INDEX, self::ITINERARY_SHOW => 'view',
+            self::ITINERARY_CREATE => 'create',
+            self::ITINERARY_UPDATE => 'update',
+            self::ITINERARY_DELETE => 'delete',
+        };
+    }
 }

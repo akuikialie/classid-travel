@@ -25,4 +25,14 @@ enum UserPermission: string implements InteractsWithPermission
     {
         return PermissionUsage::TENANT->value;
     }
+
+    public function usesFor(): string
+    {
+        return match ($this) {
+            self::USER_INDEX, self::USER_SHOW => 'view',
+            self::USER_CREATE => 'create',
+            self::USER_UPDATE => 'update',
+            self::USER_DELETE => 'delete',
+        };
+    }
 }

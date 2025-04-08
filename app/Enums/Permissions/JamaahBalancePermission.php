@@ -25,4 +25,14 @@ enum JamaahBalancePermission: string implements InteractsWithPermission
     {
         return PermissionUsage::TENANT->value;
     }
+
+    public function usesFor(): string
+    {
+        return match ($this) {
+            self::JAMAAH_BALANCE_INDEX, self::JAMAAH_BALANCE_SHOW => 'view',
+            self::JAMAAH_BALANCE_CREATE => 'create',
+            self::JAMAAH_BALANCE_UPDATE => 'update',
+            self::JAMAAH_BALANCE_DELETE => 'delete',
+        };
+    }
 }

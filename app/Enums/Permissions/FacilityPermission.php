@@ -25,4 +25,14 @@ enum FacilityPermission: string implements InteractsWithPermission
     {
         return PermissionUsage::TENANT->value;
     }
+
+    public function usesFor(): string
+    {
+        return match ($this) {
+            self::FACILITY_INDEX, self::FACILITY_SHOW => 'view',
+            self::FACILITY_CREATE => 'create',
+            self::FACILITY_UPDATE => 'update',
+            self::FACILITY_DELETE => 'delete',
+        };
+    }
 }

@@ -25,4 +25,14 @@ enum DestinationPermission: string implements InteractsWithPermission
     {
         return PermissionUsage::TENANT->value;
     }
+
+    public function usesFor(): string
+    {
+        return match ($this) {
+            self::DESTINATION_INDEX, self::DESTINATION_SHOW => 'view',
+            self::DESTINATION_CREATE => 'create',
+            self::DESTINATION_UPDATE => 'update',
+            self::DESTINATION_DELETE => 'delete',
+        };
+    }
 }

@@ -15,5 +15,22 @@ enum RegisterPermissions: string
     case PACKAGES = PackagePermission::class;
     case SCHEDULES = SchedulePermission::class;
     case TRANSACTIONS = TransactionPermission::class;
-    case TRAVEL = TravelPermission::class;
+    case TRAVELS = TravelPermission::class;
+
+    public function usingOnPage(): string
+    {
+        return match ($this) {
+            self::ROLES => 'roles',
+            self::USERS => 'users',
+            self::DESTINATIONS => 'destinations',
+            self::FACILITIES => 'facilities',
+            self::ITINERARIES => 'itineraries',
+            self::JAMAAH_BALANCES => 'jamaah_balances',
+            self::PACKAGES => 'packages',
+            self::SCHEDULES => 'schedules',
+            self::TRANSACTIONS => 'transactions',
+            self::TRAVELS => 'travel',
+
+        };
+    }
 }

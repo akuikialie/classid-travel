@@ -102,7 +102,7 @@
                <!--end::Menu 1-->
                <!--end::Filter-->--}}
 
-              @can("create {$current_page}")
+              @can(\App\Enums\Permissions\DestinationPermission::DESTINATION_CREATE->getPermissionName())
                 <button type="button" class="btn btn-primary" id="create-new" data-bs-toggle="tooltip"
                         title="Setup Tujuan">
                   <!--begin::Svg Icon | path: icons/duotune/arrows/arr075.svg-->
