@@ -134,7 +134,7 @@
 
               <!--end::Menu 1-->
               <!--end::Filter-->
-              @can("create {$current_page}")
+              @can(\App\Enums\Permissions\RolePermission::ROLE_CREATE->value)
                 <button type="button" class="btn btn-primary" id="create-new" data-bs-toggle="tooltip"
                         title="Buat Role">
                   <!--begin::Svg Icon | path: icons/duotune/arrows/arr075.svg-->

@@ -6,7 +6,7 @@ return new class extends Patch
 {
     public function __construct()
     {
-        $this->isPerpetual = true;
+        $this->isPerpetual = isNonProduction();
     }
 
     public function eligible()

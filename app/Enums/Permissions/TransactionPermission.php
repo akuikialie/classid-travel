@@ -11,9 +11,9 @@ enum TransactionPermission: string implements InteractsWithPermission
 
     // mandatory permission if implement CRUD
     case TRANSACTION_VIEW = 'transaction_view';
-    case TRANSACTION_CREATE = 'transaction_create';
-    case TRANSACTION_UPDATE = 'transaction_update';
-    case TRANSACTION_DELETE = 'transaction_delete';
+//    case TRANSACTION_CREATE = 'transaction_create';
+//    case TRANSACTION_UPDATE = 'transaction_update';
+//    case TRANSACTION_DELETE = 'transaction_delete';
 
     public static function getGroupName(): string
     {
@@ -29,9 +29,9 @@ enum TransactionPermission: string implements InteractsWithPermission
     {
         return match ($this) {
             self::TRANSACTION_VIEW => 'view',
-            self::TRANSACTION_CREATE => 'create',
-            self::TRANSACTION_UPDATE => 'update',
-            self::TRANSACTION_DELETE => 'delete',
+//            self::TRANSACTION_CREATE => 'create',
+//            self::TRANSACTION_UPDATE => 'update',
+//            self::TRANSACTION_DELETE => 'delete',
         };
     }
 }

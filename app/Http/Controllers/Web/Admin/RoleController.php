@@ -253,43 +253,19 @@ class RoleController extends Controller
     public function create()
     {
         if (\request()->ajax()) {
-            $default = [
-                'view',
-                'create',
-                'update',
-                'delete',
-                'export',
-            ];
-
-            $listPermissionRegistered = [];
-            foreach (RegisterPermissions::cases() as $permissionRegistered) {
-                $permissionList = $permissionRegistered::cases();
-                foreach ($permissionList as $permission) {
-                    $listPermissionRegistered[$permission->name] = $permission->getPermissionName();
-                }
-            }
-
-            ddapi($listPermissionRegistered);
-
-            $permissions = Permission::query()
-                ->get();
-
             $permissionGroupedList = [];
 
-            foreach ($permissions->unique('group') as $group) {
-                foreach ($default as $permission) {
-                    $isAccessExists = $permissions->where('group', '=', $group->group)
-                        ->where('name', '=' , "{$permission} {$group->group}")
-                        ->first();
-                    if (!$isAccessExists){
-                        continue;
-                    }
-                    $permissionGroupedList[$group->group][] = [
-                        'name' => "{$permission}",
+            foreach (RegisterPermissions::cases() as $permissionRegistered) {
+                $permissionList = $permissionRegistered->value::cases();
+                foreach ($permissionList as $permission) {
+                    $permissionGroupedList[$permissionRegistered->usingOnPage()][] = [
+                        'id' => $permission->getPermissionName(),
+                        'name' => $permission->getLabel(),
                         'is_active' => false,
                     ];
                 }
             }
+
 
             $this->setData('permission_grouped', $permissionGroupedList);
 

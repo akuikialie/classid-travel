@@ -43,14 +43,24 @@ class FillMissingPermission implements ShouldQueue
         $permissions = $registeredPermission;
         $getPermissions = Permission::query()
             ->select('name')
-            ->whereIn('name', $permissions::values())
+            ->where('group', $permissions::getGroupName())
             ->pluck('name');
 
-        $emptyPermissions = array_diff($permissions::values(), $getPermissions->toArray());
+        $deletedPermission = array_diff($getPermissions->toArray(), $permissions::values());
+        if (count($deletedPermission) > 0) {
+            $this->handleRemovedPermission($deletedPermission);
+        }
 
-        $this->handleEmptyPermission(permissions: $permissions, emptyPermissions: $emptyPermissions);
+        $emptyPermissions = array_diff($permissions::values(), $getPermissions->toArray());
+        if (count($emptyPermissions) > 0) {
+            $this->handleEmptyPermission(permissions: $permissions, emptyPermissions: $emptyPermissions);
+        }
     }
 
+    protected function handleRemovedPermission(array $deletedPermissions): void
+    {
+        Permission::query()->whereIn('name', $deletedPermissions)->forceDelete();
+    }
 
     /**
      * @param $permissions
