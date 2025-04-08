@@ -2,15 +2,17 @@
 
 namespace App\Services;
 
+use App\Contracts\RBAC\InteractsWithPermission;
 use App\Enums\PermissionType;
 use App\Exceptions\HandleCatchableException;
 use App\Models\Spatie\Permission;
 use App\Models\Spatie\Role;
+use Classid\LaravelServiceQueryBuilderExtend\Contracts\Abstracts\BaseService;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Spatie\Permission\Exceptions\RoleDoesNotExist;
 
-class PermissionService
+class PermissionService extends BaseService
 {
     private ?Model $model = null;
 
@@ -41,7 +43,6 @@ class PermissionService
      * @param null $modelClass
      * @param array $permissions
      * @return $this
-     * @throws DdException
      */
     public function syncPermissions(array $permissions, $modelClass = null): static
     {
@@ -61,7 +62,6 @@ class PermissionService
      * @param $model
      * @param array $roles
      * @return $this
-     * @throws DdException
      */
     public function syncRole(array $roles, $model): static
     {
@@ -101,6 +101,36 @@ class PermissionService
         }
 
         return $this;
+    }
+
+    /**
+     * @param InteractsWithPermission $permission
+     * @param string $guardName
+     * @param string|null $tenantId
+     * @return Permission
+     * @throws \Exception
+     */
+    public function createPermission(InteractsWithPermission $permission, string $guardName = 'web', ?string $tenantId = null): Permission
+    {
+        $permissionCheck = Permission::query()
+            ->where('label', '=', $permission->getPermissionName())
+            ->where('guard_name', '=', $guardName)
+            ->first();
+
+        if (!empty($permissionCheck)) {
+            throw new \Exception(message: 'Permission already exists');
+        }
+
+        $newPermission = new Permission();
+        $newPermission->name = $permission->getPermissionName();
+        $newPermission->tenant_id = $tenantId;
+        $newPermission->type = $permission->usesOn();
+        $newPermission->label = $permission->getLabel();
+        $newPermission->group = $permission::getGroupName();
+        $newPermission->guard_name = $guardName;
+        $newPermission->save();
+
+        return $newPermission;
     }
 
     private function isRoleExists(Builder $query): bool

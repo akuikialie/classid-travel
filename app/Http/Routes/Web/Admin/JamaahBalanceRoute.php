@@ -49,7 +49,6 @@ class JamaahBalanceRoute extends BaseRoute
                     'icon' => 'fa-solid fa-money',
                 ],
                 resolver: function () {
-                    return true;
                     $user = \auth()->user();
                     return $user->can('view transaction');
                 },
