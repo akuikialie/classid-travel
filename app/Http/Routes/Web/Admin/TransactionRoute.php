@@ -53,7 +53,7 @@ class TransactionRoute extends BaseRoute
                 ],
                 resolver: function () {
                     $user = \auth()->user();
-                    return $user->can(TransactionPermission::TRANSACTION_VIEW->value);
+                    return $user->can(TransactionPermission::TRANSACTION_VIEW->value) && $user->tenant_id != null;
                 },
             );
     }

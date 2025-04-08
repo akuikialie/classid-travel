@@ -51,7 +51,7 @@ class JamaahBalanceRoute extends BaseRoute
                 ],
                 resolver: function () {
                     $user = \auth()->user();
-                    return $user->can(JamaahBalancePermission::JAMAAH_BALANCE_VIEW->value);
+                    return $user->can(JamaahBalancePermission::JAMAAH_BALANCE_VIEW->value)&& $user->tenant_id != null;
                 },
             );
     }
