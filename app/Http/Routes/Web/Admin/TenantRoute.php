@@ -2,6 +2,7 @@
 
 namespace App\Http\Routes\Web\Admin;
 
+use App\Enums\Permissions\TravelPermission;
 use App\Http\Controllers\Web\Admin\TenantController;
 use Dentro\Yalr\BaseRoute;
 
@@ -18,11 +19,11 @@ class TenantRoute extends BaseRoute
             $this->router->middleware(['role:super-administrator'])->group(function () {
 
                 $this->router->post($this->prefix('datatable'), [TenantController::class, 'datatable'])
-                    ->name($this->name('datatable'))->middleware(["permission:view {$this->page}"]);
+                    ->name($this->name('datatable'))->middleware(["permission:" . TravelPermission::TRAVEL_VIEW->value]);
 
                 /* begin:: default route collection */
 
-                $this->router->middleware(['quick_access:travel'])->group(function () {
+                $this->router->middleware(['quick_access:' . $this->page])->group(function () {
                     $this->router->get($this->prefix(), [TenantController::class, 'index'])
                         ->name($this->name('index'));
 
@@ -48,7 +49,7 @@ class TenantRoute extends BaseRoute
                 /* end:: default route collection */
             });
 
-            $this->router->middleware(['quick_access:role'])->group(function () {
+            $this->router->middleware(['quick_access:' . $this->page])->group(function () {
                 //                $this->router->get($this->prefix('profile/{tenant?}'),[TenantController::class, 'show'])
                 //                    ->name($this->name('show'));
 
@@ -96,7 +97,7 @@ class TenantRoute extends BaseRoute
                 ],
                 resolver: function () {
                     $user = \auth()->user();
-                    return $user->can('view travel') && $user->hasRole('super-administrator');
+                    return $user->can(TravelPermission::TRAVEL_VIEW->value) && $user->hasRole('super-administrator');
                 },
             )
             ->route(
@@ -108,8 +109,7 @@ class TenantRoute extends BaseRoute
                 param: ['slug' => 'overview'],
                 resolver: function () {
                     $user = \auth()->user();
-                    return true;
-                    return $user->can('view travel') && $user->tenant_id != null;
+                    return $user->can(TravelPermission::TRAVEL_VIEW->value) && $user->tenant_id != null;
                 },
             );
     }

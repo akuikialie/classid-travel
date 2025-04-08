@@ -1,4 +1,4 @@
-@can("update {$current_page}")
+@can(\App\Enums\Permissions\PackagePermission::PACKAGE_UPDATE->value)
   <a href="#" data-id="{{ $package->hash }}" data-bs-toggle="tooltip"
      title="Edit paket"
      class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm me-1 btn-edit-modal">
@@ -25,7 +25,7 @@
   data-kt-menu="true">
   <!--begin::Menu item-->
 
-  @can("create {$current_page}")
+  @can(\App\Enums\Permissions\PackagePermission::PACKAGE_CREATE->value)
     <div class="menu-item px-3 text-nowrap">
       <a class="menu-link px-3 btn-itinerary-setup" data-id="{{ $package->hash }}"
          data-bs-toggle="tooltip"
@@ -63,7 +63,7 @@
   </div>
   <!--end::Menu item-->--}}
 
-  @can("delete {$current_page}")
+  @can(\App\Enums\Permissions\PackagePermission::PACKAGE_DELETE->value)
     <!--begin::Menu item-->
     <form action="{{ route('admin.package.destroy', $package->hash) }}"
           method="post" id="delete">

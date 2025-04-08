@@ -42,7 +42,7 @@
               <!--begin::Toolbar-->
               <div class="d-flex justify-content-end" data-kt-user-table-toolbar="base">
 
-                @can("create {$current_page}")
+                @can(\App\Enums\Permissions\SchedulePermission::SCHEDULE_CREATE->value)
                   <button type="button" class="btn btn-primary" id="create-new" data-bs-toggle="tooltip"
                           title="Setup Jadwal">
                     <!--begin::Svg Icon | path: icons/duotune/arrows/arr075.svg-->

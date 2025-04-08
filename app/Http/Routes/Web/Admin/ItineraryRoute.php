@@ -2,6 +2,7 @@
 
 namespace App\Http\Routes\Web\Admin;
 
+use App\Enums\Permissions\ItineraryPermission;
 use App\Http\Controllers\Web\Admin\Master\ItineraryController;
 use Dentro\Yalr\BaseRoute;
 
@@ -15,11 +16,11 @@ class ItineraryRoute extends BaseRoute
     {
         $this->router->middleware(['auth:sanctum', 'verified'])->group(function () {
             $this->router->post($this->prefix('datatable'), [ItineraryController::class, 'datatable'])
-                ->name($this->name('datatable'))->middleware(["permission:view {$this->page}"]);
+                ->name($this->name('datatable'))->middleware(["permission:" . ItineraryPermission::ITINERARY_VIEW->value]);
 
             /* begin:: default route collection */
 
-            $this->router->middleware([ "quick_access:{$this->page}"])->group(function (){
+            $this->router->middleware(["quick_access:{$this->page}"])->group(function () {
                 $this->router->get($this->prefix(), [ItineraryController::class, 'index'])
                     ->name($this->name('index'));
 
@@ -51,17 +52,17 @@ class ItineraryRoute extends BaseRoute
      */
     public function afterRegister(): void
     {
-         menus(group: 'Master')
-             ->route(
-                 name: 'admin.itinerary.index',
-                 title: 'Master Kegiatan',
-                 attribute: [
-                     'icon' => 'bx bx-right-arrow-alt',
-                 ],
-                 resolver: function () {
-                     $user = \auth()->user();
-                     return $user->can('view itinerary') && $user->tenant_id != null;
-                 },
-             );
+        menus(group: 'Master')
+            ->route(
+                name: 'admin.itinerary.index',
+                title: 'Master Kegiatan',
+                attribute: [
+                    'icon' => 'bx bx-right-arrow-alt',
+                ],
+                resolver: function () {
+                    $user = \auth()->user();
+                    return $user->can(ItineraryPermission::ITINERARY_VIEW->value) && $user->tenant_id != null;
+                },
+            );
     }
 }

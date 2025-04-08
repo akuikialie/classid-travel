@@ -2,6 +2,7 @@
 
 namespace App\Http\Middleware;
 
+use App\Enums\Permissions\RegisterPermissions;
 use Closure;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -20,7 +21,6 @@ class RedirectIfHasAccess
      */
     public function handle(Request $request, Closure $next, $page)
     {
-        $user = auth()->user();
         $method = match ($request->method()) {
             'GET',
             'HEAD' => 'view',
@@ -31,10 +31,31 @@ class RedirectIfHasAccess
             default => null,
         };
 
-        if ($method && $user->can("{$method} {$page}")) {
+        if ($this->isAllowedUsingPage(action: $method, page: $page)) {
             return $next($request);
         }
 
         throw UnauthorizedException::forPermissions([]);
+    }
+
+    private function isAllowedUsingPage(string $action, string $page): bool
+    {
+        $user = auth()->user();
+
+        foreach (RegisterPermissions::cases() as $permissionRegistered) {
+            if ($permissionRegistered->usingOnPage() != $page){
+                continue;
+            }
+            foreach ($permissionRegistered->value::cases() as $permission) {
+                if ($permission->usesFor() != $action) {
+                    continue;
+                }
+
+                if ($action && $user->can($permission->value)){
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 }

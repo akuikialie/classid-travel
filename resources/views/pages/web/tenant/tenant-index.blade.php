@@ -119,6 +119,7 @@
               <!--end::Menu 1-->
               <!--end::Filter-->
 
+            @can(\App\Enums\Permissions\TravelPermission::TRAVEL_CREATE->value)
               <button type="button" class="btn btn-primary" id="create-new" data-bs-toggle="tooltip"
                       title="Buat Akun Travel Baru">
                 <!--begin::Svg Icon | path: icons/duotune/arrows/arr075.svg-->
@@ -127,6 +128,7 @@
                 </span>
                 <!--end::Svg Icon-->Buat Travel
               </button>
+            @endcan
             </div>
             <!--end::Toolbar-->
             <!--begin::Group actions-->

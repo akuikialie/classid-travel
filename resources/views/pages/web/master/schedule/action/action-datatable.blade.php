@@ -1,4 +1,4 @@
-@can("update {$current_page}")
+@can(\App\Enums\Permissions\SchedulePermission::SCHEDULE_UPDATE->value)
   <a type="button" data-id="{{ $schedule->hash }}" data-bs-toggle="tooltip"
      title="Edit Jadwal"
      class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm me-1 btn-edit-modal">
@@ -23,7 +23,7 @@
   class="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-600 menu-state-bg-light-primary fw-semibold fs-7 w-125px py-4"
   data-kt-menu="true">
 
-  @can("update {$current_page}")
+  @can(\App\Enums\Permissions\SchedulePermission::SCHEDULE_UPDATE->value)
     <!--begin::Menu item-->
     <div class="menu-item px-3" data-kt-menu-trigger="hover"
          data-kt-menu-placement="right-start">
@@ -62,7 +62,7 @@
   @endcan
 
   <!--begin::Menu item-->
-  @can("delete {$current_page}")
+  @can(\App\Enums\Permissions\SchedulePermission::SCHEDULE_DELETE->value)
     <div class="menu-item px-3 text-nowrap">
       <form action="{{ route('admin.schedule.destroy', $schedule->hash) }}" method="post"
             data-kt-form-id="delete-{{ $schedule->hash }}">

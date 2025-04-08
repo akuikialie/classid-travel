@@ -2,6 +2,7 @@
 
 namespace App\Http\Routes\Web\Admin;
 
+use App\Enums\Permissions\JamaahBalancePermission;
 use App\Http\Controllers\Web\Admin\JamaahBalanceController;
 use Dentro\Yalr\BaseRoute;
 
@@ -16,10 +17,10 @@ class JamaahBalanceRoute extends BaseRoute
         $this->router->middleware(['auth:sanctum', 'verified'])->group(function () {
 
             $this->router->post($this->prefix('datatable'), [JamaahBalanceController::class, 'datatable'])
-                ->name($this->name('datatable'))->middleware(/*["permission:view {$this->page}"]*/);
+                ->name($this->name('datatable'))->middleware(['permission:' . JamaahBalancePermission::JAMAAH_BALANCE_VIEW->value]);
             /* begin:: default route collection */
 
-            $this->router->middleware([])->group(function () {
+            $this->router->middleware(["quick_access:{$this->page}"])->group(function () {
                 $this->router->get($this->prefix(), [JamaahBalanceController::class, 'index'])
                     ->name($this->name('index'));
 
@@ -49,9 +50,8 @@ class JamaahBalanceRoute extends BaseRoute
                     'icon' => 'fa-solid fa-money',
                 ],
                 resolver: function () {
-                    return true;
                     $user = \auth()->user();
-                    return $user->can('view transaction');
+                    return $user->can(JamaahBalancePermission::JAMAAH_BALANCE_VIEW->value)&& $user->tenant_id != null;
                 },
             );
     }

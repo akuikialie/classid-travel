@@ -88,7 +88,7 @@ class JamaahBalanceController extends Controller
                         return 'Rp. ' . moneyFormat($row->balance);
                     })
                     ->addColumn('usd_balance', function ($row) {
-                        return '$' . moneyFormat($row->usd_balance);
+                        return '$' . moneyFormat($row->usd_balance ?? 0);
                     })
                     ->addColumn('created_at', function ($row) {
                         return Carbon::parse($row->created_at)->format('d M Y');

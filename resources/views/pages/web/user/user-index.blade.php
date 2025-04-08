@@ -101,7 +101,7 @@
                             <!--end::Filter-->
 
                             @if ($pageTitle == 'Staff')
-                                @can("create {$current_page}")
+                                @can(\App\Enums\Permissions\UserPermission::USER_CREATE->value)
                                     <button type="button" class="btn btn-primary" id="create-new" data-bs-toggle="tooltip"
                                         title="Tambahkan Admin">
                                         <!--begin::Svg Icon | path: icons/duotune/arrows/arr075.svg-->

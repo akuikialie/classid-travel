@@ -2,6 +2,7 @@
 
 namespace App\Http\Routes\Web\Admin;
 
+use App\Enums\Permissions\UserPermission;
 use App\Http\Controllers\Web\Admin\UserController;
 use Dentro\Yalr\BaseRoute;
 
@@ -16,9 +17,9 @@ class UserRoute extends BaseRoute
         $this->router->middleware(['auth:sanctum', 'verified'])->group(function () {
 
             $this->router->post($this->prefix('{type}/datatable'), [UserController::class, 'datatable'])
-                ->name($this->name('datatable'))->middleware(["permission:view {$this->page}"]);
+                ->name($this->name('datatable'))->middleware(['permission:' . UserPermission::USER_VIEW->value]);
 
-            $this->router->middleware(['quick_access:user'])->group(function () {
+            $this->router->middleware(['quick_access:' . $this->page])->group(function () {
                 $this->router->get($this->prefix('{type?}'), [UserController::class, 'index'])
                     ->name($this->name('index'));
 
@@ -63,7 +64,7 @@ class UserRoute extends BaseRoute
                 param: ['type' => 'staff'],
                 resolver: function () {
                     $user = \auth()->user();
-                    return $user->hasAnyRole(['super-administrator', 'administrator']);
+                    return $user->can(UserPermission::USER_VIEW->value) && $user->hasAnyRole(['super-administrator', 'administrator']);
                 },
             );
 
@@ -77,7 +78,7 @@ class UserRoute extends BaseRoute
                 param: ['type' => 'calon-jamaah'],
                 resolver: function () {
                     $user = \auth()->user();
-                    return $user->hasAnyRole(['super-administrator', 'administrator']);
+                    return $user->can(UserPermission::USER_VIEW->value) && $user->hasAnyRole(['super-administrator', 'administrator']);
                 },
             );
     }

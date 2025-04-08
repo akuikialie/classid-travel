@@ -12,6 +12,15 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use Spatie\Permission\PermissionRegistrar;
 use Veelasky\LaravelHashId\Eloquent\HashableId;
 
+/**
+ * @property string $id
+ * @property string $tenant_id
+ * @property string $name
+ * @property string $guard_name
+ * @property string $type
+ * @property string $label
+ * @property Tenant $tenant
+ * */
 class Role extends \Spatie\Permission\Models\Role
 {
     use HasFactory, SoftDeletes, HashableId, HasTenant;
@@ -20,8 +29,10 @@ class Role extends \Spatie\Permission\Models\Role
 
     protected $fillable = [
         'tenant_id',
-        'name', 'guard_name',
-        'type', 'label',
+        'name',
+        'guard_name',
+        'type',
+        'label',
     ];
 
     /** @inheritdoc */
