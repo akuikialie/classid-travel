@@ -10,9 +10,8 @@ enum RolePermission: string implements InteractsWithPermission
     use PermissionEnumHelper;
 
     // mandatory permission if implement CRUD
-    case ROLE_INDEX = 'role_index';
+    case ROLE_VIEW = 'role_view';
     case ROLE_CREATE = 'role_create';
-    case ROLE_SHOW = 'role_show';
     case ROLE_UPDATE = 'role_update';
     case ROLE_DELETE = 'role_delete';
 
@@ -29,7 +28,7 @@ enum RolePermission: string implements InteractsWithPermission
     public function usesFor(): string
     {
         return match ($this) {
-            self::ROLE_INDEX, self::ROLE_SHOW => 'view',
+            self::ROLE_VIEW => 'view',
             self::ROLE_CREATE => 'create',
             self::ROLE_UPDATE => 'update',
             self::ROLE_DELETE => 'delete',

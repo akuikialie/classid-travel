@@ -10,11 +10,10 @@ enum JamaahBalancePermission: string implements InteractsWithPermission
     use PermissionEnumHelper;
 
     // mandatory permission if implement CRUD
-    case JAMAAH_BALANCE_INDEX = 'jamaah_balance_index';
-    case JAMAAH_BALANCE_CREATE = 'jamaah_balance_create';
-    case JAMAAH_BALANCE_SHOW = 'jamaah_balance_show';
-    case JAMAAH_BALANCE_UPDATE = 'jamaah_balance_update';
-    case JAMAAH_BALANCE_DELETE = 'jamaah_balance_delete';
+    case JAMAAH_BALANCE_VIEW = 'jamaah-balance_view';
+    case JAMAAH_BALANCE_CREATE = 'jamaah-balance_create';
+    case JAMAAH_BALANCE_UPDATE = 'jamaah-balance_update';
+    case JAMAAH_BALANCE_DELETE = 'jamaah-balance_delete';
 
     public static function getGroupName(): string
     {
@@ -29,7 +28,7 @@ enum JamaahBalancePermission: string implements InteractsWithPermission
     public function usesFor(): string
     {
         return match ($this) {
-            self::JAMAAH_BALANCE_INDEX, self::JAMAAH_BALANCE_SHOW => 'view',
+            self::JAMAAH_BALANCE_VIEW => 'view',
             self::JAMAAH_BALANCE_CREATE => 'create',
             self::JAMAAH_BALANCE_UPDATE => 'update',
             self::JAMAAH_BALANCE_DELETE => 'delete',

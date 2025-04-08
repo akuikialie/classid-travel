@@ -10,9 +10,8 @@ enum FacilityPermission: string implements InteractsWithPermission
     use PermissionEnumHelper;
 
     // mandatory permission if implement CRUD
-    case FACILITY_INDEX = 'facility_index';
+    case FACILITY_VIEW = 'facility_view';
     case FACILITY_CREATE = 'facility_create';
-    case FACILITY_SHOW = 'facility_show';
     case FACILITY_UPDATE = 'facility_update';
     case FACILITY_DELETE = 'facility_delete';
 
@@ -29,7 +28,7 @@ enum FacilityPermission: string implements InteractsWithPermission
     public function usesFor(): string
     {
         return match ($this) {
-            self::FACILITY_INDEX, self::FACILITY_SHOW => 'view',
+            self::FACILITY_VIEW => 'view',
             self::FACILITY_CREATE => 'create',
             self::FACILITY_UPDATE => 'update',
             self::FACILITY_DELETE => 'delete',

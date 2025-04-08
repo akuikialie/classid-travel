@@ -10,9 +10,8 @@ enum TravelPermission: string implements InteractsWithPermission
     use PermissionEnumHelper;
 
     // mandatory permission if implement CRUD
-    case TRAVEL_INDEX = 'travel_index';
+    case TRAVEL_VIEW = 'travel_view';
     case TRAVEL_CREATE = 'travel_create';
-    case TRAVEL_SHOW = 'travel_show';
     case TRAVEL_UPDATE = 'travel_update';
     case TRAVEL_DELETE = 'travel_delete';
 
@@ -29,7 +28,7 @@ enum TravelPermission: string implements InteractsWithPermission
     public function usesFor(): string
     {
         return match ($this) {
-            self::TRAVEL_INDEX, self::TRAVEL_SHOW => 'view',
+            self::TRAVEL_VIEW => 'view',
             self::TRAVEL_CREATE => 'create',
             self::TRAVEL_UPDATE => 'update',
             self::TRAVEL_DELETE => 'delete',

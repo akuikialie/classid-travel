@@ -10,9 +10,8 @@ enum SchedulePermission: string implements InteractsWithPermission
     use PermissionEnumHelper;
 
     // mandatory permission if implement CRUD
-    case SCHEDULE_INDEX = 'schedule_index';
+    case SCHEDULE_VIEW = 'schedule_view';
     case SCHEDULE_CREATE = 'schedule_create';
-    case SCHEDULE_SHOW = 'schedule_show';
     case SCHEDULE_UPDATE = 'schedule_update';
     case SCHEDULE_DELETE = 'schedule_delete';
 
@@ -29,7 +28,7 @@ enum SchedulePermission: string implements InteractsWithPermission
     public function usesFor(): string
     {
         return match ($this) {
-            self::SCHEDULE_INDEX, self::SCHEDULE_SHOW => 'view',
+            self::SCHEDULE_VIEW => 'view',
             self::SCHEDULE_CREATE => 'create',
             self::SCHEDULE_UPDATE => 'update',
             self::SCHEDULE_DELETE => 'delete',

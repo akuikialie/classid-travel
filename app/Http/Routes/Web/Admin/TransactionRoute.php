@@ -2,6 +2,7 @@
 
 namespace App\Http\Routes\Web\Admin;
 
+use App\Enums\Permissions\TransactionPermission;
 use App\Http\Controllers\Web\Admin\TransactionController;
 use Dentro\Yalr\BaseRoute;
 
@@ -16,11 +17,11 @@ class TransactionRoute extends BaseRoute
         $this->router->middleware(['auth:sanctum', 'verified'])->group(function () {
 
             $this->router->post($this->prefix('datatable'), [TransactionController::class, 'datatable'])
-                ->name($this->name('datatable'))->middleware(["permission:view {$this->page}"]);
+                ->name($this->name('datatable'))->middleware(['permission:' . TransactionPermission::TRANSACTION_VIEW->value]);
 
             /* begin:: default route collection */
 
-            $this->router->middleware([ "quick_access:{$this->page}"])->group(function (){
+            $this->router->middleware(["quick_access:{$this->page}"])->group(function () {
                 $this->router->get($this->prefix(), [TransactionController::class, 'index'])
                     ->name($this->name('index'));
 
@@ -52,7 +53,7 @@ class TransactionRoute extends BaseRoute
                 ],
                 resolver: function () {
                     $user = \auth()->user();
-                    return $user->can('view transaction');
+                    return $user->can(TransactionPermission::TRANSACTION_VIEW->value);
                 },
             );
     }

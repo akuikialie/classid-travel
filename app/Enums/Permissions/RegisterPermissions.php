@@ -20,17 +20,29 @@ enum RegisterPermissions: string
     public function usingOnPage(): string
     {
         return match ($this) {
-            self::ROLES => 'roles',
-            self::USERS => 'users',
-            self::DESTINATIONS => 'destinations',
-            self::FACILITIES => 'facilities',
-            self::ITINERARIES => 'itineraries',
-            self::JAMAAH_BALANCES => 'jamaah_balances',
-            self::PACKAGES => 'packages',
-            self::SCHEDULES => 'schedules',
-            self::TRANSACTIONS => 'transactions',
+            self::ROLES => 'role',
+            self::USERS => 'user',
+            self::DESTINATIONS => 'destination',
+            self::FACILITIES => 'facility',
+            self::ITINERARIES => 'itinerary',
+            self::JAMAAH_BALANCES => 'jamaah-balance',
+            self::PACKAGES => 'package',
+            self::SCHEDULES => 'schedule',
+            self::TRANSACTIONS => 'transaction',
             self::TRAVELS => 'travel',
 
         };
+    }
+
+    public static function permissionShortName(): array
+    {
+        return [
+            'view',
+            'create',
+            'update',
+            'delete',
+            'export',
+            'import',
+        ];
     }
 }

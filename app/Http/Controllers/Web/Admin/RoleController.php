@@ -4,6 +4,7 @@
 
 namespace App\Http\Controllers\Web\Admin;
 
+use App\Enums\Permissions\RegisterPermissions;
 use App\Enums\PermissionType;
 use App\Enums\RoleEnum;
 use App\Enums\UserStatus;
@@ -260,6 +261,16 @@ class RoleController extends Controller
                 'export',
             ];
 
+            $listPermissionRegistered = [];
+            foreach (RegisterPermissions::cases() as $permissionRegistered) {
+                $permissionList = $permissionRegistered::cases();
+                foreach ($permissionList as $permission) {
+                    $listPermissionRegistered[$permission->name] = $permission->getPermissionName();
+                }
+            }
+
+            ddapi($listPermissionRegistered);
+
             $permissions = Permission::query()
                 ->get();
 
@@ -475,34 +486,18 @@ class RoleController extends Controller
     {
         if (\request()->ajax()) {
 
-            $default = [
-                'view',
-                'create',
-                'update',
-                'delete',
-                'export',
-            ];
-
-            $permissions = Permission::query()
-                ->get();
+            $rolePermissions = collect($role->permissions);
 
             $permissionGroupedList = [];
 
-            $rolePermissions = collect($role->permissions);
+            foreach (RegisterPermissions::cases() as $permissionRegistered) {
+                $permissionList = $permissionRegistered->value::cases();
+                foreach ($permissionList as $permission) {
+                    $isHasPermission = $rolePermissions->firstWhere('name', strtolower($permission->getPermissionName()));
 
-            foreach ($permissions->unique('group') as $group) {
-                foreach ($default as $permission) {
-                    $isAccessExists = $permissions->where('group', '=', $group->group)
-                        ->where('name', '=' , "{$permission} {$group->group}")
-                        ->first();
-                    if (!$isAccessExists){
-                        continue;
-                    }
-
-                    $isHasPermission = $rolePermissions->firstWhere('name', strtolower("{$permission} {$group->group}"));
-
-                    $permissionGroupedList[$group->group][] = [
-                        'name' => "{$permission}",
+                    $permissionGroupedList[$permissionRegistered->usingOnPage()][] = [
+                        'id' => $permission->getPermissionName(),
+                        'name' => $permission->getLabel(),
                         'is_active' => (bool)$isHasPermission,
                     ];
                 }

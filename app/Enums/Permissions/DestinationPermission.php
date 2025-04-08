@@ -10,9 +10,8 @@ enum DestinationPermission: string implements InteractsWithPermission
     use PermissionEnumHelper;
 
     // mandatory permission if implement CRUD
-    case DESTINATION_INDEX = 'destination_index';
+    case DESTINATION_VIEW = 'destination_view';
     case DESTINATION_CREATE = 'destination_create';
-    case DESTINATION_SHOW = 'destination_show';
     case DESTINATION_UPDATE = 'destination_update';
     case DESTINATION_DELETE = 'destination_delete';
 
@@ -29,7 +28,7 @@ enum DestinationPermission: string implements InteractsWithPermission
     public function usesFor(): string
     {
         return match ($this) {
-            self::DESTINATION_INDEX, self::DESTINATION_SHOW => 'view',
+            self::DESTINATION_VIEW => 'view',
             self::DESTINATION_CREATE => 'create',
             self::DESTINATION_UPDATE => 'update',
             self::DESTINATION_DELETE => 'delete',

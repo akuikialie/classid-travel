@@ -42,10 +42,10 @@ trait PermissionEnumHelper
         $separateValue = explode(separator: '_', string: $this->value);
         if ($this->isPermissionRead()){
             $mapReadPermission = $this->mapReadPermission();
-            $label = "{$separateValue[0]} - View {$mapReadPermission}";
+            $label = "{$separateValue[0]} | View {$mapReadPermission}";
         }else{
             $combineSeparateValue = implode(separator: ' ', array: Arr::except($separateValue, [0]));
-            $label = "{$separateValue[0]} - can {$combineSeparateValue}";
+            $label = "{$separateValue[0]} | can {$combineSeparateValue}";
         }
 
         return match ($this){

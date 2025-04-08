@@ -10,9 +10,8 @@ enum PackagePermission: string implements InteractsWithPermission
     use PermissionEnumHelper;
 
     // mandatory permission if implement CRUD
-    case PACKAGE_INDEX = 'package_index';
+    case PACKAGE_VIEW = 'package_view';
     case PACKAGE_CREATE = 'package_create';
-    case PACKAGE_SHOW = 'package_show';
     case PACKAGE_UPDATE = 'package_update';
     case PACKAGE_DELETE = 'package_delete';
 
@@ -29,7 +28,7 @@ enum PackagePermission: string implements InteractsWithPermission
     public function usesFor(): string
     {
         return match ($this) {
-            self::PACKAGE_INDEX, self::PACKAGE_SHOW => 'view',
+            self::PACKAGE_VIEW => 'view',
             self::PACKAGE_CREATE => 'create',
             self::PACKAGE_UPDATE => 'update',
             self::PACKAGE_DELETE => 'delete',

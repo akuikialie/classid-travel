@@ -17,7 +17,7 @@
       </div>
       <!--end::Modal header-->
       <!--begin::Form-->
-      <form class="form" action="{{ route('admin.itinerary.update', $activity->hash) }}" method="post">
+      <form class="form" action="{{ route('admin.itinerary.update', ['itinerary' => $activity->hash]) }}" method="post">
         @csrf
         @method('PUT')
         <!--begin::Modal body-->

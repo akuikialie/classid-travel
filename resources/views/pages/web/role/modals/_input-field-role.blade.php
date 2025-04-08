@@ -48,23 +48,26 @@
             <td class="text-gray-800">{{ $permissionGroup }} Management</td>
             <!--end::Label-->
             <!--begin::Options-->
-            <td>
-              <!--begin::Wrapper-->
-              <div class="d-flex">
+              @foreach($permissions as $permission)
+                  <td>
+                      <!--begin::Wrapper-->
+                      <div class="d-flex">
 
-                @foreach($permissions as $permission)
-                  <!--begin::Checkbox-->
-                  <label class="form-check form-check-sm form-check-custom form-check-solid me-5 me-lg-20">
-                    <input class="form-check-input" type="checkbox"
-                           value="{{ strtolower("{$permission['name']} {$permissionGroup}") }}"
-                           {{ $permission['is_active'] ? 'checked' : '' }} name="permissions[]"/>
-                    <span class="form-check-label">{{ ucfirst($permission['name']) }}</span>
-                  </label>
-                  <!--end::Checkbox-->
-                @endforeach
-              </div>
-              <!--end::Wrapper-->
-            </td>
+                          <!--begin::Checkbox-->
+                          <label class="form-check form-check-sm form-check-custom form-check-solid me-5 me-lg-20">
+                              <input class="form-check-input" type="checkbox"
+                                     value="{{ strtolower("{$permission['id']}") }}"
+                                     {{ $permission['is_active'] ? 'checked' : '' }} name="permissions[]"/>
+                              <span class="form-check-label text-nowrap">{{ ucfirst($permission['name']) }}</span>
+                          </label>
+                          <!--end::Checkbox-->
+
+                      </div>
+                      <!--end::Wrapper-->
+                  </td>
+
+              @endforeach
+
             <!--end::Options-->
           </tr>
           <!--end::Table row-->

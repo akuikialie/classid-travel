@@ -1,4 +1,4 @@
-@can("update {$current_page}")
+@can(\App\Enums\Permissions\ItineraryPermission::ITINERARY_UPDATE->value)
   <a type="button" data-id="{{ $itinerary->hash }}" data-bs-toggle="tooltip"
      title="Edit Kegiatan"
      class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm me-1 btn-edit-modal">
@@ -9,7 +9,7 @@
   </a>
 @endcan
 
-@can("delete {$current_page}")
+@can(\App\Enums\Permissions\ItineraryPermission::ITINERARY_DELETE->value)
   <a class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm me-1 text-muted btn-delete" data-id="{{ $itinerary->hash }}"
      data-bs-toggle="tooltip" title="Hapus Kegiatan">
     <i class="fa-solid fa-trash"></i>

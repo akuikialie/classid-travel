@@ -43,18 +43,16 @@ class RedirectIfHasAccess
         $user = auth()->user();
 
         foreach (RegisterPermissions::cases() as $permissionRegistered) {
-            if (!$permissionRegistered->usingOnPage() == $page){
+            if ($permissionRegistered->usingOnPage() != $page){
                 continue;
             }
-            if ($action == 'view'){
-                foreach ($permissionRegistered->value::cases() as $permission) {
-                    if (!$permission->usesFor() == $action) {
-                        continue;
-                    }
+            foreach ($permissionRegistered->value::cases() as $permission) {
+                if ($permission->usesFor() != $action) {
+                    continue;
+                }
 
-                    if ($action && $user->can($permission->value)){
-                        return true;
-                    }
+                if ($action && $user->can($permission->value)){
+                    return true;
                 }
             }
         }

@@ -2,6 +2,7 @@
 
 namespace App\Http\Routes\Web\Admin;
 
+use App\Enums\Permissions\SchedulePermission;
 use App\Http\Controllers\Web\Admin\Master\ScheduleController;
 use Dentro\Yalr\BaseRoute;
 
@@ -15,11 +16,11 @@ class ScheduleRoute extends BaseRoute
     {
         $this->router->middleware(['auth:sanctum', 'verified'])->group(function () {
             $this->router->post($this->prefix('datatable'), [ScheduleController::class, 'datatable'])
-                ->name($this->name('datatable'))->middleware(["permission:view {$this->page}"]);
+                ->name($this->name('datatable'))->middleware(["permission:" . SchedulePermission::SCHEDULE_VIEW->value]);
 
             /* begin:: default route collection */
 
-            $this->router->middleware([ "quick_access:{$this->page}"])->group(function (){
+            $this->router->middleware(["quick_access:{$this->page}"])->group(function () {
                 $this->router->get($this->prefix(), [ScheduleController::class, 'index'])
                     ->name($this->name('index'));
 
@@ -38,7 +39,7 @@ class ScheduleRoute extends BaseRoute
                 $this->router->delete($this->prefix('{schedule}'), [ScheduleController::class, 'destroy'])
                     ->name($this->name('destroy'));
 
-                $this->router->post($this->prefix('{schedule}/change-status'),[ScheduleController::class, 'changeStatus'])
+                $this->router->post($this->prefix('{schedule}/change-status'), [ScheduleController::class, 'changeStatus'])
                     ->name($this->name('change-status'));
             });
 
@@ -54,17 +55,17 @@ class ScheduleRoute extends BaseRoute
      */
     public function afterRegister(): void
     {
-         menus(group: 'Master')
-             ->route(
-                 name: 'admin.schedule.index',
-                 title: 'Master Jadwal',
-                 attribute: [
-                     'icon' => 'bx bx-right-arrow-alt',
-                 ],
-                 resolver: function () {
-                     $user = \auth()->user();
-                     return $user->can('view schedule') && $user->tenant_id != null;
-                 },
-             );
+        menus(group: 'Master')
+            ->route(
+                name: 'admin.schedule.index',
+                title: 'Master Jadwal',
+                attribute: [
+                    'icon' => 'bx bx-right-arrow-alt',
+                ],
+                resolver: function () {
+                    $user = \auth()->user();
+                    return $user->can(SchedulePermission::SCHEDULE_VIEW->value) && $user->tenant_id != null;
+                },
+            );
     }
 }

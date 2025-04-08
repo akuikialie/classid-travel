@@ -10,9 +10,8 @@ enum ItineraryPermission: string implements InteractsWithPermission
     use PermissionEnumHelper;
 
     // mandatory permission if implement CRUD
-    case ITINERARY_INDEX = 'itinerary_index';
+    case ITINERARY_VIEW = 'itinerary_view';
     case ITINERARY_CREATE = 'itinerary_create';
-    case ITINERARY_SHOW = 'itinerary_show';
     case ITINERARY_UPDATE = 'itinerary_update';
     case ITINERARY_DELETE = 'itinerary_delete';
 
@@ -29,7 +28,7 @@ enum ItineraryPermission: string implements InteractsWithPermission
     public function usesFor(): string
     {
         return match ($this) {
-            self::ITINERARY_INDEX, self::ITINERARY_SHOW => 'view',
+            self::ITINERARY_VIEW => 'view',
             self::ITINERARY_CREATE => 'create',
             self::ITINERARY_UPDATE => 'update',
             self::ITINERARY_DELETE => 'delete',

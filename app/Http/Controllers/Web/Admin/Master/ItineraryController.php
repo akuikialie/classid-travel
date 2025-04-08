@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Web\Admin\Master;
 
+use App\Exceptions\ApiDumpException;
 use App\Http\Controllers\Web\Admin\Controller;
 use App\Models\Itinerary\ItineraryActivity;
 use Illuminate\Contracts\View\View;
@@ -146,10 +147,10 @@ class ItineraryController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param ItineraryActivity $activity
+     * @param ItineraryActivity $itinerary
      * @return void
      */
-    public function show(ItineraryActivity $activity)
+    public function show(ItineraryActivity $itinerary)
     {
         abort(404);
 
@@ -158,15 +159,15 @@ class ItineraryController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param ItineraryActivity $activity
-     * @return JsonResponse|RedirectResponse
+     * @param ItineraryActivity $itinerary
+     * @return JsonResponse|void
      */
-    public function edit(ItineraryActivity $activity)
+    public function edit(ItineraryActivity $itinerary)
     {
         if (request()->ajax()) {
             return response()->json([
                 'view' => view('pages.web.master.itinerary.modal.modal-edit-itinerary_activity', [
-                    'activity' => $activity,
+                    'activity' => $itinerary,
                 ])->render(),
             ]);
         }
@@ -177,11 +178,11 @@ class ItineraryController extends Controller
      * Update the specified resource in storage.
      *
      * @param Request $request
-     * @param ItineraryActivity $activity
+     * @param ItineraryActivity $itinerary
      * @return RedirectResponse
      * @throws Throwable
      */
-    public function update(Request $request, ItineraryActivity $activity)
+    public function update(Request $request, ItineraryActivity $itinerary)
     {
         $input = $request->validate([
             'activity' => ['required', 'string'],
@@ -190,9 +191,9 @@ class ItineraryController extends Controller
 
         try {
             /* begin:: update itinerary activity */
-            $activity->activity = $input['activity'];
-            $activity->detail = $input['detail'];
-            $activity->save();
+            $itinerary->activity = $input['activity'];
+            $itinerary->detail = $input['detail'];
+            $itinerary->save();
             /* end:: update itinerary activity */
 
             notify('Berhasil', 'Berhasil memperbarui data kegiatan!.', 'success');
@@ -214,17 +215,17 @@ class ItineraryController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param ItineraryActivity $activity
+     * @param ItineraryActivity $itinerary
      * @return RedirectResponse
      * @throws Throwable
      */
-    public function destroy(ItineraryActivity $activity)
+    public function destroy(ItineraryActivity $itinerary)
     {
         try {
-            if ($activity->has_itineraries_count > 0) {
+            if ($itinerary->has_itineraries_count > 0) {
                 throw new InvalidArgumentException('Tidak dapat mengapus kegiatan, karena kegiatan ini sedang digunakan!', 500);
             }
-            $activity->delete();
+            $itinerary->delete();
 
             notify('Berhasil', 'Data Aktifitas berhasil dihapus!', 'success')->autoClose();
             return redirect()->back();
