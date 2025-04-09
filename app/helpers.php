@@ -754,6 +754,7 @@ if (!function_exists('logError')) {
                 app('log')->error("data : {$data}");
             }
             app('log')->error("trace :\n" . $exception->getTraceAsString());
+            toSentry(throw: $exception);
         }
 
         app('log')->error("===== ===== ===== ===== ===== ===== ===== ===== ===== =====\n");
