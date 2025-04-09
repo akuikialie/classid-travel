@@ -721,13 +721,13 @@ if (!function_exists('paginateStyleReset')) {
 
 if (!function_exists('logError')) {
     /**
-     * @param string|Exception $exception
+     * @param string|Throwable $exception
      * @param string|null $title
      * @param string|array|null $data
      *
      * @return void
      */
-    function logError(string|Exception $exception, string|null $title = null, string|array|null $data = null): void
+    function logError(string|Throwable $exception, string|null $title = null, string|array|null $data = null): void
     {
         if ($title) {
             app('log')->error("=====#   {$title}   #=====");
@@ -743,11 +743,9 @@ if (!function_exists('logError')) {
             if ($data) {
                 app('log')->error("data : {$data}");
             }
-        }else{
-            toSentry(throw: $exception);
         }
 
-        if ($exception instanceof Exception) {
+        if ($exception instanceof Throwable) {
             app('log')->error("message : " . $exception->getMessage());
             app('log')->error("code : " . $exception->getCode());
             app('log')->error("file : " . $exception->getFile());
@@ -756,6 +754,7 @@ if (!function_exists('logError')) {
                 app('log')->error("data : {$data}");
             }
             app('log')->error("trace :\n" . $exception->getTraceAsString());
+            toSentry(throw: $exception);
         }
 
 
