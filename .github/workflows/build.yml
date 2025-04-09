@@ -11,3 +11,22 @@ jobs:
     steps:
       - name: Fake test
         run: echo "ok"
+  production:
+    runs-on: ubuntu-latest
+    needs: test
+    if: github.ref == 'refs/heads/main'
+    steps:
+      - uses: actions/checkout@v4
+      - name: deploying-production-server
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          envs: GITHUB_REF,GITHUB_ACTION_REF
+          host: ${{ secrets.PRODUCTION_HOST }}
+          username: ${{ secrets.HOST_USERNAME }}
+          password: ${{ secrets.HOST_PASSWORD }}
+          proxy_username: ${{ secrets.PROXY_USERNAME }}
+          proxy_host: ${{ secrets.PROXY_HOST }}
+          proxy_key: ${{ secrets.PROXY_KEY }}
+          script: |
+            cd ${{ secrets.PRODUCTION_DEPLOY_PATH }}
+            bash deploy.sh
