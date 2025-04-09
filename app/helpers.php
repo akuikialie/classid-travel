@@ -839,3 +839,17 @@ if (!function_exists('createNewVA')) {
         }
     }
 }
+
+if (!function_exists('toSentry')) {
+    /**
+     * @param Throwable $throw
+     *
+     * @return void
+     */
+    function toSentry(Throwable $throw): void
+    {
+        if (app()->bound('sentry') && !app()->isLocal()) {
+            \Sentry\Laravel\Integration::captureUnhandledException($throw);
+        }
+    }
+}
