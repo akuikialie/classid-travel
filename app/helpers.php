@@ -743,6 +743,8 @@ if (!function_exists('logError')) {
             if ($data) {
                 app('log')->error("data : {$data}");
             }
+        }else{
+            toSentry(throw: $exception);
         }
 
         if ($exception instanceof Exception) {
@@ -754,8 +756,8 @@ if (!function_exists('logError')) {
                 app('log')->error("data : {$data}");
             }
             app('log')->error("trace :\n" . $exception->getTraceAsString());
-            toSentry(throw: $exception);
         }
+
 
         app('log')->error("===== ===== ===== ===== ===== ===== ===== ===== ===== =====\n");
     }
