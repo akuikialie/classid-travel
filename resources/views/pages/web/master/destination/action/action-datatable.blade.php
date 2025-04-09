@@ -1,4 +1,4 @@
-@can("update {$current_page}")
+@can(\App\Enums\Permissions\DestinationPermission::DESTINATION_UPDATE->getPermissionName())
   <a type="button" data-id="{{ $destination->hash }}" data-bs-toggle="tooltip"
      title="Edit Tujuan"
      class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm me-1 btn-edit-modal">
@@ -23,7 +23,7 @@
   class="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-600 menu-state-bg-light-primary fw-semibold fs-7 w-125px py-4"
   data-kt-menu="true">
 
-  @can("update {$current_page}")
+  @can(\App\Enums\Permissions\DestinationPermission::DESTINATION_UPDATE->getPermissionName())
     <!--begin::Menu item-->
     <div class="menu-item px-3" data-kt-menu-trigger="hover"
          data-kt-menu-placement="right-start">
@@ -62,7 +62,7 @@
   @endcan
 
   <!--begin::Menu item-->
-  @can("delete {$current_page}")
+  @can(\App\Enums\Permissions\DestinationPermission::DESTINATION_DELETE->getPermissionName())
     <div class="menu-item px-3 text-nowrap">
       <form action="{{ route('admin.destination.destroy', $destination->hash) }}" method="post"
             data-kt-form-id="delete-{{ $destination->hash }}">

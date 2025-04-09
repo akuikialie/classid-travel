@@ -96,7 +96,7 @@
                             <!--end::Menu 1-->
                             <!--end::Filter-->
 
-                            @can("create {$current_page}")
+                            @can(\App\Enums\Permissions\FacilityPermission::FACILITY_CREATE->value)
                                 <button type="button" class="btn btn-primary" id="create-new" data-bs-toggle="tooltip"
                                     title="Setup Fasilitas">
                                     <!--begin::Svg Icon | path: icons/duotune/arrows/arr075.svg-->

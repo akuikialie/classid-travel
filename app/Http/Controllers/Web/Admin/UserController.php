@@ -2,8 +2,11 @@
 
 namespace App\Http\Controllers\Web\Admin;
 
+use App\Enums\ResponseCode;
+use App\Exceptions\CidException;
 use App\Exceptions\HandleCatchableException;
-use DB;
+use Illuminate\Support\Facades\DB;
+use phpDocumentor\Reflection\DocBlock\Tags\Factory\AbstractPHPStanFactory;
 use Spatie\MediaLibrary\MediaCollections\Exceptions\FileDoesNotExist;
 use Spatie\MediaLibrary\MediaCollections\Exceptions\FileIsTooBig;
 use Throwable;
@@ -42,6 +45,7 @@ class UserController extends Controller
         ['data' => 'tenant'],
         ['data' => 'status'],
         ['data' => 'last_login'],
+        ['data' => 'created_at'],
         ['data' => 'actions'],
     ];
 
@@ -124,6 +128,12 @@ class UserController extends Controller
                         }
                         return carbon($user->last_login_at)->format('d M, Y H:i:s');
                     })
+                    ->addColumn('created_at', function ($user) {
+                        if (is_null($user->created_at)) {
+                            return '-';
+                        }
+                        return carbon($user->created_at)->format('d M, Y H:i:s');
+                    })
                     ->addColumn('actions', function ($user) use ($type) {
                         $this->setData('user', $user);
                         $this->setData('type', $type);
@@ -186,6 +196,7 @@ class UserController extends Controller
                 ['data' => 'role'],
                 ['data' => 'status'],
                 ['data' => 'last_login'],
+                ['data' => 'created_at'],
                 ['data' => 'actions'],
             ];
         }
@@ -432,7 +443,13 @@ class UserController extends Controller
                     throw UnauthorizedException::forPermissions($user->roles->toArray());
                 }
             }
-            $user->delete();
+
+            $user->loadCount('transactions');
+            if ($user->transactions_count >= 0){
+                throw new \Exception(message: 'User Memiliki Data Transaksi', code: 900);
+            }
+
+            $user->forceDelete();
             notify('Behasil!', 'Berhasil menghapus akun!', 'success');
             return redirect()->back();
         } catch (Throwable $e) {

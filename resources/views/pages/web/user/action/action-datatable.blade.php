@@ -13,7 +13,7 @@
   class="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-600 menu-state-bg-light-primary fw-semibold fs-7 w-125px py-4"
   data-kt-menu="true">
 
-  @can("update {$current_page}")
+  @can(\App\Enums\Permissions\UserPermission::USER_UPDATE->value)
     <!--begin::Menu item-->
     <div class="menu-item px-3" data-kt-menu-trigger="hover"
          data-kt-menu-placement="right-start">
@@ -44,7 +44,7 @@
     <!--end::Menu item-->
   @endcan
 
-  @can("delete {$current_page}")
+  @can(\App\Enums\Permissions\UserPermission::USER_DELETE->value)
 
     <!--begin::Menu item-->
     <div class="menu-item px-3 text-nowrap">

@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Middleware\IPGValidateClientSignature;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
@@ -28,6 +29,9 @@ return Application::configure(basePath: dirname(__DIR__))
 
             // app-aliases
             'Notify' => \App\Core\Notify\Facades\Notify::class,
+
+            // IPG
+            'ipg_validate_client_signature' => IPGValidateClientSignature::class,
         ]);
 
         // dd($middleware->getMiddlewareAliases());

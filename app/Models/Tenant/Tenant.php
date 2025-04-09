@@ -2,13 +2,15 @@
 
 namespace App\Models\Tenant;
 
+use App\Concerns\Numberable;
+use App\Contracts\NumberableInterface;
+use App\Jobs\GenerateDefaultRecordForCreatedTenant;
 use App\Models\Master\Address;
 use App\Models\Master\Email;
 use App\Models\Master\Phone;
 use App\Traits\HasTenant;
 use App\Models\Jamaah\Jamaah;
 use App\Models\Plan\PlanPackage;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -17,16 +19,42 @@ use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
 use Veelasky\LaravelHashId\Eloquent\HashableId;
 
-class Tenant extends Model implements HasMedia
+/**
+ * @property string $id
+ * @property string $tenant_id
+ * @property string $name
+ * @property string $slug
+ * @property string $app_domain
+ * @property string $bcn
+ * @property string $wallet_login
+ * @property bool $is_active
+ * */
+
+class Tenant extends Model implements HasMedia, NumberableInterface
 {
     use SoftDeletes, HashableId, InteractsWithMedia, HasTenant;
+    use Numberable;
+
+    const string MORPH_ALIAS = 'tenant';
+
+    protected static function booted(): void
+    {
+        static::created(function (Tenant $tenant) {
+            dispatch_sync(new GenerateDefaultRecordForCreatedTenant($tenant));
+        });
+    }
 
     protected bool $shouldHashPersist = true;
 
     protected $table = 'tenants';
 
     protected $fillable = [
-        'name', 'slug', 'app_domain', 'bcn', 'wallet_login', 'is_active'
+        'name',
+        'slug',
+        'app_domain',
+        'bcn',
+        'wallet_login',
+        'is_active',
     ];
 
     protected $casts = [
@@ -61,5 +89,10 @@ class Tenant extends Model implements HasMedia
     public function tenantData(): HasMany
     {
         return $this->hasMany(TenantData::class, 'tenant_id');
+    }
+
+    public function getNumberableName(): string
+    {
+        return self::MORPH_ALIAS;
     }
 }

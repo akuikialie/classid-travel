@@ -2,6 +2,7 @@
 
 namespace App\Http\Routes\Web\Admin;
 
+use App\Enums\Permissions\DestinationPermission;
 use App\Http\Controllers\Web\Admin\Master\DestinationController;
 use Dentro\Yalr\BaseRoute;
 
@@ -15,11 +16,11 @@ class DestinationRoute extends BaseRoute
     {
         $this->router->middleware(['auth:sanctum', 'verified'])->group(function () {
             $this->router->post($this->prefix('datatable'), [DestinationController::class, 'datatable'])
-                ->name($this->name('datatable'))->middleware(["permission:view {$this->page}"]);
+                ->name($this->name('datatable'))->middleware(["permission:" . DestinationPermission::DESTINATION_VIEW->value]);
 
             /* begin:: default route collection */
 
-            $this->router->middleware([ 'quick_access:role'])->group(function (){
+            $this->router->middleware(['quick_access:' . $this->page])->group(function () {
                 $this->router->get($this->prefix(), [DestinationController::class, 'index'])
                     ->name($this->name('index'));
 
@@ -36,7 +37,7 @@ class DestinationRoute extends BaseRoute
                 $this->router->delete($this->prefix('{destination}'), [DestinationController::class, 'destroy'])
                     ->name($this->name('destroy'));
 
-                $this->router->post($this->prefix('{destination}/change-status'),[DestinationController::class, 'changeStatus'])
+                $this->router->post($this->prefix('{destination}/change-status'), [DestinationController::class, 'changeStatus'])
                     ->name($this->name('change-status'));
             });
 
@@ -52,17 +53,17 @@ class DestinationRoute extends BaseRoute
      */
     public function afterRegister(): void
     {
-         menus(group: 'Master')
-             ->route(
-                 name: 'admin.destination.index',
-                 title: 'Master Tujuan',
-                 attribute: [
-                     'icon' => 'bx bx-right-arrow-alt',
-                 ],
-                 resolver: function () {
-                     $user = \auth()->user();
-                     return ($user->can('view destination') && $user->tenant_id != null);
-                 },
-             );
+        menus(group: 'Master')
+            ->route(
+                name: 'admin.destination.index',
+                title: 'Master Tujuan',
+                attribute: [
+                    'icon' => 'bx bx-right-arrow-alt',
+                ],
+                resolver: function () {
+                    $user = \auth()->user();
+                    return ($user->can(DestinationPermission::DESTINATION_VIEW->value) && $user->tenant_id != null);
+                },
+            );
     }
 }

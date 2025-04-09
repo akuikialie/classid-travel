@@ -9,7 +9,7 @@
           <div class="col">
             <!--begin:Input-->
             <span class="form-check form-check-custom form-check-solid">
-                            <input class="form-check-input" type="radio" {{--name="type"--}} id="{{ $plan->key }}"
+                            <input class="form-check-input" type="radio" {{--name="type"--}} id="{{ $plan->key }}" name="type"
                                    value="{{ $plan->id }}" checked/>
 
               <!--begin::Label-->
@@ -210,7 +210,7 @@
             <div class="form-check form-check-custom form-check-solid mx-5">
               <input class="form-check-input" type="checkbox" id="facilities-{{ $facility->id }}"
                      name="facilities[{{ $facility->id }}]"
-                {{ in_array($facility->id, collect($package->myFacilities)->pluck('id')->toArray() ?? [] )? 'checked': '' }} />
+                {{ in_array($facility->id, collect($package->myFacilities ?? [])->pluck('id')->toArray() ?? [] )? 'checked': '' }} />
             </div>
             <!--end::Checkbox-->
             <!--begin::Description-->

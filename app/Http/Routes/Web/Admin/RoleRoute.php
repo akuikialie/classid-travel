@@ -2,6 +2,7 @@
 
 namespace App\Http\Routes\Web\Admin;
 
+use App\Enums\Permissions\RolePermission;
 use App\Http\Controllers\Web\Admin\RoleController;
 use Dentro\Yalr\BaseRoute;
 
@@ -15,14 +16,13 @@ class RoleRoute extends BaseRoute
     {
         $this->router->middleware(['auth:sanctum', 'verified'])->group(function () {
             $this->router->post($this->prefix('datatable'), [RoleController::class, 'datatable'])
-                ->name($this->name('datatable'))->middleware(["permission:view {$this->page}"]);
+                ->name($this->name('datatable'))->middleware(["permission:" . RolePermission::ROLE_VIEW->value]);
 
             $this->router->post($this->prefix('datatable/{role}/users'), [RoleController::class, 'datatableRoleUsers'])
-                ->name($this->name('datatable.role-user'))->middleware(["permission:view {$this->page}"]);
+                ->name($this->name('datatable.role-user'))->middleware(["permission:" . RolePermission::ROLE_VIEW->value]);
 
             /* begin:: default route collection */
-
-            $this->router->middleware([ 'quick_access:role'])->group(function (){
+            $this->router->middleware(['quick_access:' . $this->page])->group(function () {
                 $this->router->get($this->prefix(), [RoleController::class, 'index'])
                     ->name($this->name('index'));
 
@@ -42,10 +42,9 @@ class RoleRoute extends BaseRoute
                 $this->router->delete($this->prefix('{role}'), [RoleController::class, 'destroy'])
                     ->name($this->name('destroy'));
 
-                $this->router->post($this->prefix('{role}/change-status'),[RoleController::class, 'changeStatus'])
+                $this->router->post($this->prefix('{role}/change-status'), [RoleController::class, 'changeStatus'])
                     ->name($this->name('change-status'));
             });
-
             /* end:: default route collection */
 
         });
@@ -58,17 +57,17 @@ class RoleRoute extends BaseRoute
      */
     public function afterRegister(): void
     {
-         menus(group: 'setting')
-             ->route(
-                 name: 'admin.role.index',
-                 title: 'Roles',
-                 attribute: [
-                     'icon' => 'fa-solid fa-users',
-                 ],
-                 resolver: function () {
-                     $user = \auth()->user();
-                     return $user->can('view role');
-                 },
-             );
+        menus(group: 'setting')
+            ->route(
+                name: 'admin.role.index',
+                title: 'Roles',
+                attribute: [
+                    'icon' => 'fa-solid fa-users',
+                ],
+                resolver: function () {
+                    $user = \auth()->user();
+                    return $user->can(RolePermission::ROLE_VIEW->value);
+                },
+            );
     }
 }

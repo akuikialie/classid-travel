@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use App\Exceptions\Handler;
 use App\Models\Tenant\Tenant;
 use Exception;
 use Illuminate\Support\Facades\URL;
@@ -49,6 +50,13 @@ class AppServiceProvider extends ServiceProvider
             $this->app['request']->server->set('HTTPS', true);
             URL::forceScheme('https');
         }
+
+//        if (stripos(request()->path(), 'api') === false) {
+//            $this->app->singleton(
+//                \Illuminate\Contracts\Debug\ExceptionHandler::class,
+//                Handler::class
+//            );
+//        }
 
         Vite::useScriptTagAttributes([
             'type' => 'text/javascript'

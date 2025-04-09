@@ -20,7 +20,7 @@
         <img class="h-20px app-sidebar-logo-minimize" src="{{ asset('logo/SVG/logo-pict-white.svg') }}"
              alt="Logo"/>
       </a>
-      <h1 class="ms-5 text-white">ProHajj</h1>
+      <h1 class="ms-5 text-white">{{ activeTenant()?->name ?? config('app.name') }}</h1>
     </div>
     <!--end::Logo image-->
     <!--begin::Sidebar toggle-->

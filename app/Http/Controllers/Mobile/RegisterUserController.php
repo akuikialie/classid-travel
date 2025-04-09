@@ -7,6 +7,7 @@ use App\Enums\RoleEnum;
 use App\Models\Jamaah\JamaahHistory;
 use App\Services\UserService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Throwable;
 
@@ -47,7 +48,7 @@ class RegisterUserController extends Controller
 
             DB::commit();
 
-            \Auth::login($user);
+            Auth::login($user);
 
             notify('Berhasil!!', 'Anda berhasil membuat akun, silahkan login menggunakan akun anda', 'success');
             return redirect()->intended(route('login'));

@@ -96,9 +96,7 @@ class PackageService
     public function updateExistingPackage(array $input): void
     {
         $package = $this->getPackage();
-        foreach ($input as $key => $value){
-            $package->$key = $value;
-        }
+        $package->fill($input);
         $package->push();
     }
 

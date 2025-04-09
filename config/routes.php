@@ -46,6 +46,10 @@ return [
             'middleware' => 'api',
             'prefix' => 'api',
         ],
+        'api-ipg' => [
+            'middleware' => 'api',
+            'prefix' => 'api-ipg',
+        ],
     ],
 
     /*
@@ -74,20 +78,27 @@ return [
         /* web */
         \App\Http\Routes\DefaultRoute::class,
     ],
+
     'admin' => [
         /* web */
         \App\Http\Routes\Web\Admin\DefaultRoute::class,
         \App\Http\Routes\Web\Admin\AuthRoute::class,
         \App\Http\Routes\Web\Admin\TenantRoute::class,
         \App\Http\Routes\Web\Admin\PackageRoute::class,
+        \App\Http\Routes\Web\Admin\TransactionRoute::class,
         \App\Http\Routes\Web\Admin\DestinationRoute::class,
         \App\Http\Routes\Web\Admin\FacilityRoute::class,
         \App\Http\Routes\Web\Admin\ScheduleRoute::class,
         \App\Http\Routes\Web\Admin\ItineraryRoute::class,
         \App\Http\Routes\Web\Admin\UserRoute::class,
         \App\Http\Routes\Web\Admin\RoleRoute::class,
+        \App\Http\Routes\Web\Admin\JamaahBalanceRoute::class,
     ],
     'api' => [
+        /** @inject api **/
+    ],
+    'api-ipg' => [
+        \App\Http\Controllers\Api\IPGPaymentController::class
         /** @inject api **/
     ],
 ];

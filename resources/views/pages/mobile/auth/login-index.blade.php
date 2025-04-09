@@ -13,8 +13,8 @@
                 <div class="input-style no-borders has-icon validate-field mb-4">
                     <i class="fa fa-user"></i>
                     <input type="text" class="form-control" name="login" id="login"
-                        placeholder="Username / Email / Phone" value="{{ old('login') }}">
-                    <label for="login" class="color-blue-dark font-10 mt-1">Username / Email / Phone</label>
+                        placeholder="Username / Email / Phone / NIK" value="{{ old('login') }}">
+                    <label for="login" class="color-blue-dark font-10 mt-1">Username / Email / Phone / NIK</label>
                     <i class="fa fa-times disabled invalid color-red-dark"></i>
                     {{-- <i class="fa fa-check disabled valid color-green-dark"></i> --}}
                     <em>(required)</em>
@@ -48,8 +48,8 @@
             <div class="divider"></div>
 
             <div class="d-flex">
-                <div class="w-50 font-11 pb-2 color-theme opacity-60 pb-3 text-start"><a href="{{ route('register') }}"
-                        class="color-theme">Buat Akun</a></div>
+{{--                <div class="w-50 font-11 pb-2 color-theme opacity-60 pb-3 text-start"><a href="{{ route('register') }}"--}}
+{{--                        class="color-theme">Buat Akun</a></div>--}}
                 <div class="w-50 font-11 pb-2 color-theme opacity-60 pb-3 text-end"><a href="system-forgot-1.html"
                         class="color-theme">Lupa Password</a></div>
             </div>

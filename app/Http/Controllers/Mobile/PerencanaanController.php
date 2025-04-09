@@ -13,7 +13,7 @@ class PerencanaanController extends Controller
 {
     public function index()
     {
-        $hasilSimulasi = null;
+        $hasilSimulasi = [];
         if (request()->has('type')) {
             try {
                 switch (request()->get('type')) {
@@ -58,6 +58,9 @@ class PerencanaanController extends Controller
                             /* proses perhitungan biaya keberangkatan */
                             $today = Carbon::now();
                             $range = $today->diffInMonths($tanggalBerangkat);
+                            if ($range < 1){
+                                $range = 1;
+                            }
 
                             $priceOfPackage = $package->amount;
                             $targetSavings = $priceOfPackage / $range;

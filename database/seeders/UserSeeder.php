@@ -3,9 +3,8 @@
 namespace Database\Seeders;
 
 use App\Services\UserService;
-use DB;
 use Illuminate\Database\Seeder;
-use Laravel\Octane\Exceptions\DdException;
+use Illuminate\Support\Facades\DB;
 
 class UserSeeder extends Seeder
 {

@@ -85,17 +85,6 @@ trait WalletAccount
         $walletBCN = $this->getWalletBCN();
         $vaCode = (int) preg_replace('/^('. $walletBCN .')(\d+)/', '$2', $va);
 
-        // dump([
-        //     // 'username' => config('wallet.bcn'),
-        //     'username' => $username,
-        //     'email' => $email,
-        //     'name' => $name,
-        //     'password' => $password,
-        //     'password_confirmation' => $password,
-        //     'pin' => '123456',
-        //     'va_code' => $vaCode,
-        // ]);
-
         $post = $this->client()->post('api/user/create', [
             // 'username' => config('wallet.bcn'),
             'username' => $username,
@@ -110,8 +99,8 @@ trait WalletAccount
         $getBody = json_decode($post->body(), true);
         // dump($getBody);
 
-        if (isset($getBody['error'])){
-            throw new Exception($getBody['error']);
+        if ($getBody['status'] != 200){
+            throw new Exception($getBody['message'], $getBody['status']);
         }
 
         if ($post->successful()) {

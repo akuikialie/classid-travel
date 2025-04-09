@@ -1,4 +1,4 @@
-@can("view {$current_page}")
+@can(\App\Enums\Permissions\RolePermission::ROLE_VIEW->value)
   <a href="{{ route('admin.role.show', $role->hash) }}" class="btn btn-light btn-active-light-primary btn-sm" >
     <!--begin::Svg Icon | path: icons/duotune/arrows/arr072.svg-->
     <span class="svg-icon svg-icon-5 m-0">
@@ -8,7 +8,7 @@
   </a>
 @endcan
 
-@can("update {$current_page}")
+@can(\App\Enums\Permissions\RolePermission::ROLE_UPDATE->value)
   <a type="button" data-id="{{ $role->hash }}" class="btn btn-light btn-active-light-primary btn-sm update-role">
     <!--begin::Svg Icon | path: icons/duotune/arrows/arr072.svg-->
     <span class="svg-icon svg-icon-5 m-0">
@@ -18,7 +18,7 @@
   </a>
 @endcan
 
-@can("delete {$current_page}")
+@can(\App\Enums\Permissions\RolePermission::ROLE_DELETE->value)
   <a class="btn btn-light btn-active-light-primary btn-sm"
      data-kt-menu-trigger="click" data-kt-menu-placement="bottom-end">
     <!--begin::Svg Icon | path: icons/duotune/arrows/arr072.svg-->

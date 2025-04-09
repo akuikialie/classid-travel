@@ -4,7 +4,7 @@ namespace App\Enums;
 
 enum RoleEnum: string
 {
-    case SuperAdministrator  = 'super_administrator';
+    case SuperAdministrator  = 'super-administrator';
     case Admin = 'administrator';
     case Jamaah = 'jamaah';
 
@@ -38,7 +38,7 @@ enum RoleEnum: string
     public function keyValue(): string
     {
         return match ($this){
-            self::SuperAdministrator => 'super_administrator',
+            self::SuperAdministrator => 'super-administrator',
             self::Admin => 'administrator',
             self::Jamaah => 'jamaah',
         };

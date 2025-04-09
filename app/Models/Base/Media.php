@@ -13,7 +13,6 @@ class Media extends BaseMedia implements HasMedia
 {
     use HasFactory;
     use InteractsWithMedia;
-    use HasUuids;
     use SoftDeletes;
 
     protected $table = 'media';
