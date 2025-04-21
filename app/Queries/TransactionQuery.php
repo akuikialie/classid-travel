@@ -18,6 +18,14 @@ class TransactionQuery extends BaseQueryBuilder
 
     public function applyFilterParams(): void
     {
+        $search = request()->input('search.value');
+        $this->builder->when(!empty($search), function (Builder $builder) use ($search) {
+            $builder->whereHas('invocation', function (Builder $builder) use ($search) {
+                // Pencarian pada kolom 'virtual_account' dan 'invoice_number' dengan 'ilike'
+                $builder->where('virtual_account', 'ilike', '%' . $search . '%')
+                    ->orWhere('invoice_number', 'ilike', '%' . $search . '%');
+            });
+        });
         $this->builder->when(!empty(request()->input('date_from')), function (Builder $query) {
             $query->where('trx_date', '>=', request()->input('date_from'));
         });

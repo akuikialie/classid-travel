@@ -69,22 +69,6 @@
                                     <!--begin::Content-->
                                     <div class="px-7 py-5">
 
-                                        <!--begin::Input group-->
-                                        <div class="row mb-6">
-                                            <!--begin::Label-->
-                                            <label class="col-lg-4 col-form-label fw-semibold fs-6">
-                                                {{ __('Date') }}
-                                            </label>
-                                            <!--end::Label-->
-
-                                            <!--begin::Col-->
-                                            <div class="col-lg-8">
-                                                @include('components.range.date-range')
-                                            </div>
-                                            <!--end::Col-->
-                                        </div>
-                                        <!--end::Input group-->
-
                                         <div class="fv-row mb-8">
                                             <!--begin::Email-->
                                             <label class="required" for="date_to">Tipe Tabungan</label>
@@ -93,7 +77,7 @@
                                                 <option></option>
                                                 @foreach($savingTypes as $savingType)
                                                     <option
-                                                        value="{{ $savingType->value }}" @selected(request()->input('saving_type') == $savingType->value)>{{ $savingType->name }}</option>
+                                                        value="{{ $savingType->value }}" @selected(request()->input('saving_type') == $savingType->value)>{{ $savingType->label() }}</option>
                                                 @endforeach
                                             </select>
                                             @error('saving_type')
