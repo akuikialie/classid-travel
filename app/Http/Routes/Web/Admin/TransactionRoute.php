@@ -25,12 +25,14 @@ class TransactionRoute extends BaseRoute
                 $this->router->get($this->prefix(), [TransactionController::class, 'index'])
                     ->name($this->name('index'));
 
-                $this->router->post($this->prefix('download'), [TransactionController::class, 'download'])
-                    ->name($this->name('download'));
+
 
 //                $this->router->get($this->prefix('{transaction}/detail'), [TransactionController::class, 'detail'])
 //                    ->name($this->name('detail'));
             });
+
+            $this->router->post($this->prefix('download'), [TransactionController::class, 'download'])
+                ->name($this->name('download'));
 
             /* end:: default route collection */
 
