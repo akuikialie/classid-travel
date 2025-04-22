@@ -49,6 +49,17 @@
 
                     <div class="card-body p-9">
 
+                        @if($packageSaving->myPackage instanceof \App\Models\Plan\PlanPackage)
+                            <div class="fs-3 fw-bold text-gray-900">
+                                Paket:
+                            </div>
+
+                            <p class="text-gray-500 fw-semibold fs-5 mt-1 mb-7">
+                                {{ $packageSaving->myPackage->name }}
+                            </p>
+                        @endif
+
+
                         <div class="d-flex flex-wrap mb-5">
                             <div class="border border-gray-300 border-dashed rounded min-w-125px py-3 px-4 me-7 mb-3">
                                 <div class="fs-6 text-gray-800 fw-bold">Rp. {{ moneyFormat($packageSaving->balance) }}</div>
