@@ -11,7 +11,7 @@ enum VirtualAccount: string
     {
         return match($this){
             self::Tabungan => 'Tabungan Pribadi',
-            self::Perencanaan => 'Perencanaan Tabungan',
+            self::Perencanaan => 'Paket Tabungan',
         };
     }
 

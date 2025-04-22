@@ -47,15 +47,15 @@ let KTDatatablesServerSide = function () {
         }
       },
       columns: [
-        {data: 'id'},
-        {data: 'owner'},
-        {data: 'saving_name'},
-        {data: 'virtual_number'},
-        {data: 'saving_type'},
-        {data: 'balance'},
-        {data: 'usd_balance'},
-        {data: 'created_at'},
-        {data: 'actions'},
+        {data: 'id', orderable: false},
+        {data: 'owner', orderable: false},
+        {data: 'saving_name', orderable: false},
+        {data: 'virtual_number', orderable: true},
+        {data: 'saving_type', orderable: false},
+        {data: 'balance', orderable: true},
+        {data: 'usd_balance', orderable: true},
+        {data: 'created_at', orderable: true},
+        {data: 'actions', orderable: false},
       ],
       columnDefs: [
         {

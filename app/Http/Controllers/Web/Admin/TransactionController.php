@@ -55,9 +55,7 @@ class TransactionController extends Controller
                 $transactions = TransactionQuery::byTenant(activeTenant()->id)
                     ->filterColumn()
                     ->orderColumn()
-                    ->build()
-                    ->latest('id');
-
+                    ->build();
                 return datatables()->eloquent($transactions)
                     ->filter(function (Builder $query) use ($request) {
 
@@ -76,6 +74,7 @@ class TransactionController extends Controller
                     ->addColumn('amount', function ($row) {
                         return 'Rp. ' . moneyFormat($row->amount);
                     })
+                    ->orderColumn('amount', fn($query, $order) => $query->orderBy('amount', $order))
                     ->addColumn('trx_type', function ($row) {
                         return $row->trx_type;
                     })
@@ -86,7 +85,9 @@ class TransactionController extends Controller
                     })
                     ->addColumn('created_date', function ($row) {
                         return carbon($row->trx_date)->format('d M, Y');
-                    })->addColumn('actions', function ($row) {
+                    })
+                    ->orderColumn('created_date', fn($query, $order) => $query->orderBy('trx_date', $order))
+                    ->addColumn('actions', function ($row) {
                         $this->setData('transaction', $row);
                         return $this->view('pages.web.transaction.action.action-datatable');
                     })

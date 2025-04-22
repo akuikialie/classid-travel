@@ -13,12 +13,17 @@ class JamaahBalanceQuery extends BaseQueryBuilder
     {
         return VirtualAccount::query()
             ->has('vaable')
-            ->orderBy('created_at', 'desc')
             ->with(['vaable']);
     }
 
     public function applyFilterParams(): void
     {
+        // search
+        $this->builder->when(!empty(request()->input('search.value')), function (Builder $builder) {
+            $builder->where('va_number', '=', request()->input('search.value'));
+        });
+
+
         $this->builder->when(!empty(request()->input('date_from')), function (Builder $query) {
             $query->where('created_at', '>=', request()->input('date_from'));
         });

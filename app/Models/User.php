@@ -45,7 +45,7 @@ class User extends Authenticatable implements HasMedia
     use InteractsWithMedia, HashableId;
     use HasApiTokens, HasTenant, HasRoles;
 
-    protected bool $shouldHashPersist = true;
+    protected bool $shouldHashPersist = false;
 
     /**
      * The attributes that are mass assignable.

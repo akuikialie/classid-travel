@@ -42,69 +42,73 @@ class JamaahBalanceController extends Controller
     {
         if (\request()->ajax()) {
             try {
-                $filter = request()->input('filter');
+                $request = request();
 
-                if (isset($filter)) {
-                    request()->mergeIfMissing(extract_filters($filter));
+                $filter = $request->input('filter');
+                if ($filter) {
+                    $request->mergeIfMissing(extract_filters($filter));
                 }
 
-                $custom_filter = request()->input('custom');
-                if (isset($custom_filter)) {
-                    request()->mergeIfMissing($custom_filter);
+                $custom_filter = $request->input('custom');
+                if ($custom_filter) {
+                    $request->mergeIfMissing($custom_filter);
                 }
 
                 $transactions = JamaahBalanceQuery::byTenant(activeTenant()->id)
                     ->filterColumn()
                     ->orderColumn()
-                    ->build()
-                    ->latest('id');
+                    ->build();
 
                 return datatables()->eloquent($transactions)
                     ->filter(function (Builder $query) use ($request) {
-
                     })
                     ->addIndexColumn()
+
                     ->addColumn('owner', function ($row) {
                         if ($row->va_label == VirtualAccount::Tabungan->value) {
-                            $name = $row->vaable?->name;
-                        } else {
-                            $name = $row->vaable?->user?->name;
+                            return $row->vaable?->name;
                         }
-                        return $name;
-                    })->addColumn('saving_name', function ($row) {
-                        $name = $row->name;
-                        if ($row->va_label == VirtualAccount::Tabungan->value) {
-                            $name = 'Tabungan Pribadi';
-                        }
-                        return $name;
+                        return $row->vaable?->user?->name;
                     })
-                    ->addColumn('virtual_number', function ($row) {
-                        return $row->va_number;
+
+                    ->addColumn('saving_name', function ($row) {
+                        return $row->va_label == VirtualAccount::Tabungan->value
+                            ? 'Tabungan Pribadi'
+                            : $row->name;
                     })
-                    ->addColumn('saving_type', function ($row) {
-                        return $row->va_label;
+
+                    ->addColumn('virtual_number', fn($row) => $row->va_number)
+
+                    ->orderColumn('virtual_number', function ($query, $order) {
+                        $query->orderBy('va_number', $order);
                     })
-                    ->addColumn('balance', function ($row) {
-                        return 'Rp. ' . moneyFormat($row->balance);
-                    })
-                    ->addColumn('usd_balance', function ($row) {
-                        return '$' . moneyFormat($row->usd_balance ?? 0);
-                    })
-                    ->addColumn('created_at', function ($row) {
-                        return Carbon::parse($row->created_at)->format('d M Y');
-                    })
+
+                    ->addColumn('saving_type', fn($row) => $row->va_label)
+
+                    ->addColumn('balance', fn($row) => 'Rp. ' . moneyFormat($row->balance))
+                    ->orderColumn('balance', fn($query, $order) => $query->orderBy('balance', $order))
+
+                    ->addColumn('usd_balance', fn($row) => '$' . moneyFormat($row->usd_balance ?? 0))
+                    ->orderColumn('usd_balance', fn($query, $order) => $query->orderBy('usd_balance', $order))
+
+                    ->addColumn('created_at', fn($row) => \Carbon\Carbon::parse($row->created_at)->format('d M Y'))
+                    ->orderColumn('created_at', fn($query, $order) => $query->orderBy('created_at', $order))
+
                     ->addColumn('actions', function ($row) {
                         $this->setData('virtual_account', $row);
                         return $this->view('pages.web.jamaah-balance.action.action-datatable');
                     })
+
                     ->rawColumns(['actions'])
-                    ->make(true);
+
+                    ->make();
+
             } catch (\Yajra\DataTables\Exceptions\Exception $e) {
                 logError($e, title: 'transaction - datatable');
                 if (isDevelopmentMode()) {
                     throw $e;
                 }
-                throw new Exception('Terjadi kesalahan!.');
+                throw new Exception('Terjadi kesalahan!');
             }
         }
     }
