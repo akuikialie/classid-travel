@@ -20,22 +20,15 @@ class TransactionRoute extends BaseRoute
                 ->name($this->name('datatable'))->middleware(['permission:' . TransactionPermission::TRANSACTION_VIEW->value]);
 
             /* begin:: default route collection */
-
             $this->router->middleware(["quick_access:{$this->page}"])->group(function () {
                 $this->router->get($this->prefix(), [TransactionController::class, 'index'])
                     ->name($this->name('index'));
-
-
-
-//                $this->router->get($this->prefix('{transaction}/detail'), [TransactionController::class, 'detail'])
-//                    ->name($this->name('detail'));
             });
 
             $this->router->post($this->prefix('download'), [TransactionController::class, 'download'])
                 ->name($this->name('download'));
 
             /* end:: default route collection */
-
         });
     }
 

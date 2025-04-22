@@ -93,6 +93,7 @@ return [
         \App\Http\Routes\Web\Admin\UserRoute::class,
         \App\Http\Routes\Web\Admin\RoleRoute::class,
         \App\Http\Routes\Web\Admin\JamaahBalanceRoute::class,
+        \App\Http\Controllers\Web\Admin\JamaahProfileController::class,
     ],
     'api' => [
         /** @inject api **/

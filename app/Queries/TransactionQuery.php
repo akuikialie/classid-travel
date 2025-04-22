@@ -3,6 +3,7 @@
 namespace App\Queries;
 
 use App\Models\Transaction\Transaction;
+use App\Models\User;
 use Classid\LaravelServiceQueryBuilderExtend\Contracts\Abstracts\BaseQueryBuilder;
 use Illuminate\Database\Eloquent\Builder;
 
@@ -40,6 +41,10 @@ class TransactionQuery extends BaseQueryBuilder
 
         $this->builder->when(!empty(request()->input('trx_type')), function (Builder $query) {
             $query->where('trx_type', '=', request()->input('trx_type'));
+        });
+
+        $this->builder->when(!empty(request()->input('user_id')), function (Builder $query) {
+            $query->where('user_id', '=', User::hashToId(request()->input('user_id')));
         });
     }
 }

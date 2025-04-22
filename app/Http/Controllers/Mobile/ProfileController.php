@@ -2,8 +2,6 @@
 
 namespace App\Http\Controllers\Mobile;
 
-use App\Actions\Users\ChangeAvatar;
-use App\Http\Controllers\AuthenticationSessionController;
 use App\Http\Controllers\Controller;
 use App\Models\Geo\City;
 use App\Models\Jamaah\Jamaah;
@@ -181,7 +179,7 @@ class ProfileController extends Controller
     /**
      * @throws Throwable
      */
-    public function changeProfile(Request $request, ChangeAvatar $changeAvatar)
+    public function changeProfile(Request $request)
     {
         $request->validate([
             'avatar' => ['required', 'max:2048']
@@ -189,7 +187,7 @@ class ProfileController extends Controller
 
         DB::beginTransaction();
         try {
-            $changeAvatar->handle($request);
+//            $changeAvatar->handle($request);
 
             notify('Berhasil!', 'Photo profil berhasil di perbarui', 'success');
             DB::commit();
