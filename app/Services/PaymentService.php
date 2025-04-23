@@ -87,7 +87,7 @@ class PaymentService
             "va_number" => $account->va_number,
             "type" => $type,
             "invoice_number" => $invoiceNumber,
-            "name" => "SPP Bulan Januari",
+            "name" => "deposit",
             "customer_name" => $user->name,
             "customer_email" => $user->email,
             "customer_phone" => $user->phone,

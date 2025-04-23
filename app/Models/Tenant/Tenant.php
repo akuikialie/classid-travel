@@ -28,6 +28,7 @@ use Veelasky\LaravelHashId\Eloquent\HashableId;
  * @property string $bcn
  * @property string $wallet_login
  * @property bool $is_active
+ * @property float $fee_admin
  * */
 
 class Tenant extends Model implements HasMedia, NumberableInterface
@@ -44,7 +45,7 @@ class Tenant extends Model implements HasMedia, NumberableInterface
         });
     }
 
-    protected bool $shouldHashPersist = true;
+    protected bool $shouldHashPersist = false;
 
     protected $table = 'tenants';
 
@@ -55,10 +56,12 @@ class Tenant extends Model implements HasMedia, NumberableInterface
         'bcn',
         'wallet_login',
         'is_active',
+        'fee_admin',
     ];
 
     protected $casts = [
-        'wallet_login' => 'array'
+        'wallet_login' => 'array',
+        'fee_admin' => 'float',
     ];
 
     public function addresses(): MorphMany

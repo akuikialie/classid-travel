@@ -48,3 +48,16 @@
   <!--end::Input group-->
 @endif
 
+
+<!--begin::Input group-->
+<div class="mb-5 fv-row">
+    <!--begin::Label-->
+    <label class="required fs-5 fw-semibold mb-2">Fee Admin</label>
+    <!--end::Label-->
+    <!--begin::Input-->
+    <input type="number" class="form-control form-control-solid" placeholder="Fee Admin" name="fee_admin"
+           value="{{ old('fee_admin') }}"/>
+    <!--end::Input-->
+</div>
+<!--end::Input group-->
+

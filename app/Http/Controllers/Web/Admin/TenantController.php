@@ -90,6 +90,9 @@ class TenantController extends Controller
                     ->addColumn('bcn', function ($row) {
                         return $row->bcn;
                     })
+                    ->addColumn('fee_admin', function ($row) {
+                        return $row->fee_admin;
+                    })
                     ->addColumn('status', function ($row) {
                         if ($row->is_active) {
                             return '<span class="badge badge-success text-uppercase">active</span>';
@@ -159,6 +162,7 @@ class TenantController extends Controller
             'name' => ['required', 'string'],
             'app_domain' => ['required', 'string', 'unique:tenants,app_domain'],
             'phone' => ['required', 'numeric'],
+            'fee_admin' => ['required', 'numeric', 'gte:0'],
         ]);
 
         DB::beginTransaction();
@@ -305,6 +309,7 @@ class TenantController extends Controller
                 'bcn' => $tenant->bcn,
                 'app_domain' => $tenant->app_domain,
                 'tenant' => $tenant->hash,
+                'fee_admin' => $tenant->fee_admin,
             ]);
             return \response()->json([
                 'view' => $this->view('pages.web.tenant.modals.modal-edit-tenant')->render(),
@@ -333,6 +338,7 @@ class TenantController extends Controller
             'slug' => [Rule::requiredIf($user->tenant_id !== null), 'string'],
             'bcn' => [Rule::requiredIf($user->tenant_id === null), 'numeric'],
             'app_domain' => [Rule::requiredIf($user->tenant_id === null), 'string'],
+            'fee_admin' => ['required', 'numeric', 'gte:0'],
         ]);
 
         DB::beginTransaction();

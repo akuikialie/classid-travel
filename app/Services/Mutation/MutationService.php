@@ -50,6 +50,7 @@ class MutationService
         $mutation->amount = $amount;
         $mutation->amount_before = $balance;
         $mutation->tenant_id = $tenant->id;
+        $mutation->fee_admin = $tenant->fee_admin;
 
         // update balance
         $mutation->amount_after = $balance + $amount;

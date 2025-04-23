@@ -3,7 +3,7 @@
 @section('fragment-content')
     <div class="row g-6 g-xl-9">
         <div class="col-md-6 col-xl-4">
-            <a class="card border-hover-primary ">
+            <a href="{{ route('admin.jamaah.mutations', ['user' => $user->hash, 'virtual_account' => $saving->hash ]) }}" class="card border-hover-primary ">
                 <div class="card-header border-0 pt-9">
                     <div class="card-title m-0">
                         <div class="fs-3 fw-bold text-gray-900">
@@ -12,7 +12,10 @@
                     </div>
 
                     <div class="card-toolbar">
-                        <span class="badge badge-light-primary fw-bold me-auto px-4 py-3">{{ $saving->va_number }}</span>
+                        <span class="badge badge-light-primary fw-bold me-auto px-4 py-3">
+                            {{ $saving->va_number }}
+                        </span>
+
                     </div>
                 </div>
 
@@ -28,6 +31,7 @@
                             <div class="fw-semibold text-gray-500">Saldo (USD)</div>
                         </div>
                     </div>
+
                 </div>
             </a>
         </div>

@@ -5,6 +5,7 @@ namespace App\Models\Mutation;
 use App\Concerns\Mutable;
 use App\Models\Tenant\Tenant;
 use App\Models\Transaction\Transaction;
+use App\Traits\HasTenant;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -23,6 +24,7 @@ use Illuminate\Database\Eloquent\Relations\MorphTo;
  * @property double $amount
  * @property double $amount_before
  * @property double $amount_after
+ * @property double $fee_admin
  * @property string $transaction_id
  * @property string $user_id
  * @property string $tenant_id
@@ -34,6 +36,7 @@ use Illuminate\Database\Eloquent\Relations\MorphTo;
 class Mutation extends Model
 {
     use HasFactory, HasUuids;
+    use HasTenant;
 
     protected $table = 'mutations';
 
@@ -47,13 +50,15 @@ class Mutation extends Model
         'amount_after',
         'transaction_id',
         'user_id',
-        'tenant_id'
+        'tenant_id',
+        'fee_admin'
     ];
 
     protected $casts = [
         'amount' => 'double',
         'amount_before' => 'double',
-        'amount_after' => 'double'
+        'amount_after' => 'double',
+        'fee_admin' => 'double'
     ];
 
     /**

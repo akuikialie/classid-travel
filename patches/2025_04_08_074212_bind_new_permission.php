@@ -13,7 +13,7 @@ return new class extends Patch
 
     public function eligible()
     {
-        return true;
+        return false;
     }
 
     /**

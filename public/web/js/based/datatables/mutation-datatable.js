@@ -47,15 +47,15 @@ let KTDatatablesServerSide = function () {
         }
       },
       columns: [
-        {data: 'id'},
-        {data: 'name'},
-        {data: 'slug'},
-        {data: 'app_domain'},
-        {data: 'bcn'},
-        {data: 'status'},
-        {data: 'fee_admin'},
-        {data: 'created_date'},
-        {data: 'actions'},
+        {data: 'id', orderable: false},
+        {data: 'invoice_number', orderable: false},
+        {data: 'mutable', orderable: false},
+        {data: 'type', orderable: false},
+        {data: 'info', orderable: true},
+        {data: 'amount_before', orderable: false},
+        {data: 'amount', orderable: false},
+        {data: 'amount_after', orderable: false},
+        {data: 'created_date', orderable: true},
       ],
       columnDefs: [
         {
