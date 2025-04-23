@@ -38,7 +38,7 @@
                             <!--end::Svg Icon-->
                             <input type="text" data-kt-docs-table-filter="search"
                                    class="form-control form-control-solid w-250px ps-15"
-                                   placeholder="Search Transaksi"/>
+                                   placeholder="Cari"/>
                         </div>
                         <!--end::Search-->
                         <!--begin::Toolbar-->
@@ -203,6 +203,7 @@
                             <th>Nominal Sebelum</th>
                             <th>Nominal</th>
                             <th>Nominal Sesudah</th>
+                            <th>Biaya Admin</th>
                             <th>Tanggal</th>
                         </tr>
                         </thead>

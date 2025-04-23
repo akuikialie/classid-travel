@@ -55,6 +55,7 @@ let KTDatatablesServerSide = function () {
         {data: 'amount_before', orderable: false},
         {data: 'amount', orderable: false},
         {data: 'amount_after', orderable: false},
+        {data: 'fee_admin', orderable: false},
         {data: 'created_date', orderable: true},
       ],
       columnDefs: [

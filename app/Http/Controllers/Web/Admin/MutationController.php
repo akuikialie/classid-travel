@@ -91,6 +91,9 @@ class MutationController extends Controller
                     ->addColumn('amount_after', function ($row) {
                         return 'Rp. ' . moneyFormat($row->amount_after);
                     })
+                    ->addColumn('fee_admin', function ($row) {
+                        return 'Rp. ' . moneyFormat($row->fee_admin);
+                    })
                     ->addColumn('created_date', function ($row) {
                         return carbon($row->created_at)->toDateTimeString();
                     })

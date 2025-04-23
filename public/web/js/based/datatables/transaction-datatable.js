@@ -55,6 +55,7 @@ let KTDatatablesServerSide = function () {
         {data: 'trx_type', orderable: false},
         {data: 'trx_method', orderable: false},
         {data: 'status', orderable: false},
+        {data: 'fee_admin', orderable: false},
         {data: 'created_date', orderable: true},
         {data: 'actions', orderable: false},
       ],
