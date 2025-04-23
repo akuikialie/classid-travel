@@ -36,7 +36,7 @@ class VirtualAccount extends Model implements MutableInterface
     use HasTenant;
 
     const string MORPH_ALIAS = 'virtual_account';
-    protected bool $shouldHashPersist = true;
+    protected bool $shouldHashPersist = false;
 
     protected $table = 'virtual_accounts';
     protected $fillable = [

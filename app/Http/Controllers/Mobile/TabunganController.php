@@ -104,6 +104,7 @@ class TabunganController extends Controller
         }
 
         $invocations = Invocation::query()
+            ->has('transaction')
             ->where('virtual_account', '=', $saving->va_number)
             ->get();
 

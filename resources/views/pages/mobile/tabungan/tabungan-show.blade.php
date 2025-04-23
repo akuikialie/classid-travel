@@ -25,7 +25,7 @@
                         <span class="color-theme font-11">Recieved via Bank Transfer</span>
                     </div>
                     <div class="align-self-center ms-auto">
-                        <h5 class="color-green-dark mb-n1 text-end">{{ $invocation->transaction->amount }}</h5>
+                        <h5 class="color-green-dark mb-n1 text-end">{{ 'Rp. '. moneyFormat($invocation->transaction->amount) }}</h5>
                         <span class="color-theme d-block font-11 text-end">{{ \Carbon\Carbon::parse($invocation->transaction->trx_date)->format('M d, Y H:i') }}</span>
                     </div>
                 </div>
