@@ -62,8 +62,8 @@ class MutationController extends Controller
                     request()->mergeIfMissing($custom_filter);
                 }
 
-                $mutations = MutationQuery::/*byTenant(activeTenant()->id)
-                    ->*/filterColumn()
+                $mutations = MutationQuery::byTenant(activeTenant()->id)
+                    ->filterColumn()
                     ->orderColumn()
                     ->build();
                 return datatables()->eloquent($mutations)
@@ -71,8 +71,8 @@ class MutationController extends Controller
 
                     })
                     ->addIndexColumn()
-                    ->addColumn('invoice_number', function ($row) {
-                        return $row->transaction->invocation->invoice_number;
+                    ->addColumn('trx_number', function ($row) {
+                        return $row->transaction->trx_number;
                     })
                     ->addColumn('mutable', function ($row) {
                         return $row->mutable->getMutableName();

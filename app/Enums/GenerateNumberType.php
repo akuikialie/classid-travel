@@ -17,6 +17,7 @@ enum GenerateNumberType: string
     use InvokableCases;
 
     case INVOICE_NUMBER = 'invoice_number';
+    case TRANSACTION_NUMBER = 'transaction_number';
     case VIRTUAL_NUMBER = 'virtual_number';
     public function label(): string
     {

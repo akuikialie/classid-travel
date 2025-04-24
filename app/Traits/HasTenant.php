@@ -30,4 +30,23 @@ trait HasTenant
     {
         return $this->belongsTo(Tenant::class, 'tenant_id');
     }
+
+    public function getTenantColumnName()
+    {
+        $tenantColumn = 'tenant_id';
+        if (property_exists($this, 'tenantColumn')) {
+            $tenantColumn = $this->tenantColumn;
+        }
+        return $tenantColumn;
+    }
+
+    public function scopeByTenant($query, $tenantId)
+    {
+        return $query->where($this->getTenantColumnName(), $tenantId);
+    }
+
+    public function scopeByInTenant($query, $tenantIds)
+    {
+        return $query->whereIn($this->getTenantColumnName(), $tenantIds);
+    }
 }

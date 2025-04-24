@@ -2,10 +2,10 @@
 
 namespace App\Models\Transaction;
 
-use App\Concerns\HasTenant;
 use App\Models\Invoication\Invocation;
 use App\Models\Mutation\Mutation;
 use App\Models\User;
+use App\Traits\HasTenant;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -18,6 +18,7 @@ use Illuminate\Support\Collection;
  * @property string $invocation_id
  * @property string $amount
  * @property string $trx_method
+ * @property string $trx_number
  * @property string $trx_type
  * @property string $trx_date
  * @property User $user
@@ -36,6 +37,7 @@ class Transaction extends Model
         'tenant_id',
         'invocation_id',
         'amount',
+        'trx_number',
         'trx_method',
         'trx_type',
         'trx_date',

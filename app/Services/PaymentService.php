@@ -166,14 +166,16 @@ class PaymentService
 
         $user = $virtualAccount->vaable;
         // save to transaction
+        $number = generateTransactionNumber(tenant: $virtualAccount->tenant, transactionType: TransactionType::DEPOSIT, isLocking: true)[0];
         $transaction = new Transaction();
         $transaction->fill([
             'user_id' => $user->id,
             'tenant_id' => $invocation->tenant_id,
+            'trx_number' => $number,
             'invocation_id' => $invocation->id,
             'amount' => $validated['amount'],
             'trx_method' => TransactionMethod::BANK->value,
-            'trx_type' => TransactionType::PAYMENT->value,
+            'trx_type' => TransactionType::DEPOSIT->value,
             'trx_date' => now()->toIso8601String(),
         ]);
         $transaction->save();
