@@ -50,7 +50,7 @@ let KTDatatablesServerSide = function () {
         {data: 'id', orderable: false},
         {data: 'owner', orderable: false},
         {data: 'virtual_account', orderable: false},
-        {data: 'invoice_number', orderable: false},
+        {data: 'trx_number', orderable: true},
         {data: 'amount', orderable: true},
         {data: 'trx_type', orderable: false},
         {data: 'trx_method', orderable: false},

@@ -69,9 +69,10 @@ class TransactionController extends Controller
                     })->addColumn('virtual_account', function ($row) {
                         return $row->invocation->virtual_account;
                     })
-                    ->addColumn('invoice_number', function ($row) {
-                        return $row->invocation->invoice_number;
+                    ->addColumn('trx_number', function ($row) {
+                        return $row->trx_number;
                     })
+                    ->orderColumn('trx_number', fn($query, $order) => $query->orderBy('trx_number', $order))
                     ->addColumn('amount', function ($row) {
                         return 'Rp. ' . moneyFormat($row->amount);
                     })
@@ -132,7 +133,8 @@ class TransactionController extends Controller
      */
     public function download()
     {
-        $transactions = TransactionQuery::filterColumn()
+        $transactions = TransactionQuery::byTenant(activeTenant()->id)
+            ->filterColumn()
             ->orderColumn()
             ->build()
             ->latest('id');

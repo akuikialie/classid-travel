@@ -65,6 +65,33 @@ function generateInvoiceNumber(Tenant $tenant, bool $isLocking = false, int $num
     return $cardNumbers->toArray();
 }
 
+function generateTransactionNumber(Tenant $tenant,\App\Enums\TransactionType $transactionType, bool $isLocking = false, int $numberGenerated = 1): array
+{
+    $generateNumber = (new GenerateNumberService())
+        ->getNextGenerateNumber(
+            tenant: $tenant,
+            type: GenerateNumberType::TRANSACTION_NUMBER->value,
+            isTransactional: $isLocking,
+            numberGenerated: $numberGenerated
+        );
+
+    $cardNumbers = collect();
+    foreach ($generateNumber->generated_numbers as $generated_number) {
+        $uniqueReplacement = TemplateReplacement::execute(
+            templatePattern: $generateNumber->number_pattern,
+            priorityReplacementData: [
+                "trx_type" => $transactionType->code(),
+                "month_year" => now()->format('ym'),
+            ]
+        );
+
+        $newNumber = numberSignReplacement($uniqueReplacement, $generated_number);
+        $cardNumbers->push($newNumber);
+    }
+
+    return $cardNumbers->toArray();
+}
+
 /**
  * @param string $pattern
  * @param string $numberToGenerate

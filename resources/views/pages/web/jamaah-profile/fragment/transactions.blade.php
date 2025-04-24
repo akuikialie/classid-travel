@@ -175,7 +175,7 @@
                             </th>
                             <th>Jamaah</th>
                             <th>Virtual Account</th>
-                            <th>Invoice Number</th>
+                            <th>Transaction Number</th>
                             <th>Nominal</th>
                             <th>Tipe Transaksi</th>
                             <th>Metode Pembayaran</th>

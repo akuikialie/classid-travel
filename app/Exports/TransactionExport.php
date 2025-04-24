@@ -59,6 +59,7 @@ class TransactionExport extends DefaultValueBinder implements FromCollection, Wi
             'G' => 20,
             'H' => 15,
             'I' => 20,
+            'J' => 20,
         ];
     }
 
@@ -68,12 +69,13 @@ class TransactionExport extends DefaultValueBinder implements FromCollection, Wi
             "A" => "No.",
             "B" => "Jamaah",
             "C" => "Virtual Account",
-            "D" => "Nomor Invoice",
+            "D" => "Nomor Transaksi",
             "E" => "Nominal",
             "F" => "Tipe Transaksi",
             "G" => "Metode Pembayaran",
             "H" => "status",
             "I" => "Tranggal Transaksi",
+            "J" => "Jam Transaksi",
         ];
 
         $headers = [
@@ -102,12 +104,13 @@ class TransactionExport extends DefaultValueBinder implements FromCollection, Wi
             $this->rowNumber++,
             $owner,
             $row->invocation->virtual_account,
-            $row->invocation->invoice_number,
+            $row->trx_number,
             moneyFormat($row->amount),
             $row->trx_type,
             $row->trx_method,
             $row->invocation->status,
             Carbon::parse($row->trx_date)->format('Y-m-d'),
+            Carbon::parse($row->trx_date)->format('H:i:s'),
         ];
     }
 

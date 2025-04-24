@@ -48,7 +48,7 @@ let KTDatatablesServerSide = function () {
       },
       columns: [
         {data: 'id', orderable: false},
-        {data: 'invoice_number', orderable: false},
+        {data: 'trx_number', orderable: false},
         {data: 'mutable', orderable: false},
         {data: 'type', orderable: false},
         {data: 'info', orderable: true},

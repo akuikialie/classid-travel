@@ -28,6 +28,7 @@ class GenerateDefaultRecordForCreatedTenant implements ShouldQueue
     public function handle(): void
     {
         $generateNumbers = [
+            GenerateNumberType::TRANSACTION_NUMBER->value => '{trx_type}{month_year}#########',
             GenerateNumberType::INVOICE_NUMBER->value => 'INV-{month_year}#########',
             GenerateNumberType::VIRTUAL_NUMBER->value => '{tenant_bcn}{month_year}#####',
         ];
