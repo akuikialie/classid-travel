@@ -48,16 +48,15 @@ let KTDatatablesServerSide = function () {
       },
       columns: [
         {data: 'id', orderable: false},
-        {data: 'owner', orderable: false},
-        {data: 'virtual_account', orderable: false},
         {data: 'invoice_number', orderable: false},
-        {data: 'amount', orderable: true},
-        {data: 'trx_type', orderable: false},
-        {data: 'trx_method', orderable: false},
-        {data: 'status', orderable: false},
+        {data: 'mutable', orderable: false},
+        {data: 'type', orderable: false},
+        {data: 'info', orderable: true},
+        {data: 'amount_before', orderable: false},
+        {data: 'amount', orderable: false},
+        {data: 'amount_after', orderable: false},
         {data: 'fee_admin', orderable: false},
         {data: 'created_date', orderable: true},
-        {data: 'actions', orderable: false},
       ],
       columnDefs: [
         {

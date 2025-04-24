@@ -180,6 +180,7 @@
                             <th>Tipe Transaksi</th>
                             <th>Metode Pembayaran</th>
                             <th>Status</th>
+                            <th>Biaya Admin</th>
                             <th>Tanggal Transaksi</th>
                             <th class="min-w-100px text-end">Actions</th>
                         </tr>

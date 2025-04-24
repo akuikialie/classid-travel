@@ -158,6 +158,7 @@
               <th>app_domain</th>
               <th>BCN</th>
               <th>status</th>
+              <th>Fee Admin</th>
               <th>Created Date</th>
               <th class="text-end min-w-100px">Actions</th>
             </tr>

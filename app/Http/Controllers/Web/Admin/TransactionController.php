@@ -52,7 +52,8 @@ class TransactionController extends Controller
                     request()->mergeIfMissing($custom_filter);
                 }
 
-                $transactions = TransactionQuery::byTenant(activeTenant()->id)
+                $transactions = TransactionQuery::withSum('mutations', 'fee_admin')
+                    ->byTenant(activeTenant()->id)
                     ->filterColumn()
                     ->orderColumn()
                     ->build();
@@ -82,6 +83,9 @@ class TransactionController extends Controller
                         return $row->trx_method;
                     })->addColumn('status', function ($row) {
                         return $row->invocation->status;
+                    })
+                    ->addColumn('fee_admin', function ($row) {
+                        return $row->mutations_sum_fee_admin;
                     })
                     ->addColumn('created_date', function ($row) {
                         return carbon($row->trx_date)->format('d M, Y');

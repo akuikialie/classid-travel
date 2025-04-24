@@ -13,7 +13,7 @@
 
 @section('page-scripts')
     <script src="{{ asset('web/plugins/custom/datatables/datatables.bundle.js') }}"></script>
-    <script src="{{ asset('web/js/based/datatables/transaction-datatable.js') }}"></script>
+    <script src="{{ asset('web/js/based/datatables/mutation-datatable.js') }}"></script>
 @endsection
 
 @section('page-content')
@@ -187,15 +187,14 @@
                                            value="1"/>
                                 </div>
                             </th>
-                            <th>Jamaah</th>
-                            <th>Virtual Account</th>
-                            <th>Invoice Number</th>
+                            <th>Nomor Invoice</th>
+                            <th>Mutasi</th>
+                            <th>Tipe</th>
+                            <th>Informasi</th>
+                            <th>Nominal Sebelum</th>
                             <th>Nominal</th>
-                            <th>Tipe Transaksi</th>
-                            <th>Metode Pembayaran</th>
-                            <th>Status</th>
-                            <th>Biaya Admin</th>
-                            <th>Tanggal Transaksi</th>
+                            <th>Nominal Sesudah</th>
+                            <th>Tanggal</th>
                             <th class="min-w-100px text-end">Actions</th>
                         </tr>
                         </thead>

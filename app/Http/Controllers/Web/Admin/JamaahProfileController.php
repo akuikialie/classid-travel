@@ -112,4 +112,20 @@ class JamaahProfileController extends Controller
         return $this->view('pages.web.jamaah-profile.fragment.transactions');
     }
 
+    /**
+     * @param User $user
+     * @return View
+     * @throws Exception
+     */
+    #[Get('{user}/mutations', name: 'mutations')]
+    public function mutations(User $user): View
+    {
+        $this->setPageTitle('Transaksi & Mutasi');
+        $this->setBreadCrumb('Transaksi & Mutasi');
+
+        $this->default($user);
+
+        return $this->view('pages.web.jamaah-profile.fragment.mutations');
+    }
+
 }

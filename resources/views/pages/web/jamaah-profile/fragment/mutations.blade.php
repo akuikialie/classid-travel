@@ -1,4 +1,4 @@
-@extends('layouts.web.app')
+@extends('pages.web.jamaah-profile.show')
 
 @section('page-styles')
     <link href="{{ asset('web/plugins/custom/datatables/datatables.bundle.css') }}" rel="stylesheet" type="text/css"/>
@@ -7,23 +7,23 @@
 @section('page-custom-scripts')
     <script>
         let csrf_token = "{{ csrf_token() }}";
-        let urlTable = "{{ route('admin.transaction.datatable') }}";
+        let urlTable = "{{ route('admin.mutation.datatable', ['user' => $user->hash]) }}";
     </script>
 @endsection
 
 @section('page-scripts')
     <script src="{{ asset('web/plugins/custom/datatables/datatables.bundle.js') }}"></script>
-    <script src="{{ asset('web/js/based/datatables/transaction-datatable.js') }}"></script>
+    <script src="{{ asset('web/js/based/datatables/mutation-datatable.js') }}"></script>
 @endsection
 
-@section('page-content')
+@section('fragment-content')
     <div id="dynamic_modal"></div>
 
     <div class="card card-docs flex-row-fluid mb-2">
         <div class="card-body fs-6 py-15 py-lg-15 px-lg-15 px-10 text-gray-700">
             <div class="p-0">
                 <!--begin::Heading-->
-                <h3 class="card-title">List Transaksi</h3>
+                <h3 class="card-title">List Mutasi</h3>
                 <!--end::Heading-->
                 <!--begin::CRUD-->
                 <div class="py-5">
@@ -38,12 +38,21 @@
                             <!--end::Svg Icon-->
                             <input type="text" data-kt-docs-table-filter="search"
                                    class="form-control form-control-solid w-250px ps-15"
-                                   placeholder="Search Transaksi"/>
+                                   placeholder="Cari"/>
                         </div>
                         <!--end::Search-->
                         <!--begin::Toolbar-->
                         <form id="form-filter" action="{{ routed('admin.transaction.download') }}" method="post">
                             @csrf
+                            @if(!empty(request()->input('transaction_id')))
+                                <input name="transaction_id" value="{{ request()->input('transaction_id') }}"
+                                       hidden="hidden" readonly>
+                            @endif
+
+                            @if(!empty(request()->input('virtual_account')))
+                                <input name="mutable_id" value="{{ request()->input('virtual_account') }}"
+                                       hidden="hidden" readonly>
+                            @endif
                             <div class="d-flex justify-content-end" data-kt-docs-table-toolbar="base">
                                 <!--begin::Filter-->
                                 <button type="button" class="btn btn-light-primary me-3" data-kt-menu-trigger="click"
@@ -84,41 +93,41 @@
                                         </div>
                                         <!--end::Input group-->
 
-                                        <div class="fv-row mb-8">
-                                            <!--begin::Email-->
-                                            <label class="required" for="date_to">Metode Pembayaran</label>
-                                            <select class="form-select" data-control="select2" name="trx_method"
-                                                    data-placeholder="Select an option" data-allow-clear="true">
-                                                <option></option>
-                                                @foreach($transactionMethods as $transactionMethod)
-                                                    <option
-                                                        value="{{ $transactionMethod->value }}" @selected(request()->input('trx_method') == $transactionMethod->value)>{{ $transactionMethod->name }}</option>
-                                                @endforeach
-                                            </select>
-                                            @error('trx_method')
-                                            <div
-                                                class="fv-plugins-message-container fv-plugins-message-container--enabled invalid-feedback">{{ $message }}</div>
-                                            @enderror
+                                        {{--                                        <div class="fv-row mb-8">--}}
+                                        {{--                                            <!--begin::Email-->--}}
+                                        {{--                                            <label class="required" for="date_to">Metode Pembayaran</label>--}}
+                                        {{--                                            <select class="form-select" data-control="select2" name="trx_method"--}}
+                                        {{--                                                    data-placeholder="Select an option" data-allow-clear="true">--}}
+                                        {{--                                                <option></option>--}}
+                                        {{--                                                @foreach($transactionMethods as $transactionMethod)--}}
+                                        {{--                                                    <option--}}
+                                        {{--                                                        value="{{ $transactionMethod->value }}" @selected(request()->input('trx_method') == $transactionMethod->value)>{{ $transactionMethod->name }}</option>--}}
+                                        {{--                                                @endforeach--}}
+                                        {{--                                            </select>--}}
+                                        {{--                                            @error('trx_method')--}}
+                                        {{--                                            <div--}}
+                                        {{--                                                class="fv-plugins-message-container fv-plugins-message-container--enabled invalid-feedback">{{ $message }}</div>--}}
+                                        {{--                                            @enderror--}}
 
-                                        </div>
+                                        {{--                                        </div>--}}
 
-                                        <div class="fv-row mb-8">
-                                            <!--begin::Email-->
-                                            <label class="required" for="date_to">Tipe Transaksi</label>
-                                            <select class="form-select" data-control="select2" name="trx_type"
-                                                    data-placeholder="Select an option">
-                                                <option></option>
-                                                @foreach($transactionTypes as $transactionType)
-                                                    <option
-                                                        value="{{ $transactionType->value }}" @selected(old('trx_type') == $transactionType->value)>{{ $transactionType->name }}</option>
-                                                @endforeach
-                                            </select>
-                                            @error('trx_type')
-                                            <div
-                                                class="fv-plugins-message-container fv-plugins-message-container--enabled invalid-feedback">{{ $message }}</div>
-                                            @enderror
+                                        {{--                                        <div class="fv-row mb-8">--}}
+                                        {{--                                            <!--begin::Email-->--}}
+                                        {{--                                            <label class="required" for="date_to">Tipe Transaksi</label>--}}
+                                        {{--                                            <select class="form-select" data-control="select2" name="trx_type"--}}
+                                        {{--                                                    data-placeholder="Select an option">--}}
+                                        {{--                                                <option></option>--}}
+                                        {{--                                                @foreach($transactionTypes as $transactionType)--}}
+                                        {{--                                                    <option--}}
+                                        {{--                                                        value="{{ $transactionType->value }}" @selected(old('trx_type') == $transactionType->value)>{{ $transactionType->name }}</option>--}}
+                                        {{--                                                @endforeach--}}
+                                        {{--                                            </select>--}}
+                                        {{--                                            @error('trx_type')--}}
+                                        {{--                                            <div--}}
+                                        {{--                                                class="fv-plugins-message-container fv-plugins-message-container--enabled invalid-feedback">{{ $message }}</div>--}}
+                                        {{--                                            @enderror--}}
 
-                                        </div>
+                                        {{--                                        </div>--}}
 
                                         <!--begin::Actions-->
                                         <div class="d-flex justify-content-end">
@@ -187,16 +196,15 @@
                                            value="1"/>
                                 </div>
                             </th>
-                            <th>Jamaah</th>
-                            <th>Virtual Account</th>
-                            <th>Invoice Number</th>
+                            <th>Nomor Invoice</th>
+                            <th>Mutasi</th>
+                            <th>Tipe</th>
+                            <th>Informasi</th>
+                            <th>Nominal Sebelum</th>
                             <th>Nominal</th>
-                            <th>Tipe Transaksi</th>
-                            <th>Metode Pembayaran</th>
-                            <th>Status</th>
+                            <th>Nominal Sesudah</th>
                             <th>Biaya Admin</th>
-                            <th>Tanggal Transaksi</th>
-                            <th class="min-w-100px text-end">Actions</th>
+                            <th>Tanggal</th>
                         </tr>
                         </thead>
                         <tbody class="fw-semibold text-gray-600">

@@ -42,13 +42,13 @@
                                                     </span>
                                                     <!--end::Svg Icon-->
                                                     <div class="fs-2 fw-bold" data-kt-countup="true">
-                                                        {{ moneyFormat($saving->balance) }}
+                                                        Rp. {{ moneyFormat($saving->balance) }}
                                                     </div>
                                                 </div>
                                                 <!--end::Number-->
 
                                                 <!--begin::Label-->
-                                                <div class="fw-semibold fs-6 text-gray-400">Total Saldo (Rp)</div>
+                                                <div class="fw-semibold fs-6 text-gray-400">Saldo Tabungan (Rp)</div>
                                                 <!--end::Label-->
                                             </div>
                                             <!--end::Stat-->
@@ -63,13 +63,13 @@
                                                     </span>
                                                     <!--end::Svg Icon-->
                                                     <div class="fs-2 fw-bold" data-kt-countup="true">
-                                                        {{ moneyFormat($saving->usd_balance) }}
+                                                        $ {{ moneyFormat($saving->usd_balance) }}
                                                     </div>
                                                 </div>
                                                 <!--end::Number-->
 
                                                 <!--begin::Label-->
-                                                <div class="fw-semibold fs-6 text-gray-400">Total Saldo (Rp)</div>
+                                                <div class="fw-semibold fs-6 text-gray-400">Saldo Tabungan (USD)</div>
                                                 <!--end::Label-->
                                             </div>
                                             <!--end::Stat-->

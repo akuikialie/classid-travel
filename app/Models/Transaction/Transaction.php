@@ -4,10 +4,13 @@ namespace App\Models\Transaction;
 
 use App\Concerns\HasTenant;
 use App\Models\Invoication\Invocation;
+use App\Models\Mutation\Mutation;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Collection;
 
 /**
  * @property string $id
@@ -19,6 +22,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property string $trx_date
  * @property User $user
  * @property Transaction $transaction
+ * @property Collection<Mutation> $mutations
  * */
 class Transaction extends Model
 {
@@ -51,5 +55,10 @@ class Transaction extends Model
     public function invocation(): BelongsTo
     {
         return $this->belongsTo(Invocation::class, 'invocation_id');
+    }
+
+    public function mutations(): HasMany
+    {
+        return $this->hasMany(Mutation::class, 'transaction_id');
     }
 }

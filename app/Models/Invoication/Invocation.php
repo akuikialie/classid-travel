@@ -4,6 +4,7 @@ namespace App\Models\Invoication;
 
 use App\Models\Transaction\Transaction;
 use App\Models\User;
+use App\Models\VA\VirtualAccount;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Model;
@@ -56,5 +57,10 @@ class Invocation extends Model
     public function transaction(): HasOne
     {
         return $this->hasOne(Transaction::class, 'invocation_id');
+    }
+
+    public function virtualAccount(): BelongsTo
+    {
+        return $this->belongsTo(VirtualAccount::class, 'virtual_account', 'va_number');
     }
 }
