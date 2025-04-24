@@ -12,6 +12,7 @@ use Carbon\Carbon;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
@@ -126,8 +127,17 @@ class ProfileController extends Controller
         ]);
 
         try {
-            User::query()->where('id', $id)
-                ->update($validator);
+            $user = User::query()
+                ->with(['tabungan'])
+                ->find($id);
+
+            if (!$user instanceof User) {
+                throw new ModelNotFoundException();
+            }
+
+            $user->fill($validator);
+            $user->tabungan->name = $validator['name'] . ' - '. \Illuminate\Support\Str::after($user->tabungan->name, ' - ');
+            $user->push();
 
             notify('Berhasil', 'Data berhasil diperbarui!.', 'success');
             return redirect()->back();
