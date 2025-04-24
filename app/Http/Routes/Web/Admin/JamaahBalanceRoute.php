@@ -3,7 +3,7 @@
 namespace App\Http\Routes\Web\Admin;
 
 use App\Enums\Permissions\JamaahBalancePermission;
-use App\Http\Controllers\Web\Admin\JamaahBalanceController;
+use App\Http\Controllers\Web\Admin\Jamaah\JamaahBalanceController;
 use Dentro\Yalr\BaseRoute;
 
 class JamaahBalanceRoute extends BaseRoute

@@ -93,7 +93,8 @@ return [
         \App\Http\Routes\Web\Admin\UserRoute::class,
         \App\Http\Routes\Web\Admin\RoleRoute::class,
         \App\Http\Routes\Web\Admin\JamaahBalanceRoute::class,
-        \App\Http\Controllers\Web\Admin\JamaahProfileController::class,
+        \App\Http\Controllers\Web\Admin\Jamaah\JamaahController::class,
+        \App\Http\Controllers\Web\Admin\Jamaah\JamaahProfileController::class,
         \App\Http\Controllers\Web\Admin\MutationController::class,
     ],
     'api' => [

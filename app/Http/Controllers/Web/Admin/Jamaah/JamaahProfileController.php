@@ -1,11 +1,10 @@
 <?php
 
-namespace App\Http\Controllers\Web\Admin;
+namespace App\Http\Controllers\Web\Admin\Jamaah;
 
 use App\Enums\TransactionMethod;
 use App\Enums\TransactionType;
-use App\Http\Controllers\Web\Admin\Fragment\TenantFragmentController;
-use App\Models\Tenant\Tenant;
+use App\Http\Controllers\Web\Admin\Controller;
 use App\Models\User;
 use Dentro\Yalr\Attributes\Get;
 use Dentro\Yalr\Attributes\Middleware;
