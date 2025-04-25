@@ -18,6 +18,7 @@ enum GenerateNumberType: string
 
     case INVOICE_NUMBER = 'invoice_number';
     case VIRTUAL_NUMBER = 'virtual_number';
+
     public function label(): string
     {
         return ucwords(strtolower(str_replace(['_'], [' '], $this->name)));

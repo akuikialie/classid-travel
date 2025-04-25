@@ -21,7 +21,7 @@
                                 class="fa fa-arrow-down"></i></a>
                     </div>
                     <div class="align-self-center ps-3">
-                        <h5 class="font-600 font-14 mb-n2">{{ $invocation->invoice_number }}</h5>
+                        <h5 class="font-600 font-14 mb-n2">{{ $invocation->transaction->trx_number }}</h5>
                         <span class="color-theme font-11">Recieved via Bank Transfer</span>
                     </div>
                     <div class="align-self-center ms-auto">

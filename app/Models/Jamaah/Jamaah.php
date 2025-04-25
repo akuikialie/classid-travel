@@ -9,6 +9,7 @@ use App\Models\User;
 use App\Models\VA\VirtualAccount;
 use App\Traits\HasTenant;
 use App\Models\Tenant\Tenant;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -19,11 +20,20 @@ use Illuminate\Database\Eloquent\Relations\MorphOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Veelasky\LaravelHashId\Eloquent\HashableId;
 
+
+/**
+ * @property string $id
+ * @property string $user_id
+ * @property string $tenant_id
+ * @property Collection<PlanPackage> $planPackages
+ * @property Collection<VirtualAccount> $tabunganPackages
+ * @property User $user
+ * */
 class Jamaah extends Model
 {
     use HasFactory, HasTenant, SoftDeletes, HashableId;
 
-    protected bool $shouldHashPersist = true;
+    protected bool $shouldHashPersist = false;
 
     protected $table = 'jamaah';
 
