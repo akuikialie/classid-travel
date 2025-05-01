@@ -196,7 +196,7 @@
                                            value="1"/>
                                 </div>
                             </th>
-                            <th>Nomor Invoice</th>
+                            <th>Nomor Transaksi</th>
                             <th>Mutasi</th>
                             <th>Tipe</th>
                             <th>Informasi</th>

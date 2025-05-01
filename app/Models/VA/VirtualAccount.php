@@ -2,11 +2,11 @@
 
 namespace App\Models\VA;
 
-use App\Concerns\HasTenant;
 use App\Concerns\Mutable;
 use App\Contracts\MutableInterface;
 use App\Models\Plan\PlanPackage;
 use App\Models\Tenant\Tenant;
+use App\Traits\HasTenant;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
