@@ -19,12 +19,22 @@ class UserQuery extends BaseQueryBuilder
     public function applyFilterParams(): void
     {
         // search
-        $this->builder->when(!empty(request()->input('search.value')), function (Builder $builder) {
-            $builder->where('name', '=', request()->input('search.value'));
-        });
-        $this->builder->when(!empty(request()->input('q')), function (Builder $builder) {
-            $builder->where('name', 'ilike', '%' .request()->input('q') . '%');
-        });
+        if (!empty(request()->input('search.value'))){
+            $this->search(request()->input('search.value'));
+        }
 
+        if (!empty(request()->input('q'))){
+            $this->search(request()->input('q'));
+        }
+    }
+
+    private function search(string $search)
+    {
+        $this->builder->when(!empty($search), function (Builder $builder) use ($search) {
+            $builder
+                ->where('name', 'ilike', '%' . $search . '%')
+                ->orWhere('phone', 'ilike', '%' . $search . '%')
+                ->orWhere('username', 'ilike', '%' . $search . '%');
+        });
     }
 }

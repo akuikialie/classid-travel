@@ -46,5 +46,15 @@ class TransactionQuery extends BaseQueryBuilder
         $this->builder->when(!empty(request()->input('user_id')), function (Builder $query) {
             $query->where('user_id', '=', User::hashToId(request()->input('user_id')));
         });
+
+        $this->builder->when(!empty(request()->input('virtual_account')), function (Builder $query) {
+            $query->whereHas('invocation', function (Builder $query) {
+                $query ->where('virtual_account', '=', request()->input('virtual_account'));
+            });
+        });
+
+        $this->builder->when(!empty(request()->input('latest')), function (Builder $query) {
+            $query->orderBy('created_at', 'desc');
+        });
     }
 }

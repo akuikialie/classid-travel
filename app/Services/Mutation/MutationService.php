@@ -6,6 +6,7 @@ use App\Contracts\MutableInterface;
 use App\Enums\MutationInfo;
 use App\Enums\MutationType;
 use App\Enums\ResponseCode;
+use App\Enums\TransactionType;
 use App\Exceptions\CidException;
 use App\Models\Mutation\Mutation;
 use App\Models\Tenant\Tenant;
@@ -50,7 +51,11 @@ class MutationService
         $mutation->amount = $amount;
         $mutation->amount_before = $balance;
         $mutation->tenant_id = $tenant->id;
-        $mutation->fee_admin = $tenant->fee_admin;
+        $feeAdmin = $tenant->fee_admin;
+        if (!TransactionType::tryFrom($transaction->trx_type)->haveAdminFee()){
+            $feeAdmin = 0;
+        }
+        $mutation->fee_admin = $feeAdmin;
 
         // update balance
         $mutation->amount_after = $balance + $amount;

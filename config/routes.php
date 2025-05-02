@@ -78,6 +78,7 @@ return [
         \App\Http\Routes\Mobile\ProfileRoute::class,
         \App\Http\Routes\Mobile\ReferralRoute::class,
         \App\Http\Routes\Mobile\PerencanaanRoute::class,
+        \App\Http\Controllers\Mobile\MutationsController::class,
 
     ],
     'web' => [
@@ -113,6 +114,6 @@ return [
     ],
     'api-option' => [
         /** @inject option **/
-        \App\Http\Controllers\Api\Options\MoveBalanceOption::class
+        \App\Http\Controllers\Api\Options\OptionSelectController::class
     ],
 ];

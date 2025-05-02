@@ -11,4 +11,12 @@ enum TransactionMethod: string
 
     case BANK = "bank";
     case SYSTEM = "system";
+
+    public function name(): string {
+        return match ($this) {
+            self::BANK => 'Transfer Bank',
+            self::SYSTEM => 'Sistem Admin',
+
+        };
+    }
 }
