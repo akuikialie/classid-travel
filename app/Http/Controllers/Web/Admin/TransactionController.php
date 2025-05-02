@@ -52,11 +52,11 @@ class TransactionController extends Controller
                     request()->mergeIfMissing($custom_filter);
                 }
 
-                $transactions = TransactionQuery::withSum('mutations', 'fee_admin')
-                    ->byTenant(activeTenant()->id)
+                $transactions = TransactionQuery::byTenant(activeTenant()->id)
                     ->filterColumn()
                     ->orderColumn()
-                    ->build();
+                    ->build()
+                    ->withSum('mutations', 'fee_admin');
                 return datatables()->eloquent($transactions)
                     ->filter(function (Builder $query) use ($request) {
 

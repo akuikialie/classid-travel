@@ -10,6 +10,7 @@ enum TransactionType: string
 {
     use InvokableCases, Values, Options;
 
+    case MOVE = "move"; // pindah saldo
     case PAYMENT = "payment"; // pembayaran dengan fix amount
     case DEPOSIT = "deposit"; // deposit
 
@@ -18,6 +19,7 @@ enum TransactionType: string
         return match ($this) {
             self::PAYMENT => 'PAY',
             self::DEPOSIT => 'DP',
+            self::MOVE => 'MV',
         };
     }
 

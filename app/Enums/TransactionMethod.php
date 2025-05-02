@@ -10,4 +10,5 @@ enum TransactionMethod: string
     use InvokableCases, Values;
 
     case BANK = "bank";
+    case SYSTEM = "system";
 }

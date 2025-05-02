@@ -8,6 +8,9 @@ use App\Models\Tenant\Tenant;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
+/**
+ * @property Tenant $tenant
+ * */
 trait HasTenant
 {
     /**
@@ -22,15 +25,6 @@ trait HasTenant
         return $query->where("{$this->table}.tenant_id", $tenantId);
     }
 
-
-    /**
-     * @return BelongsTo
-     */
-    public function tenant(): BelongsTo
-    {
-        return $this->belongsTo(Tenant::class, 'tenant_id');
-    }
-
     public function getTenantColumnName()
     {
         $tenantColumn = 'tenant_id';
@@ -38,6 +32,14 @@ trait HasTenant
             $tenantColumn = $this->tenantColumn;
         }
         return $tenantColumn;
+    }
+
+    /**
+     * @return BelongsTo
+     */
+    public function tenant(): BelongsTo
+    {
+        return $this->belongsTo(Tenant::class, $this->getTenantColumnName());
     }
 
     public function scopeByTenant($query, $tenantId)

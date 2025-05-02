@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Concerns\InteractsWithMutation;
 use App\Concerns\ValidationInput;
 use App\Enums\InvocationStatus;
+use App\Enums\InvocationType;
 use App\Enums\MutationInfo;
 use App\Enums\TransactionMethod;
 use App\Enums\TransactionType;
@@ -12,7 +13,6 @@ use App\Enums\ResponseCode;
 use App\Exceptions\CidException;
 use App\Models\Invoication\Invocation;
 use App\Models\Transaction\Transaction;
-use App\Models\User;
 use App\Models\VA\VirtualAccount;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
@@ -52,7 +52,7 @@ class PaymentService
         DB::beginTransaction();
         $user = $account->vaable;
         $invoiceNumber = generateInvoiceNumber($account->tenant, true)[0];
-        $type = 'open';
+        $type = InvocationType::PAYMENT_TYPE_OPEN->value;
 
         // check reference id and valid until on invoice
         $invocation = Invocation::query()

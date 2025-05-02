@@ -1,20 +1,18 @@
 <?php
 
-namespace App\Http\Controllers\Web\Admin;
+namespace App\Http\Controllers\Web\Admin\Jamaah;
 
 use App\Enums\VirtualAccount;
-use App\Models\Tenant\Tenant;
+use App\Http\Controllers\Web\Admin\Controller;
 use App\Models\User;
 use App\Queries\JamaahBalanceQuery;
 use App\Services\VirtualAccountService;
-use Carbon\Carbon;
 use Exception;
 use Illuminate\Contracts\Database\Eloquent\Builder;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Routing\Redirector;
 use function response;
 
 class JamaahBalanceController extends Controller

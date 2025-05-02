@@ -3,7 +3,7 @@
 namespace App\Http\Routes\Web\Admin;
 
 use App\Enums\Permissions\JamaahBalancePermission;
-use App\Http\Controllers\Web\Admin\JamaahBalanceController;
+use App\Http\Controllers\Web\Admin\Jamaah\JamaahBalanceController;
 use Dentro\Yalr\BaseRoute;
 
 class JamaahBalanceRoute extends BaseRoute
@@ -52,6 +52,16 @@ class JamaahBalanceRoute extends BaseRoute
                 resolver: function () {
                     $user = \auth()->user();
                     return $user->can(JamaahBalancePermission::JAMAAH_BALANCE_VIEW->value)&& $user->tenant_id != null;
+                },
+            )->route(
+                name: 'admin.move-balance.index',
+                title: 'Pindah Saldo',
+                attribute: [
+                    'icon' => 'fa-solid fa-money',
+                ],
+                resolver: function () {
+                    $user = \auth()->user();
+                    return $user->can(JamaahBalancePermission::JAMAAH_BALANCE_UPDATE->value)&& $user->tenant_id != null;
                 },
             );
     }
