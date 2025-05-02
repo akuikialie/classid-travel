@@ -53,6 +53,16 @@ class JamaahBalanceRoute extends BaseRoute
                     $user = \auth()->user();
                     return $user->can(JamaahBalancePermission::JAMAAH_BALANCE_VIEW->value)&& $user->tenant_id != null;
                 },
+            )->route(
+                name: 'admin.move-balance.index',
+                title: 'Pindah Saldo',
+                attribute: [
+                    'icon' => 'fa-solid fa-money',
+                ],
+                resolver: function () {
+                    $user = \auth()->user();
+                    return $user->can(JamaahBalancePermission::JAMAAH_BALANCE_UPDATE->value)&& $user->tenant_id != null;
+                },
             );
     }
 }

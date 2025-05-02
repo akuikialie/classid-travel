@@ -10,4 +10,5 @@ enum MutationInfo: string
     use InvokableCases, Values;
 
     case DEPOSIT = "deposit";
+    case MOVE = "move";
 }

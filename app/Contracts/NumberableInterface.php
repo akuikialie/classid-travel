@@ -2,7 +2,7 @@
 
 namespace App\Contracts;
 
-use App\Models\GenerateNumber;
+use App\Models\GenerateNumber\GenerateNumber;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 

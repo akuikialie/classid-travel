@@ -50,6 +50,12 @@ return [
             'middleware' => 'api',
             'prefix' => 'api-ipg',
         ],
+
+        'api-option' => [
+            'middleware' => 'api',
+            'prefix' => 'api-option',
+            'as' => 'api-option',
+        ],
     ],
 
     /*
@@ -96,6 +102,7 @@ return [
         \App\Http\Controllers\Web\Admin\Jamaah\JamaahController::class,
         \App\Http\Controllers\Web\Admin\Jamaah\JamaahProfileController::class,
         \App\Http\Controllers\Web\Admin\MutationController::class,
+        \App\Http\Controllers\Web\Admin\MoveBalanceController::class
     ],
     'api' => [
         /** @inject api **/
@@ -103,5 +110,9 @@ return [
     'api-ipg' => [
         \App\Http\Controllers\Api\IPGPaymentController::class
         /** @inject api **/
+    ],
+    'api-option' => [
+        /** @inject option **/
+        \App\Http\Controllers\Api\Options\MoveBalanceOption::class
     ],
 ];
