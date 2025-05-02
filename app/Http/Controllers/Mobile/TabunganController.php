@@ -5,9 +5,12 @@ namespace App\Http\Controllers\Mobile;
 use App\Models\Invoication\Invocation;
 use App\Models\User;
 use App\Models\VA\VirtualAccount;
+use App\Queries\MutationQuery;
+use App\Queries\TransactionQuery;
 use App\Services\EWallet\WalletService;
 use App\Services\Saving\SavingService;
 use Exception;
+use Illuminate\Contracts\Database\Eloquent\Builder;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Throwable;
@@ -47,12 +50,12 @@ class TabunganController extends Controller
     {
         try {
             $wallet = new WalletService();
-            if ($wallet->login($virtualAccount->va_number, $virtualAccount->password)){
+            if ($wallet->login($virtualAccount->va_number, $virtualAccount->password)) {
                 $invoice = $wallet->createInvoice($request->get('amount'));
 
                 return redirect()->back()->with(['invoice' => $invoice]);
             }
-        }catch (Throwable $e){
+        } catch (Throwable $e) {
             logError($e, title: 'Mobile tabungan');
             if (isDevelopmentMode()) {
                 throw $e;
@@ -81,8 +84,8 @@ class TabunganController extends Controller
                 $userSaving = [
                     'id' => $saving->id,
                     'va' => $saving->va_number,
-                    'savings' => 'Rp '. number_format($saving->balance ?? 0),
-                    'usd_savings' => '$ '. number_format($saving->usd_balance ?? 0),
+                    'savings' => 'Rp ' . number_format($saving->balance ?? 0),
+                    'usd_savings' => '$ ' . number_format($saving->usd_balance ?? 0),
                 ];
                 break;
 
@@ -92,8 +95,8 @@ class TabunganController extends Controller
                     'namaTabungan' => ucwords($name ?? 'NN'),
                     'id' => $saving->id,
                     'va' => $saving->va_number,
-                    'savings' => 'Rp '. number_format($saving->balance ?? 0),
-                    'usd_savings' => '$ '. number_format($saving->usd_balance ?? 0),
+                    'savings' => 'Rp ' . number_format($saving->balance ?? 0),
+                    'usd_savings' => '$ ' . number_format($saving->usd_balance ?? 0),
                     'targetSavings' => 'Rp ' . number_format($saving->myPackage?->amount ?? 0),
                 ];
                 break;
@@ -103,17 +106,25 @@ class TabunganController extends Controller
                 break;
         }
 
-        $invocations = Invocation::query()
-            ->has('transaction')
-            ->where('virtual_account', '=', $saving->va_number)
+        \request()->mergeIfMissing([
+            'mutable_id' => $saving->hash,
+            'mutable_type' => VirtualAccount::class,
+            'latest' => true,
+        ]);
+
+        $mutations = MutationQuery::filterColumn()
+            ->orderColumn()
+            ->build()
+            ->limit(5)
             ->get();
 
         $saving->loadMissing('virtualAccountMutations');
 
         return view('pages.mobile.tabungan.tabungan-show', [
+            'saving' => $saving,
             'moneybox' => collect($userSaving),
-            'invocations' => $invocations,
-            'mutations' => $saving->virtualAccountMutations,
+            'mutations' => $mutations,
+            'convertBalanceMutations' => $saving->virtualAccountMutations,
         ]);
     }
 }

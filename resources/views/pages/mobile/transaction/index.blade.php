@@ -2,17 +2,16 @@
 
 @section('mobile-content')
     @include('components.mobile.toolbar', [
-        'title' => 'Rincian Tabungan',
-        'backDestination' => url()->previous(),
-    ])
+       'title' => 'Transaksi',
+       'backDestination' => route('tabungan.index'),
+   ])
 
-    @include('pages.mobile.tabungan.menu.menu-tabungan', $moneybox)
 
     <div class="card card-style">
         <div class="content">
-            <h3 class="float-start font-16">Riwayat Tabungan</h3>
-            <a class="float-end font-12 color-highlight mt-n1" href="{{ route('mutations.index', ['virtualAccount' => $saving->hash]) }}">View All</a>
-            <div class="clearfix mb-1"></div>
+            <h3 class="font-16">Transaksi Terbaru</h3>
+
+            <div class="divider mt-4"></div>
 
             @foreach($mutations as $mutation)
                 @switch($mutation->transaction->trx_type)
@@ -52,30 +51,8 @@
 
                 <div class="divider mt-3 mb-3"></div>
             @endforeach
-        </div>
 
-        <div class="content">
-            <h3 class="float-start font-16">Riwayat Mutasi Tabungan</h3>
-            <a class="float-end font-12 color-highlight mt-n1" href="#">View All</a>
-            <div class="clearfix mb-1"></div>
-
-            @foreach($convertBalanceMutations as $convertBalanceMutation)
-                <div class="d-flex">
-                    <div>
-                        <a href="#" class="icon icon-m bg-danger rounded-m shadow-xl"><i
-                                class="fa fa-arrow-right text-white"></i></a>
-                    </div>
-                    <div class="align-self-center ps-3">
-                        <h5 class="font-600 font-14 mb-n2 text-danger">{{ 'Rp ' . moneyFormat($convertBalanceMutation->amount) }} <> {{ "Rp " . moneyFormat($convertBalanceMutation->currency_exchange_rate) }}</h5>
-                        <span class="color-theme font-12">Di konversi oleh {{ $convertBalanceMutation->performer->name }} dengan nilai konversi {{ "Rp " . moneyFormat($convertBalanceMutation->currency_exchange_rate) }}</span>
-                    </div>
-                    <div class="align-self-center ms-auto">
-                        <h5 class="color-green-dark mb-n1 text-end">$ {{ $convertBalanceMutation->usd_amount_after }}</h5>
-                        <span class="color-theme d-block font-11 text-end">{{ \Carbon\Carbon::parse($convertBalanceMutation->created_at)->format('M d, Y H:i') }}</span>
-                    </div>
-                </div>
-                <div class="divider mt-3 mb-3"></div>
-            @endforeach
+            {{ $mutations->links('vendor.pagination.azures-pagination') }}
         </div>
     </div>
 @endsection

@@ -23,4 +23,12 @@ enum TransactionType: string
         };
     }
 
+    public function haveAdminFee(): bool
+    {
+        return match ($this) {
+            self::MOVE, self::PAYMENT => false,
+            self::DEPOSIT => true,
+        };
+    }
+
 }

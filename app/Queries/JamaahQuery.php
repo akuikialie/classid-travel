@@ -19,9 +19,13 @@ class JamaahQuery extends BaseQueryBuilder
     public function applyFilterParams(): void
     {
         // search
-        $this->builder->when(!empty(request()->input('search.value')), function (Builder $builder) {
-            $builder->where('va_number', '=', request()->input('search.value'));
-        });
+        if (!empty(request()->input('search.value'))) {
+            $this->search(request()->input('search.value'));
+        }
+
+        if (!empty(request()->input('q'))) {
+            $this->search(request()->input('q'));
+        }
 
         $this->builder->when(!empty(request()->input('package_id')), function (Builder $builder) {
             $builder->whereHas('planPackages', function (Builder $builder) {
@@ -29,5 +33,22 @@ class JamaahQuery extends BaseQueryBuilder
             });
         });
 
+    }
+
+    /**
+     * @param string $search
+     * @return void
+     */
+    private function search(string $search): void
+    {
+        $this->builder->when(!empty($search), function (Builder $builder) use ($search) {
+            $builder
+                ->whereHas('user', function (Builder $builder) use ($search) {
+                    $builder
+                        ->where('name', 'ilike', '%' . $search . '%')
+                        ->orWhere('phone', 'ilike', '%' . $search . '%')
+                        ->orWhere('username', 'ilike', '%' . $search . '%');
+                });
+        });
     }
 }

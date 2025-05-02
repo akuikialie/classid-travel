@@ -5,8 +5,10 @@ namespace App\Http\Controllers\Api\Options;
 use App\Exceptions\CidException;
 use App\Http\Controllers\Api\Controller as BaseController;
 use App\Http\Response;
+use App\Models\Jamaah\Jamaah;
 use App\Models\Tenant\Tenant;
 use App\Models\User;
+use App\Queries\JamaahQuery;
 use App\Queries\UserQuery;
 use App\Services\Inbound\InboundService;
 use App\Services\PaymentService;
@@ -22,7 +24,7 @@ use function Symfony\Component\String\u;
 
 #[Prefix('')]
 #[Name('', true, false)]
-class MoveBalanceOption extends BaseController
+class OptionSelectController extends BaseController
 {
 
     /**
@@ -51,6 +53,32 @@ class MoveBalanceOption extends BaseController
         return $this->response($data);
     }
 
+    /**
+     * @param Request $request
+     * @return Response
+     */
+    #[Get('jamaah', name: 'jamaah')]
+    public function jamaah(Request $request): \App\Http\Response
+    {
+        $validated = $request->validate([
+            'tenant_id' => ['required', 'string']
+        ]);
+        $jamaah = JamaahQuery::byTenant(Tenant::hashToId($validated['tenant_id']))
+            ->filterColumn()
+            ->orderColumn()
+            ->build()
+            ->get();
+
+        $data = $jamaah->map(function ($jamaah) {
+            return [
+                'id' => $jamaah->hash,
+                'name' => $jamaah->user->name,
+            ];
+        });
+
+        return $this->response($data);
+    }
+
 
     /**
      * @param Request $request
@@ -72,7 +100,7 @@ class MoveBalanceOption extends BaseController
             [
                 'id' => $user->tabungan->hash,
                 'name' => $user->tabungan->name,
-                'balance' => $user->tabungan->balance,
+                'balance' => 'Rp. '. moneyFormat($user->tabungan->balance),
             ]
         ];
 
@@ -80,7 +108,7 @@ class MoveBalanceOption extends BaseController
             $userSavings[] = [
                 'id' => $saving->hash,
                 'name' => $saving->name,
-                'balance' => $saving->balance,
+                'balance' => 'Rp. '. moneyFormat($saving->balance),
             ];
         }
 

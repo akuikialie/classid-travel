@@ -47,11 +47,13 @@
                                 @csrf
 
                                 @if(!empty(request()->input('package_id')))
-                                    <input name="package_id" value="{{ request()->input('package_id') }}" hidden="hidden">
+                                    <input name="package_id" value="{{ request()->input('package_id') }}"
+                                           hidden="hidden">
                                 @endif
                                 <div class="d-flex justify-content-end" data-kt-docs-table-toolbar="base">
                                     <!--begin::Filter-->
-                                    <button type="button" class="btn btn-light-primary me-3" data-kt-menu-trigger="click"
+                                    <button type="button" class="btn btn-light-primary me-3"
+                                            data-kt-menu-trigger="click"
                                             data-kt-menu-placement="bottom-end">
                                         <i class="ki-duotone ki-filter fs-2"><span class="path1"></span><span
                                                 class="path2"></span></i>
@@ -60,7 +62,8 @@
                                 </div>
                             </form>
 
-                            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modal_add_jamaah">
+                            <button type="button" class="btn btn-primary" data-bs-toggle="modal"
+                                    data-bs-target="#modal_add_jamaah">
                                 <!--begin::Svg Icon | path: icons/duotune/arrows/arr075.svg-->
                                 <span class="svg-icon svg-icon-2">
                                   <i class="fa-solid fa-plus"></i>
@@ -120,7 +123,8 @@
                     <h3 class="modal-title">Tambahkan Jamaah Kedalam Paket Ini</h3>
 
                     <!--begin::Close-->
-                    <div class="btn btn-icon btn-sm btn-active-light-primary ms-2" data-bs-dismiss="modal" aria-label="Close">
+                    <div class="btn btn-icon btn-sm btn-active-light-primary ms-2" data-bs-dismiss="modal"
+                         aria-label="Close">
                         <i class="ki-duotone ki-cross fs-1"><span class="path1"></span><span class="path2"></span></i>
                     </div>
                     <!--end::Close-->
@@ -136,7 +140,8 @@
                             <div class="modal-body py-1 px-lg-17">
                                 <!--begin::Scroll-->
                                 <div class="scroll-y me-n7 pe-7" id="modal_create_activity" data-kt-scroll="true"
-                                     data-kt-scroll-activate="{default: false, lg: true}" data-kt-scroll-max-height="auto"
+                                     data-kt-scroll-activate="{default: false, lg: true}"
+                                     data-kt-scroll-max-height="auto"
                                      data-kt-scroll-offset="300px">
 
                                     <!--begin::Input group-->
@@ -145,11 +150,10 @@
                                         <label class="required fs-5 fw-semibold mb-2">Jamaah</label>
                                         <!--end::Label-->
                                         <!--begin::Input-->
-                                        <select name="jamaah_id" class="form-select form-select-solid" data-control="select2" data-placeholder="Select an option" data-allow-clear="true" data-allow-search="true" data-dropdown-parent="#modal_add_jamaah">
+                                        <select id="select-user" class="form-select form-select-solid" name="jamaah_id"
+                                                data-dropdown-parent="#modal_add_jamaah"
+                                                data-placeholder="Pilih Jamaah" data-allow-clear="true">
                                             <option></option>
-                                            @foreach($jamaahs as $jamaah)
-                                                <option value="{{ $jamaah->hash }}" @selected(old('user_id') == $jamaah->hash)>{{ $jamaah->user->name }}</option>
-                                            @endforeach
                                         </select>
                                         <!--end::Input-->
                                     </div>
@@ -161,10 +165,12 @@
                                         <label class="required fs-5 fw-semibold mb-2">Paket</label>
                                         <!--end::Label-->
                                         <!--begin::Input-->
-                                        <select name="package_id" class="form-select form-select-solid" data-control="select2" data-placeholder="Pilih Paket">
+                                        <select name="package_id" class="form-select form-select-solid"
+                                                data-control="select2" data-placeholder="Pilih Paket">
                                             <option></option>
                                             @foreach($packages as $package)
-                                                <option value="{{ $package->hash }}" @selected(old('package_id', request()->input('package_id')) == $package->hash)>{{ $package->name }}</option>
+                                                <option
+                                                    value="{{ $package->hash }}" @selected(old('package_id', request()->input('package_id')) == $package->hash)>{{ $package->name }}</option>
                                             @endforeach
                                         </select>
                                         <!--end::Input-->
@@ -196,3 +202,38 @@
         </div>
     </div>
 @endsection
+
+@push('js')
+    <script>
+        $(document).ready(function () {
+            let baseUrl = "{{ env('APP_URL') }}";
+
+            $('#select-user').select2({
+                minimumInputLength: 2,
+                allowClear: true,
+                ajax: {
+                    url: baseUrl + '/api-option/jamaah',
+                    dataType: 'json',
+                    delay: 250,
+                    data: function (params) {
+                        return {
+                            q: params.term,
+                            tenant_id: "{{ activeTenant()->hash }}",
+                        };
+                    },
+                    processResults: function (data) {
+                        return {
+                            results: data.payload.data.map(function (item) {
+                                return {
+                                    id: item.id,
+                                    text: item.name
+                                };
+                            })
+                        };
+                    },
+                    cache: false
+                }
+            });
+        });
+    </script>
+@endpush

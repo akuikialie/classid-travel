@@ -12,7 +12,8 @@ class MutationQuery extends BaseQueryBuilder
 
     public function getBaseQuery(): Builder
     {
-        return Mutation::query();
+        return Mutation::query()
+            ->with(['transaction']);
     }
 
     public function applyFilterParams(): void
@@ -60,6 +61,10 @@ class MutationQuery extends BaseQueryBuilder
 
         $this->builder->when(!empty(request()->input('date_to')), function (Builder $query) {
             $query->where('created_at', '<=', request()->input('date_to'));
+        });
+
+        $this->builder->when(!empty(request()->input('latest')), function (Builder $query) {
+            $query->orderBy('created_at', 'desc');
         });
     }
 }
