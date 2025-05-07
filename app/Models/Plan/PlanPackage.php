@@ -20,7 +20,7 @@ class PlanPackage extends Model implements HasMedia
 {
     use HasFactory, InteractsWithMedia, HashableId, HasTenant, SoftDeletes;
 
-    protected bool $shouldHashPersist = true;
+    protected bool $shouldHashPersist = false;
 
     protected $table = 'plan_packages';
 

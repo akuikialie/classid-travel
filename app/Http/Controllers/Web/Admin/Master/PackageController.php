@@ -375,7 +375,8 @@ class PackageController extends Controller
             $package = PlanPackage::query()
                 ->with(['myItineraries'])
                 ->tenantId($user->tenant_id)
-                ->byHashOrFail($hash);
+                ->where('id', '=', PlanPackage::hashToId($hash))
+                ->firstOrFail();
 
             $myItineraries = $package->myItineraries ?? [];
             $itineraries = ItineraryActivity::query()
@@ -413,7 +414,8 @@ class PackageController extends Controller
             $package = PlanPackage::query()
                 ->with(['myItineraries'])
                 ->tenantId($user->tenant_id)
-                ->byHashOrFail($hash);
+                ->where('id', '=', PlanPackage::hashToId($hash))
+                ->firstOrFail();
 
             if (count($input['time']) !== count($input['itinerary'])) {
                 throw new InvalidArgumentException('Terjadi perbedaan input data!. mohon di periksa kembali.', 500);
