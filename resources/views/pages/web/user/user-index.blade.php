@@ -43,11 +43,12 @@
                                 class="form-control form-control-solid w-250px ps-15" placeholder="Search Pengguna" />
                         </div>
                         <!--end::Search-->
+
                         <!--begin::Toolbar-->
                         <div class="d-flex justify-content-end" data-kt-user-table-toolbar="base">
                             <!--begin::Filter-->
                             <button type="button" class="btn btn-light-primary me-3" data-kt-menu-trigger="click"
-                                data-kt-menu-placement="bottom-end">
+                                    data-kt-menu-placement="bottom-end">
                                 <!--begin::Svg Icon | path: icons/duotune/general/gen031.svg-->
                                 <span class="svg-icon svg-icon-2">
                                     <i class="fa-solid fa-filter"></i>
@@ -55,7 +56,7 @@
                                 <!--end::Svg Icon-->Filter
                             </button>
                             <!--begin::Menu 1-->
-                            <div class="menu menu-sub menu-sub-dropdown w-300px w-md-325px" data-kt-menu="true">
+                            <div class="menu menu-sub menu-sub-dropdown w-300px w-md-325px" data-kt-menu="true" data-kt-menu-dismiss="false">
                                 <!--begin::Header-->
                                 <div class="px-7 py-5">
                                     <div class="fs-5 text-dark fw-bold">Filter Options</div>
@@ -65,16 +66,34 @@
                                 <div class="separator border-gray-200"></div>
                                 <!--end::Separator-->
                                 <!--begin::Content-->
-                                <form id="form-filter">
+                                <form id="form-filter" action="{{ route('admin.user.download') }}" method="post">
+                                    @csrf
+
                                     <div class="px-7 py-5">
                                         <!--begin::Input group-->
+
+                                        <!--begin::Input group-->
+                                        <div class="row mb-6">
+                                            <!--begin::Label-->
+                                            <label class="col-lg-4 col-form-label fw-semibold fs-6">
+                                                Tanggal Daftar
+                                            </label>
+                                            <!--end::Label-->
+
+                                            <!--begin::Col-->
+                                            <div class="col-lg-8">
+                                                @include('components.range.date-range', ['using_default_value' => false])
+                                            </div>
+                                            <!--end::Col-->
+                                        </div>
+                                        <!--end::Input group-->
 
                                         <div class="mb-10">
                                             <label class="form-label fs-6 fw-semibold">Role:</label>
                                             <select name="role" class="form-select form-select-solid fw-bold"
-                                                data-kt-select2="true" data-placeholder="Select option"
-                                                data-allow-clear="true" data-kt-user-table-filter="role"
-                                                data-hide-search="true">
+                                                    data-kt-select2="true" data-placeholder="Select option"
+                                                    data-allow-clear="true" data-kt-user-table-filter="role"
+                                                    data-hide-search="true">
                                                 <option></option>
                                                 @foreach ($roles as $role)
                                                     <option value="{{ $role->name }}">
@@ -82,14 +101,28 @@
                                                 @endforeach
                                             </select>
                                         </div>
+
+                                        <div class="mb-10">
+                                            <label class="form-label fs-6 fw-semibold">Status:</label>
+                                            <select name="status" class="form-select form-select-solid fw-bold"
+                                                    data-kt-select2="true" data-placeholder="Select option"
+                                                    data-allow-clear="true" data-kt-user-table-filter="role"
+                                                    data-hide-search="true">
+                                                <option></option>
+                                                @foreach ($statuses as $status)
+                                                    <option value="{{ $status->value }}">
+                                                        {{ \Illuminate\Support\Str::ucfirst($status->label()) }}</option>
+                                                @endforeach
+                                            </select>
+                                        </div>
                                         <!--end::Input group-->
                                         <!--begin::Actions-->
                                         <div class="d-flex justify-content-end">
                                             <button type="reset" class="btn btn-light btn-active-light-primary me-2"
-                                                data-kt-menu-dismiss="true" data-kt-docs-table-filter="reset">Reset
+                                                    data-kt-menu-dismiss="true" data-kt-docs-table-filter="reset">Reset
                                             </button>
                                             <button type="button" class="btn btn-primary" data-kt-menu-dismiss="true"
-                                                data-kt-docs-table-filter="filter" id="apply-filter">Apply
+                                                    data-kt-docs-table-filter="filter" id="apply-filter">Apply
                                             </button>
                                         </div>
                                         <!--end::Actions-->
@@ -100,10 +133,22 @@
                             <!--end::Menu 1-->
                             <!--end::Filter-->
 
+                            @if ($type == 'calon-jamaah')
+                                <input hidden="hidden" name="type" value="{{ $type }}">
+                                <button type="submit" class="btn btn-active-primary mx-2 btn-outline btn-outline-primary" data-bs-toggle="tooltip"
+                                        title="Export Ke Excel">
+                                    <!--begin::Svg Icon | path: icons/duotune/arrows/arr075.svg-->
+                                    <span class="svg-icon svg-icon-2">
+                                            <i class="fa-solid fa-plus"></i>
+                                        </span>
+                                    <!--end::Svg Icon-->Export Ke Excel
+                                </button>
+                            @endif
+
                             @if ($pageTitle == 'Staff')
                                 @can(\App\Enums\Permissions\UserPermission::USER_CREATE->value)
                                     <button type="button" class="btn btn-primary" id="create-new" data-bs-toggle="tooltip"
-                                        title="Tambahkan Admin">
+                                            title="Tambahkan Admin">
                                         <!--begin::Svg Icon | path: icons/duotune/arrows/arr075.svg-->
                                         <span class="svg-icon svg-icon-2">
                                             <i class="fa-solid fa-plus"></i>

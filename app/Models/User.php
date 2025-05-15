@@ -35,6 +35,7 @@ use Veelasky\LaravelHashId\Eloquent\HashableId;
  * @property bool $is_super
  * @property string $locale
  * @property string $timezone
+ * @property \DateTime $last_login_at
  * @property Jamaah $jamaah
  * @property VirtualAccount $tabungan
  * @property Collection<UserInvitation> $peopleInvites

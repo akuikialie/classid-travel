@@ -42,6 +42,9 @@ class UserRoute extends BaseRoute
 
                 $this->router->post($this->prefix('{user}/change-status'), [UserController::class, 'changeStatus'])
                     ->name($this->name('change-status'));
+
+                $this->router->post($this->prefix('download'), [UserController::class, 'download'])
+                    ->name($this->name('download'));
             });
         });
     }

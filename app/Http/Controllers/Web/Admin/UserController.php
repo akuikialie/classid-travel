@@ -2,11 +2,11 @@
 
 namespace App\Http\Controllers\Web\Admin;
 
-use App\Enums\ResponseCode;
-use App\Exceptions\CidException;
+use App\Enums\Statuses;
 use App\Exceptions\HandleCatchableException;
+use App\Exports\UserJamaahExport;
+use App\Queries\UserQuery;
 use Illuminate\Support\Facades\DB;
-use phpDocumentor\Reflection\DocBlock\Tags\Factory\AbstractPHPStanFactory;
 use Spatie\MediaLibrary\MediaCollections\Exceptions\FileDoesNotExist;
 use Spatie\MediaLibrary\MediaCollections\Exceptions\FileIsTooBig;
 use Throwable;
@@ -58,6 +58,39 @@ class UserController extends Controller
         $this->setData('current_page', $this->forPage);
     }
 
+    private function query(string|null $type = null)
+    {
+        $user = auth()->user();
+
+        $filter = request()->input('filter');
+
+        if (isset($filter)) {
+            request()->mergeIfMissing(extract_filters($filter));
+        }
+
+        return UserQuery::with(['roles'])
+            ->orderColumn()
+            ->filterColumn()
+            ->build()
+            ->when(is_null($user->tenant_id), function (Builder $subQuery) use ($user) {
+                $subQuery->with(['tenant']);
+            }, function (Builder $subQuery) use ($user) {
+                if (!is_null($user->tenant_id)) {
+                    $subQuery->where('tenant_id', $user->tenant_id);
+                    $subQuery->where('id', '!=', $user->id);
+                }
+            })
+            ->when($type == 'calon-jamaah', function (Builder $subQuery) {
+                $subQuery->role(['jamaah']);
+            }, function (Builder $subQuery) {
+                $subQuery->whereHas('roles', function (Builder $subQuery) {
+                    $subQuery->where('name', '!=', 'jamaah');
+                });
+            })
+            ->where('is_super', false)
+            ->orderBy('created_at', 'desc');
+    }
+
     /**
      * @return JsonResponse|void
      * @throws ContainerExceptionInterface
@@ -70,51 +103,11 @@ class UserController extends Controller
         if (\request()->ajax()) {
             try {
                 $user = auth()->user();
-                $users = User::query()
-                    ->with(['roles'])
-                    ->when(is_null($user->tenant_id), function (Builder $subQuery) use ($user) {
-                        $subQuery->with(['tenant']);
-                    }, function (Builder $subQuery) use ($user) {
-                        if (!is_null($user->tenant_id)) {
-                            $subQuery->where('tenant_id', $user->tenant_id);
-                            $subQuery->where('id', '!=', $user->id);
-                        }
-                    })
-                    ->when($type == 'calon-jamaah', function (Builder $subQuery) {
-                        $subQuery->role(['jamaah']);
-                    }, function (Builder $subQuery) {
-                        $subQuery->whereHas('roles', function (Builder $subQuery) {
-                            $subQuery->where('name', '!=', 'jamaah');
-                        });
-                    })
-                    ->where('is_super', false)
-                    ->latest('id');
+                $users = $this->query($type);
 
                 $datatable = datatables()->eloquent($users)
                     ->filter(function (Builder $query) use ($request) {
-                        /* begin:: apply custom filter */
-                        $customFilters = collect($request->input('filter'));
-                        if ($customFilters->count() > 0) {
-                            foreach ($customFilters as $filter) {
-                                if ($filter['name'] == 'role') {
-                                    $role = $filter['value'] ?? null;
-                                    if ($role) {
-                                        $query->whereHas('roles', function (Builder $subQuery) use ($role) {
-                                            $subQuery->where('name', $role);
-                                        });
-                                    }
-                                    continue;
-                                }
-                                $query->where($filter['name'], $filter['value']);
-                            }
-                        }
-                        /* end:: apply custom filter */
 
-                        /* begin:: filter search */
-                        $query->when($request->input('search')['value'], function (Builder $subQuery) use ($request) {
-                            $subQuery->where('name', 'like', "%" . $request->input('search')['value'] . "%");
-                        });
-                        /* end:: filter search */
                     })
                     ->addIndexColumn()
                     ->addColumn('role', function ($user) {
@@ -151,7 +144,7 @@ class UserController extends Controller
                 }
 
                 return $datatable->make(true);
-            } catch (Exception | NotFoundExceptionInterface | ContainerExceptionInterface $e) {
+            } catch (Exception|NotFoundExceptionInterface|ContainerExceptionInterface $e) {
                 logError($e, title: 'user - datatable');
                 if (isDevelopmentMode()) {
                     throw $e;
@@ -205,6 +198,9 @@ class UserController extends Controller
 
         $this->setData('type', $type);
         $this->setData('roles', $roles);
+        $this->setData('statuses', Statuses::cases());
+
+
         return $this->view('pages.web.user.user-index');
     }
 
@@ -276,7 +272,7 @@ class UserController extends Controller
                 throw $e;
             }
             $message = 'Terjadi kesalahan!';
-            if ($e->getCode() >= 900){
+            if ($e->getCode() >= 900) {
                 $message = $e->getMessage();
             }
             notify('Oops!', $message, 'error');
@@ -312,7 +308,7 @@ class UserController extends Controller
                 throw $e;
             }
             $message = 'Terjadi kesalahan!';
-            if ($e->getCode() >= 900){
+            if ($e->getCode() >= 900) {
                 $message = $e->getMessage();
             }
             notify('Oops!', $message, 'error');
@@ -363,7 +359,7 @@ class UserController extends Controller
             }
             $userService
                 ->setAvatar($request)
-                ->update($request->only('name', 'username','phone'));
+                ->update($request->only('name', 'username', 'phone'));
             /* end:: user service */
 
             DB::commit();
@@ -377,7 +373,7 @@ class UserController extends Controller
                 throw $e;
             }
             $message = 'Terjadi kesalahan!';
-            if ($e->getCode() >= 900){
+            if ($e->getCode() >= 900) {
                 $message = $e->getMessage();
             }
             notify('Oops!', $message, 'error');
@@ -414,7 +410,7 @@ class UserController extends Controller
                 throw $e;
             }
             $message = 'Terjadi kesalahan!';
-            if ($e->getCode() >= 900){
+            if ($e->getCode() >= 900) {
                 $message = $e->getMessage();
             }
             notify('Oops!', $message, 'error');
@@ -445,7 +441,7 @@ class UserController extends Controller
             }
 
             $user->loadCount('transactions');
-            if ($user->transactions_count >= 0){
+            if ($user->transactions_count >= 0) {
                 throw new \Exception(message: 'User Memiliki Data Transaksi', code: 900);
             }
 
@@ -458,7 +454,7 @@ class UserController extends Controller
                 throw $e;
             }
             $message = 'Terjadi kesalahan!';
-            if ($e->getCode() >= 900){
+            if ($e->getCode() >= 900) {
                 $message = $e->getMessage();
             }
             notify('Oops!', $message, 'error');
@@ -494,12 +490,18 @@ class UserController extends Controller
                 throw $e;
             }
             $message = 'Terjadi kesalahan!';
-            if ($e->getCode() >= 900){
+            if ($e->getCode() >= 900) {
                 $message = $e->getMessage();
             }
             notify('Oops!', $message, 'error');
 
             return redirect()->back();
         }
+    }
+
+    public function download(Request $request)
+    {
+        $users = $this->query($request->input('type'));
+        return (new UserJamaahExport($users))->download();
     }
 }
