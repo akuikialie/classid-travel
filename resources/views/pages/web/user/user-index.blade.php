@@ -45,29 +45,29 @@
                         <!--end::Search-->
 
                         <!--begin::Toolbar-->
-                        <div class="d-flex justify-content-end" data-kt-user-table-toolbar="base">
-                            <!--begin::Filter-->
-                            <button type="button" class="btn btn-light-primary me-3" data-kt-menu-trigger="click"
-                                    data-kt-menu-placement="bottom-end">
-                                <!--begin::Svg Icon | path: icons/duotune/general/gen031.svg-->
-                                <span class="svg-icon svg-icon-2">
+                        <form id="form-filter" action="{{ route('admin.user.download') }}" method="post">
+                            @csrf
+                            <div class="d-flex justify-content-end" data-kt-user-table-toolbar="base">
+                                <!--begin::Filter-->
+                                <button type="button" class="btn btn-light-primary me-3" data-kt-menu-trigger="click"
+                                        data-kt-menu-placement="bottom-end">
+                                    <!--begin::Svg Icon | path: icons/duotune/general/gen031.svg-->
+                                    <span class="svg-icon svg-icon-2">
                                     <i class="fa-solid fa-filter"></i>
                                 </span>
-                                <!--end::Svg Icon-->Filter
-                            </button>
-                            <!--begin::Menu 1-->
-                            <div class="menu menu-sub menu-sub-dropdown w-300px w-md-325px" data-kt-menu="true" data-kt-menu-dismiss="false">
-                                <!--begin::Header-->
-                                <div class="px-7 py-5">
-                                    <div class="fs-5 text-dark fw-bold">Filter Options</div>
-                                </div>
-                                <!--end::Header-->
-                                <!--begin::Separator-->
-                                <div class="separator border-gray-200"></div>
-                                <!--end::Separator-->
-                                <!--begin::Content-->
-                                <form id="form-filter" action="{{ route('admin.user.download') }}" method="post">
-                                    @csrf
+                                    <!--end::Svg Icon-->Filter
+                                </button>
+                                <!--begin::Menu 1-->
+                                <div class="menu menu-sub menu-sub-dropdown w-300px w-md-325px" data-kt-menu="true" data-kt-menu-dismiss="false">
+                                    <!--begin::Header-->
+                                    <div class="px-7 py-5">
+                                        <div class="fs-5 text-dark fw-bold">Filter Options</div>
+                                    </div>
+                                    <!--end::Header-->
+                                    <!--begin::Separator-->
+                                    <div class="separator border-gray-200"></div>
+                                    <!--end::Separator-->
+                                    <!--begin::Content-->
 
                                     <div class="px-7 py-5">
                                         <!--begin::Input group-->
@@ -127,37 +127,39 @@
                                         </div>
                                         <!--end::Actions-->
                                     </div>
-                                </form>
-                                <!--end::Content-->
-                            </div>
-                            <!--end::Menu 1-->
-                            <!--end::Filter-->
 
-                            @if ($type == 'calon-jamaah')
-                                <input hidden="hidden" name="type" value="{{ $type }}">
-                                <button type="submit" class="btn btn-active-primary mx-2 btn-outline btn-outline-primary" data-bs-toggle="tooltip"
-                                        title="Export Ke Excel">
-                                    <!--begin::Svg Icon | path: icons/duotune/arrows/arr075.svg-->
-                                    <span class="svg-icon svg-icon-2">
-                                            <i class="fa-solid fa-plus"></i>
-                                        </span>
-                                    <!--end::Svg Icon-->Export Ke Excel
-                                </button>
-                            @endif
+                                    <!--end::Content-->
+                                </div>
+                                <!--end::Menu 1-->
+                                <!--end::Filter-->
 
-                            @if ($pageTitle == 'Staff')
-                                @can(\App\Enums\Permissions\UserPermission::USER_CREATE->value)
-                                    <button type="button" class="btn btn-primary" id="create-new" data-bs-toggle="tooltip"
-                                            title="Tambahkan Admin">
+                                @if ($type == 'calon-jamaah')
+                                    <input hidden="hidden" name="type" value="{{ $type }}">
+                                    <button type="submit" class="btn btn-active-primary mx-2 btn-outline btn-outline-primary" data-bs-toggle="tooltip"
+                                            title="Export Ke Excel">
                                         <!--begin::Svg Icon | path: icons/duotune/arrows/arr075.svg-->
                                         <span class="svg-icon svg-icon-2">
                                             <i class="fa-solid fa-plus"></i>
                                         </span>
-                                        <!--end::Svg Icon-->Tambah Admin
+                                        <!--end::Svg Icon-->Export Ke Excel
                                     </button>
-                                @endcan
-                            @endif
-                        </div>
+                                @endif
+
+                                @if ($pageTitle == 'Staff')
+                                    @can(\App\Enums\Permissions\UserPermission::USER_CREATE->value)
+                                        <button type="button" class="btn btn-primary" id="create-new" data-bs-toggle="tooltip"
+                                                title="Tambahkan Admin">
+                                            <!--begin::Svg Icon | path: icons/duotune/arrows/arr075.svg-->
+                                            <span class="svg-icon svg-icon-2">
+                                            <i class="fa-solid fa-plus"></i>
+                                        </span>
+                                            <!--end::Svg Icon-->Tambah Admin
+                                        </button>
+                                    @endcan
+                                @endif
+                            </div>
+
+                        </form>
                         <!--end::Toolbar-->
                         <!--begin::Group actions-->
                         <div class="d-flex justify-content-end align-items-center d-none"
