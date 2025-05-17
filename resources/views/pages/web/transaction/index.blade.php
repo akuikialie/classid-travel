@@ -78,7 +78,7 @@
 
                                             <!--begin::Col-->
                                             <div class="col-lg-8">
-                                                @include('components.range.date-range')
+                                                @include('components.range.date-range', ['using_default_value' => true])
                                             </div>
                                             <!--end::Col-->
                                         </div>

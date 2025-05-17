@@ -2,7 +2,7 @@
     <!--begin::Email-->
     <label class="required" for="date_from">Date From</label>
     <input class="form-control date-range-picker" name="date_from" placeholder="Pick date rage" type="date"
-           value="{{ $using_default_value ? now()->startOfMonth()->toDateString(): null}}" id="date_from"/>
+           value="{{ (isset($using_default_value) ? $using_default_value : false) ? now()->startOfMonth()->toDateString(): null}}" id="date_from"/>
 
     @error('date_from')
     <div class="text-danger">{{ $message }}</div>
@@ -13,7 +13,7 @@
     <!--begin::Email-->
     <label class="required" for="date_to">Date To</label>
     <input class="form-control date-range-picker" name="date_to" placeholder="Pick date rage" type="date"
-           value="{{ $using_default_value ?  now()->toDateString() : null}}" id="date_to"/>
+           value="{{ (isset($using_default_value) ? $using_default_value : false) ?  now()->toDateString() : null}}" id="date_to"/>
 
     @error('date_to')
     <div class="text-danger">{{ $message }}</div>
