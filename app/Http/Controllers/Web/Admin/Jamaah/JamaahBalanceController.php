@@ -89,7 +89,7 @@ class JamaahBalanceController extends Controller
                     ->addColumn('usd_balance', fn($row) => '$' . moneyFormat($row->usd_balance ?? 0))
                     ->orderColumn('usd_balance', fn($query, $order) => $query->orderBy('usd_balance', $order))
 
-                    ->addColumn('created_at', fn($row) => \Carbon\Carbon::parse($row->created_at)->format('d M Y'))
+                    ->addColumn('created_at', fn($row) => carbon($row->created_at)->format('d M Y'))
                     ->orderColumn('created_at', fn($query, $order) => $query->orderBy('created_at', $order))
 
                     ->addColumn('actions', function ($row) {

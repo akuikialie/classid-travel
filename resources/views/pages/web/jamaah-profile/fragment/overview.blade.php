@@ -58,7 +58,7 @@
 
                 <!--begin::Col-->
                 <div class="col-lg-8">
-                    <span class="fw-bold fs-6 text-gray-800">{{ !empty($user->last_login_at) ? \Carbon\Carbon::parse($user->last_login_at)->diffForHumans() : null }}</span>
+                    <span class="fw-bold fs-6 text-gray-800">{{ !empty($user->last_login_at) ? carbon($user->last_login_at)->diffForHumans() : null }}</span>
                 </div>
                 <!--end::Col-->
             </div>

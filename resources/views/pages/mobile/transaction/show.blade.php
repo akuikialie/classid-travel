@@ -39,13 +39,13 @@
 
                         <div class="col-4"><p class="font-15 font-700 color-theme">Tanggal</p></div>
                         <div class="col-8"><p
-                                class="font-13 color-theme">{{ \Carbon\Carbon::parse($mutation->transaction->trx_date)->format('d F, Y') }}</p>
+                                class="font-13 color-theme">{{ carbon($mutation->transaction->trx_date)->format('d F, Y') }}</p>
                         </div>
                         <div class="divider divider-margins w-100 mt-2 mb-2"></div>
 
                         <div class="col-4"><p class="font-15 font-700 color-theme">Waktu</p></div>
                         <div class="col-8"><p
-                                class="font-13 color-theme">{{ \Carbon\Carbon::parse($mutation->transaction->trx_date)->format('H:i A') }}</p>
+                                class="font-13 color-theme">{{ carbon($mutation->transaction->trx_date)->format('H:i A') }}</p>
                         </div>
                         <div class="divider divider-margins w-100 mt-2 mb-2"></div>
 
@@ -97,13 +97,13 @@
 
                         <div class="col-4"><p class="font-15 font-700 color-theme">Tanggal</p></div>
                         <div class="col-8"><p
-                                class="font-13 color-theme">{{ \Carbon\Carbon::parse($mutation->transaction->trx_date)->format('d F, Y') }}</p>
+                                class="font-13 color-theme">{{ carbon($mutation->transaction->trx_date)->format('d F, Y') }}</p>
                         </div>
                         <div class="divider divider-margins w-100 mt-2 mb-2"></div>
 
                         <div class="col-4"><p class="font-15 font-700 color-theme">Waktu</p></div>
                         <div class="col-8"><p
-                                class="font-13 color-theme">{{ \Carbon\Carbon::parse($mutation->transaction->trx_date)->format('H:i A') }}</p>
+                                class="font-13 color-theme">{{ carbon($mutation->transaction->trx_date)->format('H:i A') }}</p>
                         </div>
                         <div class="divider divider-margins w-100 mt-2 mb-2"></div>
 

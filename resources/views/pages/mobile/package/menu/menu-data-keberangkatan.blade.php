@@ -23,7 +23,7 @@
     <select id="schedule_id" name="schedule_id">
       @forelse ($schedules as $schedule)
         <option value="{{ $schedule->id }}" {{ old('schedule_id') == $schedule->id ? 'selected' : null }}>
-          {{ \Carbon\Carbon::parse($schedule->departure_date)->format('d F Y') }}</option>
+          {{ carbon($schedule->departure_date)->format('d F Y') }}</option>
       @empty
         <option value="">Tidak ada jadwal keberangkatan</option>
       @endforelse

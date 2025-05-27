@@ -27,7 +27,7 @@
                             </div>
                             <div class="align-self-center ms-auto">
                                 <h5 class="color-green-dark mb-n1 text-end">Rp. {{ moneyFormat($mutation->transaction->amount) }}</h5>
-                                <span class="color-theme d-block font-11 text-end">{{ \Carbon\Carbon::parse($mutation->transaction->trx_date)->toDateTimeString() }}</span>
+                                <span class="color-theme d-block font-11 text-end">{{ carbon($mutation->transaction->trx_date)->toDateTimeString() }}</span>
                             </div>
                         </div>
                         @break
@@ -43,7 +43,7 @@
                             </div>
                             <div class="align-self-center ms-auto">
                                 <h5 class="color-blue-dark mb-n1 text-end">Rp. {{ moneyFormat($mutation->transaction->amount) }}</h5>
-                                <span class="color-theme d-block font-11 text-end">{{ \Carbon\Carbon::parse($mutation->transaction->trx_date)->toDateTimeString() }}</span>
+                                <span class="color-theme d-block font-11 text-end">{{ carbon($mutation->transaction->trx_date)->toDateTimeString() }}</span>
                             </div>
                         </div>
                         @break

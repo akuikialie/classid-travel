@@ -10,6 +10,7 @@ use App\Models\Spatie\Role;
 use Classid\LaravelServiceQueryBuilderExtend\Contracts\Abstracts\BaseService;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Str;
 use Spatie\Permission\Exceptions\RoleDoesNotExist;
 
 class PermissionService extends BaseService
@@ -35,6 +36,11 @@ class PermissionService extends BaseService
                 'guard_name' => $guard,
             ]);
         }
+
+        $inputName = $input['name'];
+
+        $input['name'] = Str::slug(strtolower($inputName));
+        $input['label'] = ucwords($input['name']);
         $this->model = Role::query()->create($input);
         return $this;
     }
