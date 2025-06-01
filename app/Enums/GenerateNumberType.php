@@ -30,8 +30,8 @@ enum GenerateNumberType: string
     {
         return match ($this) {
             self::INVOICE_NUMBER => 'INV-{month_year}#########',
-            self::VIRTUAL_NUMBER => '{tenant_bcn}{month_year}#####',
-            self::TRANSACTIONAL_NUMBER => '{type}{month_year}#####',
+            self::VIRTUAL_NUMBER => '{tenant_bcn}{month_year}######',
+            self::TRANSACTIONAL_NUMBER => '{type}{month_year}######',
             self::TRANSACTION_NUMBER => '{trx_type}{month_year}#########',
         };
     }

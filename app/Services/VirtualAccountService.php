@@ -21,9 +21,7 @@ class VirtualAccountService
 {
     public function __construct(
         private readonly int $tenantId
-    )
-    {
-    }
+    ) {}
 
     private ?Model $model = null;
 

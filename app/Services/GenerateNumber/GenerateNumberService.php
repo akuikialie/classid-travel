@@ -33,9 +33,7 @@ class GenerateNumberService
             DB::beginTransaction();
         }
 
-        $prefixNumber =
-            substr(date('Y'), -3) .
-            date('m');
+        $prefixNumber = date('ym');
 
         /* @var GenerateNumber $generateNumber */
         $generateNumber = GenerateNumber::query()
