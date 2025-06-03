@@ -338,7 +338,7 @@ class TenantController extends Controller
             'slug' => [Rule::requiredIf($user->tenant_id !== null), 'string'],
             'bcn' => [Rule::requiredIf($user->tenant_id === null), 'numeric'],
             'app_domain' => [Rule::requiredIf($user->tenant_id === null), 'string'],
-            'fee_admin' => ['required', 'numeric', 'gte:0'],
+            'fee_admin' => [Rule::requiredIf($user->tenant_id === null), 'numeric', 'gte:0'],
         ]);
 
         DB::beginTransaction();
