@@ -162,7 +162,7 @@ class TenantService
             $tenant->name = $input['name'];
             $tenant->slug = $input['slug'];
         }
-        $tenant->fee_admin = $input['fee_admin'];
+        $tenant->fee_admin = $input['fee_admin'] ?? $tenant->fee_admin;
         $tenant->save();
 
         return $tenant->fresh();
