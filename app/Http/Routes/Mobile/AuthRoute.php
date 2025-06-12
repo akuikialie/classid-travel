@@ -23,11 +23,11 @@ class AuthRoute extends BaseRoute
         $this->router->middleware(['guest'])->group(function(){
             /* login */
             $this->router->get($this->prefix('login'), [AuthenticationSessionController::class, 'create'])->name('login');
-            $this->router->post($this->prefix('login'), [AuthenticationSessionController::class, 'store'])->name('login');
+            $this->router->post($this->prefix('login'), [AuthenticationSessionController::class, 'store'])->name('login-post');
 
             /* register */
             $this->router->get($this->prefix('register'), [RegisterUserController::class, 'create'])->name('register');
-            $this->router->post($this->prefix('register'), [RegisterUserController::class, 'store'])->name('register');
+            $this->router->post($this->prefix('register'), [RegisterUserController::class, 'store'])->name('register-post');
         });
 
 

@@ -7,6 +7,7 @@ use App\Models\Tenant\Tenant;
 use Exception;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Facades\Vite;
+use Illuminate\Support\Fluent;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -20,6 +21,15 @@ class AppServiceProvider extends ServiceProvider
 
         $this->app->singleton('notifLog', fn () => app('log')->channel('msnotif'));
 
+        $this->app->singleton('tenantOption', function (): Fluent {
+            $host = request()->getHttpHost();
+            return app('cache')
+                ->remember('tenant-opt-'.$host, now('Asia/Jakarta')->endOfDay(), function () use ($host): Fluent {
+                    $tenant = Tenant::query()->select('options')->where('app_domain', $host)->first();
+                    return new Fluent($tenant?->options ?? []);
+                });
+        });
+
         app()->singleton('activeTenant', function(): Tenant|null {
             try {
                 $tenant = Tenant::query()
@@ -29,7 +39,7 @@ class AppServiceProvider extends ServiceProvider
                 if (auth()->user()?->tenant_id ?? null){
                     $tenant->where('id', auth()->user()->tenant_id);
                 } else {
-                    $domain = request()->getHost();
+                    $domain = request()->getHttpHost();
                     $tenant->where('app_domain', $domain);
                 }
 

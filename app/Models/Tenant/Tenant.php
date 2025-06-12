@@ -57,11 +57,13 @@ class Tenant extends Model implements HasMedia, NumberableInterface
         'wallet_login',
         'is_active',
         'fee_admin',
+        'options',
     ];
 
     protected $casts = [
         'wallet_login' => 'array',
         'fee_admin' => 'float',
+        'options' => 'array',
     ];
 
     public function addresses(): MorphMany
