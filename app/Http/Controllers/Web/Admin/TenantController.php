@@ -280,6 +280,10 @@ class TenantController extends Controller
                 ->withCount(['jamaah', 'packages'])
                 ->first();
 
+            setDefaultRequest([
+                'options' => $tenant->options,
+            ]);
+
             $this->addGlobalParams('fragment_active', $slug);
 
             $this->fragment(new TenantFragmentController())

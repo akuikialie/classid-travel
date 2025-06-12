@@ -1,5 +1,9 @@
 @extends('layouts.web.app')
 
+@section('page-scripts')
+  <script src="{{ cachedAsset('web/plugins/custom/colorpicker/colorpicker.bundle.js') }}"></script>
+@endsection
+
 @section('page-content')
     @php
         $avatars = $tenant->getMedia('avatars');
