@@ -163,7 +163,14 @@ class TenantService
             $tenant->slug = $input['slug'];
         }
         $tenant->fee_admin = $input['fee_admin'] ?? $tenant->fee_admin;
+        $tenant->options = $input['options'] ?? $tenant->options;
         $tenant->save();
+
+        try {
+            app('cache')->forget('tenant-opt-'.$tenant->app_domain);
+        } catch (Exception $e) {
+            toSentry($e);
+        }
 
         return $tenant->fresh();
     }

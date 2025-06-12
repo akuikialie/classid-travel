@@ -61,3 +61,19 @@
 </div>
 <!--end::Input group-->
 
+<div class="separator separator-content fw-bold mt-10 mb-5">Kofigurasi</div>
+
+<div class="mb-5 row row-cols-1 g-5">
+  <div class="col">
+    <label class="required fs-5 fw-semibold mb-2">Warna Utama</label>
+    <input type="text" class="form-control color" name="options[style][bg_color]" value="{{ request('options.style.bg_color') }}" placeholder="Warna Utama" style="background-color:{{ request('options.style.bg_color') }}" />
+  </div>
+  <div class="col">
+    <label class="required fs-5 fw-semibold mb-2">Kebalikan Warna Utama</label>
+    <input type="text" class="form-control color" name="options[style][bg_inverse]" value="{{ request('options.style.bg_inverse') }}" placeholder="Kebalikan Warna Utama" style="background-color:{{ request('options.style.bg_inverse') }}" />
+  </div>
+  <div class="col">
+    <label class="required fs-5 fw-semibold mb-2">Warna Teks</label>
+    <input type="text" class="form-control color" name="options[style][color]" value="{{ request('options.style.color') }}" placeholder="Kebalikan Text" style="background-color:{{ request('options.style.color') }}" />
+  </div>
+</div>

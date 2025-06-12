@@ -1,8 +1,8 @@
 @extends('layouts.web.app')
 
 @section('page-styles')
-  <link href="{{ asset('web/plugins/custom/datatables/datatables.bundle.css') }}" rel="stylesheet" type="text/css"/>
-
+  <link href="{{ cachedAsset('web/plugins/custom/datatables/datatables.bundle.css') }}" rel="stylesheet" type="text/css"/>
+  <link href="{{ cachedAsset('web/plugins/custom/colorpicker/colorpicker.bundle.css') }}" rel="stylesheet" type="text/css"/>
 @endsection
 
 @section('page-custom-scripts')
@@ -12,12 +12,16 @@
     let createUrl = "{{ route('admin.tenant.create') }}";
     let editUrl = "{{ route('admin.tenant.edit', ':id') }}";
     let changeStatusUrl = "{{ route('admin.tenant.change-status', ':id') }}";
+    $(document).on('show.bs.modal', '#modal-create-travel-account', function (event) {
+      $('input.color').colorPicker()
+    })
   </script>
 @endsection
 
 @section('page-scripts')
-  <script src="{{ asset('web/plugins/custom/datatables/datatables.bundle.js') }}"></script>
-  <script src="{{asset('web/js/based/datatables/tenant-datatable.js')}}"></script>
+  <script src="{{ cachedAsset('web/plugins/custom/datatables/datatables.bundle.js') }}"></script>
+  <script src="{{ cachedAsset('web/js/based/datatables/tenant-datatable.js')}}"></script>
+  <script src="{{ cachedAsset('web/plugins/custom/colorpicker/colorpicker.bundle.js') }}"></script>
 @endsection
 
 @section('page-content')

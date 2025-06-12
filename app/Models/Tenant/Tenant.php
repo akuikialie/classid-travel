@@ -29,6 +29,7 @@ use Veelasky\LaravelHashId\Eloquent\HashableId;
  * @property string $wallet_login
  * @property bool $is_active
  * @property float $fee_admin
+ * @property array $options
  * */
 
 class Tenant extends Model implements HasMedia, NumberableInterface
