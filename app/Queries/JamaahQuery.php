@@ -44,7 +44,7 @@ class JamaahQuery extends BaseQueryBuilder
         $this->builder->when(!empty($search), function (Builder $builder) use ($search) {
             $builder
                 ->whereHas('user', function (Builder $builder) use ($search) {
-                    $builder->where(function($qry) {
+                    $builder->where(function($qry) use ($search) {
                         $qry->where('name', 'ilike', '%' . $search . '%')
                             ->orWhere('phone', 'ilike', '%' . $search . '%')
                             ->orWhere('username', 'ilike', '%' . $search . '%');
