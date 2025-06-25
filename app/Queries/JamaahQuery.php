@@ -44,10 +44,11 @@ class JamaahQuery extends BaseQueryBuilder
         $this->builder->when(!empty($search), function (Builder $builder) use ($search) {
             $builder
                 ->whereHas('user', function (Builder $builder) use ($search) {
-                    $builder
-                        ->where('name', 'ilike', '%' . $search . '%')
-                        ->orWhere('phone', 'ilike', '%' . $search . '%')
-                        ->orWhere('username', 'ilike', '%' . $search . '%');
+                    $builder->where(function($qry) {
+                        $qry->where('name', 'ilike', '%' . $search . '%')
+                            ->orWhere('phone', 'ilike', '%' . $search . '%')
+                            ->orWhere('username', 'ilike', '%' . $search . '%');
+                    });
                 });
         });
     }
