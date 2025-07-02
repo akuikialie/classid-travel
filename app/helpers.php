@@ -12,6 +12,13 @@ use Illuminate\Support\Carbon;
 use Illuminate\Support\Fluent;
 use Illuminate\Support\ViewErrorBag;
 
+if (! function_exists('hostIsAdmin')) {
+    function hostIsAdmin(): bool
+    {
+        $adminHosts = explode(env('ADMIN_URL'));
+        return in_array(request()->getHttpHost(), $adminHosts);
+    }
+}
 
 function generateVirtualNumber(Tenant $tenant, bool $isLocking = false, int $numberGenerated = 1): array
 {

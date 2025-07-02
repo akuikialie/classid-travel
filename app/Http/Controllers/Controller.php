@@ -89,9 +89,9 @@ class Controller extends BaseController
         // ]);
         if (
             !app()->runningInConsole() &&
-            env(key: 'ADMIN_URL') === request()->host() &&
-            !preg_match('/^admin(\/.*)?/i', request()->path())
-        ){
+            hostIsAdmin() &&
+            !str(request()->path())->startWith('admin')
+        ) {
             return to_route('admin.dashboard')->send();
         }
         $this->setBreadCrumb([]);
