@@ -15,7 +15,7 @@ use Illuminate\Support\ViewErrorBag;
 if (! function_exists('hostIsAdmin')) {
     function hostIsAdmin(): bool
     {
-        $adminHosts = explode(env('ADMIN_URL'));
+        $adminHosts = explode(',', env('ADMIN_URL'));
         return in_array(request()->getHttpHost(), $adminHosts);
     }
 }
