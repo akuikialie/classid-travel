@@ -90,7 +90,7 @@ class Controller extends BaseController
         if (
             !app()->runningInConsole() &&
             hostIsAdmin() &&
-            !str(request()->path())->startWith('admin')
+            !str(request()->path())->startsWith('admin')
         ) {
             return to_route('admin.dashboard')->send();
         }
