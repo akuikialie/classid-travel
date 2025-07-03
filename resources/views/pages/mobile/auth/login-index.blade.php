@@ -50,7 +50,7 @@
             <div class="d-flex">
 {{--                <div class="w-50 font-11 pb-2 color-theme opacity-60 pb-3 text-start"><a href="{{ route('register') }}"--}}
 {{--                        class="color-theme">Buat Akun</a></div>--}}
-                <div class="w-50 font-11 pb-2 color-theme opacity-60 pb-3 text-end"><a href="system-forgot-1.html"
+                <div class="w-50 font-11 pb-2 color-theme opacity-60 pb-3 text-end"><a href="{{ route('reset-password') }}"
                         class="color-theme">Lupa Password</a></div>
             </div>
         </div>
