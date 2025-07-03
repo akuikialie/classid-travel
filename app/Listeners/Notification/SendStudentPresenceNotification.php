@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Domains\Presence\Listener\Notification;
+namespace App\Listeners\Notification;
 
 use App\Domains\Presence\Enums\PresenceNotificationKey;
 use App\Domains\Presence\Event\StudentPresence;

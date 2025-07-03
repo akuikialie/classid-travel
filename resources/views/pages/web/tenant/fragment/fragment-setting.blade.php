@@ -96,6 +96,32 @@
         </div>
       </div>
       <!--end::Row-->
+
+
+      <div class="row mb-8">
+        <div class="col-xl-3">
+          <div class="fs-6 fw-semibold mt-2 mb-3">Warna Utama</div>
+        </div>
+        <div class="col-xl-9 fv-row">
+          <input type="text" class="form-control color" name="options[style][bg_color]" value="{{ request('options.style.bg_color') }}" placeholder="Warna Utama" style="background-color:{{ request('options.style.bg_color') }}" />
+        </div>
+      </div>
+      <div class="row mb-8">
+        <div class="col-xl-3">
+          <div class="fs-6 fw-semibold mt-2 mb-3">Kebalikan Warna Utama</div>
+        </div>
+        <div class="col-xl-9 fv-row">
+          <input type="text" class="form-control color" name="options[style][bg_inverse]" value="{{ request('options.style.bg_inverse') }}" placeholder="Kebalikan Warna Utama" style="background-color:{{ request('options.style.bg_inverse') }}" />
+        </div>
+      </div>
+      <div class="row mb-8">
+        <div class="col-xl-3">
+          <div class="fs-6 fw-semibold mt-2 mb-3">Warna Teks</div>
+        </div>
+        <div class="col-xl-9 fv-row">
+          <input type="text" class="form-control color" name="options[style][color]" value="{{ request('options.style.color') }}" placeholder="Warna Teks" style="background-color:{{ request('options.style.color') }}" />
+        </div>
+      </div>
     </div>
     <!--end::Card body-->
     <!--begin::Card footer-->

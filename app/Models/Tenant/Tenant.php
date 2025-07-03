@@ -29,6 +29,7 @@ use Veelasky\LaravelHashId\Eloquent\HashableId;
  * @property string $wallet_login
  * @property bool $is_active
  * @property float $fee_admin
+ * @property array $options
  * */
 
 class Tenant extends Model implements HasMedia, NumberableInterface
@@ -57,11 +58,13 @@ class Tenant extends Model implements HasMedia, NumberableInterface
         'wallet_login',
         'is_active',
         'fee_admin',
+        'options',
     ];
 
     protected $casts = [
         'wallet_login' => 'array',
         'fee_admin' => 'float',
+        'options' => 'array',
     ];
 
     public function addresses(): MorphMany

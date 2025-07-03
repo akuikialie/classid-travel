@@ -19,7 +19,7 @@ class TenantSeeder extends Seeder
             [
                 'name' => 'Tenant Development',
                 'slug' => 'for-development',
-                'app_domain' => 'd1.'.env('ADMIN_URL'),
+                'app_domain' => 'd1.'.env('APP_HOST'),
                 'bcn' => '000000',
             ],
 

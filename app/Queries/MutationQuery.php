@@ -22,8 +22,10 @@ class MutationQuery extends BaseQueryBuilder
         $this->builder->when(!empty($search), function (Builder $builder) use ($search) {
             $builder->whereHas('invocation', function (Builder $builder) use ($search) {
                 // Pencarian pada kolom 'virtual_account' dan 'invoice_number' dengan 'ilike'
-                $builder->where('virtual_account', 'ilike', '%' . $search . '%')
-                    ->orWhere('invoice_number', 'ilike', '%' . $search . '%');
+                $builder->where(function($qry) use ($search) {
+                    $qry->where('virtual_account', 'ilike', '%' . $search . '%')
+                        ->orWhere('invoice_number', 'ilike', '%' . $search . '%');
+                });
             });
         });
 

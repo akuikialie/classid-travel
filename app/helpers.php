@@ -9,8 +9,16 @@ use App\Services\Notification\NotifManager;
 use Classid\TemplateReplacement\TemplateReplacement;
 use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Fluent;
 use Illuminate\Support\ViewErrorBag;
 
+if (! function_exists('hostIsAdmin')) {
+    function hostIsAdmin(): bool
+    {
+        $adminHosts = explode(',', env('ADMIN_URL'));
+        return in_array(request()->getHttpHost(), $adminHosts);
+    }
+}
 
 function generateVirtualNumber(Tenant $tenant, bool $isLocking = false, int $numberGenerated = 1): array
 {
@@ -904,8 +912,30 @@ if (!function_exists('toSentry')) {
      */
     function toSentry(Throwable $throw): void
     {
-        if (app()->bound('sentry') && !app()->isLocal()) {
+        if (app()->bound('sentry')) {
             \Sentry\Laravel\Integration::captureUnhandledException($throw);
         }
+    }
+}
+
+if (!function_exists('tenantOptions')) {
+    /**
+     * @return Fluent
+     */
+    function tenantOptions(): Fluent
+    {
+        return app('tenantOption');
+    }
+}
+
+if (!function_exists('tenantOption')) {
+    /**
+     * @param  string  $key
+     *
+     * @return mixed
+     */
+    function tenantOption(string $key): mixed
+    {
+        return tenantOptions()->get($key);
     }
 }

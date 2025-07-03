@@ -140,7 +140,16 @@ class TenantController extends Controller
     {
         if (\request()->ajax()) {
             $lastBCN = Tenant::query()->max('bcn');
-            setDefaultRequest('bcn', $lastBCN + 1);
+            setDefaultRequest([
+                'bcn' => $lastBCN + 1,
+                'options' => [
+                    'style' => [
+                        'bg_color' => '#611e91',
+                        'bg_inverse' => '#fff',
+                        'color' => '#611e91',
+                    ],
+                ],
+            ]);
             return \response()->json([
                 'view' => $this->view('pages.web.tenant.modals.modal-create-tenant')->render(),
             ]);
@@ -163,6 +172,7 @@ class TenantController extends Controller
             'app_domain' => ['required', 'string', 'unique:tenants,app_domain'],
             'phone' => ['required', 'numeric'],
             'fee_admin' => ['required', 'numeric', 'gte:0'],
+            'options' => ['array'],
         ]);
 
         DB::beginTransaction();
@@ -270,6 +280,10 @@ class TenantController extends Controller
                 ->withCount(['jamaah', 'packages'])
                 ->first();
 
+            setDefaultRequest([
+                'options' => $tenant->options,
+            ]);
+
             $this->addGlobalParams('fragment_active', $slug);
 
             $this->fragment(new TenantFragmentController())
@@ -310,6 +324,7 @@ class TenantController extends Controller
                 'app_domain' => $tenant->app_domain,
                 'tenant' => $tenant->hash,
                 'fee_admin' => $tenant->fee_admin,
+                'options' => $tenant->options,
             ]);
             return \response()->json([
                 'view' => $this->view('pages.web.tenant.modals.modal-edit-tenant')->render(),
@@ -338,7 +353,8 @@ class TenantController extends Controller
             'slug' => [Rule::requiredIf($user->tenant_id !== null), 'string'],
             'bcn' => [Rule::requiredIf($user->tenant_id === null), 'numeric'],
             'app_domain' => [Rule::requiredIf($user->tenant_id === null), 'string'],
-            'fee_admin' => ['required', 'numeric', 'gte:0'],
+            'fee_admin' => [Rule::requiredIf($user->tenant_id === null), 'numeric', 'gte:0'],
+            'options' => ['array'],
         ]);
 
         DB::beginTransaction();
