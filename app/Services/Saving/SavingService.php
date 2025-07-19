@@ -32,17 +32,19 @@ class SavingService
             ->first();
 
         foreach ($jamaah->tabunganPackages as $tabungan) {
-            $namaTabungan = 'tabungan ' . $tabungan?->myPackage->name;
-            $totalSavings = $tabungan->getStartingBalance();
-            $savings->add([
-                'namaTabungan' => ucwords($namaTabungan),
-                'id' => $tabungan->hash,
-                'va' => $tabungan->va_number,
-                'savings' => 'Rp '. number_format($totalSavings ?? 0),
-                'usd_savings' => '$ '. number_format($tabungan->usd_balance ?? 0),
-                'targetSavings' => $tabungan?->myPackage?->amount ?? 0,
-                'showDetails' => true,
-            ]);
+            if ($tabungan->myPackage) {
+                $namaTabungan = 'tabungan ' . $tabungan?->myPackage->name;
+                $totalSavings = $tabungan->getStartingBalance();
+                $savings->add([
+                    'namaTabungan' => ucwords($namaTabungan),
+                    'id' => $tabungan->hash,
+                    'va' => $tabungan->va_number,
+                    'savings' => 'Rp '. number_format($totalSavings ?? 0),
+                    'usd_savings' => '$ '. number_format($tabungan->usd_balance ?? 0),
+                    'targetSavings' => $tabungan?->myPackage?->amount ?? 0,
+                    'showDetails' => true,
+                ]);
+            }
         }
         /* end:: planing savings */
 
