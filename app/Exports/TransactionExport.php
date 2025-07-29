@@ -140,8 +140,7 @@ class TransactionExport extends DefaultValueBinder implements FromCollection, Wi
                 $lastRow = $event->sheet->getDelegate()->getHighestRow();
 
                 $sheet = $event->sheet;
-                // Add the total withdrawal Php and USD to the end of the Excel last record
-                $sheet->cell('E' . ($sheet->getHighestRow() + 1))->setValue(5);
+                $sheet->cell('E' . ($lastRow + 1))->setValue(5);
 
                 $event->sheet->getStyle('B' . ($lastRow + 1) . ':J' . ($lastRow + 1))->applyFromArray([
                     'font' => [
