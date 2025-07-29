@@ -26,9 +26,28 @@ class ResetPasswordUserController extends Controller
      */
     public function store(Request $request): RedirectResponse
     {
+        $validator = $request->validate([
+            'phone' => ['required', 'regex:/^([0-9\s\-\+\(\)]*)$/'],
+            'password' => ['required', 'string'],
+            'password_confirmation' => ['required_with:password', 'same:password'],
+        ]);
+
+        // User::query()->create($validator);
+        DB::beginTransaction();
         try {
+
+            var_dump($request->all());
+           
+            // notify('Berhasil!!', 'Anda berhasil membuat akun, silahkan login menggunakan akun anda', 'success');
             return redirect()->intended(route('login'));
         } catch (\Exception $e) {
+            DB::rollBack();
+            logError($e, title: 'Mobile Reset Password');
+
+            throw_if(isDevelopmentMode(), $e);
+            toSentry($e);
+
+            notify('Oops!', 'Terjadi kesalahan!', 'error');
 
             return back()->withInput();
         }
