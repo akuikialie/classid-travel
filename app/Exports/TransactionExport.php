@@ -139,10 +139,21 @@ class TransactionExport extends DefaultValueBinder implements FromCollection, Wi
 
                 $lastRow = $event->sheet->getDelegate()->getHighestRow();
 
-                $sheet = $event->sheet;
-                $sheet->cell('E' . ($lastRow + 1))->setValue(5);
+                // Append the summary row
+                $event->sheet->getDelegate()->appendRow([
+                    '1',
+                    '2',
+                    '3',
+                    '4',
+                    '5',
+                    '6',
+                    '7',
+                    '8',
+                    '9',
+                    '10',
+                ]);
 
-                $event->sheet->getStyle('B' . ($lastRow + 1) . ':J' . ($lastRow + 1))->applyFromArray([
+                $event->sheet->getStyle('A' . ($lastRow + 1) . ':J' . ($lastRow + 1))->applyFromArray([
                     'font' => [
                         'bold' => true
                     ],
