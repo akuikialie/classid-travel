@@ -4,6 +4,7 @@ namespace App\Http\Routes\Mobile;
 
 use App\Http\Controllers\Mobile\AuthenticationSessionController;
 use App\Http\Controllers\Mobile\RegisterUserController;
+use App\Http\Controllers\Mobile\ResetPasswordUserController;
 use Dentro\Yalr\BaseRoute;
 
 class AuthRoute extends BaseRoute
