@@ -11,6 +11,8 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+
+use App\Model\User;
 use Throwable;
 
 class ResetPasswordUserController extends Controller
@@ -35,10 +37,20 @@ class ResetPasswordUserController extends Controller
         // User::query()->create($validator);
         DB::beginTransaction();
         try {
+            $user = User::where('phone', $request->phone)
+                        ->first();
 
-            var_dump($request->all());
+            if (!$user) {
+                 notify('Oops!', 'User Tidak Tersedia', 'error');
+
+                return back()->withInput();
+            }
+
+            $user->update([
+                'password' => Hash::make($request->password)
+            ]);
            
-            // notify('Berhasil!!', 'Anda berhasil membuat akun, silahkan login menggunakan akun anda', 'success');
+            notify('Berhasil!!', 'Anda berhasil merubah password akun anda, silahkan login menggunakan akun anda', 'success');
             return redirect()->intended(route('login'));
         } catch (\Exception $e) {
             DB::rollBack();
