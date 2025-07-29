@@ -6,7 +6,7 @@
     @include('components.mobile.toolbar', ['title' => 'Daftar', 'backDestination' => url('/')])
 
     <div class="card card-style">
-        <form action="{{ route('register') }}" method="post">
+        <form action="{{ route('reset-password-post') }}" method="post">
             @csrf
 
             <div class="content mb-0 mt-1">
