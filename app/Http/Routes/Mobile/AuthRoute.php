@@ -28,6 +28,10 @@ class AuthRoute extends BaseRoute
             /* register */
             $this->router->get($this->prefix('register'), [RegisterUserController::class, 'create'])->name('register');
             $this->router->post($this->prefix('register'), [RegisterUserController::class, 'store'])->name('register-post');
+
+            /* reset-password */
+            $this->router->get($this->prefix('reset-password'), [ResetPasswordUserController::class, 'index'])->name('reset-password');
+            $this->router->post($this->prefix('reset-password'), [ResetPasswordUserController::class, 'store'])->name('reset-password-post');
         });
 
 

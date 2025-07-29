@@ -7,7 +7,6 @@ use Dentro\Yalr\BaseRoute;
 
 class AuthRoute extends BaseRoute
 {
-
     protected string $prefix = 'auth';
     protected string $name = '';
 
@@ -21,13 +20,17 @@ class AuthRoute extends BaseRoute
     public function register(): void
     {
 
-        $this->router->middleware(['guest'])->group(function(){
+        $this->router->middleware(['guest'])->group(function () {
             /* login */
-            $this->router->get($this->prefix('login'),
-                [AuthenticationSessionController::class, 'create'])
+            $this->router->get(
+                $this->prefix('login'),
+                [AuthenticationSessionController::class, 'create']
+            )
                 ->name($this->name('login'));
-            $this->router->post($this->prefix('login'),
-                [AuthenticationSessionController::class, 'store'])
+            $this->router->post(
+                $this->prefix('login'),
+                [AuthenticationSessionController::class, 'store']
+            )
                 ->name($this->name('sign-in'));
 
             /* register */
@@ -38,7 +41,7 @@ class AuthRoute extends BaseRoute
 
         // $this->router->get($this->prefix('user'), [AuthenticationSessionController::class, 'user'])->middleware('auth:api');
 
-        $this->router->middleware(['auth:sanctum', 'verified'])->group(function($route){
+        $this->router->middleware(['auth:sanctum', 'verified'])->group(function ($route) {
             $route->post($this->prefix('logout'), [AuthenticationSessionController::class, 'destroy'])->name($this->name('logout'));
         });
     }
