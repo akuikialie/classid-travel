@@ -136,6 +136,27 @@ class TransactionExport extends DefaultValueBinder implements FromCollection, Wi
                 $this->setHeaderStyle($worksheet);
                 $this->setHeaderTableStyle($worksheet);
                 $this->setTableStyle($worksheet);
+
+                $lastRow = $event->sheet->getDelegate()->getHighestRow();
+
+                $event->sheet->appendRow([
+                    '1',
+                    '2',
+                    '3',
+                    '4',
+                    '5',
+                    '6',
+                    '7',
+                    '8',
+                    '9',
+                    '10',
+                ]);
+
+                $event->sheet->getStyle('B' . ($lastRow + 1) . ':J' . ($lastRow + 1))->applyFromArray([
+                    'font' => [
+                        'bold' => true
+                    ],
+                ]);
             },
         ];
     }
