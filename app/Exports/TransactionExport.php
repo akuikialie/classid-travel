@@ -144,19 +144,6 @@ class TransactionExport extends DefaultValueBinder implements FromCollection, Wi
                         'bold' => true
                     ],
                 ]);
-
-                $worksheet->appendRow([
-                    'A',
-                    'B',
-                    'C',
-                    'D',
-                    'E',
-                    'F',
-                    'G',
-                    'H',
-                    'I',
-                    'J',
-                ]);
             },
         ];
     }
