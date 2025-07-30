@@ -12,7 +12,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
-use App\Model\User;
+use App\Models\User;
 use Throwable;
 
 class ResetPasswordUserController extends Controller
