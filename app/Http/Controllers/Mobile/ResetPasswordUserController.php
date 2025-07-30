@@ -2,15 +2,14 @@
 
 namespace App\Http\Controllers\Mobile;
 
-// use App\Actions\Users\CreateNewUser;
 use App\Enums\RoleEnum;
-// use App\Models\Jamaah\JamaahHistory;
 use App\Services\UserService;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
 
 use App\Models\User;
 use Throwable;
