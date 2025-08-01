@@ -6,12 +6,17 @@ use App\Enums\TransactionMethod;
 use App\Enums\TransactionType;
 use App\Http\Controllers\Web\Admin\Controller;
 use App\Models\User;
+use App\Services\UserService;
 use Dentro\Yalr\Attributes\Get;
 use Dentro\Yalr\Attributes\Middleware;
 use Dentro\Yalr\Attributes\Name;
 use Dentro\Yalr\Attributes\Prefix;
+use Dentro\Yalr\Attributes\Put;
 use Exception;
 use Illuminate\Contracts\View\View;
+use Illuminate\Support\Facades\Hash;
+use Throwable;
+use Illuminate\Http\Request;
 
 #[Prefix('jamaah')]
 #[Name('jamaah', false, true)]
@@ -126,5 +131,43 @@ class JamaahProfileController extends Controller
 
         return $this->view('pages.web.jamaah-profile.fragment.mutations');
     }
+
+        /**
+     * @param Request $request
+     * @param User $user
+     * @return RedirectResponse
+     * @throws HandleCatchableException
+     * @throws Throwable
+     */
+    #[Put('{user}/updatePassword', name: 'updatePassword')]
+    public function updatePassword(Request $request, User $user)
+    {
+        try {
+            $input = $request->validate([
+                'password' => ['required'],
+                'confirm_password' => ['required_with:password', 'same:password'],
+            ]);
+
+            (new UserService())
+                ->setUser($user)
+                ->update(['password' => Hash::make($input['password'])]);
+
+            notify('Berhasil', 'Password berhasil diperbarui!', 'success')->autoClose();
+            return redirect()->back();
+        } catch (Throwable $e) {
+            logError($e, title: 'calon jamaah - update password');
+            if (isDevelopmentMode()) {
+                throw $e;
+            }
+            $message = 'Terjadi kesalahan!';
+            if ($e->getCode() >= 900) {
+                $message = $e->getMessage();
+            }
+            notify('Oops!', $message, 'error');
+
+            return redirect()->back();
+        }
+    }
+
 
 }

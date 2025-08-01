@@ -1,7 +1,6 @@
 @extends('pages.web.jamaah-profile.show')
 
 @section('fragment-content')
-
     <!--begin::details View-->
     <div class="card mb-5 mb-xl-10" id="kt_profile_details_view">
         <!--begin::Card header-->
@@ -67,6 +66,46 @@
         <!--end::Card body-->
     </div>
     <!--end::details View-->
+    <!--begin::Reset Password-->
+    <div class="card mb-5" id="kt_reset_password">
+        <!--begin::Card header-->
+        <div class="card-header">
+            <div class="card-title">
+                <h3 class="fw-bold">Reset Password Jamaah</h3>
+            </div>
+        </div>
+        <!--end::Card header-->
 
+        <!--begin::Form-->
+        <form method="POST" action="{{ route('admin.jamaah.updatePassword', $user->hash) }}">
+            @csrf
+            @method('PUT')
+
+            <!--begin::Card body-->
+            <div class="card-body p-9">
+                <!--begin::Input group-->
+
+                <div class="mb-7">
+                    <label class="required form-label">Password Baru</label>
+                    <input type="password" name="password" class="form-control" required>
+                </div>
+
+                <div class="mb-7">
+                    <label class="required form-label">Konfirmasi Password</label>
+                    <input type="password" name="confirm_password" class="form-control" required>
+                </div>
+                <!--end::Input group-->
+
+                <!--begin::Actions-->
+                <div class="text-end">
+                    <button type="submit" class="btn btn-primary">Reset Password</button>
+                </div>
+                <!--end::Actions-->
+            </div>
+            <!--end::Card body-->
+        </form>
+        <!--end::Form-->
+    </div>
+    <!--end::Reset Password-->
 
 @endsection
