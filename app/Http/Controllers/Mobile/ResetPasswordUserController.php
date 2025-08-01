@@ -33,8 +33,6 @@ class ResetPasswordUserController extends Controller
             'password_confirmation' => ['required_with:password', 'same:password'],
         ]);
 
-        // User::query()->create($validator);
-        DB::beginTransaction();
         try {
             $user = User::where('phone', $request->phone)
                         ->first();
@@ -46,13 +44,12 @@ class ResetPasswordUserController extends Controller
             }
 
             $user->update([
-                'password' => Hash::make($request->password)
+                'password' => $request->password,
             ]);
            
             notify('Berhasil!!', 'Anda berhasil merubah password akun anda, silahkan login menggunakan akun anda', 'success');
             return redirect()->intended(route('login'));
         } catch (\Exception $e) {
-            DB::rollBack();
             logError($e, title: 'Mobile Reset Password');
 
             throw_if(isDevelopmentMode(), $e);
