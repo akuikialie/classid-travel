@@ -14,7 +14,7 @@
     "classid/template-replacement": "^1.1.1",
     "dentro/laravel-patcher": "^1.4.3",
     "dentro/yalr": "^1.5",
-    "koffinate/laravel-menu": "^1.2.4",
+    "koffinate/laravel-menu": "^2.2.1",
     "laravel/framework": "^11.45.1",
     "laravel/horizon": "^5.33.0",
     "laravel/sanctum": "^4.1.1",
